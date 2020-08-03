@@ -1,0 +1,139 @@
+package pe.com.edu.siaa.core.ejb.service.rest.matricula.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.admision.local.AdmisionServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.matricula.local.MatriculaServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.admision.AnhoSemestreDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.AlumnoDTO;
+import pe.com.edu.siaa.core.model.estate.EstadoAnhoSemestreState;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class AlumnoRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:30 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/alumnoRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class AlumnoRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient MatriculaServiceLocal matriculaServiceLocal;
+	
+	@EJB
+	private transient AdmisionServiceLocal admisionServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<AlumnoDTO> crear(AlumnoDTO alumno) throws Exception {
+		AnhoSemestreDTO anhoSemestreIngreso = admisionServiceLocal.obtenerAnhoSemestreByEstado(EstadoAnhoSemestreState.ACTIVO);
+		alumno.setAnhoSemestreIngreso(anhoSemestreIngreso);
+		return controladorAccion(alumno,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<AlumnoDTO> modificar(AlumnoDTO alumno) throws Exception {
+		return controladorAccion(alumno,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<AlumnoDTO> eliminar(@PathParam("id") String idAlumno) throws Exception {
+		AlumnoDTO alumno = new AlumnoDTO();
+		alumno.setIdAlumno(idAlumno);		
+		return controladorAccion(alumno,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<AlumnoDTO> controladorAccion(AlumnoDTO alumno, AccionType accionType){
+		ResultadoRestVO<AlumnoDTO> resultado = new ResultadoRestVO<AlumnoDTO>();
+		 try {
+    		 resultado.setObjetoResultado(matriculaServiceLocal.controladorAccionAlumno(alumno,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<AlumnoDTO> finById(@PathParam("id") String idAlumno) throws Exception {
+		AlumnoDTO alumno = new AlumnoDTO();
+		alumno.setIdAlumno(idAlumno);
+		return controladorAccion(alumno,AccionType.FIND_BY_ID);
+	}
+
+	@GET
+	@Path("/findAlumnoByPersona/{idPersona}")
+	public ResultadoRestVO<AlumnoDTO> findAlumnoByPersona(@PathParam("idPersona") String idPersona) throws Exception {
+		ResultadoRestVO<AlumnoDTO> resultado = new ResultadoRestVO<AlumnoDTO>();
+		 try {
+   		resultado.setObjetoResultado(matriculaServiceLocal.findAlumnoByPersona(idPersona));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<AlumnoDTO> listarAlumno(@Context UriInfo info){
+		ResultadoRestVO<AlumnoDTO> resultado = new ResultadoRestVO<AlumnoDTO>();
+		AlumnoDTO alumno = transferUriInfo(info);
+		 try {
+			resultado.setListaResultado(matriculaServiceLocal.listarAlumno(alumno));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<AlumnoDTO> contarAlumno(@Context UriInfo info){
+		ResultadoRestVO<AlumnoDTO> resultado = new ResultadoRestVO<AlumnoDTO>();
+		AlumnoDTO alumno = transferUriInfo(info);
+		 try {
+			resultado.setContador(matriculaServiceLocal.contarListarAlumno(alumno));
+			if (resultado.isData()) {
+				resultado.setListaResultado(matriculaServiceLocal.listarAlumno(alumno));
+			}
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}	
+	@GET
+    @Path("/")
+	public ResultadoRestVO<AlumnoDTO> inicializarAlumno(@Context UriInfo info) throws Exception {
+	     AlumnoDTO alumno = transferUriInfo(info);
+		 ResultadoRestVO<AlumnoDTO> resultado = new ResultadoRestVO<AlumnoDTO>();
+		 try {
+    		resultado.setObjetoResultado(alumno);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private AlumnoDTO transferUriInfo(@Context UriInfo info) {
+		AlumnoDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,AlumnoDTO.class);
+		return resultado;
+	}
+}

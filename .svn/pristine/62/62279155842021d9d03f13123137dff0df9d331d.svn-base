@@ -1,0 +1,271 @@
+package pe.com.edu.siaa.core.ejb.dao.matricula.impl;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.persistence.Query;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericAcademicoDAOImpl;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.HorarioDaoLocal;
+import pe.com.edu.siaa.core.ejb.factory.CollectionUtil;
+import pe.com.edu.siaa.core.model.dto.matricula.HorarioDTO;
+import pe.com.edu.siaa.core.model.jpa.matricula.Horario;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+
+/**
+ * La Class HorarioDaoImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 19:53:43 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+public class HorarioDaoImpl extends  GenericAcademicoDAOImpl<String, Horario> implements HorarioDaoLocal  {
+
+	
+	@Override
+	public List<Horario> listarHorarioFiltro(HorarioDTO horario) throws Exception {
+		List<String> listaIdDetCargaLectiva  = obtenerIdDetCargaLectiva(horario);		
+		return listarHorario(listaIdDetCargaLectiva);
+	}
+	
+	/**
+	 * Obtener id det carga lectiva.
+	 *
+	 * @param horario el horario
+	 * @return the list
+	 */
+	@Override
+	public List<String> obtenerIdDetCargaLectiva(HorarioDTO horario) {
+		List<String> resultado = new ArrayList<String>();
+		List<String> resultadoTemp = new ArrayList<String>();
+		Map<String, Object> parametros = new HashMap<String, Object>();
+		boolean ejecutarQuery = false;
+		StringBuilder jpaql = new StringBuilder();
+		//Inicio obteniendo id detcarga lectiva por ciclo
+		jpaql.append(" select o.idDetCargaLectiva from DetCargaLectiva o where 1=1 ");
+		if (horario.getDetCargaLectiva().getDetPlanEstudio() != null) {
+			 if (horario.getDetCargaLectiva().getDetPlanEstudio().getItemByCiclo() != null) {
+				 if (StringUtils.isNotNullOrBlank(horario.getDetCargaLectiva().getDetPlanEstudio().getItemByCiclo().getIdItem())) {
+					 jpaql.append(" and o.detPlanEstudio.itemByCiclo.idItem =:idCiclo ");
+					 parametros.put("idCiclo", horario.getDetCargaLectiva().getDetPlanEstudio().getItemByCiclo().getIdItem());
+					 ejecutarQuery = true;
+				 }
+				 if (StringUtils.isNotNullOrBlank(horario.getDetCargaLectiva().getCargaLectiva().getEscuela())) {
+					 if (StringUtils.isNotNullOrBlank(horario.getDetCargaLectiva().getCargaLectiva().getEscuela().getIdEscuela())) {
+						 jpaql.append(" and o.cargaLectiva.escuela.idEscuela=:idEscuela  ");
+						 parametros.put("idEscuela", horario.getDetCargaLectiva().getCargaLectiva().getEscuela().getIdEscuela());
+						 ejecutarQuery = true;
+					 }
+				 }
+				 if (StringUtils.isNotNullOrBlank(horario.getDetCargaLectiva().getCargaLectiva().getAnhoSemestre())) {
+					 if (StringUtils.isNotNullOrBlank(horario.getDetCargaLectiva().getCargaLectiva().getAnhoSemestre().getIdAnhoSemestre())) {
+						 jpaql.append(" and o.cargaLectiva.anhoSemestre.idAnhoSemestre=:idSemestre  ");
+						 parametros.put("idSemestre", horario.getDetCargaLectiva().getCargaLectiva().getAnhoSemestre().getIdAnhoSemestre());
+						 ejecutarQuery = true;
+					 }
+				 }
+				 if (StringUtils.isNotNullOrBlank(horario.getDetCargaLectiva().getItemByTurno())) {
+					 if (StringUtils.isNotNullOrBlank(horario.getDetCargaLectiva().getItemByTurno().getIdItem())) {
+						 jpaql.append(" and o.itemByTurno.idItem=:idTurno  ");
+						 parametros.put("idTurno", horario.getDetCargaLectiva().getItemByTurno().getIdItem());
+						 ejecutarQuery = true;
+					 }
+				 }
+			 }
+		 }
+		if (horario.getDetCargaLectiva().getCargaLectiva() != null) {
+			if (horario.getDetCargaLectiva().getCargaLectiva().getEntidadUniversitaria() != null) {
+				jpaql.append(" and o.cargaLectiva.entidadUniversitaria.idEntidadUniversitaria = :idEntidadUniversitaria ");
+				parametros.put("idEntidadUniversitaria", horario.getDetCargaLectiva().getCargaLectiva().getEntidadUniversitaria().getIdEntidadUniversitaria());
+			}
+		}
+		if (ejecutarQuery) {		
+			Query query = createQuery(jpaql.toString(), parametros);
+			resultadoTemp =  query.getResultList();			
+		} 
+		if (resultadoTemp != null) {
+			resultado.addAll(resultadoTemp);
+		}
+		//Fin obteniendo id detcarga lectiva por ciclo
+		//Inicio obteniendo id detcarga lectiva por docente
+		if (horario.getDetCargaLectiva().getPersonalByDocente() != null && StringUtils.isNotNullOrBlank(horario.getDetCargaLectiva().getPersonalByDocente().getIdPersonal())) {
+			if (!horario.getListaIdDocente().contains(horario.getDetCargaLectiva().getPersonalByDocente().getIdPersonal())) {
+				horario.getListaIdDocente().add(horario.getDetCargaLectiva().getPersonalByDocente().getIdPersonal());
+			}
+		}
+		ejecutarQuery = false;
+		jpaql = new StringBuilder();
+		resultadoTemp = new ArrayList<String>();
+		parametros = new HashMap<String, Object>();
+		jpaql.append(" select o.idDetCargaLectiva from DetCargaLectiva o where 1=1 ");
+		if (horario.getListaIdDocente() != null) {
+			 if (horario.getListaIdDocente().size() > 0) {
+					 jpaql.append(" and o.personalByDocente.idPersonal in (:idPersonalDocente) ");
+					 parametros.put("idPersonalDocente", horario.getListaIdDocente());
+					 ejecutarQuery = true;
+				 if (StringUtils.isNotNullOrBlank(horario.getDetCargaLectiva().getCargaLectiva().getAnhoSemestre().getIdAnhoSemestre())) {
+					 jpaql.append(" and o.cargaLectiva.anhoSemestre.idAnhoSemestre=:idSemestre  ");
+					 parametros.put("idSemestre", horario.getDetCargaLectiva().getCargaLectiva().getAnhoSemestre().getIdAnhoSemestre());
+					 ejecutarQuery = true;
+				 }
+			 }
+		 }
+		if (ejecutarQuery) {		
+			Query query = createQuery(jpaql.toString(), parametros);
+			resultadoTemp =  query.getResultList();			
+		} 
+		if (resultadoTemp != null) {
+			resultado.addAll(resultadoTemp);
+		}
+		//Fin obteniendo id detcarga lectiva por docente
+		//Inicio obteniendo id detcarga lectiva por docente practica
+		if (horario.getDetCargaLectiva().getPersonalByDocentePractica() != null && StringUtils.isNotNullOrBlank(horario.getDetCargaLectiva().getPersonalByDocentePractica().getIdPersonal())) {
+			if (!horario.getListaIdDocentePractica().contains(horario.getDetCargaLectiva().getPersonalByDocentePractica().getIdPersonal())) {
+				horario.getListaIdDocentePractica().add(horario.getDetCargaLectiva().getPersonalByDocentePractica().getIdPersonal());
+			}
+		}
+		ejecutarQuery = false;
+		jpaql = new StringBuilder();
+		resultadoTemp = new ArrayList<String>();
+		parametros = new HashMap<String, Object>();
+		jpaql.append(" select o.idDetCargaLectiva from DetCargaLectiva o where 1=1 ");
+		if (horario.getListaIdDocentePractica() != null) {
+			 if (horario.getListaIdDocentePractica().size() > 0) {
+					 jpaql.append(" and o.personalByDocentePractica.idPersonal in (:idPersonalDocentePractica) ");
+					 parametros.put("idPersonalDocentePractica", horario.getListaIdDocentePractica());
+					 ejecutarQuery = true;
+				 if (StringUtils.isNotNullOrBlank(horario.getDetCargaLectiva().getCargaLectiva().getAnhoSemestre().getIdAnhoSemestre())) {
+					 jpaql.append(" and o.cargaLectiva.anhoSemestre.idAnhoSemestre=:idSemestre  ");
+					 parametros.put("idSemestre", horario.getDetCargaLectiva().getCargaLectiva().getAnhoSemestre().getIdAnhoSemestre());
+					 ejecutarQuery = true;
+				 }
+			 }
+		}
+		if (ejecutarQuery) {		
+			Query query = createQuery(jpaql.toString(), parametros);
+			resultadoTemp =  query.getResultList();			
+		} 
+		if (resultadoTemp != null) {
+			resultado.addAll(resultadoTemp);
+		}
+		//Fin obteniendo id detcarga lectiva por docente practica
+		return resultado;
+	}
+
+	
+	@Override
+	public List<Horario> listarHorario(List<String> listaIdDetCargaLectiva) throws Exception {
+		if (CollectionUtil.isEmpty(listaIdDetCargaLectiva)) {
+			return new ArrayList<Horario>();
+		}
+		Map<String, Object> parametros = new HashMap<String, Object>();
+		boolean ejecutarQuery = false;
+		StringBuilder jpaql = new StringBuilder();
+		jpaql.append(" from Horario h left join fetch h.detCargaLectiva det left join fetch det.aula left join fetch det.itemByTurno left join fetch det.detPlanEstudio dep left join fetch dep.itemByCiclo cicl ");
+		jpaql.append(" left join fetch det.personalByDocente doc left join fetch det.personalByDocentePractica docp  ");
+		jpaql.append(" left join fetch doc.persona perdoc left join fetch docp.persona perdocp ");
+		jpaql.append(" left join fetch perdoc.entidadUniversitaria left join fetch perdocp.entidadUniversitaria ");
+		jpaql.append(" left join fetch det.cargaLectiva cl left join fetch cl.entidadUniversitaria left join fetch cl.escuela ");
+		jpaql.append(" left join fetch h.itemByDia");
+		jpaql.append(" where 1 = 1 ");
+		if (listaIdDetCargaLectiva != null && listaIdDetCargaLectiva.size() > 0) {
+			ejecutarQuery = true;
+			jpaql.append(" and h.detCargaLectiva.idDetCargaLectiva in (:listaIdDetCargaLectiva) ");
+			parametros.put("listaIdDetCargaLectiva", listaIdDetCargaLectiva);				 
+		}
+		jpaql.append(" order by h.horaInicio, h.horaFin,h.detCargaLectiva.aula.idAula ");
+		if (ejecutarQuery) {		
+			Query query = createQuery(jpaql.toString(), parametros);
+			List<Horario> lista = query.getResultList();
+			return lista;
+		} 
+		return new ArrayList<Horario>();
+	}
+	
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.HorarioDaoLocal#listarHorario(pe.com.edu.siaa.core.model.jpa.seguridad.Horario)
+     */  
+    @Override	 
+    public List<Horario> listarHorario(HorarioDTO horario) {
+        Query query = generarQueryListaHorario(horario, false);
+        query.setFirstResult(horario.getStartRow());
+        query.setMaxResults(horario.getOffset());
+        return query.getResultList();
+    }   
+   
+    /**
+     * Generar query lista Horario.
+     *
+     * @param HorarioDTO el horario
+     * @param esContador el es contador
+     * @return the query
+     */
+    private Query generarQueryListaHorario(HorarioDTO horario, boolean esContador) {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        if (esContador) {
+            jpaql.append(" select count(o.idHorario) from Horario o where 1=1 ");
+        } else {
+            jpaql.append(" select o from Horario o where 1=1 ");           
+        }
+		if (!StringUtils.isNullOrEmpty(horario.getSearch())) {
+	          jpaql.append(" and upper(o.idHorario) like :search ");
+	          parametros.put("search", "%" + horario.getSearch().toUpperCase() + "%");
+	    } else {
+			if (!StringUtils.isNullOrEmpty(horario.getHoraInicio())) {
+				jpaql.append(" and upper(o.horaInicio) like :horaInicio ");
+				parametros.put("horaInicio", "%" + horario.getHoraInicio().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(horario.getHoraFin())) {
+				jpaql.append(" and upper(o.horaFin) like :horaFin ");
+				parametros.put("horaFin", "%" + horario.getHoraFin().toUpperCase() + "%");
+			}
+		}
+        if (!esContador) {
+            //jpaql.append(" ORDER BY 1 ");
+        }
+        Query query = createQuery(jpaql.toString(), parametros);
+        return query;
+    }
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.HorarioDaoLocal#contarListar{entity.getClassName()}(pe.com.edu.siaa.core.model.jpa.seguridad.HorarioDTO)
+     */
+	@Override
+    public int contarListarHorario(HorarioDTO horario) {
+        int resultado = 0;
+        try {
+            //StringBuilder jpaql = new StringBuilder();
+            Query query = generarQueryListaHorario(horario, true);
+            resultado = ((Long) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            resultado = 0;
+        }
+        return resultado;
+    }
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.HorarioDaoLocal#generarIdHorario()
+     */
+	 @Override
+    public String generarIdHorario() {
+        String resultado = "1";
+        Query query = createQuery("select max(o.idHorario) from Horario o", null);
+        List<Object> listLong =  query.getResultList();
+        if (listLong != null && listLong.size() > 0 && listLong.get(0) != null)  {
+            Long ultimoIdGenerado = Long.valueOf(listLong.get(0).toString());
+            if (!StringUtils.isNullOrEmpty(ultimoIdGenerado)) {
+                resultado = resultado + ultimoIdGenerado;
+            }
+        }
+        return resultado;
+    }
+   
+}

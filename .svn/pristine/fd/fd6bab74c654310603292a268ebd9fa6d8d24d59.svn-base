@@ -1,0 +1,226 @@
+package pe.com.builderp.core.facturacion.ejb.dao.venta.impl;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.persistence.Query;
+
+import pe.com.builderp.core.facturacion.ejb.dao.venta.local.VentaDaoLocal;
+import pe.com.builderp.core.facturacion.model.dto.venta.VentaDTO;
+import pe.com.builderp.core.facturacion.model.jpa.venta.Venta;
+import pe.com.builderp.core.facturacion.model.vo.venta.RegistroVentaVO;
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericFacturacionDAOImpl;
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.jdbc.generic.GenericJDBC;
+import pe.com.edu.siaa.core.ejb.service.util.FechaUtil;
+import pe.com.edu.siaa.core.ejb.util.jms.UUIDUtil;
+import pe.com.edu.siaa.core.model.jdbc.vo.ScriptSqlResulJDBCVO;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+
+/**
+ * La Class VentaDaoImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Thu Dec 28 12:32:59 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+public class VentaDaoImpl extends  GenericFacturacionDAOImpl<String, Venta> implements VentaDaoLocal  {
+
+	 @Override	 
+	 public List<RegistroVentaVO> listarVentaReporte(Map<String,Object> parametroFiltroMap) throws Exception {
+		List<RegistroVentaVO> resultado = new ArrayList<RegistroVentaVO>();
+		Map<String,String> formatoFechaMap = new HashMap<String,String>();
+		formatoFechaMap.put("fechaEmision", FechaUtil.DATE_DMY);
+		formatoFechaMap.put("fechaVencimientoOPago", FechaUtil.DATE_DMY);
+		formatoFechaMap.put("fehaRefComprobanteDocModifica", FechaUtil.DATE_DMY);
+		ScriptSqlResulJDBCVO resultadoTemp = obtenerScriptSql(parametroFiltroMap,false);
+		resultado = TransferDataObjectUtil.transferObjetoEntityListVO(resultadoTemp, RegistroVentaVO.class, formatoFechaMap);
+		return resultado;
+			
+	}
+		 
+	private ScriptSqlResulJDBCVO obtenerScriptSql(Map<String,Object> parametroFiltroMap, boolean isContador) throws Exception {
+		StringBuilder sql = new StringBuilder();
+		Map<String, Object> parametros = new HashMap<String, Object>();
+		parametros.putAll(parametroFiltroMap);
+		if (!isContador) {
+			sql.append("select  * from ( ");
+			sql.append(" select nroCorrelativoOperacion as codigoOperacion, to_char( fechaPago,'dd/mm/yyyy') as fechaEmision, to_char( fechaPago,'dd/mm/yyyy') as fechaVencimientoOPago , it.codigoExterno as tipoDocumentoPago, ");  
+			sql.append("substring(cp.nroDoc,1,3) as serieDocumentoPago,  cp.nroDoc as nroDocumentoPago , tipoDocIdentidad.codigoExterno as tipoDocIdentidad,");
+			sql.append("per.nroDoc as nroDocIdentidad, (per.nombre || ' ' || per.apellidopaterno || ' ' || per.apellidomaterno) as nombreORazonSocial, ");
+			sql.append("0 as valorFacturadoExportacion, subMontoTotal baseImponibleOperacionGrabada,0 importeTotalOperacionExonerada , 0 importeTotalOperacionInafecto ,'' as ISC , igv IGVoIPM,");
+			sql.append(" 0 as otroTributoBaseImponible,  montoTotal as importeTotalComprobantePago, tipoCambio, null as fehaRefComprobanteDocModifica, null as tipoDocRefComprobanteDocModifica,"); 
+			sql.append("null as serieDocRefComprobanteDocModifica , null as nroDocRefComprobanteDocModifica");				
+		 } else {
+			sql.append("select  sum(CONTADOR) as CONTADOR from ( ");
+			sql.append("select count(1) as CONTADOR ");
+		}
+		sql.append(" from dbo.ControlPago cp, commo.item it,dbo.Alumno al,dbo.postulante post ,dbo.persona per,");
+		sql.append(" commo.item tipoDocIdentidad");
+		sql.append(" where cp.idTipoDocSunat = it.iditem");  
+		sql.append(" and cp.idalumno =  al.idAlumno and al.idPostulante = post.idPostulante and post.idPersona = per.idPersona"); 
+		sql.append(" and per.idTipoDocIdentidad = tipoDocIdentidad.idItem");
+		sql.append(" union ALL ");
+		if (!isContador) {
+			sql.append("	 select nroCorrelativoOperacion as codigoOperacion, to_char(fechaVenta,'dd/mm/yyyy') as fechaEmision, to_char(fechaVenta,'dd/mm/yyyy')  as fechaVencimientoOPago , it.codigoExterno as tipoDocumentoPago,");  
+			sql.append(" substring(cp.nroDoc,1,3) as serieDocumentoPago,  cp.nroDoc as nroDocumentoPago , tipoDocIdentidad.codigoExterno as tipoDocIdentidad,");
+			sql.append(" cl.nroDoc as nroDocIdentidad, (cl.nombre || ' ' || cl.apellidopaterno || ' ' || cl.apellidomaterno) as nombreORazonSocial, ");
+			sql.append(" 0 as valorFacturadoExportacion, subMontoTotal baseImponibleOperacionGrabada,0 importeTotalOperacionExonerada , 0 importeTotalOperacionInafecto ,'' as ISC , igv IGVoIPM,");
+			sql.append(" 0 as otroTributoBaseImponible,  montoTotal as importeTotalComprobantePago, tipoCambio, null as fehaRefComprobanteDocModifica, null as tipoDocRefComprobanteDocModifica,"); 
+			sql.append(" null as serieDocRefComprobanteDocModifica , null as nroDocRefComprobanteDocModifica");
+		} else {
+			sql.append("select count(1) as CONTADOR ");
+		}
+		sql.append(" from factu.venta cp,commo.item it,factu.cliente cl, commo.item tipoDocIdentidad ");
+		sql.append(" where cp.idtipodocsunat = it.iditem and cp.idCliente = cl.idCliente ");
+		sql.append(" and cl.idTipoDocumentoIdentidad = tipoDocIdentidad.idItem ");
+		//Fin tempora
+		if (!isContador) {
+			sql.append(" ) d order by codigoOperacion ");
+			sql.append(" limit :offset OFFSET :startRow ");
+		} else {
+			sql.append(" ) d ");
+		}	
+		return GenericJDBC.executeQuery(sql, parametros);
+	}
+		 
+	@Override	 
+	public  int contarListarVentaReporte(Map<String,Object> parametroFiltroMap) {
+		int resultado = 0;
+		try {
+			resultado = Integer.parseInt(obtenerScriptSql(parametroFiltroMap,true).getListaData().get(0).get("CONTADOR") + "");
+		} catch (Exception e) {
+			resultado = 0;
+		}
+		return resultado;	 
+	}
+		
+    /* (non-Javadoc)
+     * @see pe.com.builderp.core.facturacion.ejb.dao.venta.local.VentaDaoLocal#listarVenta(pe.com.builderp.core.facturacion.model.jpa.venta.Venta)
+     */  
+    @Override	 
+    public List<Venta> listarVenta(VentaDTO venta) {
+        Query query = generarQueryListaVenta(venta, false);
+        query.setFirstResult(venta.getStartRow());
+        query.setMaxResults(venta.getOffset());
+        return query.getResultList();
+    }   
+   
+    /**
+     * Generar query lista Venta.
+     *
+     * @param VentaDTO el venta
+     * @param esContador el es contador
+     * @return the query
+     */
+    private Query generarQueryListaVenta(VentaDTO venta, boolean esContador) {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        if (esContador) {
+            jpaql.append(" select count(o.idVenta) from Venta o where 1=1 ");
+        } else {
+            jpaql.append(" select o from Venta o  left join fetch o.tipoDocSunat ");
+            jpaql.append(" left join fetch o.itemByTipoMoneda left join fetch o.pedido  "); 
+            jpaql.append(" left join fetch o.cliente  where 1=1 ");
+        }
+		if (!StringUtils.isNullOrEmpty(venta.getSearch())) {
+	          jpaql.append(" and upper(o.idVenta) like :search ");
+	          parametros.put("search", "%" + venta.getSearch().toUpperCase() + "%");
+	    } else {
+			if (!StringUtils.isNullOrEmptyNumeric(venta.getTipoCambio())) {
+				jpaql.append(" and o.tipoCambio = :tipoCambio ");
+				parametros.put("tipoCambio", venta.getTipoCambio());
+			}
+			if (!StringUtils.isNullOrEmpty(venta.getNroDoc())) {
+				jpaql.append(" and upper(o.nroDoc) like :nroDoc ");
+				parametros.put("nroDoc", "%" + venta.getNroDoc().toUpperCase() + "%");
+			}
+
+			if (!StringUtils.isNullOrEmptyNumeric(venta.getIgv())) {
+				jpaql.append(" and o.igv = :igv ");
+				parametros.put("igv", venta.getIgv());
+			}
+			if (!StringUtils.isNullOrEmptyNumeric(venta.getDescuentoTotal())) {
+				jpaql.append(" and o.descuentoTotal = :descuentoTotal ");
+				parametros.put("descuentoTotal", venta.getDescuentoTotal());
+			}
+			if (!StringUtils.isNullOrEmptyNumeric(venta.getSubMontoTotal())) {
+				jpaql.append(" and o.subMontoTotal = :subMontoTotal ");
+				parametros.put("subMontoTotal", venta.getSubMontoTotal());
+			}
+			if (!StringUtils.isNullOrEmptyNumeric(venta.getMontoTotal())) {
+				jpaql.append(" and o.montoTotal = :montoTotal ");
+				parametros.put("montoTotal", venta.getMontoTotal());
+			}
+			if (!StringUtils.isNullOrEmpty(venta.getFechaVenta())) {
+				jpaql.append(" and o.fechaVenta = :fechaVenta ");
+				parametros.put("fechaVenta", venta.getFechaVenta());
+			}
+			if (!StringUtils.isNullOrEmptyNumeric(venta.getNroCorrelativoOperacion())) {
+				jpaql.append(" and o.nroCorrelativoOperacion = :nroCorrelativoOperacion ");
+				parametros.put("nroCorrelativoOperacion", venta.getNroCorrelativoOperacion());
+			}
+			if (!StringUtils.isNullOrEmpty(venta.getFechaCreacion())) {
+				jpaql.append(" and o.fechaCreacion = :fechaCreacion ");
+				parametros.put("fechaCreacion", venta.getFechaCreacion());
+			}
+			if (!StringUtils.isNullOrEmpty(venta.getUsuarioCreacion())) {
+				jpaql.append(" and upper(o.usuarioCreacion) like :usuarioCreacion ");
+				parametros.put("usuarioCreacion", "%" + venta.getUsuarioCreacion().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(venta.getFechaModificacion())) {
+				jpaql.append(" and o.fechaModificacion = :fechaModificacion ");
+				parametros.put("fechaModificacion", venta.getFechaModificacion());
+			}
+			if (!StringUtils.isNullOrEmpty(venta.getUsuarioModificacion())) {
+				jpaql.append(" and upper(o.usuarioModificacion) like :usuarioModificacion ");
+				parametros.put("usuarioModificacion", "%" + venta.getUsuarioModificacion().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(venta.getEstado())) {
+				jpaql.append(" and upper(o.estado) like :estado ");
+				parametros.put("estado", "%" + venta.getEstado().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(venta.getIpAcceso())) {
+				jpaql.append(" and upper(o.ipAcceso) like :ipAcceso ");
+				parametros.put("ipAcceso", "%" + venta.getIpAcceso().toUpperCase() + "%");
+			}
+		}
+        if (!esContador) {
+            //jpaql.append(" ORDER BY 1 ");
+        }
+        Query query = createQuery(jpaql.toString(), parametros);
+        return query;
+    }
+
+    /* (non-Javadoc)
+     * @see pe.com.builderp.core.facturacion.ejb.dao.venta.local.VentaDaoLocal#contarListar{entity.getClassName()}(pe.com.builderp.core.facturacion.model.jpa.venta.VentaDTO)
+     */
+	@Override
+    public int contarListarVenta(VentaDTO venta) {
+        int resultado = 0;
+        try {
+            //StringBuilder jpaql = new StringBuilder();
+            Query query = generarQueryListaVenta(venta, true);
+            resultado = ((Long) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            resultado = 0;
+        }
+        return resultado;
+    }
+    /* (non-Javadoc)
+     * @see pe.com.builderp.core.facturacion.ejb.dao.venta.local.VentaDaoLocal#generarIdVenta()
+     */
+	 @Override
+    public String generarIdVenta() {
+        return UUIDUtil.generarElementUUID();
+    }
+   
+}

@@ -1,0 +1,120 @@
+package pe.com.edu.siaa.core.ejb.service.rest.admision.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.admision.local.AdmisionServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.admision.EntidadUniversitariaDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class EntidadUniversitariaRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Nov 14 11:33:10 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/entidadUniversitariaRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class EntidadUniversitariaRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient AdmisionServiceLocal admisionServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<EntidadUniversitariaDTO> crear(EntidadUniversitariaDTO entidadUniversitaria) throws Exception {
+		return controladorAccion(entidadUniversitaria,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<EntidadUniversitariaDTO> modificar(EntidadUniversitariaDTO entidadUniversitaria) throws Exception {
+		return controladorAccion(entidadUniversitaria,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<EntidadUniversitariaDTO> eliminar(@PathParam("id") Long idEntidadUniversitaria) throws Exception {
+		EntidadUniversitariaDTO entidadUniversitaria = new EntidadUniversitariaDTO();
+		entidadUniversitaria.setIdEntidadUniversitaria(idEntidadUniversitaria);		
+		return controladorAccion(entidadUniversitaria,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<EntidadUniversitariaDTO> controladorAccion(EntidadUniversitariaDTO entidadUniversitaria, AccionType accionType){
+		ResultadoRestVO<EntidadUniversitariaDTO> resultado = new ResultadoRestVO<EntidadUniversitariaDTO>();
+		 try {
+    		resultado.setObjetoResultado(admisionServiceLocal.controladorAccionEntidadUniversitaria(entidadUniversitaria,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<EntidadUniversitariaDTO> finById(@PathParam("id") Long idEntidadUniversitaria) throws Exception {
+		EntidadUniversitariaDTO entidadUniversitaria = new EntidadUniversitariaDTO();
+		entidadUniversitaria.setIdEntidadUniversitaria(idEntidadUniversitaria);
+		return controladorAccion(entidadUniversitaria,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<EntidadUniversitariaDTO> listarEntidadUniversitaria(@Context UriInfo info){
+		ResultadoRestVO<EntidadUniversitariaDTO> resultado = new ResultadoRestVO<EntidadUniversitariaDTO>();
+		EntidadUniversitariaDTO entidadUniversitaria = transferUriInfo(info);
+		 try {
+			resultado.setListaResultado(admisionServiceLocal.listarEntidadUniversitaria(entidadUniversitaria));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<EntidadUniversitariaDTO> contarEntidadUniversitaria(@Context UriInfo info){
+		ResultadoRestVO<EntidadUniversitariaDTO> resultado = new ResultadoRestVO<EntidadUniversitariaDTO>();
+		EntidadUniversitariaDTO entidadUniversitaria = transferUriInfo(info);
+		 try {
+			 resultado.setContador(admisionServiceLocal.contarListarEntidadUniversitaria(entidadUniversitaria));
+			 if (resultado.isData()) {
+				resultado.setListaResultado(admisionServiceLocal.listarEntidadUniversitaria(entidadUniversitaria));
+			 }
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<EntidadUniversitariaDTO> inicializarEntidadUniversitaria(@Context UriInfo info) throws Exception {
+	     EntidadUniversitariaDTO entidadUniversitaria = transferUriInfo(info);
+		 ResultadoRestVO<EntidadUniversitariaDTO> resultado = new ResultadoRestVO<EntidadUniversitariaDTO>();
+		 try {
+    		resultado.setObjetoResultado(entidadUniversitaria);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private EntidadUniversitariaDTO transferUriInfo(@Context UriInfo info) {
+		EntidadUniversitariaDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,EntidadUniversitariaDTO.class);
+		return resultado;
+	}
+}

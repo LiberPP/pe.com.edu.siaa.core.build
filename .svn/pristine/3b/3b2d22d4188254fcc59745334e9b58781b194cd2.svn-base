@@ -1,0 +1,149 @@
+package pe.com.edu.siaa.core.model.dto.encuesta;
+
+import java.io.Serializable;
+
+import pe.com.edu.siaa.core.model.dto.BasePaginator;
+
+ 
+
+/**
+ * La Class EncuestaCampoDetDTO.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 1.0, Fri Sep 08 19:59:04 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+public class EncuestaCampoDetDTO extends BasePaginator implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id encuesta campo det. */
+    private String idEncuestaCampoDet;
+   
+    /** El encuesta campo. */
+    private EncuestaCampoDTO encuestaCampo;
+   
+    /** El alternativa. */
+    private AlternativaDTO alternativa;
+   
+    /**
+     * Instancia un nuevo encuesta campo detDTO.
+     */
+    public EncuestaCampoDetDTO() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo encuesta campo detDTO.
+     *
+     * @param idEncuestaCampoDet el id encuesta campo det
+     * @param encuestaCampo el encuesta campo
+     * @param alternativa el alternativa
+     */
+    public EncuestaCampoDetDTO(String idEncuestaCampoDet, EncuestaCampoDTO encuestaCampo,AlternativaDTO alternativa) {
+        super();
+        this.idEncuestaCampoDet = idEncuestaCampoDet;
+        this.encuestaCampo = encuestaCampo;
+        this.alternativa = alternativa;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id encuesta campo det.
+     *
+     * @return id encuesta campo det
+     */
+     public String getIdEncuestaCampoDet() {
+        return this.idEncuestaCampoDet;
+    }
+    /**
+     * Establece el id encuesta campo det.
+     *
+     * @param idEncuestaCampoDet el new id encuesta campo det
+     */
+    public void setIdEncuestaCampoDet(String idEncuestaCampoDet) {
+        this.idEncuestaCampoDet = idEncuestaCampoDet;
+    }
+    /**
+     * Obtiene encuesta campo.
+     *
+     * @return encuesta campo
+     */
+     public EncuestaCampoDTO getEncuestaCampo() {
+        return this.encuestaCampo;
+    }
+    /**
+     * Establece el encuesta campo.
+     *
+     * @param encuestaCampo el new encuesta campo
+     */
+    public void setEncuestaCampo(EncuestaCampoDTO encuestaCampo) {
+        this.encuestaCampo = encuestaCampo;
+    }
+    /**
+     * Obtiene alternativa.
+     *
+     * @return alternativa
+     */
+     public AlternativaDTO getAlternativa() {
+        return this.alternativa;
+    }
+    /**
+     * Establece el alternativa.
+     *
+     * @param alternativa el new alternativa
+     */
+    public void setAlternativa(AlternativaDTO alternativa) {
+        this.alternativa = alternativa;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idEncuestaCampoDet == null) ? 0 : idEncuestaCampoDet.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        EncuestaCampoDetDTO other = (EncuestaCampoDetDTO) obj;
+        if (idEncuestaCampoDet == null) {
+            if (other.idEncuestaCampoDet != null) {
+                return false;
+            }
+        } else if (!idEncuestaCampoDet.equals(other.idEncuestaCampoDet)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "EncuestaCampoDetDTO [idEncuestaCampoDet=" + idEncuestaCampoDet + "]";
+    }
+   
+}

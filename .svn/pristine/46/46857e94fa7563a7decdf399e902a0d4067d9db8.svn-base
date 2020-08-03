@@ -1,0 +1,68 @@
+package pe.com.edu.siaa.core.ejb.dao.admision.local;
+
+import java.util.List;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.dto.admision.PersonaDTO;
+import pe.com.edu.siaa.core.model.jpa.admision.Persona;
+
+/**
+ * La Class PersonaDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 11:25:10 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface PersonaDaoLocal  extends GenericDAOLocal<String,Persona> {
+	
+	/**
+	 * Generar codigo persona.
+	 *
+	 * @param anhoSemestre el anho semestre
+	 * @return the string
+	 * @throws Exception the exception
+	 */
+	String generarCodigoPersona(String idAnhoSemestre) throws Exception;
+	
+	/**
+	 * Validar login.
+	 *
+	 * @param userName el user name
+	 * @param userPassword el user password
+	 * @return the persona
+	 * @throws Exception the exception
+	 */
+	Persona validarLogin(String userName,String userPassword) throws Exception;
+	
+	/**
+	 * Listar persona.
+	 *
+	 * @param persona el personaDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<Persona> listarPersona(PersonaDTO persona) throws Exception;
+	
+	/**
+	 * contar lista persona.
+	 *
+	 * @param persona el persona
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarPersona(PersonaDTO persona);
+	/**
+	 * Generar id persona.
+	 *
+	 * @return the String
+	 * @throws Exception the exception
+	 */
+	String generarIdPersona() throws Exception;
+}

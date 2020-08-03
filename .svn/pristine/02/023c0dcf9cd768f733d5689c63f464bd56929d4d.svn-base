@@ -1,0 +1,48 @@
+package pe.com.edu.siaa.core.ejb.dao.admision.local;
+
+import java.util.List;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.dto.admision.CierreAnhoSemestreDTO;
+import pe.com.edu.siaa.core.model.jpa.admision.CierreAnhoSemestre;
+
+/**
+ * La Class CierreAnhoSemestreDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 11:25:04 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface CierreAnhoSemestreDaoLocal  extends GenericDAOLocal<String,CierreAnhoSemestre> {
+	/**
+	 * Listar cierre anho semestre.
+	 *
+	 * @param cierreAnhoSemestre el cierre anho semestreDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<CierreAnhoSemestre> listarCierreAnhoSemestre(CierreAnhoSemestreDTO cierreAnhoSemestre) throws Exception;
+	
+	/**
+	 * contar lista cierre anho semestre.
+	 *
+	 * @param cierreAnhoSemestre el cierre anho semestre
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarCierreAnhoSemestre(CierreAnhoSemestreDTO cierreAnhoSemestre);
+	/**
+	 * Generar id cierreAnhoSemestre.
+	 *
+	 * @return the String
+	 * @throws Exception the exception
+	 */
+	String generarIdCierreAnhoSemestre() throws Exception;
+}

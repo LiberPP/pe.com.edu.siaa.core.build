@@ -1,0 +1,120 @@
+package pe.com.edu.siaa.core.ejb.service.rest.pago.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.pago.local.PagoServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.pago.ConvenioDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class ConvenioRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:33 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/convenioRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class ConvenioRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient PagoServiceLocal pagoServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<ConvenioDTO> crear(ConvenioDTO convenio) throws Exception {
+		return controladorAccion(convenio,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<ConvenioDTO> modificar(ConvenioDTO convenio) throws Exception {
+		return controladorAccion(convenio,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<ConvenioDTO> eliminar(@PathParam("id") Long idConvenio) throws Exception {
+		ConvenioDTO convenio = new ConvenioDTO();
+		convenio.setIdConvenio(idConvenio);		
+		return controladorAccion(convenio,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<ConvenioDTO> controladorAccion(ConvenioDTO convenio, AccionType accionType){
+		ResultadoRestVO<ConvenioDTO> resultado = new ResultadoRestVO<ConvenioDTO>();
+		 try {
+    		resultado.setObjetoResultado(pagoServiceLocal.controladorAccionConvenio(convenio,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<ConvenioDTO> finById(@PathParam("id") Long idConvenio) throws Exception {
+		ConvenioDTO convenio = new ConvenioDTO();
+		convenio.setIdConvenio(idConvenio);
+		return controladorAccion(convenio,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<ConvenioDTO> listarConvenio(@Context UriInfo info){
+		ResultadoRestVO<ConvenioDTO> resultado = new ResultadoRestVO<ConvenioDTO>();
+		ConvenioDTO convenio = transferUriInfo(info);
+		 try {
+    		resultado.setListaResultado(pagoServiceLocal.listarConvenio(convenio));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<ConvenioDTO> contarListarConvenio(@Context UriInfo info){
+		ResultadoRestVO<ConvenioDTO> resultado = new ResultadoRestVO<ConvenioDTO>();
+		ConvenioDTO convenio = transferUriInfo(info);
+		 try {
+    		resultado.setContador(pagoServiceLocal.contarListarConvenio(convenio));
+    		if (resultado.isData()) {
+    			resultado.setListaResultado(pagoServiceLocal.listarConvenio(convenio));
+    		}
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<ConvenioDTO> inicializarConvenio(@Context UriInfo info) throws Exception {
+	     ConvenioDTO convenio = transferUriInfo(info);
+		 ResultadoRestVO<ConvenioDTO> resultado = new ResultadoRestVO<ConvenioDTO>();
+		 try {
+    		resultado.setObjetoResultado(convenio);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private ConvenioDTO transferUriInfo(@Context UriInfo info) {
+		ConvenioDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,ConvenioDTO.class);
+		return resultado;
+	}
+}

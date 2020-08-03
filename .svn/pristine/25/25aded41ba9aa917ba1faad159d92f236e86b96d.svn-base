@@ -1,0 +1,167 @@
+package pe.com.edu.siaa.core.model.dto.admision;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import pe.com.edu.siaa.core.model.dto.BasePaginator;
+import pe.com.edu.siaa.core.model.dto.matricula.OrganoDirectivoDTO;
+
+/**
+ * La Class TipoPersonaDTO.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 1.0, Tue Apr 18 09:56:51 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+public class TipoPersonaDTO extends BasePaginator implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id tipo persona. */
+    private Long idTipoPersona;
+   
+    /** El descripcion. */
+    private String descripcion;
+   
+    /** El tipo persona organo directivo list. */
+    private List<OrganoDirectivoDTO> tipoPersonaOrganoDirectivoList = new ArrayList<OrganoDirectivoDTO>();
+   
+    /** El tipo persona persona list. */
+    private List<PersonaDTO> tipoPersonaPersonaList = new ArrayList<PersonaDTO>();
+   
+    /**
+     * Instancia un nuevo tipo personaDTO.
+     */
+    public TipoPersonaDTO() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo tipo personaDTO.
+     *
+     * @param idTipoPersona el id tipo persona
+     * @param descripcion el descripcion
+     */
+    public TipoPersonaDTO(Long idTipoPersona, String descripcion ) {
+        super();
+        this.idTipoPersona = idTipoPersona;
+        this.descripcion = descripcion;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id tipo persona.
+     *
+     * @return id tipo persona
+     */
+     public Long getIdTipoPersona() {
+        return this.idTipoPersona;
+    }
+    /**
+     * Establece el id tipo persona.
+     *
+     * @param idTipoPersona el new id tipo persona
+     */
+    public void setIdTipoPersona(Long idTipoPersona) {
+        this.idTipoPersona = idTipoPersona;
+    }
+    /**
+     * Obtiene descripcion.
+     *
+     * @return descripcion
+     */
+     public String getDescripcion() {
+        return this.descripcion;
+    }
+    /**
+     * Establece el descripcion.
+     *
+     * @param descripcion el new descripcion
+     */
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+    /**
+     * Establece el tipo persona organo directivo list.
+     *
+     * @param tipoPersonaOrganoDirectivoList el new tipo persona organo directivo list
+     */
+    public List<OrganoDirectivoDTO> getTipoPersonaOrganoDirectivoList(){
+        return this.tipoPersonaOrganoDirectivoList;
+    }
+    /**
+     * Establece el tipo persona list.
+     *
+     * @param tipoPersonaList el new tipo persona list
+     */
+    public void setTipoPersonaOrganoDirectivoList(List<OrganoDirectivoDTO> tipoPersonaOrganoDirectivoList) {
+        this.tipoPersonaOrganoDirectivoList = tipoPersonaOrganoDirectivoList;
+    }   
+    /**
+     * Establece el tipo persona persona list.
+     *
+     * @param tipoPersonaPersonaList el new tipo persona persona list
+     */
+    public List<PersonaDTO> getTipoPersonaPersonaList(){
+        return this.tipoPersonaPersonaList;
+    }
+    /**
+     * Establece el tipo persona list.
+     *
+     * @param tipoPersonaList el new tipo persona list
+     */
+    public void setTipoPersonaPersonaList(List<PersonaDTO> tipoPersonaPersonaList) {
+        this.tipoPersonaPersonaList = tipoPersonaPersonaList;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idTipoPersona == null) ? 0 : idTipoPersona.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        TipoPersonaDTO other = (TipoPersonaDTO) obj;
+        if (idTipoPersona == null) {
+            if (other.idTipoPersona != null) {
+                return false;
+            }
+        } else if (!idTipoPersona.equals(other.idTipoPersona)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "TipoPersonaDTO [idTipoPersona=" + idTipoPersona + "]";
+    }
+   
+}

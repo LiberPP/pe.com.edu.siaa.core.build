@@ -1,0 +1,148 @@
+package pe.com.edu.siaa.core.ejb.dao.admision.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.persistence.Query;
+
+import pe.com.edu.siaa.core.ejb.dao.admision.local.EntidadUniversitariaDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericAcademicoDAOImpl;
+import pe.com.edu.siaa.core.model.dto.admision.EntidadUniversitariaDTO;
+import pe.com.edu.siaa.core.model.jpa.admision.EntidadUniversitaria;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+
+/**
+ * La Class EntidadUniversitariaDaoImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 19:53:38 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+public class EntidadUniversitariaDaoImpl extends  GenericAcademicoDAOImpl<Long, EntidadUniversitaria> implements EntidadUniversitariaDaoLocal  {
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.EntidadUniversitariaDaoLocal#listarEntidadUniversitaria(pe.com.edu.siaa.core.model.jpa.seguridad.EntidadUniversitaria)
+     */  
+    @Override	 
+    public List<EntidadUniversitaria> listarEntidadUniversitaria(EntidadUniversitariaDTO entidadUniversitaria) {
+        Query query = generarQueryListaEntidadUniversitaria(entidadUniversitaria, false);
+        query.setFirstResult(entidadUniversitaria.getStartRow());
+        query.setMaxResults(entidadUniversitaria.getOffset());
+        return query.getResultList();
+    }   
+   
+    /**
+     * Generar query lista EntidadUniversitaria.
+     *
+     * @param EntidadUniversitariaDTO el entidadUniversitaria
+     * @param esContador el es contador
+     * @return the query
+     */
+    private Query generarQueryListaEntidadUniversitaria(EntidadUniversitariaDTO entidadUniversitaria, boolean esContador) {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        if (esContador) {
+            jpaql.append(" select count(o.idEntidadUniversitaria) from EntidadUniversitaria o where 1=1 ");
+        } else {
+            jpaql.append(" select o from EntidadUniversitaria o  left join fetch o.establecimiento  left join fetch o.itemByTipoEntidadUniversitaria where 1=1 ");           
+        }
+		if (!StringUtils.isNullOrEmpty(entidadUniversitaria.getSearch())) {
+	          jpaql.append(" and upper(o.nombre) like :search ");
+	          parametros.put("search", "%" + entidadUniversitaria.getSearch().toUpperCase() + "%");
+	    } else {
+			if (!StringUtils.isNullOrEmpty(entidadUniversitaria.getCodigoEntidad())) {
+				jpaql.append(" and upper(o.codigoEntidad) like :codigoEntidad ");
+				parametros.put("codigoEntidad", "%" + entidadUniversitaria.getCodigoEntidad().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(entidadUniversitaria.getNombre())) {
+				jpaql.append(" and upper(o.nombre) like :nombre ");
+				parametros.put("nombre", "%" + entidadUniversitaria.getNombre().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(entidadUniversitaria.getAbreviatura())) {
+				jpaql.append(" and upper(o.abreviatura) like :abreviatura ");
+				parametros.put("abreviatura", "%" + entidadUniversitaria.getAbreviatura().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(entidadUniversitaria.getFlagCentroProduccion())) {
+				jpaql.append(" and upper(o.flagCentroProduccion) like :flagCentroProduccion ");
+				parametros.put("flagCentroProduccion", "%" + entidadUniversitaria.getFlagCentroProduccion().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(entidadUniversitaria.getFechaAutorizacion())) {
+				jpaql.append(" and o.fechaAutorizacion = :fechaAutorizacion ");
+				parametros.put("fechaAutorizacion", entidadUniversitaria.getFechaAutorizacion());
+			}
+			if (!StringUtils.isNullOrEmpty(entidadUniversitaria.getDispositivoLegalCreacion())) {
+				jpaql.append(" and upper(o.dispositivoLegalCreacion) like :dispositivoLegalCreacion ");
+				parametros.put("dispositivoLegalCreacion", "%" + entidadUniversitaria.getDispositivoLegalCreacion().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(entidadUniversitaria.getFechaInicioActividad())) {
+				jpaql.append(" and o.fechaInicioActividad = :fechaInicioActividad ");
+				parametros.put("fechaInicioActividad", entidadUniversitaria.getFechaInicioActividad());
+			}
+			if (!StringUtils.isNullOrEmpty(entidadUniversitaria.getTelefono1())) {
+				jpaql.append(" and upper(o.telefono1) like :telefono1 ");
+				parametros.put("telefono1", "%" + entidadUniversitaria.getTelefono1().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(entidadUniversitaria.getTelefono2())) {
+				jpaql.append(" and upper(o.telefono2) like :telefono2 ");
+				parametros.put("telefono2", "%" + entidadUniversitaria.getTelefono2().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(entidadUniversitaria.getEmail())) {
+				jpaql.append(" and upper(o.email) like :email ");
+				parametros.put("email", "%" + entidadUniversitaria.getEmail().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(entidadUniversitaria.getEmailAlternativo())) {
+				jpaql.append(" and upper(o.emailAlternativo) like :emailAlternativo ");
+				parametros.put("emailAlternativo", "%" + entidadUniversitaria.getEmailAlternativo().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(entidadUniversitaria.getPaginaWebEntidad())) {
+				jpaql.append(" and upper(o.paginaWebEntidad) like :paginaWebEntidad ");
+				parametros.put("paginaWebEntidad", "%" + entidadUniversitaria.getPaginaWebEntidad().toUpperCase() + "%");
+			}
+		}
+        if (!esContador) {
+            //jpaql.append(" ORDER BY 1 ");
+        }
+        Query query = createQuery(jpaql.toString(), parametros);
+        return query;
+    }
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.EntidadUniversitariaDaoLocal#contarListar{entity.getClassName()}(pe.com.edu.siaa.core.model.jpa.seguridad.EntidadUniversitariaDTO)
+     */
+	@Override
+    public int contarListarEntidadUniversitaria(EntidadUniversitariaDTO entidadUniversitaria) {
+        int resultado = 0;
+        try {
+            //StringBuilder jpaql = new StringBuilder();
+            Query query = generarQueryListaEntidadUniversitaria(entidadUniversitaria, true);
+            resultado = ((Long) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            resultado = 0;
+        }
+        return resultado;
+    }
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.EntidadUniversitariaDaoLocal#generarIdEntidadUniversitaria()
+     */
+	 @Override
+    public Long generarIdEntidadUniversitaria() {
+        Long resultado = 1L;
+        Query query = createQuery("select max(o.idEntidadUniversitaria) from EntidadUniversitaria o", null);
+        List<Object> listLong =  query.getResultList();
+        if (listLong != null && listLong.size() > 0 && listLong.get(0) != null)  {
+            Long ultimoIdGenerado = Long.valueOf(listLong.get(0).toString());
+            if (!StringUtils.isNullOrEmpty(ultimoIdGenerado)) {
+                resultado = resultado + ultimoIdGenerado;
+            }
+        }
+        return resultado;
+    }
+   
+}

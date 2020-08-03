@@ -1,0 +1,436 @@
+package pe.com.edu.siaa.core.model.jpa.admision;
+
+import java.io.Serializable;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import pe.com.edu.siaa.core.model.jpa.common.Item;
+import pe.com.edu.siaa.core.model.util.ConfiguracionEntityManagerUtil;
+
+/**
+ * La Class EntidadUniversitaria.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 09:56:52 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Entity
+@Table(name = "EntidadUniversitaria", schema = ConfiguracionEntityManagerUtil.ESQUEMA_ACADEMICO)
+public class EntidadUniversitaria implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id entidad universitaria. */
+    @Id
+    @Column(name = "idEntidadUniversitaria" , precision = 18 , scale = 0)
+    private Long idEntidadUniversitaria;
+   
+    /** El establecimiento. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idEstablecimiento", referencedColumnName = "idEstablecimiento")
+    private Establecimiento establecimiento;
+   
+    /** El codigo entidad. */
+    @Column(name = "codigoEntidad" , length = 16)
+    private String codigoEntidad;
+   
+    /** El item by tipo entidad universitaria. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idTipoEntidadUniversitaria", referencedColumnName = "idItem")
+    private Item itemByTipoEntidadUniversitaria;
+   
+    /** El nombre. */
+    @Column(name = "nombre" , length = 256)
+    private String nombre;
+   
+    /** El abreviatura. */
+    @Column(name = "abreviatura" , length = 64)
+    private String abreviatura;
+   
+    /** El flag centro produccion. */
+    @Column(name = "flagCentroProduccion" , length = 1)
+    private String flagCentroProduccion;
+   
+    /** El fecha autorizacion. */
+    @Temporal( TemporalType.TIMESTAMP)
+    @Column(name = "fechaAutorizacion")
+    private Date fechaAutorizacion;
+   
+    /** El dispositivo legal creacion. */
+    @Column(name = "dispositivoLegalCreacion" , length = 128)
+    private String dispositivoLegalCreacion;
+   
+    /** El fecha inicio actividad. */
+    @Temporal( TemporalType.TIMESTAMP)
+    @Column(name = "fechaInicioActividad")
+    private Date fechaInicioActividad;
+   
+    /** El telefono1. */
+    @Column(name = "telefono1" , length = 50)
+    private String telefono1;
+   
+    /** El telefono2. */
+    @Column(name = "telefono2" , length = 50)
+    private String telefono2;
+   
+    /** El email. */
+    @Column(name = "email" , length = 128)
+    private String email;
+   
+    /** El email alternativo. */
+    @Column(name = "emailAlternativo" , length = 128)
+    private String emailAlternativo;
+   
+    /** El pagina web entidad. */
+    @Column(name = "paginaWebEntidad" , length = 256)
+    private String paginaWebEntidad;
+   
+    
+    
+    /**
+     * Instancia un nuevo entidad universitaria.
+     */
+    public EntidadUniversitaria() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo entidad universitaria.
+     *
+     * @param idEntidadUniversitaria el id entidad universitaria
+     * @param establecimiento el establecimiento
+     * @param codigoEntidad el codigo entidad
+     * @param itemByTipoEntidadUniversitaria el item by tipo entidad universitaria
+     * @param nombre el nombre
+     * @param abreviatura el abreviatura
+     * @param flagCentroProduccion el flag centro produccion
+     * @param fechaAutorizacion el fecha autorizacion
+     * @param dispositivoLegalCreacion el dispositivo legal creacion
+     * @param fechaInicioActividad el fecha inicio actividad
+     * @param telefono1 el telefono1
+     * @param telefono2 el telefono2
+     * @param email el email
+     * @param emailAlternativo el email alternativo
+     * @param paginaWebEntidad el pagina web entidad
+     */
+    public EntidadUniversitaria(Long idEntidadUniversitaria, Establecimiento establecimiento,String codigoEntidad, Item itemByTipoEntidadUniversitaria,String nombre, String abreviatura, String flagCentroProduccion, Date fechaAutorizacion, String dispositivoLegalCreacion, Date fechaInicioActividad, String telefono1, String telefono2, String email, String emailAlternativo, String paginaWebEntidad ) {
+        super();
+        this.idEntidadUniversitaria = idEntidadUniversitaria;
+        this.establecimiento = establecimiento;
+        this.codigoEntidad = codigoEntidad;
+        this.itemByTipoEntidadUniversitaria = itemByTipoEntidadUniversitaria;
+        this.nombre = nombre;
+        this.abreviatura = abreviatura;
+        this.flagCentroProduccion = flagCentroProduccion;
+        this.fechaAutorizacion = fechaAutorizacion;
+        this.dispositivoLegalCreacion = dispositivoLegalCreacion;
+        this.fechaInicioActividad = fechaInicioActividad;
+        this.telefono1 = telefono1;
+        this.telefono2 = telefono2;
+        this.email = email;
+        this.emailAlternativo = emailAlternativo;
+        this.paginaWebEntidad = paginaWebEntidad;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id entidad universitaria.
+     *
+     * @return id entidad universitaria
+     */
+     public Long getIdEntidadUniversitaria() {
+        return this.idEntidadUniversitaria;
+    }
+    /**
+     * Establece el id entidad universitaria.
+     *
+     * @param idEntidadUniversitaria el new id entidad universitaria
+     */
+    public void setIdEntidadUniversitaria(Long idEntidadUniversitaria) {
+        this.idEntidadUniversitaria = idEntidadUniversitaria;
+    }
+    /**
+     * Obtiene establecimiento.
+     *
+     * @return establecimiento
+     */
+     public Establecimiento getEstablecimiento() {
+        return this.establecimiento;
+    }
+    /**
+     * Establece el establecimiento.
+     *
+     * @param establecimiento el new establecimiento
+     */
+    public void setEstablecimiento(Establecimiento establecimiento) {
+        this.establecimiento = establecimiento;
+    }
+    /**
+     * Obtiene codigo entidad.
+     *
+     * @return codigo entidad
+     */
+     public String getCodigoEntidad() {
+        return this.codigoEntidad;
+    }
+    /**
+     * Establece el codigo entidad.
+     *
+     * @param codigoEntidad el new codigo entidad
+     */
+    public void setCodigoEntidad(String codigoEntidad) {
+        this.codigoEntidad = codigoEntidad;
+    }
+    /**
+     * Obtiene item by tipo entidad universitaria.
+     *
+     * @return item by tipo entidad universitaria
+     */
+     public Item getItemByTipoEntidadUniversitaria() {
+        return this.itemByTipoEntidadUniversitaria;
+    }
+    /**
+     * Establece el item by tipo entidad universitaria.
+     *
+     * @param itemByTipoEntidadUniversitaria el new item by tipo entidad universitaria
+     */
+    public void setItemByTipoEntidadUniversitaria(Item itemByTipoEntidadUniversitaria) {
+        this.itemByTipoEntidadUniversitaria = itemByTipoEntidadUniversitaria;
+    }
+    /**
+     * Obtiene nombre.
+     *
+     * @return nombre
+     */
+     public String getNombre() {
+        return this.nombre;
+    }
+    /**
+     * Establece el nombre.
+     *
+     * @param nombre el new nombre
+     */
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+    /**
+     * Obtiene abreviatura.
+     *
+     * @return abreviatura
+     */
+     public String getAbreviatura() {
+        return this.abreviatura;
+    }
+    /**
+     * Establece el abreviatura.
+     *
+     * @param abreviatura el new abreviatura
+     */
+    public void setAbreviatura(String abreviatura) {
+        this.abreviatura = abreviatura;
+    }
+    /**
+     * Obtiene flag centro produccion.
+     *
+     * @return flag centro produccion
+     */
+     public String getFlagCentroProduccion() {
+        return this.flagCentroProduccion;
+    }
+    /**
+     * Establece el flag centro produccion.
+     *
+     * @param flagCentroProduccion el new flag centro produccion
+     */
+    public void setFlagCentroProduccion(String flagCentroProduccion) {
+        this.flagCentroProduccion = flagCentroProduccion;
+    }
+    /**
+     * Obtiene fecha autorizacion.
+     *
+     * @return fecha autorizacion
+     */
+     public Date getFechaAutorizacion() {
+        return this.fechaAutorizacion;
+    }
+    /**
+     * Establece el fecha autorizacion.
+     *
+     * @param fechaAutorizacion el new fecha autorizacion
+     */
+    public void setFechaAutorizacion(Date fechaAutorizacion) {
+        this.fechaAutorizacion = fechaAutorizacion;
+    }
+    /**
+     * Obtiene dispositivo legal creacion.
+     *
+     * @return dispositivo legal creacion
+     */
+     public String getDispositivoLegalCreacion() {
+        return this.dispositivoLegalCreacion;
+    }
+    /**
+     * Establece el dispositivo legal creacion.
+     *
+     * @param dispositivoLegalCreacion el new dispositivo legal creacion
+     */
+    public void setDispositivoLegalCreacion(String dispositivoLegalCreacion) {
+        this.dispositivoLegalCreacion = dispositivoLegalCreacion;
+    }
+    /**
+     * Obtiene fecha inicio actividad.
+     *
+     * @return fecha inicio actividad
+     */
+     public Date getFechaInicioActividad() {
+        return this.fechaInicioActividad;
+    }
+    /**
+     * Establece el fecha inicio actividad.
+     *
+     * @param fechaInicioActividad el new fecha inicio actividad
+     */
+    public void setFechaInicioActividad(Date fechaInicioActividad) {
+        this.fechaInicioActividad = fechaInicioActividad;
+    }
+    /**
+     * Obtiene telefono1.
+     *
+     * @return telefono1
+     */
+     public String getTelefono1() {
+        return this.telefono1;
+    }
+    /**
+     * Establece el telefono1.
+     *
+     * @param telefono1 el new telefono1
+     */
+    public void setTelefono1(String telefono1) {
+        this.telefono1 = telefono1;
+    }
+    /**
+     * Obtiene telefono2.
+     *
+     * @return telefono2
+     */
+     public String getTelefono2() {
+        return this.telefono2;
+    }
+    /**
+     * Establece el telefono2.
+     *
+     * @param telefono2 el new telefono2
+     */
+    public void setTelefono2(String telefono2) {
+        this.telefono2 = telefono2;
+    }
+    /**
+     * Obtiene email.
+     *
+     * @return email
+     */
+     public String getEmail() {
+        return this.email;
+    }
+    /**
+     * Establece el email.
+     *
+     * @param email el new email
+     */
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    /**
+     * Obtiene email alternativo.
+     *
+     * @return email alternativo
+     */
+     public String getEmailAlternativo() {
+        return this.emailAlternativo;
+    }
+    /**
+     * Establece el email alternativo.
+     *
+     * @param emailAlternativo el new email alternativo
+     */
+    public void setEmailAlternativo(String emailAlternativo) {
+        this.emailAlternativo = emailAlternativo;
+    }
+    /**
+     * Obtiene pagina web entidad.
+     *
+     * @return pagina web entidad
+     */
+     public String getPaginaWebEntidad() {
+        return this.paginaWebEntidad;
+    }
+    /**
+     * Establece el pagina web entidad.
+     *
+     * @param paginaWebEntidad el new pagina web entidad
+     */
+    public void setPaginaWebEntidad(String paginaWebEntidad) {
+        this.paginaWebEntidad = paginaWebEntidad;
+    }
+   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idEntidadUniversitaria == null) ? 0 : idEntidadUniversitaria.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        EntidadUniversitaria other = (EntidadUniversitaria) obj;
+        if (idEntidadUniversitaria == null) {
+            if (other.idEntidadUniversitaria != null) {
+                return false;
+            }
+        } else if (!idEntidadUniversitaria.equals(other.idEntidadUniversitaria)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "EntidadUniversitaria [idEntidadUniversitaria=" + idEntidadUniversitaria + "]";
+    }
+   
+}

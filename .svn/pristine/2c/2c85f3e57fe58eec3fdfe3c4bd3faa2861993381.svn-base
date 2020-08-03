@@ -1,0 +1,120 @@
+package pe.com.edu.siaa.core.ejb.service.rest.matricula.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.matricula.local.MatriculaServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.matricula.PlanEstudioDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class PlanEstudioRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:40 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/planEstudioRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class PlanEstudioRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient MatriculaServiceLocal matriculaServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<PlanEstudioDTO> crear(PlanEstudioDTO planEstudio) throws Exception {
+		return controladorAccion(planEstudio,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<PlanEstudioDTO> modificar(PlanEstudioDTO planEstudio) throws Exception {
+		return controladorAccion(planEstudio,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<PlanEstudioDTO> eliminar(@PathParam("id") String idPlanEstudio) throws Exception {
+		PlanEstudioDTO planEstudio = new PlanEstudioDTO();
+		planEstudio.setIdPlanEstudio(idPlanEstudio);		
+		return controladorAccion(planEstudio,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<PlanEstudioDTO> controladorAccion(PlanEstudioDTO planEstudio, AccionType accionType){
+		ResultadoRestVO<PlanEstudioDTO> resultado = new ResultadoRestVO<PlanEstudioDTO>();
+		 try {
+    		resultado.setObjetoResultado(matriculaServiceLocal.controladorAccionPlanEstudio(planEstudio,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<PlanEstudioDTO> finById(@PathParam("id") String idPlanEstudio) throws Exception {
+		PlanEstudioDTO planEstudio = new PlanEstudioDTO();
+		planEstudio.setIdPlanEstudio(idPlanEstudio);
+		return controladorAccion(planEstudio,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<PlanEstudioDTO> listarPlanEstudio(@Context UriInfo info){
+		ResultadoRestVO<PlanEstudioDTO> resultado = new ResultadoRestVO<PlanEstudioDTO>();
+		PlanEstudioDTO planEstudio = transferUriInfo(info);
+		 try {
+    		resultado.setListaResultado(matriculaServiceLocal.listarPlanEstudio(planEstudio));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<PlanEstudioDTO> contarListarPlanEstudio(@Context UriInfo info){
+		ResultadoRestVO<PlanEstudioDTO> resultado = new ResultadoRestVO<PlanEstudioDTO>();
+		PlanEstudioDTO planEstudio = transferUriInfo(info);
+		 try {
+    		resultado.setContador(matriculaServiceLocal.contarListarPlanEstudio(planEstudio));
+    		if (resultado.isData()) {
+    			resultado.setListaResultado(matriculaServiceLocal.listarPlanEstudio(planEstudio));
+    		}
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<PlanEstudioDTO> inicializarPlanEstudio(@Context UriInfo info) throws Exception {
+	     PlanEstudioDTO planEstudio = transferUriInfo(info);
+		 ResultadoRestVO<PlanEstudioDTO> resultado = new ResultadoRestVO<PlanEstudioDTO>();
+		 try {
+    		resultado.setObjetoResultado(planEstudio);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private PlanEstudioDTO transferUriInfo(@Context UriInfo info) {
+		PlanEstudioDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,PlanEstudioDTO.class);
+		return resultado;
+	}
+}

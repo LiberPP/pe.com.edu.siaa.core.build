@@ -1,0 +1,117 @@
+package pe.com.edu.siaa.core.ejb.service.rest.matricula.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.matricula.local.MatriculaServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.matricula.DetTrasladoDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class DetTrasladoRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:30 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/detTrasladoRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class DetTrasladoRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient MatriculaServiceLocal matriculaServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<DetTrasladoDTO> crear(DetTrasladoDTO detTraslado) throws Exception {
+		return controladorAccion(detTraslado,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<DetTrasladoDTO> modificar(DetTrasladoDTO detTraslado) throws Exception {
+		return controladorAccion(detTraslado,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<DetTrasladoDTO> eliminar(@PathParam("id") String idDetTraslado) throws Exception {
+		DetTrasladoDTO detTraslado = new DetTrasladoDTO();
+		detTraslado.setIdDetTraslado(idDetTraslado);		
+		return controladorAccion(detTraslado,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<DetTrasladoDTO> controladorAccion(DetTrasladoDTO detTraslado, AccionType accionType){
+		ResultadoRestVO<DetTrasladoDTO> resultado = new ResultadoRestVO<DetTrasladoDTO>();
+		 try {
+    		resultado.setObjetoResultado(matriculaServiceLocal.controladorAccionDetTraslado(detTraslado,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<DetTrasladoDTO> finById(@PathParam("id") String idDetTraslado) throws Exception {
+		DetTrasladoDTO detTraslado = new DetTrasladoDTO();
+		detTraslado.setIdDetTraslado(idDetTraslado);
+		return controladorAccion(detTraslado,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<DetTrasladoDTO> listarDetTraslado(@Context UriInfo info){
+		ResultadoRestVO<DetTrasladoDTO> resultado = new ResultadoRestVO<DetTrasladoDTO>();
+		DetTrasladoDTO detTraslado = transferUriInfo(info);
+		 try {
+    		resultado.setListaResultado(matriculaServiceLocal.listarDetTraslado(detTraslado));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<Integer> contarListarDetTraslado(@Context UriInfo info){
+		ResultadoRestVO<Integer> resultado = new ResultadoRestVO<Integer>();
+		DetTrasladoDTO detTraslado = transferUriInfo(info);
+		 try {
+    		resultado.setObjetoResultado(matriculaServiceLocal.contarListarDetTraslado(detTraslado));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<DetTrasladoDTO> inicializarDetTraslado(@Context UriInfo info) throws Exception {
+	     DetTrasladoDTO detTraslado = transferUriInfo(info);
+		 ResultadoRestVO<DetTrasladoDTO> resultado = new ResultadoRestVO<DetTrasladoDTO>();
+		 try {
+    		resultado.setObjetoResultado(detTraslado);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private DetTrasladoDTO transferUriInfo(@Context UriInfo info) {
+		DetTrasladoDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,DetTrasladoDTO.class);
+		return resultado;
+	}
+}

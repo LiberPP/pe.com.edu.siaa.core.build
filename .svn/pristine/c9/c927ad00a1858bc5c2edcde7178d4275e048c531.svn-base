@@ -1,0 +1,355 @@
+package pe.com.edu.siaa.core.ejb.dao.matricula.impl;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.persistence.Query;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericAcademicoDAOImpl;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.MatriculaDaoLocal;
+import pe.com.edu.siaa.core.ejb.util.motor.regla.ProcesarReglaUtil;
+import pe.com.edu.siaa.core.model.dto.matricula.LimiteCreditoDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.MatriculaDTO;
+import pe.com.edu.siaa.core.model.estate.EstadoAnhoSemestreState;
+import pe.com.edu.siaa.core.model.jpa.admision.AnhoSemestre;
+import pe.com.edu.siaa.core.model.jpa.common.Item;
+import pe.com.edu.siaa.core.model.jpa.matricula.Matricula;
+import pe.com.edu.siaa.core.model.type.ReglaType;
+import pe.com.edu.siaa.core.model.type.SumaCreditoType;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+
+/**
+ * La Class MatriculaDaoImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 19:53:47 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+public class MatriculaDaoImpl extends  GenericAcademicoDAOImpl<String, Matricula> implements MatriculaDaoLocal  {
+
+	@Override
+	public List<Item> obtenerCicloMatriculadoByAlumno(String idAlumno) throws Exception {
+		List<Item> resultado = new ArrayList<Item>();
+		Map<String, Object> parametros = new HashMap<String, Object>();
+	    StringBuilder jpaql = generarQueryObtenerCicloMatriculadoAlumno(idAlumno, null, null);
+		parametros.put("idAlumno", idAlumno);
+		Query query = createNativeQuery(jpaql.toString(), parametros);
+		List<Object[]>   listaObject =  query.getResultList();
+		resultado = parsearDatosItem(listaObject);
+		return resultado;
+	}
+
+	/* (non-Javadoc)
+	 * @see pe.edu.upp.siaa.matricula.dao.MatriculaDaoLocal#obtenerCicloMatriculadoByAlumno(pe.edu.upp.siaa.entity.Alumno, java.lang.Long, java.lang.Long)
+	 */
+	@Override
+	public List<Item> obtenerCicloMatriculadoByAlumno(String idAlumno,Long idCicloInicio,Long idCicloFin) throws Exception {
+		List<Item> resultado = new ArrayList<Item>();
+		Map<String, Object> parametros = new HashMap<String, Object>();
+	    StringBuilder jpaql = generarQueryObtenerCicloMatriculadoAlumno(idAlumno, idCicloInicio, idCicloFin);
+		parametros.put("idAlumno", idAlumno);
+		if (idCicloInicio != null && idCicloFin != null) {
+			parametros.put("idCicloInicio", idCicloInicio);
+			parametros.put("idCicloFin", idCicloFin);
+		}
+		Query query = createNativeQuery(jpaql.toString(), parametros);
+		List<Object[]>   listaObject =  query.getResultList();
+		resultado = parsearDatosItem(listaObject);
+		return resultado;
+	}
+	
+	/**
+	 * Generar query obtener ciclo matriculado alumno.
+	 *
+	 * @param alumno el alumno
+	 * @param idCicloInicio el id ciclo inicio
+	 * @param idCicloFin el id ciclo fin
+	 * @return the string builder
+	 */
+	private StringBuilder generarQueryObtenerCicloMatriculadoAlumno(String idAlumno,Long idCicloInicio,Long idCicloFin) {
+		StringBuilder jpaql = new StringBuilder();
+		jpaql.append(" select distinct DetPlanEstudio.idCiclo,Ciclo.nombre  ");
+		jpaql.append(" from dbo.DetMatricula,dbo.Matricula,dbo.AnhoSemestre,dbo.DetCargaLectiva,dbo.DetPlanEstudio,commo.Item Ciclo ");
+		jpaql.append(" where DetMatricula.idMatricula=Matricula.idMatricula and Matricula.idAnhoSemestre=AnhoSemestre.idAnhoSemestre  ");
+		jpaql.append(" and DetMatricula.idDetCargaLectiva=DetCargaLectiva.idDetCargaLectiva ");
+		jpaql.append(" and DetCargaLectiva.idDetPlanEstudio=DetPlanEstudio.idDetPlanEstudio and DetPlanEstudio.idCiclo=Ciclo.idItem ");
+		jpaql.append(" and idAlumno=:idAlumno ");
+		if (idCicloInicio != null && idCicloFin != null) {
+			jpaql.append(" and DetPlanEstudio.idCiclo between :idCicloInicio and :idCicloFin ");
+		}
+		jpaql.append(" union ");
+		jpaql.append(" select distinct DetPlanEstudio.idCiclo,Ciclo.nombre ");
+		jpaql.append(" from dbo.DetTraslado,dbo.Traslado,dbo.AnhoSemestre,dbo.DetPlanEstudio, commo.Item Ciclo ");
+		jpaql.append(" where DetTraslado.idTraslado=Traslado.idTraslado and Traslado.idAnhoSemestre=AnhoSemestre.idAnhoSemestre ");
+		jpaql.append(" and DetTraslado.idDetPlanEstudio=DetPlanEstudio.idDetPlanEstudio ");
+		jpaql.append(" and DetPlanEstudio.idCiclo=Ciclo.idItem ");		
+		jpaql.append("  and idAlumno=:idAlumno ");
+		if (idCicloInicio != null && idCicloFin != null) {
+			jpaql.append(" and DetPlanEstudio.idCiclo between :idCicloInicio and :idCicloFin ");
+		}
+		jpaql.append(" order by  idCiclo ");
+		return jpaql;
+	}
+	/**
+	 * Parsear datos item.
+	 *
+	 * @param listaObject el lista object
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	private List<Item> parsearDatosItem(List<Object[]>   listaObject ) throws Exception {
+		List<Item> resultado = new ArrayList<Item>();
+		if (listaObject != null) {
+			for (Object[] res : listaObject) {
+				Item item  = new Item();
+				if (res[0] != null) {
+					item.setIdItem(Long.valueOf(res[0].toString()));
+				} 
+				if (res[1] != null) {
+					item.setNombre(res[1].toString());
+				}
+				resultado.add(item);
+			}
+		}
+		return resultado;
+	}
+	
+	@Override
+	public List<AnhoSemestre> obtenerSemestreMariculadoOrdenadoBySemestre(String idAlumno) throws Exception {
+		List<AnhoSemestre> resultado = new ArrayList<AnhoSemestre>();
+		Map<String, Object> parametros = new HashMap<String, Object>();
+		boolean ejecutarQuery = false;
+		StringBuilder jpaql = new StringBuilder();
+		jpaql.append("select  o.anhoSemestre from Matricula o where 1 = 1 ");
+		if (idAlumno != null) {
+			if (StringUtils.isNotNullOrBlank(idAlumno)) {
+				jpaql.append(" and o.alumno.idAlumno = :idAlumno ");
+				parametros.put("idAlumno", idAlumno);
+				ejecutarQuery = true;
+			}
+			
+		}
+		jpaql.append(" order by o.anhoSemestre.idAnhoSemestre ");
+		if (ejecutarQuery) {		
+			Query query = createQuery(jpaql.toString(), parametros);
+			resultado  = query.getResultList();
+		} 
+		return resultado;
+	}
+	
+	@Override
+	public List<Object[]>  obtenerCicloAlumnoEnBaseCreditoAculado(String idPlanEstudio) throws Exception {
+		StringBuilder jpaql = new StringBuilder();
+		jpaql.append("select o.itemByCiclo.idItem,sum(o.credito) from DetPlanEstudio o ");
+		jpaql.append(" where o.planEstudio.idPlanEstudio =:idPlanEstudio and o.sumaCredito=:sumaCreditoSi");
+		jpaql.append(" group by o.itemByCiclo.idItem ");
+		jpaql.append(" order by o.itemByCiclo.idItem ");
+		Query query = createQuery(jpaql.toString(),null);
+		query.setParameter("idPlanEstudio", idPlanEstudio);
+		query.setParameter("sumaCreditoSi", SumaCreditoType.SI.getKey());
+		List<Object[]> detPlanEstudioResulCredito = query.getResultList();
+		return detPlanEstudioResulCredito;
+	}
+	
+	@Override
+	public String generarCodigoMatricula(String idAnhoSemestre,String idAlumno) throws Exception {
+		StringBuilder resultado = new StringBuilder();
+		resultado.append(idAnhoSemestre.trim());
+		resultado.append(idAlumno);
+		return resultado.toString();
+	}
+	
+	@Override
+	public Matricula obtenerMatricula(String idAlumno, String idAnhoSemestre)throws Exception {
+		Matricula resultado = null;
+		Map<String, Object> parametros = new HashMap<String, Object>();
+		StringBuilder jpaql = new StringBuilder();
+		jpaql.append("from Matricula m where m.alumno.idAlumno=:idAlumno");
+		jpaql.append(" and m.anhoSemestre.idAnhoSemestre =:idAnhoSemestre");
+		parametros.put("idAlumno", idAlumno);
+		parametros.put("idAnhoSemestre", idAnhoSemestre);
+		Query query = createQuery(jpaql.toString(),parametros);
+		
+		List<Matricula> matriculaActual = query.getResultList();
+		if (matriculaActual != null && matriculaActual.size() > 0) {
+			resultado = matriculaActual.get(0);
+		}
+		return resultado;
+	}
+	
+	@Override
+	public int obtenerLimiteCredito(String idAlumno,String idPlanEstudio,Long idCiclo) throws Exception {
+		Long resultado = 0L;
+		Long maxLimiteCredito = 24L;
+		double promedioBase = 11.00;
+		Double ponderadoSemestrePasado = 0.0;
+		Long creditoPlanEstudio = 0L;
+		//Inicio obteniendo la nota final del semestre pasado
+		StringBuilder jpaql = new StringBuilder();
+		Map<String, Object> parametros = new HashMap<String, Object>();
+		jpaql.append("select o.notaFinal from RegistroNota o where o.matricula.alumno.idAlumno=:idAlumno");
+		jpaql.append(" and o.matricula.anhoSemestre.estado =:estadoSemestrePasado");
+		parametros.put("idAlumno", idAlumno);
+		parametros.put("estadoSemestrePasado", EstadoAnhoSemestreState.PASADO.getKey());
+		Query query = createQuery(jpaql.toString(),parametros);
+		
+		List<BigDecimal> registroNotaSemestrePasado = query.getResultList();
+		if (registroNotaSemestrePasado != null && registroNotaSemestrePasado.size() > 0) {
+			ponderadoSemestrePasado = registroNotaSemestrePasado.get(0).doubleValue();
+		}
+		if (ponderadoSemestrePasado == null) {
+			ponderadoSemestrePasado = 0.0;
+		}
+		//Fin obteniendo la nota final del semestre pasado
+		
+		//Inicio obteniendo el credito del plan estudio
+		Long detPlanEstudioCredito = null;
+		StringBuilder jpaql2 = new StringBuilder();
+		parametros = new HashMap<String, Object>();
+		jpaql2.append("select sum(o.credito) from DetPlanEstudio o where o.itemByCiclo.idItem=:idCiclo");
+		jpaql2.append(" and o.planEstudio.idPlanEstudio =:idPlanEstudio and o.sumaCredito=:sumaCreditoSi");
+		parametros.put("idCiclo", idCiclo);
+		parametros.put("idPlanEstudio", idPlanEstudio);
+		parametros.put("sumaCreditoSi", SumaCreditoType.SI.getKey());
+		Query query2 = createQuery(jpaql2.toString(),parametros);
+		
+		List<Long> detPlanEstudioResulCredito = query2.getResultList();
+		if (detPlanEstudioResulCredito != null && detPlanEstudioResulCredito.size() > 0) {
+			detPlanEstudioCredito = detPlanEstudioResulCredito.get(0);
+		}
+		if (detPlanEstudioCredito != null) {
+			creditoPlanEstudio = detPlanEstudioCredito;
+		}
+		//Fin obteniendo el credito del plan estudio
+		//llenando al objeto para evaluar la regla
+		LimiteCreditoDTO limiteCreditoDTO = new LimiteCreditoDTO();
+		limiteCreditoDTO.setCreditoPlanEstudio(creditoPlanEstudio);
+		limiteCreditoDTO.setIdCiclo(idCiclo);
+		limiteCreditoDTO.setPonderadoSemestrePasado(ponderadoSemestrePasado);
+		//limiteCreditoDTO.setMaxLimiteCredito(maxLimiteCredito);
+		
+		if (ponderadoSemestrePasado.doubleValue() > promedioBase) {
+			resultado = creditoPlanEstudio + (maxLimiteCredito - creditoPlanEstudio);
+		} else {
+			resultado = creditoPlanEstudio;
+		}
+		ProcesarReglaUtil.procesarRegla(limiteCreditoDTO, ReglaType.CALCULAR_LIMITE_CREDITO.getKey());
+		return limiteCreditoDTO.getLimiteCredito();
+	}
+	
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.MatriculaDaoLocal#listarMatricula(pe.com.edu.siaa.core.model.jpa.seguridad.Matricula)
+     */  
+    @Override	 
+    public List<Matricula> listarMatricula(MatriculaDTO matricula) {
+        Query query = generarQueryListaMatricula(matricula, false);
+        query.setFirstResult(matricula.getStartRow());
+        query.setMaxResults(matricula.getOffset());
+        return query.getResultList();
+    }   
+   
+    /**
+     * Generar query lista Matricula.
+     *
+     * @param MatriculaDTO el matricula
+     * @param esContador el es contador
+     * @return the query
+     */
+    private Query generarQueryListaMatricula(MatriculaDTO matricula, boolean esContador) {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        if (esContador) {
+            jpaql.append(" select count(o.idMatricula) from Matricula o where 1=1 ");
+        } else {
+            jpaql.append(" select o from Matricula o where 1=1 ");           
+        }
+		if (!StringUtils.isNullOrEmpty(matricula.getSearch())) {
+	          jpaql.append(" and upper(o.idMatricula) like :search ");
+	          parametros.put("search", "%" + matricula.getSearch().toUpperCase() + "%");
+	    } else {
+			if (!StringUtils.isNullOrEmptyNumeric(matricula.getCreditos())) {
+				jpaql.append(" and o.creditos = :creditos ");
+				parametros.put("creditos", matricula.getCreditos());
+			}
+			if (!StringUtils.isNullOrEmpty(matricula.getTipoMatricula())) {
+				jpaql.append(" and upper(o.tipoMatricula) like :tipoMatricula ");
+				parametros.put("tipoMatricula", "%" + matricula.getTipoMatricula().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(matricula.getFechaMatricula())) {
+				jpaql.append(" and o.fechaMatricula = :fechaMatricula ");
+				parametros.put("fechaMatricula", matricula.getFechaMatricula());
+			}
+			if (!StringUtils.isNullOrEmpty(matricula.getUsuarioCreacion())) {
+				jpaql.append(" and upper(o.usuariocreacion) like :usuariocreacion ");
+				parametros.put("usuariocreacion", "%" + matricula.getUsuarioCreacion().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(matricula.getFechaCreacion())) {
+				jpaql.append(" and o.fechaCreacion = :fechaCreacion ");
+				parametros.put("fechaCreacion", matricula.getFechaCreacion());
+			}
+			if (!StringUtils.isNullOrEmpty(matricula.getUsuarioModificacion())) {
+				jpaql.append(" and upper(o.usuarioModificacion) like :usuarioModificacion ");
+				parametros.put("usuarioModificacion", "%" + matricula.getUsuarioModificacion().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(matricula.getFechaModificacion())) {
+				jpaql.append(" and o.fechaModificacion = :fechaModificacion ");
+				parametros.put("fechaModificacion", matricula.getFechaModificacion());
+			}
+			if (!StringUtils.isNullOrEmpty(matricula.getObservacion())) {
+				jpaql.append(" and upper(o.observacion) like :observacion ");
+				parametros.put("observacion", "%" + matricula.getObservacion().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(matricula.getEstado())) {
+				jpaql.append(" and upper(o.estado) like :estado ");
+				parametros.put("estado", "%" + matricula.getEstado().toUpperCase() + "%");
+			}
+		}
+        if (!esContador) {
+            //jpaql.append(" ORDER BY 1 ");
+        }
+        Query query = createQuery(jpaql.toString(), parametros);
+        return query;
+    }
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.MatriculaDaoLocal#contarListar{entity.getClassName()}(pe.com.edu.siaa.core.model.jpa.seguridad.MatriculaDTO)
+     */
+	@Override
+    public int contarListarMatricula(MatriculaDTO matricula) {
+        int resultado = 0;
+        try {
+            //StringBuilder jpaql = new StringBuilder();
+            Query query = generarQueryListaMatricula(matricula, true);
+            resultado = ((Long) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            resultado = 0;
+        }
+        return resultado;
+    }
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.MatriculaDaoLocal#generarIdMatricula()
+     */
+	 @Override
+    public String generarIdMatricula() {
+        String resultado = "1";
+        Query query = createQuery("select max(o.idMatricula) from Matricula o", null);
+        List<Object> listLong =  query.getResultList();
+        if (listLong != null && listLong.size() > 0 && listLong.get(0) != null)  {
+            Long ultimoIdGenerado = Long.valueOf(listLong.get(0).toString());
+            if (!StringUtils.isNullOrEmpty(ultimoIdGenerado)) {
+                resultado = resultado + ultimoIdGenerado;
+            }
+        }
+        return resultado;
+    }
+   
+}

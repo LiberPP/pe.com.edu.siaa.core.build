@@ -1,0 +1,120 @@
+package pe.com.edu.siaa.core.ejb.service.rest.matricula.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.matricula.local.MatriculaServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.matricula.CargoDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class CargoRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Wed Dec 27 12:00:41 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/cargoRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class CargoRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient MatriculaServiceLocal matriculaServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<CargoDTO> crear(CargoDTO cargo) throws Exception {
+		return controladorAccion(cargo,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<CargoDTO> modificar(CargoDTO cargo) throws Exception {
+		return controladorAccion(cargo,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<CargoDTO> eliminar(@PathParam("id") String idCargo) throws Exception {
+		CargoDTO cargo = new CargoDTO();
+		cargo.setIdCargo(idCargo);		
+		return controladorAccion(cargo,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<CargoDTO> controladorAccion(CargoDTO cargo, AccionType accionType){
+		ResultadoRestVO<CargoDTO> resultado = new ResultadoRestVO<CargoDTO>();
+		 try {
+    		resultado.setObjetoResultado(matriculaServiceLocal.controladorAccionCargo(cargo,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<CargoDTO> finById(@PathParam("id") String idCargo) throws Exception {
+		CargoDTO cargo = new CargoDTO();
+		cargo.setIdCargo(idCargo);
+		return controladorAccion(cargo,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<CargoDTO> listarCargo(@Context UriInfo info){
+		ResultadoRestVO<CargoDTO> resultado = new ResultadoRestVO<CargoDTO>();
+		CargoDTO cargo = transferUriInfo(info);
+		 try {
+			resultado.setListaResultado(matriculaServiceLocal.listarCargo(cargo));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<CargoDTO> contarCargo(@Context UriInfo info){
+		ResultadoRestVO<CargoDTO> resultado = new ResultadoRestVO<CargoDTO>();
+		CargoDTO cargo = transferUriInfo(info);
+		 try {
+			 resultado.setContador(matriculaServiceLocal.contarListarCargo(cargo));
+			 if (resultado.isData()) {
+				resultado.setListaResultado(matriculaServiceLocal.listarCargo(cargo));
+			 }
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<CargoDTO> inicializarCargo(@Context UriInfo info) throws Exception {
+	     CargoDTO cargo = transferUriInfo(info);
+		 ResultadoRestVO<CargoDTO> resultado = new ResultadoRestVO<CargoDTO>();
+		 try {
+    		resultado.setObjetoResultado(cargo);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private CargoDTO transferUriInfo(@Context UriInfo info) {
+		CargoDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,CargoDTO.class);
+		return resultado;
+	}
+}

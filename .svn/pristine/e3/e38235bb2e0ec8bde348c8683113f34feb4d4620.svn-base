@@ -1,0 +1,991 @@
+package pe.com.edu.siaa.core.model.jpa.admision;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import pe.com.edu.siaa.core.model.jpa.common.Item;
+import pe.com.edu.siaa.core.model.jpa.common.Ubigeo;
+import pe.com.edu.siaa.core.model.jpa.matricula.Personal;
+import pe.com.edu.siaa.core.model.jpa.seguridad.GrupoUsuarioUsuario;
+import pe.com.edu.siaa.core.model.jpa.seguridad.MenuPersonalizado;
+import pe.com.edu.siaa.core.model.jpa.seguridad.PrivilegioPersonalizado;
+import pe.com.edu.siaa.core.model.util.ConfiguracionEntityManagerUtil;
+
+/**
+ * La Class Persona.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 09:56:52 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Entity
+@Table(name = "Persona", schema = ConfiguracionEntityManagerUtil.ESQUEMA_ACADEMICO)
+public class Persona implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id persona. */
+    @Id
+    @Column(name = "idPersona" , length = 10)
+    private String idPersona;
+   
+    /** El tipo persona. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idTipoPersona", referencedColumnName = "idTipoPersona")
+    private TipoPersona tipoPersona;
+   
+    /** El item by tipo doc identidad. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idTipoDocIdentidad", referencedColumnName = "idItem")
+    private Item itemByTipoDocIdentidad;
+   
+    /** El item by estado civil. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idEstadoCivil", referencedColumnName = "idItem")
+    private Item itemByEstadoCivil;
+   
+    /** El item by tipo via. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idTipoVia", referencedColumnName = "idItem")
+    private Item itemByTipoVia;
+   
+    /** El item by zona. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idZona", referencedColumnName = "idItem")
+    private Item itemByZona;
+   
+    /** El procedencia. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idProcedencia", referencedColumnName = "idProcedencia")
+    private Procedencia procedencia;
+   
+    /** El item by idioma. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idIdioma", referencedColumnName = "idItem")
+    private Item itemByIdioma;
+   
+    /** El item by nivel educativo. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idNivelEducativo", referencedColumnName = "idItem")
+    private Item itemByNivelEducativo;
+   
+    /** El nacionalidad. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idNacionalidad", referencedColumnName = "idNacionalidad")
+    private Nacionalidad nacionalidad;
+   
+    /** El ubigeo by nacimiento. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idUbigeoNacimiento", referencedColumnName = "idUbigeo")
+    private Ubigeo ubigeoByNacimiento;
+   
+    /** El ubigeo by actual. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idUbigeoActual", referencedColumnName = "idUbigeo")
+    private Ubigeo ubigeoByActual;
+   
+    /** El entidad universitaria. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idEntidadUniversitaria", referencedColumnName = "idEntidadUniversitaria")
+    private EntidadUniversitaria entidadUniversitaria;
+   
+    /** El nombre. */
+    @Column(name = "nombre" , length = 50)
+    private String nombre;
+   
+    /** El apellido paterno. */
+    @Column(name = "apellidoPaterno" , length = 50)
+    private String apellidoPaterno;
+   
+    /** El apellido materno. */
+    @Column(name = "apellidoMaterno" , length = 50)
+    private String apellidoMaterno;
+   
+    /** El nro doc. */
+    @Column(name = "nroDoc" , length = 50)
+    private String nroDoc;
+   
+    /** El genero. */
+    @Column(name = "genero" , length = 1)
+    private String genero;
+   
+    /** El email. */
+    @Column(name = "email" , length = 50)
+    private String email;
+   
+    /** El email alternativo. */
+    @Column(name = "emailAlternativo" , length = 50)
+    private String emailAlternativo;
+   
+    /** El telefono1. */
+    @Column(name = "telefono1" , length = 50)
+    private String telefono1;
+   
+    /** El telefono2. */
+    @Column(name = "telefono2" , length = 50)
+    private String telefono2;
+   
+    /** El celular. */
+    @Column(name = "celular" , length = 50)
+    private String celular;
+   
+    /** El rpm. */
+    @Column(name = "rpm" , length = 50)
+    private String rpm;
+   
+    /** El fax. */
+    @Column(name = "fax" , length = 50)
+    private String fax;
+   
+    /** El user name. */
+    @Column(name = "userName" , length = 50)
+    private String userName;
+   
+    /** El user password. */
+    @Column(name = "userPassword" , length = 100)
+    private String userPassword;
+   
+    /** El fecha nacimiento. */
+    @Temporal( TemporalType.TIMESTAMP)
+    @Column(name = "fechaNacimiento")
+    private Date fechaNacimiento;
+   
+    /** El nombre zona. */
+    @Column(name = "nombreZona" , length = 200)
+    private String nombreZona;
+   
+    /** El nombre tipo via. */
+    @Column(name = "nombreTipoVia" , length = 200)
+    private String nombreTipoVia;
+   
+    /** El direccion. */
+    @Column(name = "direccion" , length = 100)
+    private String direccion;
+   
+    /** El anho concluyo secundaria. */
+    @Column(name = "anhoConcluyoSecundaria" , precision = 18 , scale = 0)
+    private Long anhoConcluyoSecundaria;
+   
+    /** El foto. */
+    @Column(name = "foto" , length = 50)
+    private String foto;
+   
+    /** El estado. */
+    @Column(name = "estado" , length = 1)
+    private String estado;
+   
+    /** El fecha creacion. */
+    @Temporal( TemporalType.TIMESTAMP)
+    @Column(name = "fechaCreacion")
+    private Date fechaCreacion;
+   
+    /** El usuario grupo usuario usuario list. */
+    @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY)
+    private List<GrupoUsuarioUsuario> usuarioGrupoUsuarioUsuarioList = new ArrayList<GrupoUsuarioUsuario>();
+    
+    /** El persona menu personalizado list. */
+    @OneToMany(mappedBy = "persona", fetch = FetchType.LAZY)
+    private List<MenuPersonalizado> personaMenuPersonalizadoList = new ArrayList<MenuPersonalizado>();
+    
+    /** El persona personal list. */
+    @OneToMany(mappedBy = "persona", fetch = FetchType.LAZY)
+    private List<Personal> personaPersonalList = new ArrayList<Personal>();
+    
+    /** El persona postulante list. */
+    @OneToMany(mappedBy = "persona", fetch = FetchType.LAZY)
+    private List<Postulante> personaPostulanteList = new ArrayList<Postulante>();
+    
+    /** El usuario privilegio personalizado list. */
+    @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY)
+    private List<PrivilegioPersonalizado> usuarioPrivilegioPersonalizadoList = new ArrayList<PrivilegioPersonalizado>();
+    
+    /**
+     * Instancia un nuevo persona.
+     */
+    public Persona() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo persona.
+     *
+     * @param idPersona el id persona
+     * @param tipoPersona el tipo persona
+     * @param itemByTipoDocIdentidad el item by tipo doc identidad
+     * @param itemByEstadoCivil el item by estado civil
+     * @param itemByTipoVia el item by tipo via
+     * @param itemByZona el item by zona
+     * @param procedencia el procedencia
+     * @param itemByIdioma el item by idioma
+     * @param itemByNivelEducativo el item by nivel educativo
+     * @param nacionalidad el nacionalidad
+     * @param ubigeoByNacimiento el ubigeo by nacimiento
+     * @param ubigeoByActual el ubigeo by actual
+     * @param entidadUniversitaria el entidad universitaria
+     * @param nombre el nombre
+     * @param apellidoPaterno el apellido paterno
+     * @param apellidoMaterno el apellido materno
+     * @param nroDoc el nro doc
+     * @param genero el genero
+     * @param email el email
+     * @param emailAlternativo el email alternativo
+     * @param telefono1 el telefono1
+     * @param telefono2 el telefono2
+     * @param celular el celular
+     * @param rpm el rpm
+     * @param fax el fax
+     * @param userName el user name
+     * @param userPassword el user password
+     * @param fechaNacimiento el fecha nacimiento
+     * @param nombreZona el nombre zona
+     * @param nombreTipoVia el nombre tipo via
+     * @param direccion el direccion
+     * @param anhoConcluyoSecundaria el anho concluyo secundaria
+     * @param foto el foto
+     * @param estado el estado
+     * @param fechaCreacion el fecha creacion
+     */
+    public Persona(String idPersona, TipoPersona tipoPersona,Item itemByTipoDocIdentidad,Item itemByEstadoCivil,Item itemByTipoVia,Item itemByZona,Procedencia procedencia,Item itemByIdioma,Item itemByNivelEducativo,Nacionalidad nacionalidad,Ubigeo ubigeoByNacimiento,Ubigeo ubigeoByActual,EntidadUniversitaria entidadUniversitaria,String nombre, String apellidoPaterno, String apellidoMaterno, String nroDoc, String genero, String email, String emailAlternativo, String telefono1, String telefono2, String celular, String rpm, String fax, String userName, String userPassword, Date fechaNacimiento, String nombreZona, String nombreTipoVia, String direccion, Long anhoConcluyoSecundaria, String foto, String estado, Date fechaCreacion ) {
+        super();
+        this.idPersona = idPersona;
+        this.tipoPersona = tipoPersona;
+        this.itemByTipoDocIdentidad = itemByTipoDocIdentidad;
+        this.itemByEstadoCivil = itemByEstadoCivil;
+        this.itemByTipoVia = itemByTipoVia;
+        this.itemByZona = itemByZona;
+        this.procedencia = procedencia;
+        this.itemByIdioma = itemByIdioma;
+        this.itemByNivelEducativo = itemByNivelEducativo;
+        this.nacionalidad = nacionalidad;
+        this.ubigeoByNacimiento = ubigeoByNacimiento;
+        this.ubigeoByActual = ubigeoByActual;
+        this.entidadUniversitaria = entidadUniversitaria;
+        this.nombre = nombre;
+        this.apellidoPaterno = apellidoPaterno;
+        this.apellidoMaterno = apellidoMaterno;
+        this.nroDoc = nroDoc;
+        this.genero = genero;
+        this.email = email;
+        this.emailAlternativo = emailAlternativo;
+        this.telefono1 = telefono1;
+        this.telefono2 = telefono2;
+        this.celular = celular;
+        this.rpm = rpm;
+        this.fax = fax;
+        this.userName = userName;
+        this.userPassword = userPassword;
+        this.fechaNacimiento = fechaNacimiento;
+        this.nombreZona = nombreZona;
+        this.nombreTipoVia = nombreTipoVia;
+        this.direccion = direccion;
+        this.anhoConcluyoSecundaria = anhoConcluyoSecundaria;
+        this.foto = foto;
+        this.estado = estado;
+        this.fechaCreacion = fechaCreacion;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id persona.
+     *
+     * @return id persona
+     */
+     public String getIdPersona() {
+        return this.idPersona;
+    }
+    /**
+     * Establece el id persona.
+     *
+     * @param idPersona el new id persona
+     */
+    public void setIdPersona(String idPersona) {
+        this.idPersona = idPersona;
+    }
+    /**
+     * Obtiene tipo persona.
+     *
+     * @return tipo persona
+     */
+     public TipoPersona getTipoPersona() {
+        return this.tipoPersona;
+    }
+    /**
+     * Establece el tipo persona.
+     *
+     * @param tipoPersona el new tipo persona
+     */
+    public void setTipoPersona(TipoPersona tipoPersona) {
+        this.tipoPersona = tipoPersona;
+    }
+    /**
+     * Obtiene item by tipo doc identidad.
+     *
+     * @return item by tipo doc identidad
+     */
+     public Item getItemByTipoDocIdentidad() {
+        return this.itemByTipoDocIdentidad;
+    }
+    /**
+     * Establece el item by tipo doc identidad.
+     *
+     * @param itemByTipoDocIdentidad el new item by tipo doc identidad
+     */
+    public void setItemByTipoDocIdentidad(Item itemByTipoDocIdentidad) {
+        this.itemByTipoDocIdentidad = itemByTipoDocIdentidad;
+    }
+    /**
+     * Obtiene item by estado civil.
+     *
+     * @return item by estado civil
+     */
+     public Item getItemByEstadoCivil() {
+        return this.itemByEstadoCivil;
+    }
+    /**
+     * Establece el item by estado civil.
+     *
+     * @param itemByEstadoCivil el new item by estado civil
+     */
+    public void setItemByEstadoCivil(Item itemByEstadoCivil) {
+        this.itemByEstadoCivil = itemByEstadoCivil;
+    }
+    /**
+     * Obtiene item by tipo via.
+     *
+     * @return item by tipo via
+     */
+     public Item getItemByTipoVia() {
+        return this.itemByTipoVia;
+    }
+    /**
+     * Establece el item by tipo via.
+     *
+     * @param itemByTipoVia el new item by tipo via
+     */
+    public void setItemByTipoVia(Item itemByTipoVia) {
+        this.itemByTipoVia = itemByTipoVia;
+    }
+    /**
+     * Obtiene item by zona.
+     *
+     * @return item by zona
+     */
+     public Item getItemByZona() {
+        return this.itemByZona;
+    }
+    /**
+     * Establece el item by zona.
+     *
+     * @param itemByZona el new item by zona
+     */
+    public void setItemByZona(Item itemByZona) {
+        this.itemByZona = itemByZona;
+    }
+    /**
+     * Obtiene procedencia.
+     *
+     * @return procedencia
+     */
+     public Procedencia getProcedencia() {
+        return this.procedencia;
+    }
+    /**
+     * Establece el procedencia.
+     *
+     * @param procedencia el new procedencia
+     */
+    public void setProcedencia(Procedencia procedencia) {
+        this.procedencia = procedencia;
+    }
+    /**
+     * Obtiene item by idioma.
+     *
+     * @return item by idioma
+     */
+     public Item getItemByIdioma() {
+        return this.itemByIdioma;
+    }
+    /**
+     * Establece el item by idioma.
+     *
+     * @param itemByIdioma el new item by idioma
+     */
+    public void setItemByIdioma(Item itemByIdioma) {
+        this.itemByIdioma = itemByIdioma;
+    }
+    /**
+     * Obtiene item by nivel educativo.
+     *
+     * @return item by nivel educativo
+     */
+     public Item getItemByNivelEducativo() {
+        return this.itemByNivelEducativo;
+    }
+    /**
+     * Establece el item by nivel educativo.
+     *
+     * @param itemByNivelEducativo el new item by nivel educativo
+     */
+    public void setItemByNivelEducativo(Item itemByNivelEducativo) {
+        this.itemByNivelEducativo = itemByNivelEducativo;
+    }
+    /**
+     * Obtiene nacionalidad.
+     *
+     * @return nacionalidad
+     */
+     public Nacionalidad getNacionalidad() {
+        return this.nacionalidad;
+    }
+    /**
+     * Establece el nacionalidad.
+     *
+     * @param nacionalidad el new nacionalidad
+     */
+    public void setNacionalidad(Nacionalidad nacionalidad) {
+        this.nacionalidad = nacionalidad;
+    }
+    /**
+     * Obtiene ubigeo by nacimiento.
+     *
+     * @return ubigeo by nacimiento
+     */
+     public Ubigeo getUbigeoByNacimiento() {
+        return this.ubigeoByNacimiento;
+    }
+    /**
+     * Establece el ubigeo by nacimiento.
+     *
+     * @param ubigeoByNacimiento el new ubigeo by nacimiento
+     */
+    public void setUbigeoByNacimiento(Ubigeo ubigeoByNacimiento) {
+        this.ubigeoByNacimiento = ubigeoByNacimiento;
+    }
+    /**
+     * Obtiene ubigeo by actual.
+     *
+     * @return ubigeo by actual
+     */
+     public Ubigeo getUbigeoByActual() {
+        return this.ubigeoByActual;
+    }
+    /**
+     * Establece el ubigeo by actual.
+     *
+     * @param ubigeoByActual el new ubigeo by actual
+     */
+    public void setUbigeoByActual(Ubigeo ubigeoByActual) {
+        this.ubigeoByActual = ubigeoByActual;
+    }
+    /**
+     * Obtiene entidad universitaria.
+     *
+     * @return entidad universitaria
+     */
+     public EntidadUniversitaria getEntidadUniversitaria() {
+        return this.entidadUniversitaria;
+    }
+    /**
+     * Establece el entidad universitaria.
+     *
+     * @param entidadUniversitaria el new entidad universitaria
+     */
+    public void setEntidadUniversitaria(EntidadUniversitaria entidadUniversitaria) {
+        this.entidadUniversitaria = entidadUniversitaria;
+    }
+    /**
+     * Obtiene nombre.
+     *
+     * @return nombre
+     */
+     public String getNombre() {
+        return this.nombre;
+    }
+    /**
+     * Establece el nombre.
+     *
+     * @param nombre el new nombre
+     */
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+    /**
+     * Obtiene apellido paterno.
+     *
+     * @return apellido paterno
+     */
+     public String getApellidoPaterno() {
+        return this.apellidoPaterno;
+    }
+    /**
+     * Establece el apellido paterno.
+     *
+     * @param apellidoPaterno el new apellido paterno
+     */
+    public void setApellidoPaterno(String apellidoPaterno) {
+        this.apellidoPaterno = apellidoPaterno;
+    }
+    /**
+     * Obtiene apellido materno.
+     *
+     * @return apellido materno
+     */
+     public String getApellidoMaterno() {
+        return this.apellidoMaterno;
+    }
+    /**
+     * Establece el apellido materno.
+     *
+     * @param apellidoMaterno el new apellido materno
+     */
+    public void setApellidoMaterno(String apellidoMaterno) {
+        this.apellidoMaterno = apellidoMaterno;
+    }
+    /**
+     * Obtiene nro doc.
+     *
+     * @return nro doc
+     */
+     public String getNroDoc() {
+        return this.nroDoc;
+    }
+    /**
+     * Establece el nro doc.
+     *
+     * @param nroDoc el new nro doc
+     */
+    public void setNroDoc(String nroDoc) {
+        this.nroDoc = nroDoc;
+    }
+    /**
+     * Obtiene genero.
+     *
+     * @return genero
+     */
+     public String getGenero() {
+        return this.genero;
+    }
+    /**
+     * Establece el genero.
+     *
+     * @param genero el new genero
+     */
+    public void setGenero(String genero) {
+        this.genero = genero;
+    }
+    /**
+     * Obtiene email.
+     *
+     * @return email
+     */
+     public String getEmail() {
+        return this.email;
+    }
+    /**
+     * Establece el email.
+     *
+     * @param email el new email
+     */
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    /**
+     * Obtiene email alternativo.
+     *
+     * @return email alternativo
+     */
+     public String getEmailAlternativo() {
+        return this.emailAlternativo;
+    }
+    /**
+     * Establece el email alternativo.
+     *
+     * @param emailAlternativo el new email alternativo
+     */
+    public void setEmailAlternativo(String emailAlternativo) {
+        this.emailAlternativo = emailAlternativo;
+    }
+    /**
+     * Obtiene telefono1.
+     *
+     * @return telefono1
+     */
+     public String getTelefono1() {
+        return this.telefono1;
+    }
+    /**
+     * Establece el telefono1.
+     *
+     * @param telefono1 el new telefono1
+     */
+    public void setTelefono1(String telefono1) {
+        this.telefono1 = telefono1;
+    }
+    /**
+     * Obtiene telefono2.
+     *
+     * @return telefono2
+     */
+     public String getTelefono2() {
+        return this.telefono2;
+    }
+    /**
+     * Establece el telefono2.
+     *
+     * @param telefono2 el new telefono2
+     */
+    public void setTelefono2(String telefono2) {
+        this.telefono2 = telefono2;
+    }
+    /**
+     * Obtiene celular.
+     *
+     * @return celular
+     */
+     public String getCelular() {
+        return this.celular;
+    }
+    /**
+     * Establece el celular.
+     *
+     * @param celular el new celular
+     */
+    public void setCelular(String celular) {
+        this.celular = celular;
+    }
+    /**
+     * Obtiene rpm.
+     *
+     * @return rpm
+     */
+     public String getRpm() {
+        return this.rpm;
+    }
+    /**
+     * Establece el rpm.
+     *
+     * @param rpm el new rpm
+     */
+    public void setRpm(String rpm) {
+        this.rpm = rpm;
+    }
+    /**
+     * Obtiene fax.
+     *
+     * @return fax
+     */
+     public String getFax() {
+        return this.fax;
+    }
+    /**
+     * Establece el fax.
+     *
+     * @param fax el new fax
+     */
+    public void setFax(String fax) {
+        this.fax = fax;
+    }
+    /**
+     * Obtiene user name.
+     *
+     * @return user name
+     */
+     public String getUserName() {
+        return this.userName;
+    }
+    /**
+     * Establece el user name.
+     *
+     * @param userName el new user name
+     */
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+    /**
+     * Obtiene user password.
+     *
+     * @return user password
+     */
+     public String getUserPassword() {
+        return this.userPassword;
+    }
+    /**
+     * Establece el user password.
+     *
+     * @param userPassword el new user password
+     */
+    public void setUserPassword(String userPassword) {
+        this.userPassword = userPassword;
+    }
+    /**
+     * Obtiene fecha nacimiento.
+     *
+     * @return fecha nacimiento
+     */
+     public Date getFechaNacimiento() {
+        return this.fechaNacimiento;
+    }
+    /**
+     * Establece el fecha nacimiento.
+     *
+     * @param fechaNacimiento el new fecha nacimiento
+     */
+    public void setFechaNacimiento(Date fechaNacimiento) {
+        this.fechaNacimiento = fechaNacimiento;
+    }
+    /**
+     * Obtiene nombre zona.
+     *
+     * @return nombre zona
+     */
+     public String getNombreZona() {
+        return this.nombreZona;
+    }
+    /**
+     * Establece el nombre zona.
+     *
+     * @param nombreZona el new nombre zona
+     */
+    public void setNombreZona(String nombreZona) {
+        this.nombreZona = nombreZona;
+    }
+    /**
+     * Obtiene nombre tipo via.
+     *
+     * @return nombre tipo via
+     */
+     public String getNombreTipoVia() {
+        return this.nombreTipoVia;
+    }
+    /**
+     * Establece el nombre tipo via.
+     *
+     * @param nombreTipoVia el new nombre tipo via
+     */
+    public void setNombreTipoVia(String nombreTipoVia) {
+        this.nombreTipoVia = nombreTipoVia;
+    }
+    /**
+     * Obtiene direccion.
+     *
+     * @return direccion
+     */
+     public String getDireccion() {
+        return this.direccion;
+    }
+    /**
+     * Establece el direccion.
+     *
+     * @param direccion el new direccion
+     */
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
+    }
+    /**
+     * Obtiene anho concluyo secundaria.
+     *
+     * @return anho concluyo secundaria
+     */
+     public Long getAnhoConcluyoSecundaria() {
+        return this.anhoConcluyoSecundaria;
+    }
+    /**
+     * Establece el anho concluyo secundaria.
+     *
+     * @param anhoConcluyoSecundaria el new anho concluyo secundaria
+     */
+    public void setAnhoConcluyoSecundaria(Long anhoConcluyoSecundaria) {
+        this.anhoConcluyoSecundaria = anhoConcluyoSecundaria;
+    }
+    /**
+     * Obtiene foto.
+     *
+     * @return foto
+     */
+     public String getFoto() {
+        return this.foto;
+    }
+    /**
+     * Establece el foto.
+     *
+     * @param foto el new foto
+     */
+    public void setFoto(String foto) {
+        this.foto = foto;
+    }
+    /**
+     * Obtiene estado.
+     *
+     * @return estado
+     */
+     public String getEstado() {
+        return this.estado;
+    }
+    /**
+     * Establece el estado.
+     *
+     * @param estado el new estado
+     */
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+    /**
+     * Obtiene fecha creacion.
+     *
+     * @return fecha creacion
+     */
+     public Date getFechaCreacion() {
+        return this.fechaCreacion;
+    }
+    /**
+     * Establece el fecha creacion.
+     *
+     * @param fechaCreacion el new fecha creacion
+     */
+    public void setFechaCreacion(Date fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
+    }
+    /**
+     * Establece el usuario grupo usuario usuario list.
+     *
+     * @param usuarioGrupoUsuarioUsuarioList el new usuario grupo usuario usuario list
+     */
+    public List<GrupoUsuarioUsuario> getUsuarioGrupoUsuarioUsuarioList(){
+        return this.usuarioGrupoUsuarioUsuarioList;
+    }
+    /**
+     * Establece el usuario list.
+     *
+     * @param usuarioList el new usuario list
+     */
+    public void setUsuarioGrupoUsuarioUsuarioList(List<GrupoUsuarioUsuario> usuarioGrupoUsuarioUsuarioList) {
+        this.usuarioGrupoUsuarioUsuarioList = usuarioGrupoUsuarioUsuarioList;
+    }   
+    /**
+     * Establece el persona menu personalizado list.
+     *
+     * @param personaMenuPersonalizadoList el new persona menu personalizado list
+     */
+    public List<MenuPersonalizado> getPersonaMenuPersonalizadoList(){
+        return this.personaMenuPersonalizadoList;
+    }
+    /**
+     * Establece el persona list.
+     *
+     * @param personaList el new persona list
+     */
+    public void setPersonaMenuPersonalizadoList(List<MenuPersonalizado> personaMenuPersonalizadoList) {
+        this.personaMenuPersonalizadoList = personaMenuPersonalizadoList;
+    }   
+    /**
+     * Establece el persona personal list.
+     *
+     * @param personaPersonalList el new persona personal list
+     */
+    public List<Personal> getPersonaPersonalList(){
+        return this.personaPersonalList;
+    }
+    /**
+     * Establece el persona list.
+     *
+     * @param personaList el new persona list
+     */
+    public void setPersonaPersonalList(List<Personal> personaPersonalList) {
+        this.personaPersonalList = personaPersonalList;
+    }   
+    /**
+     * Establece el persona postulante list.
+     *
+     * @param personaPostulanteList el new persona postulante list
+     */
+    public List<Postulante> getPersonaPostulanteList(){
+        return this.personaPostulanteList;
+    }
+    /**
+     * Establece el persona list.
+     *
+     * @param personaList el new persona list
+     */
+    public void setPersonaPostulanteList(List<Postulante> personaPostulanteList) {
+        this.personaPostulanteList = personaPostulanteList;
+    }   
+    /**
+     * Establece el usuario privilegio personalizado list.
+     *
+     * @param usuarioPrivilegioPersonalizadoList el new usuario privilegio personalizado list
+     */
+    public List<PrivilegioPersonalizado> getUsuarioPrivilegioPersonalizadoList(){
+        return this.usuarioPrivilegioPersonalizadoList;
+    }
+    /**
+     * Establece el usuario list.
+     *
+     * @param usuarioList el new usuario list
+     */
+    public void setUsuarioPrivilegioPersonalizadoList(List<PrivilegioPersonalizado> usuarioPrivilegioPersonalizadoList) {
+        this.usuarioPrivilegioPersonalizadoList = usuarioPrivilegioPersonalizadoList;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idPersona == null) ? 0 : idPersona.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Persona other = (Persona) obj;
+        if (idPersona == null) {
+            if (other.idPersona != null) {
+                return false;
+            }
+        } else if (!idPersona.equals(other.idPersona)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Persona [idPersona=" + idPersona + "]";
+    }
+   
+}

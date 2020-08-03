@@ -1,0 +1,168 @@
+package pe.com.edu.siaa.core.ejb.service.rest.matricula.impl;
+
+import java.util.List;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.matricula.local.MatriculaServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.matricula.HorarioDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class HorarioRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:36 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/horarioRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class HorarioRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient MatriculaServiceLocal matriculaServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<HorarioDTO> crear(HorarioDTO horario) throws Exception {
+		return controladorAccion(horario,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<HorarioDTO> modificar(HorarioDTO horario) throws Exception {
+		return controladorAccion(horario,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<HorarioDTO> eliminar(@PathParam("id") String idHorario) throws Exception {
+		HorarioDTO horario = new HorarioDTO();
+		horario.setIdHorario(idHorario);		
+		return controladorAccion(horario,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<HorarioDTO> controladorAccion(HorarioDTO horario, AccionType accionType){
+		ResultadoRestVO<HorarioDTO> resultado = new ResultadoRestVO<HorarioDTO>();
+		 try {
+    		resultado.setObjetoResultado(matriculaServiceLocal.controladorAccionHorario(horario,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<HorarioDTO> finById(@PathParam("id") String idHorario) throws Exception {
+		HorarioDTO horario = new HorarioDTO();
+		horario.setIdHorario(idHorario);
+		return controladorAccion(horario,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<HorarioDTO> listarHorario(@Context UriInfo info){
+		ResultadoRestVO<HorarioDTO> resultado = new ResultadoRestVO<HorarioDTO>();
+		HorarioDTO horario = transferUriInfo(info);
+		 try {
+    		resultado.setListaResultado(matriculaServiceLocal.listarHorario(horario));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<Integer> contarListarHorario(@Context UriInfo info){
+		ResultadoRestVO<Integer> resultado = new ResultadoRestVO<Integer>();
+		HorarioDTO horario = transferUriInfo(info);
+		 try {
+    		resultado.setObjetoResultado(matriculaServiceLocal.contarListarHorario(horario));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<HorarioDTO> inicializarHorario(@Context UriInfo info) throws Exception {
+	     HorarioDTO horario = transferUriInfo(info);
+		 ResultadoRestVO<HorarioDTO> resultado = new ResultadoRestVO<HorarioDTO>();
+		 try {
+    		resultado.setObjetoResultado(horario);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/generarHorario")
+	public ResultadoRestVO<HorarioDTO> generarHorario(@Context UriInfo info){
+		ResultadoRestVO<HorarioDTO> resultado = new ResultadoRestVO<HorarioDTO>();
+		List<String> listaIdDetCargaLectiva = info.getQueryParameters().get("idCargaLectiva");
+		 try {
+    		resultado.setListaResultado(matriculaServiceLocal.listarHorario(listaIdDetCargaLectiva));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	
+	@POST
+    @Path("/listarHorarioCiclo")
+	public ResultadoRestVO<HorarioDTO> listarHorarioCiclo(HorarioDTO horario){
+		ResultadoRestVO<HorarioDTO> resultado = new ResultadoRestVO<HorarioDTO>();
+		 try {
+    		resultado.setListaResultado(matriculaServiceLocal.listarHorarioCiclo(horario, true));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	
+	@GET
+    @Path("/listarHorarioAlumno/{idAlumno}/{idAnhoSemestre}")
+	public ResultadoRestVO<HorarioDTO> listarHorarioAlumno(@PathParam("idAlumno") String idAlumno,@PathParam("idAnhoSemestre") String idAnhoSemestre){
+		ResultadoRestVO<HorarioDTO> resultado = new ResultadoRestVO<HorarioDTO>();
+		 try {
+    		resultado.setListaResultado(matriculaServiceLocal.listarHorarioAlumno(idAlumno, idAnhoSemestre));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	
+	@GET
+    @Path("/listarHorarioDocenete/{idDocente}/{idAnhoSemestre}")
+	public ResultadoRestVO<HorarioDTO> listarHorarioDocenete(@PathParam("idDocente") String idDocente,@PathParam("idAnhoSemestre") String idAnhoSemestre){
+		ResultadoRestVO<HorarioDTO> resultado = new ResultadoRestVO<HorarioDTO>();
+		 try {
+    		resultado.setListaResultado(matriculaServiceLocal.listarHorarioDocenete(idDocente, idAnhoSemestre));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	
+	private HorarioDTO transferUriInfo(@Context UriInfo info) {
+		HorarioDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,HorarioDTO.class);
+		return resultado;
+	}
+}

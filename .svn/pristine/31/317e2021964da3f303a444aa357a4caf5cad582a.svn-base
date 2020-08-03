@@ -1,0 +1,120 @@
+package pe.com.edu.siaa.core.ejb.service.rest.admision.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.admision.local.AdmisionServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.admision.NacionalidadDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class NacionalidadRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Thu Nov 09 09:00:36 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/nacionalidadRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class NacionalidadRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient AdmisionServiceLocal admisionServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<NacionalidadDTO> crear(NacionalidadDTO nacionalidad) throws Exception {
+		return controladorAccion(nacionalidad,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<NacionalidadDTO> modificar(NacionalidadDTO nacionalidad) throws Exception {
+		return controladorAccion(nacionalidad,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<NacionalidadDTO> eliminar(@PathParam("id") Long idNacionalidad) throws Exception {
+		NacionalidadDTO nacionalidad = new NacionalidadDTO();
+		nacionalidad.setIdNacionalidad(idNacionalidad);		
+		return controladorAccion(nacionalidad,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<NacionalidadDTO> controladorAccion(NacionalidadDTO nacionalidad, AccionType accionType){
+		ResultadoRestVO<NacionalidadDTO> resultado = new ResultadoRestVO<NacionalidadDTO>();
+		 try {
+    		resultado.setObjetoResultado(admisionServiceLocal.controladorAccionNacionalidad(nacionalidad,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<NacionalidadDTO> finById(@PathParam("id") Long idNacionalidad) throws Exception {
+		NacionalidadDTO nacionalidad = new NacionalidadDTO();
+		nacionalidad.setIdNacionalidad(idNacionalidad);
+		return controladorAccion(nacionalidad,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<NacionalidadDTO> listarNacionalidad(@Context UriInfo info){
+		ResultadoRestVO<NacionalidadDTO> resultado = new ResultadoRestVO<NacionalidadDTO>();
+		NacionalidadDTO nacionalidad = transferUriInfo(info);
+		 try {
+			resultado.setListaResultado(admisionServiceLocal.listarNacionalidad(nacionalidad));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<NacionalidadDTO> contarNacionalidad(@Context UriInfo info){
+		ResultadoRestVO<NacionalidadDTO> resultado = new ResultadoRestVO<NacionalidadDTO>();
+		NacionalidadDTO nacionalidad = transferUriInfo(info);
+		 try {
+			 resultado.setContador(admisionServiceLocal.contarListarNacionalidad(nacionalidad));
+			 if (resultado.isData()) {
+				resultado.setListaResultado(admisionServiceLocal.listarNacionalidad(nacionalidad));
+			 }
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<NacionalidadDTO> inicializarNacionalidad(@Context UriInfo info) throws Exception {
+	     NacionalidadDTO nacionalidad = transferUriInfo(info);
+		 ResultadoRestVO<NacionalidadDTO> resultado = new ResultadoRestVO<NacionalidadDTO>();
+		 try {
+    		resultado.setObjetoResultado(nacionalidad);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private NacionalidadDTO transferUriInfo(@Context UriInfo info) {
+		NacionalidadDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,NacionalidadDTO.class);
+		return resultado;
+	}
+}

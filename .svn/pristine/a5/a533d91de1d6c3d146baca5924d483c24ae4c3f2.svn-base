@@ -1,0 +1,120 @@
+package pe.com.builderp.core.escalafon.ejb.service.rest.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.builderp.core.escalafon.ejb.service.local.EscalafonServiceLocal;
+import pe.com.builderp.core.escalafon.model.dto.ContratoAcademicoDTO;
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class ContratoAcademicoRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Sun Dec 31 00:35:58 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/contratoAcademicoRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class ContratoAcademicoRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient EscalafonServiceLocal escalafonServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<ContratoAcademicoDTO> crear(ContratoAcademicoDTO contratoAcademico) throws Exception {
+		return controladorAccion(contratoAcademico,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<ContratoAcademicoDTO> modificar(ContratoAcademicoDTO contratoAcademico) throws Exception {
+		return controladorAccion(contratoAcademico,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<ContratoAcademicoDTO> eliminar(@PathParam("id") String idContratoAcademico) throws Exception {
+		ContratoAcademicoDTO contratoAcademico = new ContratoAcademicoDTO();
+		contratoAcademico.setIdContratoAcademico(idContratoAcademico);		
+		return controladorAccion(contratoAcademico,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<ContratoAcademicoDTO> controladorAccion(ContratoAcademicoDTO contratoAcademico, AccionType accionType){
+		ResultadoRestVO<ContratoAcademicoDTO> resultado = new ResultadoRestVO<ContratoAcademicoDTO>();
+		 try {
+    		resultado.setObjetoResultado(escalafonServiceLocal.controladorAccionContratoAcademico(contratoAcademico,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<ContratoAcademicoDTO> finById(@PathParam("id") String idContratoAcademico) throws Exception {
+		ContratoAcademicoDTO contratoAcademico = new ContratoAcademicoDTO();
+		contratoAcademico.setIdContratoAcademico(idContratoAcademico);
+		return controladorAccion(contratoAcademico,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<ContratoAcademicoDTO> listarContratoAcademico(@Context UriInfo info){
+		ResultadoRestVO<ContratoAcademicoDTO> resultado = new ResultadoRestVO<ContratoAcademicoDTO>();
+		ContratoAcademicoDTO contratoAcademico = transferUriInfo(info);
+		 try {
+			resultado.setListaResultado(escalafonServiceLocal.listarContratoAcademico(contratoAcademico));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<ContratoAcademicoDTO> contarContratoAcademico(@Context UriInfo info){
+		ResultadoRestVO<ContratoAcademicoDTO> resultado = new ResultadoRestVO<ContratoAcademicoDTO>();
+		ContratoAcademicoDTO contratoAcademico = transferUriInfo(info);
+		 try {
+			 resultado.setContador(escalafonServiceLocal.contarListarContratoAcademico(contratoAcademico));
+			 if (resultado.isData()) {
+				resultado.setListaResultado(escalafonServiceLocal.listarContratoAcademico(contratoAcademico));
+			 }
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<ContratoAcademicoDTO> inicializarContratoAcademico(@Context UriInfo info) throws Exception {
+	     ContratoAcademicoDTO contratoAcademico = transferUriInfo(info);
+		 ResultadoRestVO<ContratoAcademicoDTO> resultado = new ResultadoRestVO<ContratoAcademicoDTO>();
+		 try {
+    		resultado.setObjetoResultado(contratoAcademico);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private ContratoAcademicoDTO transferUriInfo(@Context UriInfo info) {
+		ContratoAcademicoDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,ContratoAcademicoDTO.class);
+		return resultado;
+	}
+}

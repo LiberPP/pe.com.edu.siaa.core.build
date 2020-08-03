@@ -1,0 +1,104 @@
+package pe.com.edu.siaa.core.ejb.dao.admision.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.persistence.Query;
+
+import pe.com.edu.siaa.core.ejb.dao.admision.local.CierreAnhoSemestreDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericAcademicoDAOImpl;
+import pe.com.edu.siaa.core.model.dto.admision.CierreAnhoSemestreDTO;
+import pe.com.edu.siaa.core.model.jpa.admision.CierreAnhoSemestre;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+
+/**
+ * La Class CierreAnhoSemestreDaoImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 19:53:33 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+public class CierreAnhoSemestreDaoImpl extends  GenericAcademicoDAOImpl<String, CierreAnhoSemestre> implements CierreAnhoSemestreDaoLocal  {
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.CierreAnhoSemestreDaoLocal#listarCierreAnhoSemestre(pe.com.edu.siaa.core.model.jpa.seguridad.CierreAnhoSemestre)
+     */  
+    @Override	 
+    public List<CierreAnhoSemestre> listarCierreAnhoSemestre(CierreAnhoSemestreDTO cierreAnhoSemestre) {
+        Query query = generarQueryListaCierreAnhoSemestre(cierreAnhoSemestre, false);
+        query.setFirstResult(cierreAnhoSemestre.getStartRow());
+        query.setMaxResults(cierreAnhoSemestre.getOffset());
+        return query.getResultList();
+    }   
+   
+    /**
+     * Generar query lista CierreAnhoSemestre.
+     *
+     * @param CierreAnhoSemestreDTO el cierreAnhoSemestre
+     * @param esContador el es contador
+     * @return the query
+     */
+    private Query generarQueryListaCierreAnhoSemestre(CierreAnhoSemestreDTO cierreAnhoSemestre, boolean esContador) {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        if (esContador) {
+            jpaql.append(" select count(o.anhosemestre) from CierreAnhoSemestre o where 1=1 ");
+        } else {
+            jpaql.append(" select o from CierreAnhoSemestre o where 1=1 ");           
+        }
+		if (!StringUtils.isNullOrEmpty(cierreAnhoSemestre.getSearch())) {
+	          jpaql.append(" and upper(o.anhosemestre) like :search ");
+	          parametros.put("search", "%" + cierreAnhoSemestre.getSearch().toUpperCase() + "%");
+	    } else {
+			if (!StringUtils.isNullOrEmpty(cierreAnhoSemestre.getFechacierre())) {
+				jpaql.append(" and o.fechacierre = :fechacierre ");
+				parametros.put("fechacierre", cierreAnhoSemestre.getFechacierre());
+			}
+		}
+        if (!esContador) {
+            //jpaql.append(" ORDER BY 1 ");
+        }
+        Query query = createQuery(jpaql.toString(), parametros);
+        return query;
+    }
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.CierreAnhoSemestreDaoLocal#contarListar{entity.getClassName()}(pe.com.edu.siaa.core.model.jpa.seguridad.CierreAnhoSemestreDTO)
+     */
+	@Override
+    public int contarListarCierreAnhoSemestre(CierreAnhoSemestreDTO cierreAnhoSemestre) {
+        int resultado = 0;
+        try {
+            //StringBuilder jpaql = new StringBuilder();
+            Query query = generarQueryListaCierreAnhoSemestre(cierreAnhoSemestre, true);
+            resultado = ((Long) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            resultado = 0;
+        }
+        return resultado;
+    }
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.CierreAnhoSemestreDaoLocal#generarIdCierreAnhoSemestre()
+     */
+	 @Override
+    public String generarIdCierreAnhoSemestre() {
+        String resultado = "1";
+        Query query = createQuery("select max(o.anhosemestre) from CierreAnhoSemestre o", null);
+        List<Object> listLong =  query.getResultList();
+        if (listLong != null && listLong.size() > 0 && listLong.get(0) != null)  {
+            Long ultimoIdGenerado = Long.valueOf(listLong.get(0).toString());
+            if (!StringUtils.isNullOrEmpty(ultimoIdGenerado)) {
+                resultado = resultado + ultimoIdGenerado;
+            }
+        }
+        return resultado;
+    }
+   
+}

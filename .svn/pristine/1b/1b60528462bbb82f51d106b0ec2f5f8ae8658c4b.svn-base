@@ -1,0 +1,299 @@
+package pe.com.edu.siaa.core.model.vo;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import pe.com.edu.siaa.core.model.dto.admision.AnhoSemestreDTO;
+import pe.com.edu.siaa.core.model.dto.admision.EscuelaDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.DetCargaLectivaDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.PersonalDTO;
+import pe.com.edu.siaa.core.model.dto.nota.DetRegistroNotaDTO;
+
+/**
+ * <ul>
+ * <li>Copyright 2012 BUILD SOFT S.A.C - BS. Todos los derechos reservados.</li>
+ * </ul>
+ * 
+ * La Class ReporteActaEvaluacionFinalVO.
+ *
+ * @author ndavilal.
+ * @version 1.0 , 17/08/2015
+ * @since SIAA 2.0
+ */
+public class ReporteActaEvaluacionFinalVO implements Serializable {
+ 
+ /** La Constante serialVersionUID. */
+	private static final long serialVersionUID = 1L;
+  
+  /** La escuela. */
+  private EscuelaDTO escuela = new EscuelaDTO();
+  
+  /** La anho semestre. */
+  private AnhoSemestreDTO anhoSemestre = new AnhoSemestreDTO();
+  
+  /** La dSet carga lectiva. */
+  private DetCargaLectivaDTO detCargaLectiva = new DetCargaLectivaDTO();
+  
+  /** La jefe asuntos academicos. */
+  private PersonalDTO jefeAsuntosAcademicos = new  PersonalDTO();
+  
+  /** La vive presidente. */
+  private PersonalDTO vicePresidente = new  PersonalDTO();
+  
+  /** La lista alumno nota. */
+  private List<DetRegistroNotaDTO> listaAlumnoNota = new ArrayList<DetRegistroNotaDTO>(); 
+  
+  /** La fecha acta. */
+  private Date fechaActa;
+  
+  /** La dia. */
+  private String dia;
+  
+  /** La mes. */
+  private String mes;
+  
+  /** La anho. */
+  private String anho;
+  
+  /** La is acta evaluacion final aplazado. */
+  private boolean isActaEvaluacionFinalAplazado = false;
+	
+	/**
+	 * Instancia un nuevo reporte acta evaluacion final vo.
+	 */
+	public ReporteActaEvaluacionFinalVO() {
+		super();
+	}
+	
+	/**
+	 * Instancia un nuevo reporte acta evaluacion final vo.
+	 *
+	 * @param escuela el escuela
+	 * @param anhoSemestre el anho semestre
+	 * @param detCargaLectiva el det carga lectiva
+	 * @param jefeAsuntosAcademicos el jefe asuntos academicos
+	 * @param vicePresidente el vice presidente
+	 * @param listaAlumnoNota el lista alumno nota
+	 * @param fechaActa el fecha acta
+	 * @param isActaEvaluacionFinalAplazado el is acta evaluacion final aplazado
+	 */
+	public ReporteActaEvaluacionFinalVO(EscuelaDTO escuela, AnhoSemestreDTO anhoSemestre,
+			DetCargaLectivaDTO detCargaLectiva, PersonalDTO jefeAsuntosAcademicos,
+			PersonalDTO vicePresidente, List<DetRegistroNotaDTO> listaAlumnoNota,
+			Date fechaActa, boolean isActaEvaluacionFinalAplazado) {
+		super();
+		this.escuela = escuela;
+		this.anhoSemestre = anhoSemestre;
+		this.detCargaLectiva = detCargaLectiva;
+		this.jefeAsuntosAcademicos = jefeAsuntosAcademicos;
+		this.vicePresidente = vicePresidente;
+		this.listaAlumnoNota = listaAlumnoNota;
+		this.fechaActa = fechaActa;
+		this.isActaEvaluacionFinalAplazado = isActaEvaluacionFinalAplazado;
+	}
+
+	/**
+	 * Obtiene escuela.
+	 *
+	 * @return escuela
+	 */
+	public EscuelaDTO getEscuela() {
+		return escuela;
+	}
+	
+	//get y set
+	
+	/**
+	 * Establece el escuela.
+	 *
+	 * @param escuela el new escuela
+	 */
+	public void setEscuela(EscuelaDTO escuela) {
+		this.escuela = escuela;
+	}
+
+	/**
+	 * Obtiene anho semestre.
+	 *
+	 * @return anho semestre
+	 */
+	public AnhoSemestreDTO getAnhoSemestre() {
+		return anhoSemestre;
+	}
+
+	/**
+	 * Establece el anho semestre.
+	 *
+	 * @param anhoSemestre el new anho semestre
+	 */
+	public void setAnhoSemestre(AnhoSemestreDTO anhoSemestre) {
+		this.anhoSemestre = anhoSemestre;
+	}
+
+	/**
+	 * Obtiene det carga lectiva.
+	 *
+	 * @return det carga lectiva
+	 */
+	public DetCargaLectivaDTO getDetCargaLectiva() {
+		return detCargaLectiva;
+	}
+
+	/**
+	 * Establece el det carga lectiva.
+	 *
+	 * @param detCargaLectiva el new det carga lectiva
+	 */
+	public void setDetCargaLectiva(DetCargaLectivaDTO detCargaLectiva) {
+		this.detCargaLectiva = detCargaLectiva;
+	}
+
+	/**
+	 * Obtiene jefe asuntos academicos.
+	 *
+	 * @return jefe asuntos academicos
+	 */
+	public PersonalDTO getJefeAsuntosAcademicos() {
+		return jefeAsuntosAcademicos;
+	}
+
+	/**
+	 * Establece el jefe asuntos academicos.
+	 *
+	 * @param jefeAsuntosAcademicos el new jefe asuntos academicos
+	 */
+	public void setJefeAsuntosAcademicos(PersonalDTO jefeAsuntosAcademicos) {
+		this.jefeAsuntosAcademicos = jefeAsuntosAcademicos;
+	}
+
+	/**
+	 * Obtiene vice presidente.
+	 *
+	 * @return vice presidente
+	 */
+	public PersonalDTO getVicePresidente() {
+		return vicePresidente;
+	}
+
+	
+	/**
+	 * Establece el vice presidente.
+	 *
+	 * @param vicePresidente el new vice presidente
+	 */
+	public void setVicePresidente(PersonalDTO vicePresidente) {
+		this.vicePresidente = vicePresidente;
+	}
+
+	/**
+	 * Obtiene lista alumno nota.
+	 *
+	 * @return lista alumno nota
+	 */
+	public List<DetRegistroNotaDTO> getListaAlumnoNota() {
+		return listaAlumnoNota;
+	}
+
+	/**
+	 * Establece el lista alumno nota.
+	 *
+	 * @param listaAlumnoNota el new lista alumno nota
+	 */
+	public void setListaAlumnoNota(List<DetRegistroNotaDTO> listaAlumnoNota) {
+		this.listaAlumnoNota = listaAlumnoNota;
+	}
+
+	/**
+	 * Obtiene fecha acta.
+	 *
+	 * @return fecha acta
+	 */
+	public Date getFechaActa() {
+		return fechaActa;
+	}
+
+	/**
+	 * Establece el fecha acta.
+	 *
+	 * @param fechaActa el new fecha acta
+	 */
+	public void setFechaActa(Date fechaActa) {
+		this.fechaActa = fechaActa;
+	}
+
+	/**
+	 * Comprueba si es acta evaluacion final aplazado.
+	 *
+	 * @return true, si es acta evaluacion final aplazado
+	 */
+	public boolean isActaEvaluacionFinalAplazado() {
+		return isActaEvaluacionFinalAplazado;
+	}
+
+	/**
+	 * Establece el acta evaluacion final aplazado.
+	 *
+	 * @param isActaEvaluacionFinalAplazado el new acta evaluacion final aplazado
+	 */
+	public void setActaEvaluacionFinalAplazado(boolean isActaEvaluacionFinalAplazado) {
+		this.isActaEvaluacionFinalAplazado = isActaEvaluacionFinalAplazado;
+	}
+
+	/**
+	 * Obtiene dia.
+	 *
+	 * @return dia
+	 */
+	public String getDia() {
+		return dia;
+	}
+
+	/**
+	 * Establece el dia.
+	 *
+	 * @param dia el new dia
+	 */
+	public void setDia(String dia) {
+		this.dia = dia;
+	}
+
+	/**
+	 * Obtiene mes.
+	 *
+	 * @return mes
+	 */
+	public String getMes() {
+		return mes;
+	}
+
+	/**
+	 * Establece el mes.
+	 *
+	 * @param mes el new mes
+	 */
+	public void setMes(String mes) {
+		this.mes = mes;
+	}
+
+	/**
+	 * Obtiene anho.
+	 *
+	 * @return anho
+	 */
+	public String getAnho() {
+		return anho;
+	}
+
+	/**
+	 * Establece el anho.
+	 *
+	 * @param anho el new anho
+	 */
+	public void setAnho(String anho) {
+		this.anho = anho;
+	}
+	
+  
+}

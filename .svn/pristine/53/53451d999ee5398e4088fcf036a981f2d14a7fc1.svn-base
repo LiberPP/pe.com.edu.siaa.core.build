@@ -1,0 +1,48 @@
+package pe.com.edu.siaa.core.ejb.dao.admision.local;
+
+import java.util.List;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.dto.admision.EntidadUniversitariaDTO;
+import pe.com.edu.siaa.core.model.jpa.admision.EntidadUniversitaria;
+
+/**
+ * La Class EntidadUniversitariaDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 11:25:10 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface EntidadUniversitariaDaoLocal  extends GenericDAOLocal<Long,EntidadUniversitaria> {
+	/**
+	 * Listar entidad universitaria.
+	 *
+	 * @param entidadUniversitaria el entidad universitariaDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<EntidadUniversitaria> listarEntidadUniversitaria(EntidadUniversitariaDTO entidadUniversitaria) throws Exception;
+	
+	/**
+	 * contar lista entidad universitaria.
+	 *
+	 * @param entidadUniversitaria el entidad universitaria
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarEntidadUniversitaria(EntidadUniversitariaDTO entidadUniversitaria);
+	/**
+	 * Generar id entidadUniversitaria.
+	 *
+	 * @return the Long
+	 * @throws Exception the exception
+	 */
+	Long generarIdEntidadUniversitaria() throws Exception;
+}

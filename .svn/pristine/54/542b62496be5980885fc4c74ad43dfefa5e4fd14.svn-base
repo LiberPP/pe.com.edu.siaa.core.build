@@ -1,0 +1,119 @@
+package pe.com.edu.siaa.core.ejb.service.rest.nota.impl;
+
+import java.math.BigDecimal;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.nota.local.NotaServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.nota.NotaLetraDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class NotaLetraRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:29 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/notaLetraRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class NotaLetraRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient NotaServiceLocal notaServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<NotaLetraDTO> crear(NotaLetraDTO notaLetra) throws Exception {
+		return controladorAccion(notaLetra,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<NotaLetraDTO> modificar(NotaLetraDTO notaLetra) throws Exception {
+		return controladorAccion(notaLetra,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<NotaLetraDTO> eliminar(@PathParam("id") BigDecimal idNotaletra) throws Exception {
+		NotaLetraDTO notaLetra = new NotaLetraDTO();
+		notaLetra.setIdNotaLetra(idNotaletra);		
+		return controladorAccion(notaLetra,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<NotaLetraDTO> controladorAccion(NotaLetraDTO notaLetra, AccionType accionType){
+		ResultadoRestVO<NotaLetraDTO> resultado = new ResultadoRestVO<NotaLetraDTO>();
+		 try {
+    		resultado.setObjetoResultado(notaServiceLocal.controladorAccionNotaLetra(notaLetra,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<NotaLetraDTO> finById(@PathParam("id") BigDecimal idNotaletra) throws Exception {
+		NotaLetraDTO notaLetra = new NotaLetraDTO();
+		notaLetra.setIdNotaLetra(idNotaletra);
+		return controladorAccion(notaLetra,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<NotaLetraDTO> listarNotaLetra(@Context UriInfo info){
+		ResultadoRestVO<NotaLetraDTO> resultado = new ResultadoRestVO<NotaLetraDTO>();
+		NotaLetraDTO notaLetra = transferUriInfo(info);
+		 try {
+    		resultado.setListaResultado(notaServiceLocal.listarNotaLetra(notaLetra));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<Integer> contarListarNotaLetra(@Context UriInfo info){
+		ResultadoRestVO<Integer> resultado = new ResultadoRestVO<Integer>();
+		NotaLetraDTO notaLetra = transferUriInfo(info);
+		 try {
+    		resultado.setObjetoResultado(notaServiceLocal.contarListarNotaLetra(notaLetra));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<NotaLetraDTO> inicializarNotaLetra(@Context UriInfo info) throws Exception {
+	     NotaLetraDTO notaLetra = transferUriInfo(info);
+		 ResultadoRestVO<NotaLetraDTO> resultado = new ResultadoRestVO<NotaLetraDTO>();
+		 try {
+    		resultado.setObjetoResultado(notaLetra);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private NotaLetraDTO transferUriInfo(@Context UriInfo info) {
+		NotaLetraDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,NotaLetraDTO.class);
+		return resultado;
+	}
+}

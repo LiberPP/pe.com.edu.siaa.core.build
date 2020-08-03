@@ -1,0 +1,182 @@
+package pe.com.edu.siaa.core.model.jpa.admision;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import pe.com.edu.siaa.core.model.util.ConfiguracionEntityManagerUtil;
+
+/**
+ * La Class Nacionalidad.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 09:56:50 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Entity
+@Table(name = "Nacionalidad", schema = ConfiguracionEntityManagerUtil.ESQUEMA_ACADEMICO)
+public class Nacionalidad implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id nacionalidad. */
+    @Id
+    @Column(name = "idNacionalidad" , precision = 18 , scale = 0)
+    private Long idNacionalidad;
+   
+    /** El codigo. */
+    @Column(name = "codigo" , length = 4)
+    private String codigo;
+   
+    /** El descripcion. */
+    @Column(name = "descripcion" , length = 200)
+    private String descripcion;
+   
+    /** El nacionalidad persona list. */
+    @OneToMany(mappedBy = "nacionalidad", fetch = FetchType.LAZY)
+    private List<Persona> nacionalidadPersonaList = new ArrayList<Persona>();
+    
+    /**
+     * Instancia un nuevo nacionalidad.
+     */
+    public Nacionalidad() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo nacionalidad.
+     *
+     * @param idNacionalidad el id nacionalidad
+     * @param codigo el codigo
+     * @param descripcion el descripcion
+     */
+    public Nacionalidad(Long idNacionalidad, String codigo, String descripcion ) {
+        super();
+        this.idNacionalidad = idNacionalidad;
+        this.codigo = codigo;
+        this.descripcion = descripcion;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id nacionalidad.
+     *
+     * @return id nacionalidad
+     */
+     public Long getIdNacionalidad() {
+        return this.idNacionalidad;
+    }
+    /**
+     * Establece el id nacionalidad.
+     *
+     * @param idNacionalidad el new id nacionalidad
+     */
+    public void setIdNacionalidad(Long idNacionalidad) {
+        this.idNacionalidad = idNacionalidad;
+    }
+    /**
+     * Obtiene codigo.
+     *
+     * @return codigo
+     */
+     public String getCodigo() {
+        return this.codigo;
+    }
+    /**
+     * Establece el codigo.
+     *
+     * @param codigo el new codigo
+     */
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+    /**
+     * Obtiene descripcion.
+     *
+     * @return descripcion
+     */
+     public String getDescripcion() {
+        return this.descripcion;
+    }
+    /**
+     * Establece el descripcion.
+     *
+     * @param descripcion el new descripcion
+     */
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+    /**
+     * Establece el nacionalidad persona list.
+     *
+     * @param nacionalidadPersonaList el new nacionalidad persona list
+     */
+    public List<Persona> getNacionalidadPersonaList(){
+        return this.nacionalidadPersonaList;
+    }
+    /**
+     * Establece el nacionalidad list.
+     *
+     * @param nacionalidadList el new nacionalidad list
+     */
+    public void setNacionalidadPersonaList(List<Persona> nacionalidadPersonaList) {
+        this.nacionalidadPersonaList = nacionalidadPersonaList;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idNacionalidad == null) ? 0 : idNacionalidad.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Nacionalidad other = (Nacionalidad) obj;
+        if (idNacionalidad == null) {
+            if (other.idNacionalidad != null) {
+                return false;
+            }
+        } else if (!idNacionalidad.equals(other.idNacionalidad)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Nacionalidad [idNacionalidad=" + idNacionalidad + "]";
+    }
+   
+}

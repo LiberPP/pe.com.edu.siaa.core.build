@@ -1,0 +1,108 @@
+package pe.com.edu.siaa.core.ejb.dao.matricula.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.persistence.Query;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericAcademicoDAOImpl;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.AsignaPlanEstudioDaoLocal;
+import pe.com.edu.siaa.core.model.dto.matricula.AsignaPlanEstudioDTO;
+import pe.com.edu.siaa.core.model.jpa.matricula.AsignaPlanEstudio;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+
+/**
+ * La Class AsignaPlanEstudioDaoImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 19:53:47 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+public class AsignaPlanEstudioDaoImpl extends  GenericAcademicoDAOImpl<String, AsignaPlanEstudio> implements AsignaPlanEstudioDaoLocal  {
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.AsignaPlanEstudioDaoLocal#listarAsignaPlanEstudio(pe.com.edu.siaa.core.model.jpa.seguridad.AsignaPlanEstudio)
+     */  
+    @Override	 
+    public List<AsignaPlanEstudio> listarAsignaPlanEstudio(AsignaPlanEstudioDTO asignaPlanEstudio) {
+        Query query = generarQueryListaAsignaPlanEstudio(asignaPlanEstudio, false);
+        query.setFirstResult(asignaPlanEstudio.getStartRow());
+        query.setMaxResults(asignaPlanEstudio.getOffset());
+        return query.getResultList();
+    }   
+   
+    /**
+     * Generar query lista AsignaPlanEstudio.
+     *
+     * @param AsignaPlanEstudioDTO el asignaPlanEstudio
+     * @param esContador el es contador
+     * @return the query
+     */
+    private Query generarQueryListaAsignaPlanEstudio(AsignaPlanEstudioDTO asignaPlanEstudio, boolean esContador) {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        if (esContador) {
+            jpaql.append(" select count(o.idAsignaPlanestudio) from AsignaPlanEstudio o where 1=1 ");
+        } else {
+            jpaql.append(" select o from AsignaPlanEstudio o where 1=1 ");           
+        }
+		if (!StringUtils.isNullOrEmpty(asignaPlanEstudio.getSearch())) {
+	          jpaql.append(" and upper(o.idAsignaPlanestudio) like :search ");
+	          parametros.put("search", "%" + asignaPlanEstudio.getSearch().toUpperCase() + "%");
+	    } else {
+			if (!StringUtils.isNullOrEmpty(asignaPlanEstudio.getEstado())) {
+				jpaql.append(" and upper(o.estado) like :estado ");
+				parametros.put("estado", "%" + asignaPlanEstudio.getEstado().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(asignaPlanEstudio.getFechaCrea())) {
+				jpaql.append(" and o.fechaCrea = :fechaCrea ");
+				parametros.put("fechaCrea", asignaPlanEstudio.getFechaCrea());
+			}
+		}
+        if (!esContador) {
+            //jpaql.append(" ORDER BY 1 ");
+        }
+        Query query = createQuery(jpaql.toString(), parametros);
+        return query;
+    }
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.AsignaPlanEstudioDaoLocal#contarListar{entity.getClassName()}(pe.com.edu.siaa.core.model.jpa.seguridad.AsignaPlanEstudioDTO)
+     */
+	@Override
+    public int contarListarAsignaPlanEstudio(AsignaPlanEstudioDTO asignaPlanEstudio) {
+        int resultado = 0;
+        try {
+            //StringBuilder jpaql = new StringBuilder();
+            Query query = generarQueryListaAsignaPlanEstudio(asignaPlanEstudio, true);
+            resultado = ((Long) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            resultado = 0;
+        }
+        return resultado;
+    }
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.AsignaPlanEstudioDaoLocal#generarIdAsignaPlanEstudio()
+     */
+	 @Override
+    public String generarIdAsignaPlanEstudio() {
+        String resultado = "1";
+        Query query = createQuery("select max(o.idAsignaPlanestudio) from AsignaPlanEstudio o", null);
+        List<Object> listLong =  query.getResultList();
+        if (listLong != null && listLong.size() > 0 && listLong.get(0) != null)  {
+            Long ultimoIdGenerado = Long.valueOf(listLong.get(0).toString());
+            if (!StringUtils.isNullOrEmpty(ultimoIdGenerado)) {
+                resultado = resultado + ultimoIdGenerado;
+            }
+        }
+        return resultado;
+    }
+   
+}

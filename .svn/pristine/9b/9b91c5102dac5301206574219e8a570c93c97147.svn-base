@@ -1,0 +1,48 @@
+package pe.com.edu.siaa.core.ejb.dao.matricula.local;
+
+import java.util.List;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.dto.matricula.DetPlanEstudioDTO;
+import pe.com.edu.siaa.core.model.jpa.matricula.DetPlanEstudio;
+
+/**
+ * La Class DetPlanEstudioDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 11:25:09 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface DetPlanEstudioDaoLocal  extends GenericDAOLocal<String,DetPlanEstudio> {
+	/**
+	 * Listar det plan estudio.
+	 *
+	 * @param detPlanEstudio el det plan estudioDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<DetPlanEstudio> listarDetPlanEstudio(DetPlanEstudioDTO detPlanEstudio) throws Exception;
+	
+	/**
+	 * contar lista det plan estudio.
+	 *
+	 * @param detPlanEstudio el det plan estudio
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarDetPlanEstudio(DetPlanEstudioDTO detPlanEstudio);
+	/**
+	 * Generar id detPlanEstudio.
+	 *
+	 * @return the String
+	 * @throws Exception the exception
+	 */
+	String generarIdDetPlanEstudio() throws Exception;
+}

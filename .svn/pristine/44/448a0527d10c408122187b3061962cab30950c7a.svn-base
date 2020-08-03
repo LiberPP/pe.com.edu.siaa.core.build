@@ -1,0 +1,130 @@
+package pe.com.edu.siaa.core.ejb.service.rest.nota.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.nota.local.NotaServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.nota.DetRegistroNotaDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class DetRegistroNotaRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:43 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/detRegistroNotaRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class DetRegistroNotaRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient NotaServiceLocal notaServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<DetRegistroNotaDTO> crear(DetRegistroNotaDTO detRegistroNota) throws Exception {
+		return controladorAccion(detRegistroNota,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<DetRegistroNotaDTO> modificar(DetRegistroNotaDTO detRegistroNota) throws Exception {
+		return controladorAccion(detRegistroNota,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<DetRegistroNotaDTO> eliminar(@PathParam("id") String idDetRegistroNota) throws Exception {
+		DetRegistroNotaDTO detRegistroNota = new DetRegistroNotaDTO();
+		detRegistroNota.setIdDetRegistroNota(idDetRegistroNota);		
+		return controladorAccion(detRegistroNota,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<DetRegistroNotaDTO> controladorAccion(DetRegistroNotaDTO detRegistroNota, AccionType accionType){
+		ResultadoRestVO<DetRegistroNotaDTO> resultado = new ResultadoRestVO<DetRegistroNotaDTO>();
+		 try {
+    		resultado.setObjetoResultado(notaServiceLocal.controladorAccionDetRegistroNota(detRegistroNota,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<DetRegistroNotaDTO> finById(@PathParam("id") String idDetRegistroNota) throws Exception {
+		DetRegistroNotaDTO detRegistroNota = new DetRegistroNotaDTO();
+		detRegistroNota.setIdDetRegistroNota(idDetRegistroNota);
+		return controladorAccion(detRegistroNota,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<DetRegistroNotaDTO> listarDetRegistroNota(@Context UriInfo info){
+		ResultadoRestVO<DetRegistroNotaDTO> resultado = new ResultadoRestVO<DetRegistroNotaDTO>();
+		DetRegistroNotaDTO detRegistroNota = transferUriInfo(info);
+		 try {
+    		resultado.setListaResultado(notaServiceLocal.listarDetRegistroNota(detRegistroNota));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<Integer> contarListarDetRegistroNota(@Context UriInfo info){
+		ResultadoRestVO<Integer> resultado = new ResultadoRestVO<Integer>();
+		DetRegistroNotaDTO detRegistroNota = transferUriInfo(info);
+		 try {
+    		resultado.setObjetoResultado(notaServiceLocal.contarListarDetRegistroNota(detRegistroNota));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<DetRegistroNotaDTO> inicializarDetRegistroNota(@Context UriInfo info) throws Exception {
+	     DetRegistroNotaDTO detRegistroNota = transferUriInfo(info);
+		 ResultadoRestVO<DetRegistroNotaDTO> resultado = new ResultadoRestVO<DetRegistroNotaDTO>();
+		 try {
+    		resultado.setObjetoResultado(detRegistroNota);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	
+	@GET
+    @Path("/obtenerNotaAlumnoMariculadoByCurso/{idCursoCarga}/{idAlumno}/{esActaEvaluacionFinalAplazado}")
+	public ResultadoRestVO<DetRegistroNotaDTO> obtenerNotaAlumnoMariculadoByCurso(@PathParam("idCursoCarga") String idCursoCarga,@PathParam("idAlumno") String idAlumno,@PathParam("esActaEvaluacionFinalAplazado") Boolean esActaEvaluacionFinalAplazado) throws Exception {
+		 ResultadoRestVO<DetRegistroNotaDTO> resultado = new ResultadoRestVO<DetRegistroNotaDTO>();
+		 try {
+    		resultado.setListaResultado(notaServiceLocal.obtenerNotaAlumnoMariculadoByCurso(idCursoCarga, idAlumno,esActaEvaluacionFinalAplazado));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	
+	private DetRegistroNotaDTO transferUriInfo(@Context UriInfo info) {
+		DetRegistroNotaDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,DetRegistroNotaDTO.class);
+		return resultado;
+	}
+}

@@ -1,0 +1,18 @@
+apply plugin: 'java'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {    
+     compile project(':pe.com.edu.siaa.core.be.client')
+     compile project(':pe.com.edu.siaa.core.bp.client')
+     compile project(':pe.com.edu.siaa.core.bp')
+     compile project(':pe.com.edu.siaa.core.integration')
+     
+     compileOnly group: 'javax', name: 'javaee-api', version: '7.0'
+     
+     compile group: 'io.socket', name: 'socket.io-client', version: '1.0.0'
+     compile group: 'com.corundumstudio.socketio', name: 'netty-socketio', version: '1.7.12'
+}
+

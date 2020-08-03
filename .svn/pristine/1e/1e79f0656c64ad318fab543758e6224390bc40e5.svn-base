@@ -1,0 +1,120 @@
+package pe.com.edu.siaa.core.ejb.service.rest.pago.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.pago.local.PagoServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.pago.ClasificacionDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class ClasificacionRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:41 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/clasificacionRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class ClasificacionRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient PagoServiceLocal pagoServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<ClasificacionDTO> crear(ClasificacionDTO clasificacion) throws Exception {
+		return controladorAccion(clasificacion,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<ClasificacionDTO> modificar(ClasificacionDTO clasificacion) throws Exception {
+		return controladorAccion(clasificacion,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<ClasificacionDTO> eliminar(@PathParam("id") Long idClasificacion) throws Exception {
+		ClasificacionDTO clasificacion = new ClasificacionDTO();
+		clasificacion.setIdClasificacion(idClasificacion);		
+		return controladorAccion(clasificacion,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<ClasificacionDTO> controladorAccion(ClasificacionDTO clasificacion, AccionType accionType){
+		ResultadoRestVO<ClasificacionDTO> resultado = new ResultadoRestVO<ClasificacionDTO>();
+		 try {
+    		resultado.setObjetoResultado(pagoServiceLocal.controladorAccionClasificacion(clasificacion,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<ClasificacionDTO> finById(@PathParam("id") Long idClasificacion) throws Exception {
+		ClasificacionDTO clasificacion = new ClasificacionDTO();
+		clasificacion.setIdClasificacion(idClasificacion);
+		return controladorAccion(clasificacion,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<ClasificacionDTO> listarClasificacion(@Context UriInfo info){
+		ResultadoRestVO<ClasificacionDTO> resultado = new ResultadoRestVO<ClasificacionDTO>();
+		ClasificacionDTO clasificacion = transferUriInfo(info);
+		 try {
+    		resultado.setListaResultado(pagoServiceLocal.listarClasificacion(clasificacion));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<ClasificacionDTO> contarListarClasificacion(@Context UriInfo info){
+		ResultadoRestVO<ClasificacionDTO> resultado = new ResultadoRestVO<ClasificacionDTO>();
+		ClasificacionDTO clasificacion = transferUriInfo(info);
+		 try {
+    		resultado.setContador(pagoServiceLocal.contarListarClasificacion(clasificacion));
+    		if (resultado.isData()) {
+    			resultado.setListaResultado(pagoServiceLocal.listarClasificacion(clasificacion));
+    		}
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<ClasificacionDTO> inicializarClasificacion(@Context UriInfo info) throws Exception {
+	     ClasificacionDTO clasificacion = transferUriInfo(info);
+		 ResultadoRestVO<ClasificacionDTO> resultado = new ResultadoRestVO<ClasificacionDTO>();
+		 try {
+    		resultado.setObjetoResultado(clasificacion);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private ClasificacionDTO transferUriInfo(@Context UriInfo info) {
+		ClasificacionDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,ClasificacionDTO.class);
+		return resultado;
+	}
+}

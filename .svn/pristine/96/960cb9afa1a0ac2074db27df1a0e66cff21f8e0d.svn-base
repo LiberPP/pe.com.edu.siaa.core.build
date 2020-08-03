@@ -1,0 +1,163 @@
+package pe.com.edu.siaa.core.model.jpa.matricula;
+
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+import pe.com.edu.siaa.core.model.util.ConfiguracionEntityManagerUtil;
+
+/**
+ * La Class PreRequisito.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 09:56:48 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Entity
+@Table(name = "PreRequisito", schema = ConfiguracionEntityManagerUtil.ESQUEMA_ACADEMICO)
+public class PreRequisito implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id pre requisito. */
+    @Id
+    @Column(name = "idPreRequisito" , length = 13)
+    private String idPreRequisito;
+   
+    /** El det plan estudio. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idDetPlanEstudio", referencedColumnName = "idDetPlanEstudio")
+    private DetPlanEstudio detPlanEstudio;
+   
+    /** El det plan estudio requisito. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idRequisito", referencedColumnName = "idDetPlanEstudio")
+    private DetPlanEstudio detPlanEstudioRequisito;
+   
+    /**
+     * Instancia un nuevo pre requisito.
+     */
+    public PreRequisito() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo pre requisito.
+     *
+     * @param idPreRequisito el id pre requisito
+     * @param detPlanEstudio el det plan estudio
+     * @param detPlanEstudioRequisito el det plan estudio requisito
+     */
+    public PreRequisito(String idPreRequisito, DetPlanEstudio detPlanEstudio,DetPlanEstudio detPlanEstudioRequisito) {
+        super();
+        this.idPreRequisito = idPreRequisito;
+        this.detPlanEstudio = detPlanEstudio;
+        this.detPlanEstudioRequisito = detPlanEstudioRequisito;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id pre requisito.
+     *
+     * @return id pre requisito
+     */
+     public String getIdPreRequisito() {
+        return this.idPreRequisito;
+    }
+    /**
+     * Establece el id pre requisito.
+     *
+     * @param idPreRequisito el new id pre requisito
+     */
+    public void setIdPreRequisito(String idPreRequisito) {
+        this.idPreRequisito = idPreRequisito;
+    }
+    /**
+     * Obtiene det plan estudio.
+     *
+     * @return det plan estudio
+     */
+     public DetPlanEstudio getDetPlanEstudio() {
+        return this.detPlanEstudio;
+    }
+    /**
+     * Establece el det plan estudio.
+     *
+     * @param detPlanEstudio el new det plan estudio
+     */
+    public void setDetPlanEstudio(DetPlanEstudio detPlanEstudio) {
+        this.detPlanEstudio = detPlanEstudio;
+    }
+    /**
+     * Obtiene det plan estudio requisito.
+     *
+     * @return det plan estudio requisito
+     */
+     public DetPlanEstudio getDetPlanEstudioRequisito() {
+        return this.detPlanEstudioRequisito;
+    }
+    /**
+     * Establece el det plan estudio requisito.
+     *
+     * @param detPlanEstudioRequisito el new det plan estudio requisito
+     */
+    public void setDetPlanEstudioRequisito(DetPlanEstudio detPlanEstudioRequisito) {
+        this.detPlanEstudioRequisito = detPlanEstudioRequisito;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idPreRequisito == null) ? 0 : idPreRequisito.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        PreRequisito other = (PreRequisito) obj;
+        if (idPreRequisito == null) {
+            if (other.idPreRequisito != null) {
+                return false;
+            }
+        } else if (!idPreRequisito.equals(other.idPreRequisito)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "PreRequisito [idPreRequisito=" + idPreRequisito + "]";
+    }
+   
+}

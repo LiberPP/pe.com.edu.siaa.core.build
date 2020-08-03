@@ -1,0 +1,224 @@
+package pe.com.edu.siaa.core.model.jpa.nota;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import pe.com.edu.siaa.core.model.jpa.matricula.DetTraslado;
+import pe.com.edu.siaa.core.model.util.ConfiguracionEntityManagerUtil;
+
+/**
+ * La Class NotaLetra.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 09:56:49 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Entity
+@Table(name = "NotaLetra", schema = ConfiguracionEntityManagerUtil.ESQUEMA_ACADEMICO)
+public class NotaLetra implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id notaletra. */
+    @Id
+    @Column(name = "idNotaLetra" , precision = 18 , scale = 2)
+    private BigDecimal idNotaLetra;
+   
+    /** El abreviatura. */
+    @Column(name = "abreviatura" , length = 50)
+    private String abreviatura;
+   
+    /** El descripcion. */
+    @Column(name = "descripcion" , length = 50)
+    private String descripcion;
+   
+    /** El nota letra det registro nota list. */
+    @OneToMany(mappedBy = "notaLetra", fetch = FetchType.LAZY)
+    private List<DetRegistroNota> notaLetraDetRegistroNotaList = new ArrayList<DetRegistroNota>();
+    
+    /** El nota letra by nota aplazado det registro nota list. */
+    @OneToMany(mappedBy = "notaLetraByNotaAplazado", fetch = FetchType.LAZY)
+    private List<DetRegistroNota> notaLetraByNotaAplazadoDetRegistroNotaList = new ArrayList<DetRegistroNota>();
+    
+    /** El nota letra det traslado list. */
+    @OneToMany(mappedBy = "notaLetra", fetch = FetchType.LAZY)
+    private List<DetTraslado> notaLetraDetTrasladoList = new ArrayList<DetTraslado>();
+    
+    /**
+     * Instancia un nuevo nota letra.
+     */
+    public NotaLetra() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo nota letra.
+     *
+     * @param idNotaLetra el id notaletra
+     * @param abreviatura el abreviatura
+     * @param descripcion el descripcion
+     */
+    public NotaLetra(BigDecimal idNotaLetra, String abreviatura, String descripcion ) {
+        super();
+        this.idNotaLetra = idNotaLetra;
+        this.abreviatura = abreviatura;
+        this.descripcion = descripcion;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id notaletra.
+     *
+     * @return id notaletra
+     */
+     public BigDecimal getIdNotaLetra() {
+        return this.idNotaLetra;
+    }
+    /**
+     * Establece el id notaletra.
+     *
+     * @param idNotaLetra el new id notaletra
+     */
+    public void setIdNotaLetra(BigDecimal idNotaLetra) {
+        this.idNotaLetra = idNotaLetra;
+    }
+    /**
+     * Obtiene abreviatura.
+     *
+     * @return abreviatura
+     */
+     public String getAbreviatura() {
+        return this.abreviatura;
+    }
+    /**
+     * Establece el abreviatura.
+     *
+     * @param abreviatura el new abreviatura
+     */
+    public void setAbreviatura(String abreviatura) {
+        this.abreviatura = abreviatura;
+    }
+    /**
+     * Obtiene descripcion.
+     *
+     * @return descripcion
+     */
+     public String getDescripcion() {
+        return this.descripcion;
+    }
+    /**
+     * Establece el descripcion.
+     *
+     * @param descripcion el new descripcion
+     */
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+    /**
+     * Establece el nota letra det registro nota list.
+     *
+     * @param notaLetraDetRegistroNotaList el new nota letra det registro nota list
+     */
+    public List<DetRegistroNota> getNotaLetraDetRegistroNotaList(){
+        return this.notaLetraDetRegistroNotaList;
+    }
+    /**
+     * Establece el nota letra list.
+     *
+     * @param notaLetraList el new nota letra list
+     */
+    public void setNotaLetraDetRegistroNotaList(List<DetRegistroNota> notaLetraDetRegistroNotaList) {
+        this.notaLetraDetRegistroNotaList = notaLetraDetRegistroNotaList;
+    }   
+    /**
+     * Establece el nota letra by nota aplazado det registro nota list.
+     *
+     * @param notaLetraByNotaAplazadoDetRegistroNotaList el new nota letra by nota aplazado det registro nota list
+     */
+    public List<DetRegistroNota> getNotaLetraByNotaAplazadoDetRegistroNotaList(){
+        return this.notaLetraByNotaAplazadoDetRegistroNotaList;
+    }
+    /**
+     * Establece el nota letra by nota aplazado list.
+     *
+     * @param notaLetraByNotaAplazadoList el new nota letra by nota aplazado list
+     */
+    public void setNotaLetraByNotaAplazadoDetRegistroNotaList(List<DetRegistroNota> notaLetraByNotaAplazadoDetRegistroNotaList) {
+        this.notaLetraByNotaAplazadoDetRegistroNotaList = notaLetraByNotaAplazadoDetRegistroNotaList;
+    }   
+    /**
+     * Establece el nota letra det traslado list.
+     *
+     * @param notaLetraDetTrasladoList el new nota letra det traslado list
+     */
+    public List<DetTraslado> getNotaLetraDetTrasladoList(){
+        return this.notaLetraDetTrasladoList;
+    }
+    /**
+     * Establece el nota letra list.
+     *
+     * @param notaLetraList el new nota letra list
+     */
+    public void setNotaLetraDetTrasladoList(List<DetTraslado> notaLetraDetTrasladoList) {
+        this.notaLetraDetTrasladoList = notaLetraDetTrasladoList;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idNotaLetra == null) ? 0 : idNotaLetra.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        NotaLetra other = (NotaLetra) obj;
+        if (idNotaLetra == null) {
+            if (other.idNotaLetra != null) {
+                return false;
+            }
+        } else if (!idNotaLetra.equals(other.idNotaLetra)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "NotaLetra [idNotaletra=" + idNotaLetra + "]";
+    }
+   
+}

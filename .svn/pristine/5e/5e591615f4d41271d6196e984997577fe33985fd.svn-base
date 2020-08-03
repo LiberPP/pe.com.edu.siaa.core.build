@@ -1,0 +1,212 @@
+package pe.com.edu.siaa.core.model.dto.matricula;
+
+import java.io.Serializable;
+import java.util.Date;
+
+import pe.com.edu.siaa.core.model.dto.BasePaginator;
+import pe.com.edu.siaa.core.model.dto.common.ItemDTO;
+
+/**
+ * La Class HorarioTemDTO.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 1.0, Tue Apr 18 09:56:48 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+public class HorarioTemDTO extends BasePaginator implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id horario tem. */
+    private Long idHorarioTem;
+   
+    /** El codigo. */
+    private Integer codigo;
+   
+    /** El id det carga lectiva. */
+    private String idDetCargaLectiva;
+   
+    /** El item by dia. */
+    private ItemDTO itemByDia;
+   
+    /** El hora inicio. */
+    private Date horaInicio;
+   
+    /** El hora fin. */
+    private Date horaFin;
+   
+    /**
+     * Instancia un nuevo horario temDTO.
+     */
+    public HorarioTemDTO() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo horario temDTO.
+     *
+     * @param idHorarioTem el id horario tem
+     * @param codigo el codigo
+     * @param idDetCargaLectiva el id det carga lectiva
+     * @param itemByDia el item by dia
+     * @param horaInicio el hora inicio
+     * @param horaFin el hora fin
+     */
+    public HorarioTemDTO(Long idHorarioTem, Integer codigo, String idDetCargaLectiva, ItemDTO itemByDia,Date horaInicio, Date horaFin ) {
+        super();
+        this.idHorarioTem = idHorarioTem;
+        this.codigo = codigo;
+        this.idDetCargaLectiva = idDetCargaLectiva;
+        this.itemByDia = itemByDia;
+        this.horaInicio = horaInicio;
+        this.horaFin = horaFin;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id horario tem.
+     *
+     * @return id horario tem
+     */
+     public Long getIdHorarioTem() {
+        return this.idHorarioTem;
+    }
+    /**
+     * Establece el id horario tem.
+     *
+     * @param idHorarioTem el new id horario tem
+     */
+    public void setIdHorarioTem(Long idHorarioTem) {
+        this.idHorarioTem = idHorarioTem;
+    }
+    /**
+     * Obtiene codigo.
+     *
+     * @return codigo
+     */
+     public Integer getCodigo() {
+        return this.codigo;
+    }
+    /**
+     * Establece el codigo.
+     *
+     * @param codigo el new codigo
+     */
+    public void setCodigo(Integer codigo) {
+        this.codigo = codigo;
+    }
+    /**
+     * Obtiene id det carga lectiva.
+     *
+     * @return id det carga lectiva
+     */
+     public String getIdDetCargaLectiva() {
+        return this.idDetCargaLectiva;
+    }
+    /**
+     * Establece el id det carga lectiva.
+     *
+     * @param idDetCargaLectiva el new id det carga lectiva
+     */
+    public void setIdDetCargaLectiva(String idDetCargaLectiva) {
+        this.idDetCargaLectiva = idDetCargaLectiva;
+    }
+    /**
+     * Obtiene item by dia.
+     *
+     * @return item by dia
+     */
+     public ItemDTO getItemByDia() {
+        return this.itemByDia;
+    }
+    /**
+     * Establece el item by dia.
+     *
+     * @param itemByDia el new item by dia
+     */
+    public void setItemByDia(ItemDTO itemByDia) {
+        this.itemByDia = itemByDia;
+    }
+    /**
+     * Obtiene hora inicio.
+     *
+     * @return hora inicio
+     */
+     public Date getHoraInicio() {
+        return this.horaInicio;
+    }
+    /**
+     * Establece el hora inicio.
+     *
+     * @param horaInicio el new hora inicio
+     */
+    public void setHoraInicio(Date horaInicio) {
+        this.horaInicio = horaInicio;
+    }
+    /**
+     * Obtiene hora fin.
+     *
+     * @return hora fin
+     */
+     public Date getHoraFin() {
+        return this.horaFin;
+    }
+    /**
+     * Establece el hora fin.
+     *
+     * @param horaFin el new hora fin
+     */
+    public void setHoraFin(Date horaFin) {
+        this.horaFin = horaFin;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idHorarioTem == null) ? 0 : idHorarioTem.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        HorarioTemDTO other = (HorarioTemDTO) obj;
+        if (idHorarioTem == null) {
+            if (other.idHorarioTem != null) {
+                return false;
+            }
+        } else if (!idHorarioTem.equals(other.idHorarioTem)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "HorarioTemDTO [idHorarioTem=" + idHorarioTem + "]";
+    }
+   
+}

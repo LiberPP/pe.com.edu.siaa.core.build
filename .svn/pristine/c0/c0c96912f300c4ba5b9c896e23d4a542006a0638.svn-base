@@ -1,0 +1,52 @@
+package pe.com.edu.siaa.core.ejb.dao.matricula.local;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.dto.matricula.ConvalidacionPlanEstudioDTO;
+import pe.com.edu.siaa.core.model.jpa.matricula.ConvalidacionPlanEstudio;
+
+/**
+ * La Class ConvalidacionPlanEstudioDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 11:25:18 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface ConvalidacionPlanEstudioDaoLocal  extends GenericDAOLocal<String,ConvalidacionPlanEstudio> {
+	
+	Map<String,Map<String,String>> obtenerConvalidacionPlanEstudioMap(List<String> listaIdDetPlanEstudio) throws Exception;
+	
+	/**
+	 * Listar convalidacion plan estudio.
+	 *
+	 * @param convalidacionPlanEstudio el convalidacion plan estudioDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<ConvalidacionPlanEstudio> listarConvalidacionPlanEstudio(ConvalidacionPlanEstudioDTO convalidacionPlanEstudio) throws Exception;
+	
+	/**
+	 * contar lista convalidacion plan estudio.
+	 *
+	 * @param convalidacionPlanEstudio el convalidacion plan estudio
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarConvalidacionPlanEstudio(ConvalidacionPlanEstudioDTO convalidacionPlanEstudio);
+	/**
+	 * Generar id convalidacionPlanEstudio.
+	 *
+	 * @return the String
+	 * @throws Exception the exception
+	 */
+	String generarIdConvalidacionPlanEstudio() throws Exception;
+}

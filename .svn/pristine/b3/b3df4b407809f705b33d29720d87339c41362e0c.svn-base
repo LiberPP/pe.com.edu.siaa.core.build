@@ -1,0 +1,120 @@
+package pe.com.edu.siaa.core.ejb.dao.matricula.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.persistence.Query;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericAcademicoDAOImpl;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.OrganoDirectivoDaoLocal;
+import pe.com.edu.siaa.core.model.dto.matricula.OrganoDirectivoDTO;
+import pe.com.edu.siaa.core.model.jpa.matricula.OrganoDirectivo;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+
+/**
+ * La Class OrganoDirectivoDaoImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 19:53:48 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+public class OrganoDirectivoDaoImpl extends  GenericAcademicoDAOImpl<String, OrganoDirectivo> implements OrganoDirectivoDaoLocal  {
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.OrganoDirectivoDaoLocal#listarOrganoDirectivo(pe.com.edu.siaa.core.model.jpa.seguridad.OrganoDirectivo)
+     */  
+    @Override	 
+    public List<OrganoDirectivo> listarOrganoDirectivo(OrganoDirectivoDTO organoDirectivo) {
+        Query query = generarQueryListaOrganoDirectivo(organoDirectivo, false);
+        query.setFirstResult(organoDirectivo.getStartRow());
+        query.setMaxResults(organoDirectivo.getOffset());
+        return query.getResultList();
+    }   
+   
+    /**
+     * Generar query lista OrganoDirectivo.
+     *
+     * @param OrganoDirectivoDTO el organoDirectivo
+     * @param esContador el es contador
+     * @return the query
+     */
+    private Query generarQueryListaOrganoDirectivo(OrganoDirectivoDTO organoDirectivo, boolean esContador) {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        if (esContador) {
+            jpaql.append(" select count(o.idOrganoDirectivo) from OrganoDirectivo o where 1=1 ");
+        } else {
+            jpaql.append(" select o from OrganoDirectivo o where 1=1 ");           
+        }
+		if (!StringUtils.isNullOrEmpty(organoDirectivo.getSearch())) {
+	          jpaql.append(" and upper(o.idOrganoDirectivo) like :search ");
+	          parametros.put("search", "%" + organoDirectivo.getSearch().toUpperCase() + "%");
+	    } else {
+			if (!StringUtils.isNullOrEmpty(organoDirectivo.getGradoAbreviatura())) {
+				jpaql.append(" and upper(o.gradoAbreviatura) like :gradoAbreviatura ");
+				parametros.put("gradoAbreviatura", "%" + organoDirectivo.getGradoAbreviatura().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(organoDirectivo.getFirma())) {
+				jpaql.append(" and upper(o.firma) like :firma ");
+				parametros.put("firma", "%" + organoDirectivo.getFirma().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(organoDirectivo.getEstado())) {
+				jpaql.append(" and upper(o.estado) like :estado ");
+				parametros.put("estado", "%" + organoDirectivo.getEstado().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(organoDirectivo.getFechaCreacion())) {
+				jpaql.append(" and o.fechaCreacion = :fechaCreacion ");
+				parametros.put("fechaCreacion", organoDirectivo.getFechaCreacion());
+			}
+			if (!StringUtils.isNullOrEmpty(organoDirectivo.getUsuarioCreacion())) {
+				jpaql.append(" and upper(o.usuarioCreacion) like :usuarioCreacion ");
+				parametros.put("usuarioCreacion", "%" + organoDirectivo.getUsuarioCreacion().toUpperCase() + "%");
+			}
+		}
+        if (!esContador) {
+            //jpaql.append(" ORDER BY 1 ");
+        }
+        Query query = createQuery(jpaql.toString(), parametros);
+        return query;
+    }
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.OrganoDirectivoDaoLocal#contarListar{entity.getClassName()}(pe.com.edu.siaa.core.model.jpa.seguridad.OrganoDirectivoDTO)
+     */
+	@Override
+    public int contarListarOrganoDirectivo(OrganoDirectivoDTO organoDirectivo) {
+        int resultado = 0;
+        try {
+            //StringBuilder jpaql = new StringBuilder();
+            Query query = generarQueryListaOrganoDirectivo(organoDirectivo, true);
+            resultado = ((Long) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            resultado = 0;
+        }
+        return resultado;
+    }
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.OrganoDirectivoDaoLocal#generarIdOrganoDirectivo()
+     */
+	 @Override
+    public String generarIdOrganoDirectivo() {
+        String resultado = "1";
+        Query query = createQuery("select max(o.idOrganoDirectivo) from OrganoDirectivo o", null);
+        List<Object> listLong =  query.getResultList();
+        if (listLong != null && listLong.size() > 0 && listLong.get(0) != null)  {
+            Long ultimoIdGenerado = Long.valueOf(listLong.get(0).toString());
+            if (!StringUtils.isNullOrEmpty(ultimoIdGenerado)) {
+                resultado = resultado + ultimoIdGenerado;
+            }
+        }
+        return resultado;
+    }
+   
+}

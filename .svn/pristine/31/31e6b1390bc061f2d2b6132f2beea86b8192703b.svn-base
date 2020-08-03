@@ -1,0 +1,187 @@
+package pe.com.edu.siaa.core.model.jpa.nota;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+import pe.com.edu.siaa.core.model.jpa.matricula.DetCargaLectiva;
+import pe.com.edu.siaa.core.model.util.ConfiguracionEntityManagerUtil;
+
+/**
+ * La Class DefinirCriterioEvaluacion.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 09:57:01 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Entity
+@Table(name = "DefinirCriterioEvaluacion", schema = ConfiguracionEntityManagerUtil.ESQUEMA_ACADEMICO)
+public class DefinirCriterioEvaluacion implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id definir criterio evaluacion. */
+    @Id
+    @Column(name = "idDefinirCriterioEvaluacion" , length = 15)
+    private String idDefinirCriterioEvaluacion;
+   
+    /** El det carga lectiva. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idDetCargalectiva", referencedColumnName = "idDetCargaLectiva")
+    private DetCargaLectiva detCargaLectiva;
+   
+    /** El concepto nota. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idConceptoNota", referencedColumnName = "idConceptoNota")
+    private ConceptoNota conceptoNota;
+   
+    /** El porcentaje. */
+    @Column(name = "porcentaje" , precision = 18 , scale = 2)
+    private BigDecimal porcentaje;
+   
+    /**
+     * Instancia un nuevo definir criterio evaluacion.
+     */
+    public DefinirCriterioEvaluacion() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo definir criterio evaluacion.
+     *
+     * @param idDefinirCriterioEvaluacion el id definir criterio evaluacion
+     * @param detCargaLectiva el det carga lectiva
+     * @param conceptoNota el concepto nota
+     * @param porcentaje el porcentaje
+     */
+    public DefinirCriterioEvaluacion(String idDefinirCriterioEvaluacion, DetCargaLectiva detCargaLectiva,ConceptoNota conceptoNota,BigDecimal porcentaje ) {
+        super();
+        this.idDefinirCriterioEvaluacion = idDefinirCriterioEvaluacion;
+        this.detCargaLectiva = detCargaLectiva;
+        this.conceptoNota = conceptoNota;
+        this.porcentaje = porcentaje;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id definir criterio evaluacion.
+     *
+     * @return id definir criterio evaluacion
+     */
+     public String getIdDefinirCriterioEvaluacion() {
+        return this.idDefinirCriterioEvaluacion;
+    }
+    /**
+     * Establece el id definir criterio evaluacion.
+     *
+     * @param idDefinirCriterioEvaluacion el new id definir criterio evaluacion
+     */
+    public void setIdDefinirCriterioEvaluacion(String idDefinirCriterioEvaluacion) {
+        this.idDefinirCriterioEvaluacion = idDefinirCriterioEvaluacion;
+    }
+    /**
+     * Obtiene det carga lectiva.
+     *
+     * @return det carga lectiva
+     */
+     public DetCargaLectiva getDetCargaLectiva() {
+        return this.detCargaLectiva;
+    }
+    /**
+     * Establece el det carga lectiva.
+     *
+     * @param detCargaLectiva el new det carga lectiva
+     */
+    public void setDetCargaLectiva(DetCargaLectiva detCargaLectiva) {
+        this.detCargaLectiva = detCargaLectiva;
+    }
+    /**
+     * Obtiene concepto nota.
+     *
+     * @return concepto nota
+     */
+     public ConceptoNota getConceptoNota() {
+        return this.conceptoNota;
+    }
+    /**
+     * Establece el concepto nota.
+     *
+     * @param conceptoNota el new concepto nota
+     */
+    public void setConceptoNota(ConceptoNota conceptoNota) {
+        this.conceptoNota = conceptoNota;
+    }
+    /**
+     * Obtiene porcentaje.
+     *
+     * @return porcentaje
+     */
+     public BigDecimal getPorcentaje() {
+        return this.porcentaje;
+    }
+    /**
+     * Establece el porcentaje.
+     *
+     * @param porcentaje el new porcentaje
+     */
+    public void setPorcentaje(BigDecimal porcentaje) {
+        this.porcentaje = porcentaje;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idDefinirCriterioEvaluacion == null) ? 0 : idDefinirCriterioEvaluacion.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        DefinirCriterioEvaluacion other = (DefinirCriterioEvaluacion) obj;
+        if (idDefinirCriterioEvaluacion == null) {
+            if (other.idDefinirCriterioEvaluacion != null) {
+                return false;
+            }
+        } else if (!idDefinirCriterioEvaluacion.equals(other.idDefinirCriterioEvaluacion)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "DefinirCriterioEvaluacion [idDefinirCriterioEvaluacion=" + idDefinirCriterioEvaluacion + "]";
+    }
+   
+}

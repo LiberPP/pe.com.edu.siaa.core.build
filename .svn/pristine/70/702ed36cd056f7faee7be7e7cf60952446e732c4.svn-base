@@ -1,0 +1,117 @@
+package pe.com.edu.siaa.core.ejb.service.rest.matricula.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.matricula.local.MatriculaServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.matricula.HorarioTemDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class HorarioTemRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:28 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/horarioTemRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class HorarioTemRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient MatriculaServiceLocal matriculaServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<HorarioTemDTO> crear(HorarioTemDTO horarioTem) throws Exception {
+		return controladorAccion(horarioTem,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<HorarioTemDTO> modificar(HorarioTemDTO horarioTem) throws Exception {
+		return controladorAccion(horarioTem,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<HorarioTemDTO> eliminar(@PathParam("id") Long idHorarioTem) throws Exception {
+		HorarioTemDTO horarioTem = new HorarioTemDTO();
+		horarioTem.setIdHorarioTem(idHorarioTem);		
+		return controladorAccion(horarioTem,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<HorarioTemDTO> controladorAccion(HorarioTemDTO horarioTem, AccionType accionType){
+		ResultadoRestVO<HorarioTemDTO> resultado = new ResultadoRestVO<HorarioTemDTO>();
+		 try {
+    		resultado.setObjetoResultado(matriculaServiceLocal.controladorAccionHorarioTem(horarioTem,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<HorarioTemDTO> finById(@PathParam("id") Long idHorarioTem) throws Exception {
+		HorarioTemDTO horarioTem = new HorarioTemDTO();
+		horarioTem.setIdHorarioTem(idHorarioTem);
+		return controladorAccion(horarioTem,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<HorarioTemDTO> listarHorarioTem(@Context UriInfo info){
+		ResultadoRestVO<HorarioTemDTO> resultado = new ResultadoRestVO<HorarioTemDTO>();
+		HorarioTemDTO horarioTem = transferUriInfo(info);
+		 try {
+    		resultado.setListaResultado(matriculaServiceLocal.listarHorarioTem(horarioTem));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<Integer> contarListarHorarioTem(@Context UriInfo info){
+		ResultadoRestVO<Integer> resultado = new ResultadoRestVO<Integer>();
+		HorarioTemDTO horarioTem = transferUriInfo(info);
+		 try {
+    		resultado.setObjetoResultado(matriculaServiceLocal.contarListarHorarioTem(horarioTem));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<HorarioTemDTO> inicializarHorarioTem(@Context UriInfo info) throws Exception {
+	     HorarioTemDTO horarioTem = transferUriInfo(info);
+		 ResultadoRestVO<HorarioTemDTO> resultado = new ResultadoRestVO<HorarioTemDTO>();
+		 try {
+    		resultado.setObjetoResultado(horarioTem);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private HorarioTemDTO transferUriInfo(@Context UriInfo info) {
+		HorarioTemDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,HorarioTemDTO.class);
+		return resultado;
+	}
+}

@@ -1,0 +1,48 @@
+package pe.com.edu.siaa.core.ejb.dao.matricula.local;
+
+import java.util.List;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.dto.matricula.ProfesionDTO;
+import pe.com.edu.siaa.core.model.jpa.matricula.Profesion;
+
+/**
+ * La Class ProfesionDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 11:25:03 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface ProfesionDaoLocal  extends GenericDAOLocal<Long,Profesion> {
+	/**
+	 * Listar profesion.
+	 *
+	 * @param profesion el profesionDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<Profesion> listarProfesion(ProfesionDTO profesion) throws Exception;
+	
+	/**
+	 * contar lista profesion.
+	 *
+	 * @param profesion el profesion
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarProfesion(ProfesionDTO profesion);
+	/**
+	 * Generar id profesion.
+	 *
+	 * @return the Long
+	 * @throws Exception the exception
+	 */
+	Long generarIdProfesion() throws Exception;
+}

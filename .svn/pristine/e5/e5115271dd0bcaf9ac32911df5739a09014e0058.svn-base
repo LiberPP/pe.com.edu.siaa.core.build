@@ -1,0 +1,120 @@
+package pe.com.edu.siaa.core.ejb.service.rest.matricula.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.matricula.local.MatriculaServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.matricula.TrasladoDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class TrasladoRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Wed Dec 27 12:00:49 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/trasladoRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class TrasladoRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient MatriculaServiceLocal matriculaServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<TrasladoDTO> crear(TrasladoDTO traslado) throws Exception {
+		return controladorAccion(traslado,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<TrasladoDTO> modificar(TrasladoDTO traslado) throws Exception {
+		return controladorAccion(traslado,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<TrasladoDTO> eliminar(@PathParam("id") String idTraslado) throws Exception {
+		TrasladoDTO traslado = new TrasladoDTO();
+		traslado.setIdTraslado(idTraslado);		
+		return controladorAccion(traslado,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<TrasladoDTO> controladorAccion(TrasladoDTO traslado, AccionType accionType){
+		ResultadoRestVO<TrasladoDTO> resultado = new ResultadoRestVO<TrasladoDTO>();
+		 try {
+    		resultado.setObjetoResultado(matriculaServiceLocal.controladorAccionTraslado(traslado,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<TrasladoDTO> finById(@PathParam("id") String idTraslado) throws Exception {
+		TrasladoDTO traslado = new TrasladoDTO();
+		traslado.setIdTraslado(idTraslado);
+		return controladorAccion(traslado,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<TrasladoDTO> listarTraslado(@Context UriInfo info){
+		ResultadoRestVO<TrasladoDTO> resultado = new ResultadoRestVO<TrasladoDTO>();
+		TrasladoDTO traslado = transferUriInfo(info);
+		 try {
+			resultado.setListaResultado(matriculaServiceLocal.listarTraslado(traslado));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<TrasladoDTO> contarTraslado(@Context UriInfo info){
+		ResultadoRestVO<TrasladoDTO> resultado = new ResultadoRestVO<TrasladoDTO>();
+		TrasladoDTO traslado = transferUriInfo(info);
+		 try {
+			 resultado.setContador(matriculaServiceLocal.contarListarTraslado(traslado));
+			 if (resultado.isData()) {
+				resultado.setListaResultado(matriculaServiceLocal.listarTraslado(traslado));
+			 }
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<TrasladoDTO> inicializarTraslado(@Context UriInfo info) throws Exception {
+	     TrasladoDTO traslado = transferUriInfo(info);
+		 ResultadoRestVO<TrasladoDTO> resultado = new ResultadoRestVO<TrasladoDTO>();
+		 try {
+    		resultado.setObjetoResultado(traslado);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private TrasladoDTO transferUriInfo(@Context UriInfo info) {
+		TrasladoDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,TrasladoDTO.class);
+		return resultado;
+	}
+}

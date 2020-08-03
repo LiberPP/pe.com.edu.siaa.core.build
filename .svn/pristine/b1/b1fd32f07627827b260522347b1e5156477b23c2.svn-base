@@ -1,0 +1,50 @@
+package pe.com.edu.siaa.core.ejb.service.rest.admision.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
+import pe.com.edu.siaa.core.ejb.service.admision.local.AdmisionServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.admision.DocumentoRequeridoDTO;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class DocumentoRequeridoRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:28 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/documentoRequeridoRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class DocumentoRequeridoRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient AdmisionServiceLocal admisionServiceLocal;
+	
+	@GET
+    @Path("/obtenerDocumentoReqierido/{idPostulante}")
+	public ResultadoRestVO<DocumentoRequeridoDTO> listarDocumentoRequerido(@PathParam("idPostulante") String idPostulante){
+		ResultadoRestVO<DocumentoRequeridoDTO> resultado = new ResultadoRestVO<DocumentoRequeridoDTO>();
+		 try {
+    		resultado.setListaResultado(admisionServiceLocal.listarDocumentoRequerido(idPostulante));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	
+}

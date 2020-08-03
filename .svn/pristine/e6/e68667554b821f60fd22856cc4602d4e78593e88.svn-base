@@ -1,0 +1,232 @@
+package pe.com.edu.siaa.core.model.dto.pago;
+
+import java.io.Serializable;
+
+import pe.com.edu.siaa.core.model.dto.BasePaginator;
+import pe.com.edu.siaa.core.model.dto.matricula.AlumnoConvenioDTO;
+
+/**
+ * La Class ConceptoAlumnoConvenioDTO.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 1.0, Tue Apr 18 09:56:46 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+public class ConceptoAlumnoConvenioDTO extends BasePaginator implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id concepto alumnoconvenio. */
+    private Long idConceptoAlumnoconvenio;
+   
+    /** El alumno convenio. */
+    private AlumnoConvenioDTO alumnoConvenio;
+   
+    /** El catalogo cuenta. */
+    private CatalogoCuentaDTO catalogoCuenta;
+   
+    /** El monto. */
+    private Long monto;
+   
+    /** El fraccionado. */
+    private String fraccionado;
+   
+    /** El nro fraccionamiento. */
+    private Integer nroFraccionamiento;
+   
+    /** El estado. */
+    private String estado;
+   
+    /**
+     * Instancia un nuevo concepto alumno convenioDTO.
+     */
+    public ConceptoAlumnoConvenioDTO() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo concepto alumno convenioDTO.
+     *
+     * @param idConceptoAlumnoconvenio el id concepto alumnoconvenio
+     * @param alumnoConvenio el alumno convenio
+     * @param catalogoCuenta el catalogo cuenta
+     * @param monto el monto
+     * @param fraccionado el fraccionado
+     * @param nroFraccionamiento el nro fraccionamiento
+     * @param estado el estado
+     */
+    public ConceptoAlumnoConvenioDTO(Long idConceptoAlumnoconvenio, AlumnoConvenioDTO alumnoConvenio,CatalogoCuentaDTO catalogoCuenta,Long monto, String fraccionado, Integer nroFraccionamiento, String estado ) {
+        super();
+        this.idConceptoAlumnoconvenio = idConceptoAlumnoconvenio;
+        this.alumnoConvenio = alumnoConvenio;
+        this.catalogoCuenta = catalogoCuenta;
+        this.monto = monto;
+        this.fraccionado = fraccionado;
+        this.nroFraccionamiento = nroFraccionamiento;
+        this.estado = estado;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id concepto alumnoconvenio.
+     *
+     * @return id concepto alumnoconvenio
+     */
+     public Long getIdConceptoAlumnoconvenio() {
+        return this.idConceptoAlumnoconvenio;
+    }
+    /**
+     * Establece el id concepto alumnoconvenio.
+     *
+     * @param idConceptoAlumnoconvenio el new id concepto alumnoconvenio
+     */
+    public void setIdConceptoAlumnoconvenio(Long idConceptoAlumnoconvenio) {
+        this.idConceptoAlumnoconvenio = idConceptoAlumnoconvenio;
+    }
+    /**
+     * Obtiene alumno convenio.
+     *
+     * @return alumno convenio
+     */
+     public AlumnoConvenioDTO getAlumnoConvenio() {
+        return this.alumnoConvenio;
+    }
+    /**
+     * Establece el alumno convenio.
+     *
+     * @param alumnoConvenio el new alumno convenio
+     */
+    public void setAlumnoConvenio(AlumnoConvenioDTO alumnoConvenio) {
+        this.alumnoConvenio = alumnoConvenio;
+    }
+    /**
+     * Obtiene catalogo cuenta.
+     *
+     * @return catalogo cuenta
+     */
+     public CatalogoCuentaDTO getCatalogoCuenta() {
+        return this.catalogoCuenta;
+    }
+    /**
+     * Establece el catalogo cuenta.
+     *
+     * @param catalogoCuenta el new catalogo cuenta
+     */
+    public void setCatalogoCuenta(CatalogoCuentaDTO catalogoCuenta) {
+        this.catalogoCuenta = catalogoCuenta;
+    }
+    /**
+     * Obtiene monto.
+     *
+     * @return monto
+     */
+     public Long getMonto() {
+        return this.monto;
+    }
+    /**
+     * Establece el monto.
+     *
+     * @param monto el new monto
+     */
+    public void setMonto(Long monto) {
+        this.monto = monto;
+    }
+    /**
+     * Obtiene fraccionado.
+     *
+     * @return fraccionado
+     */
+     public String getFraccionado() {
+        return this.fraccionado;
+    }
+    /**
+     * Establece el fraccionado.
+     *
+     * @param fraccionado el new fraccionado
+     */
+    public void setFraccionado(String fraccionado) {
+        this.fraccionado = fraccionado;
+    }
+    /**
+     * Obtiene nro fraccionamiento.
+     *
+     * @return nro fraccionamiento
+     */
+     public Integer getNroFraccionamiento() {
+        return this.nroFraccionamiento;
+    }
+    /**
+     * Establece el nro fraccionamiento.
+     *
+     * @param nroFraccionamiento el new nro fraccionamiento
+     */
+    public void setNroFraccionamiento(Integer nroFraccionamiento) {
+        this.nroFraccionamiento = nroFraccionamiento;
+    }
+    /**
+     * Obtiene estado.
+     *
+     * @return estado
+     */
+     public String getEstado() {
+        return this.estado;
+    }
+    /**
+     * Establece el estado.
+     *
+     * @param estado el new estado
+     */
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idConceptoAlumnoconvenio == null) ? 0 : idConceptoAlumnoconvenio.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        ConceptoAlumnoConvenioDTO other = (ConceptoAlumnoConvenioDTO) obj;
+        if (idConceptoAlumnoconvenio == null) {
+            if (other.idConceptoAlumnoconvenio != null) {
+                return false;
+            }
+        } else if (!idConceptoAlumnoconvenio.equals(other.idConceptoAlumnoconvenio)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "ConceptoAlumnoConvenioDTO [idConceptoAlumnoconvenio=" + idConceptoAlumnoconvenio + "]";
+    }
+   
+}

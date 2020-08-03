@@ -1,0 +1,49 @@
+package pe.com.edu.siaa.core.ejb.dao.nota.local;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.dto.nota.NotaLetraDTO;
+import pe.com.edu.siaa.core.model.jpa.nota.NotaLetra;
+
+/**
+ * La Class NotaLetraDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 11:25:07 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface NotaLetraDaoLocal  extends GenericDAOLocal<BigDecimal,NotaLetra> {
+	/**
+	 * Listar nota letra.
+	 *
+	 * @param notaLetra el nota letraDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<NotaLetra> listarNotaLetra(NotaLetraDTO notaLetra) throws Exception;
+	
+	/**
+	 * contar lista nota letra.
+	 *
+	 * @param notaLetra el nota letra
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarNotaLetra(NotaLetraDTO notaLetra);
+	/**
+	 * Generar id notaLetra.
+	 *
+	 * @return the BigDecimal
+	 * @throws Exception the exception
+	 */
+	BigDecimal generarIdNotaLetra() throws Exception;
+}

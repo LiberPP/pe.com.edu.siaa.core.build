@@ -1,0 +1,41 @@
+package pe.com.edu.siaa.core.ejb.dao.admision.local;
+
+import java.util.List;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.jpa.admision.DocumentoRequerido;
+
+/**
+ * La Class DocumentoRequeridoDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 11:25:06 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface DocumentoRequeridoDaoLocal  extends GenericDAOLocal<Long,DocumentoRequerido> {
+	/**
+	 * Listar documento requerido.
+	 *
+	 * @param documentoRequerido el documento requeridoDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<DocumentoRequerido> listarDocumentoRequerido(String idPostulante) throws Exception;
+	
+	boolean eliminarDocumentoRequerido(String idPostulante) throws Exception;
+	
+	/**
+	 * Generar id documentoRequerido.
+	 *
+	 * @return the Long
+	 * @throws Exception the exception
+	 */
+	Long generarIdDocumentoRequerido() throws Exception;
+}

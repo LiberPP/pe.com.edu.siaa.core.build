@@ -1,0 +1,117 @@
+package pe.com.edu.siaa.core.ejb.service.rest.admision.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.admision.local.AdmisionServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.admision.TipoSectorDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class TipoSectorRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:31 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/tipoSectorRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class TipoSectorRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient AdmisionServiceLocal admisionServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<TipoSectorDTO> crear(TipoSectorDTO tipoSector) throws Exception {
+		return controladorAccion(tipoSector,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<TipoSectorDTO> modificar(TipoSectorDTO tipoSector) throws Exception {
+		return controladorAccion(tipoSector,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<TipoSectorDTO> eliminar(@PathParam("id") String idTipoSector) throws Exception {
+		TipoSectorDTO tipoSector = new TipoSectorDTO();
+		tipoSector.setIdTipoSector(idTipoSector);		
+		return controladorAccion(tipoSector,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<TipoSectorDTO> controladorAccion(TipoSectorDTO tipoSector, AccionType accionType){
+		ResultadoRestVO<TipoSectorDTO> resultado = new ResultadoRestVO<TipoSectorDTO>();
+		 try {
+    		resultado.setObjetoResultado(admisionServiceLocal.controladorAccionTipoSector(tipoSector,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<TipoSectorDTO> finById(@PathParam("id") String idTipoSector) throws Exception {
+		TipoSectorDTO tipoSector = new TipoSectorDTO();
+		tipoSector.setIdTipoSector(idTipoSector);
+		return controladorAccion(tipoSector,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<TipoSectorDTO> listarTipoSector(@Context UriInfo info){
+		ResultadoRestVO<TipoSectorDTO> resultado = new ResultadoRestVO<TipoSectorDTO>();
+		TipoSectorDTO tipoSector = transferUriInfo(info);
+		 try {
+    		resultado.setListaResultado(admisionServiceLocal.listarTipoSector(tipoSector));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<Integer> contarListarTipoSector(@Context UriInfo info){
+		ResultadoRestVO<Integer> resultado = new ResultadoRestVO<Integer>();
+		TipoSectorDTO tipoSector = transferUriInfo(info);
+		 try {
+    		resultado.setObjetoResultado(admisionServiceLocal.contarListarTipoSector(tipoSector));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<TipoSectorDTO> inicializarTipoSector(@Context UriInfo info) throws Exception {
+	     TipoSectorDTO tipoSector = transferUriInfo(info);
+		 ResultadoRestVO<TipoSectorDTO> resultado = new ResultadoRestVO<TipoSectorDTO>();
+		 try {
+    		resultado.setObjetoResultado(tipoSector);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private TipoSectorDTO transferUriInfo(@Context UriInfo info) {
+		TipoSectorDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,TipoSectorDTO.class);
+		return resultado;
+	}
+}

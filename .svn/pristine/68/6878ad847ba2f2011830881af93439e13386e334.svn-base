@@ -1,0 +1,214 @@
+package pe.com.builderp.core.escalafon.model.dto;
+
+import java.io.Serializable;
+
+import pe.com.edu.siaa.core.model.dto.BasePaginator;
+import pe.com.edu.siaa.core.model.dto.admision.UniversidadDTO;
+import pe.com.edu.siaa.core.model.dto.common.ItemDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.PersonalDTO;
+ 
+
+/**
+ * La Class FormacionProfesionalDTO.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 1.0, Sun Dec 31 00:35:59 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+public class FormacionProfesionalDTO extends BasePaginator implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id formacion profesional. */
+    private String idFormacionProfesional;
+   
+    /** El personal. */
+    private PersonalDTO personal;
+   
+    /** El item by grado academico. */
+    private ItemDTO itemByGradoAcademico;
+   
+    /** El item by grado academico otorga. */
+    private ItemDTO itemByGradoAcademicoOtorga;
+   
+    /** El universidad. */
+    private UniversidadDTO universidad;
+   
+    /** El nro orden. */
+    private Long nroOrden;
+   
+    /**
+     * Instancia un nuevo formacion profesionalDTO.
+     */
+    public FormacionProfesionalDTO() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo formacion profesionalDTO.
+     *
+     * @param idFormacionProfesional el id formacion profesional
+     * @param personal el personal
+     * @param itemByGradoAcademico el item by grado academico
+     * @param itemByGradoAcademicoOtorga el item by grado academico otorga
+     * @param universidad el universidad
+     * @param nroOrden el nro orden
+     */
+    public FormacionProfesionalDTO(String idFormacionProfesional, PersonalDTO personal,ItemDTO itemByGradoAcademico,ItemDTO itemByGradoAcademicoOtorga,UniversidadDTO universidad,Long nroOrden ) {
+        super();
+        this.idFormacionProfesional = idFormacionProfesional;
+        this.personal = personal;
+        this.itemByGradoAcademico = itemByGradoAcademico;
+        this.itemByGradoAcademicoOtorga = itemByGradoAcademicoOtorga;
+        this.universidad = universidad;
+        this.nroOrden = nroOrden;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id formacion profesional.
+     *
+     * @return id formacion profesional
+     */
+     public String getIdFormacionProfesional() {
+        return this.idFormacionProfesional;
+    }
+    /**
+     * Establece el id formacion profesional.
+     *
+     * @param idFormacionProfesional el new id formacion profesional
+     */
+    public void setIdFormacionProfesional(String idFormacionProfesional) {
+        this.idFormacionProfesional = idFormacionProfesional;
+    }
+    /**
+     * Obtiene personal.
+     *
+     * @return personal
+     */
+     public PersonalDTO getPersonal() {
+        return this.personal;
+    }
+    /**
+     * Establece el personal.
+     *
+     * @param personal el new personal
+     */
+    public void setPersonal(PersonalDTO personal) {
+        this.personal = personal;
+    }
+    /**
+     * Obtiene item by grado academico.
+     *
+     * @return item by grado academico
+     */
+     public ItemDTO getItemByGradoAcademico() {
+        return this.itemByGradoAcademico;
+    }
+    /**
+     * Establece el item by grado academico.
+     *
+     * @param itemByGradoAcademico el new item by grado academico
+     */
+    public void setItemByGradoAcademico(ItemDTO itemByGradoAcademico) {
+        this.itemByGradoAcademico = itemByGradoAcademico;
+    }
+    /**
+     * Obtiene item by grado academico otorga.
+     *
+     * @return item by grado academico otorga
+     */
+     public ItemDTO getItemByGradoAcademicoOtorga() {
+        return this.itemByGradoAcademicoOtorga;
+    }
+    /**
+     * Establece el item by grado academico otorga.
+     *
+     * @param itemByGradoAcademicoOtorga el new item by grado academico otorga
+     */
+    public void setItemByGradoAcademicoOtorga(ItemDTO itemByGradoAcademicoOtorga) {
+        this.itemByGradoAcademicoOtorga = itemByGradoAcademicoOtorga;
+    }
+    /**
+     * Obtiene universidad.
+     *
+     * @return universidad
+     */
+     public UniversidadDTO getUniversidad() {
+        return this.universidad;
+    }
+    /**
+     * Establece el universidad.
+     *
+     * @param universidad el new universidad
+     */
+    public void setUniversidad(UniversidadDTO universidad) {
+        this.universidad = universidad;
+    }
+    /**
+     * Obtiene nro orden.
+     *
+     * @return nro orden
+     */
+     public Long getNroOrden() {
+        return this.nroOrden;
+    }
+    /**
+     * Establece el nro orden.
+     *
+     * @param nroOrden el new nro orden
+     */
+    public void setNroOrden(Long nroOrden) {
+        this.nroOrden = nroOrden;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idFormacionProfesional == null) ? 0 : idFormacionProfesional.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        FormacionProfesionalDTO other = (FormacionProfesionalDTO) obj;
+        if (idFormacionProfesional == null) {
+            if (other.idFormacionProfesional != null) {
+                return false;
+            }
+        } else if (!idFormacionProfesional.equals(other.idFormacionProfesional)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "FormacionProfesionalDTO [idFormacionProfesional=" + idFormacionProfesional + "]";
+    }
+   
+}

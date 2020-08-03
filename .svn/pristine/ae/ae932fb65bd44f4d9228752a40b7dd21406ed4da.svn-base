@@ -1,0 +1,168 @@
+package pe.com.edu.siaa.core.ejb.dao.admision.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.persistence.Query;
+
+import pe.com.edu.siaa.core.ejb.dao.admision.local.UniversidadDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericAcademicoDAOImpl;
+import pe.com.edu.siaa.core.model.dto.admision.UniversidadDTO;
+import pe.com.edu.siaa.core.model.jpa.admision.Universidad;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+
+/**
+ * La Class UniversidadDaoImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 19:53:38 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+public class UniversidadDaoImpl extends  GenericAcademicoDAOImpl<Long, Universidad> implements UniversidadDaoLocal  {
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.UniversidadDaoLocal#listarUniversidad(pe.com.edu.siaa.core.model.jpa.seguridad.Universidad)
+     */  
+    @Override	 
+    public List<Universidad> listarUniversidad(UniversidadDTO universidad) {
+        Query query = generarQueryListaUniversidad(universidad, false);
+        query.setFirstResult(universidad.getStartRow());
+        query.setMaxResults(universidad.getOffset());
+        return query.getResultList();
+    }   
+   
+    /**
+     * Generar query lista Universidad.
+     *
+     * @param UniversidadDTO el universidad
+     * @param esContador el es contador
+     * @return the query
+     */
+    private Query generarQueryListaUniversidad(UniversidadDTO universidad, boolean esContador) {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        if (esContador) {
+            jpaql.append(" select count(o.idUniversidad) from Universidad o where 1=1 ");
+        } else {
+            jpaql.append(" select o from Universidad o where 1=1 ");           
+        }
+		if (!StringUtils.isNullOrEmpty(universidad.getSearch())) {
+	          jpaql.append(" and upper(o.descripcion) like :search ");
+	          parametros.put("search", "%" + universidad.getSearch().toUpperCase() + "%");
+	    } else {
+			if (!StringUtils.isNullOrEmpty(universidad.getCodigoUniversidad())) {
+				jpaql.append(" and upper(o.codigoUniversidad) like :codigoUniversidad ");
+				parametros.put("codigoUniversidad", "%" + universidad.getCodigoUniversidad().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(universidad.getDescripcion())) {
+				jpaql.append(" and upper(o.descripcion) like :descripcion ");
+				parametros.put("descripcion", "%" + universidad.getDescripcion().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(universidad.getAbreviatura())) {
+				jpaql.append(" and upper(o.abreviatura) like :abreviatura ");
+				parametros.put("abreviatura", "%" + universidad.getAbreviatura().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(universidad.getNroExamenAdmisionAlAhno())) {
+				jpaql.append(" and upper(o.nroExamenAdmisionAlAhno) like :nroExamenAdmisionAlAhno ");
+				parametros.put("nroExamenAdmisionAlAhno", "%" + universidad.getNroExamenAdmisionAlAhno().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(universidad.getFlagPei())) {
+				jpaql.append(" and upper(o.flagPei) like :flagPei ");
+				parametros.put("flagPei", "%" + universidad.getFlagPei().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(universidad.getDocApruebaPei())) {
+				jpaql.append(" and upper(o.docApruebaPei) like :docApruebaPei ");
+				parametros.put("docApruebaPei", "%" + universidad.getDocApruebaPei().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(universidad.getFechaApruebaPei())) {
+				jpaql.append(" and o.fechaApruebaPei = :fechaApruebaPei ");
+				parametros.put("fechaApruebaPei", universidad.getFechaApruebaPei());
+			}
+			if (!StringUtils.isNullOrEmpty(universidad.getFlagRof())) {
+				jpaql.append(" and upper(o.flagRof) like :flagRof ");
+				parametros.put("flagRof", "%" + universidad.getFlagRof().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(universidad.getDocumentoApruebaRof())) {
+				jpaql.append(" and upper(o.documentoApruebaRof) like :documentoApruebaRof ");
+				parametros.put("documentoApruebaRof", "%" + universidad.getDocumentoApruebaRof().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(universidad.getFechaApruebaRof())) {
+				jpaql.append(" and o.fechaApruebaRof = :fechaApruebaRof ");
+				parametros.put("fechaApruebaRof", universidad.getFechaApruebaRof());
+			}
+			if (!StringUtils.isNullOrEmpty(universidad.getFlagMof())) {
+				jpaql.append(" and upper(o.flagMof) like :flagMof ");
+				parametros.put("flagMof", "%" + universidad.getFlagMof().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(universidad.getDocumentoApruebaMof())) {
+				jpaql.append(" and upper(o.documentoApruebaMof) like :documentoApruebaMof ");
+				parametros.put("documentoApruebaMof", "%" + universidad.getDocumentoApruebaMof().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(universidad.getFechaApruebaMof())) {
+				jpaql.append(" and o.fechaApruebaMof = :fechaApruebaMof ");
+				parametros.put("fechaApruebaMof", universidad.getFechaApruebaMof());
+			}
+			if (!StringUtils.isNullOrEmpty(universidad.getFlagMapro())) {
+				jpaql.append(" and upper(o.flagMapro) like :flagMapro ");
+				parametros.put("flagMapro", "%" + universidad.getFlagMapro().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(universidad.getDocumentoApruebaMapro())) {
+				jpaql.append(" and upper(o.documentoApruebaMapro) like :documentoApruebaMapro ");
+				parametros.put("documentoApruebaMapro", "%" + universidad.getDocumentoApruebaMapro().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(universidad.getFechaApruebaMapro())) {
+				jpaql.append(" and o.fechaApruebaMapro = :fechaApruebaMapro ");
+				parametros.put("fechaApruebaMapro", universidad.getFechaApruebaMapro());
+			}
+			if (!StringUtils.isNullOrEmpty(universidad.getPaginaWeb())) {
+				jpaql.append(" and upper(o.paginaWeb) like :paginaWeb ");
+				parametros.put("paginaWeb", "%" + universidad.getPaginaWeb().toUpperCase() + "%");
+			}
+		}
+        if (!esContador) {
+            //jpaql.append(" ORDER BY 1 ");
+        }
+        Query query = createQuery(jpaql.toString(), parametros);
+        return query;
+    }
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.UniversidadDaoLocal#contarListar{entity.getClassName()}(pe.com.edu.siaa.core.model.jpa.seguridad.UniversidadDTO)
+     */
+	@Override
+    public int contarListarUniversidad(UniversidadDTO universidad) {
+        int resultado = 0;
+        try {
+            //StringBuilder jpaql = new StringBuilder();
+            Query query = generarQueryListaUniversidad(universidad, true);
+            resultado = ((Long) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            resultado = 0;
+        }
+        return resultado;
+    }
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.UniversidadDaoLocal#generarIdUniversidad()
+     */
+	 @Override
+    public Long generarIdUniversidad() {
+        Long resultado = 1L;
+        Query query = createQuery("select max(o.idUniversidad) from Universidad o", null);
+        List<Object> listLong =  query.getResultList();
+        if (listLong != null && listLong.size() > 0 && listLong.get(0) != null)  {
+            Long ultimoIdGenerado = Long.valueOf(listLong.get(0).toString());
+            if (!StringUtils.isNullOrEmpty(ultimoIdGenerado)) {
+                resultado = resultado + ultimoIdGenerado;
+            }
+        }
+        return resultado;
+    }
+   
+}

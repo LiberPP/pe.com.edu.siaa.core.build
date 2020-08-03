@@ -1,0 +1,174 @@
+package pe.com.edu.siaa.core.ejb.dao.pago.impl;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.persistence.Query;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericAcademicoDAOImpl;
+import pe.com.edu.siaa.core.ejb.dao.pago.local.DetPlanPagosDaoLocal;
+import pe.com.edu.siaa.core.model.dto.pago.DetPlanPagosDTO;
+import pe.com.edu.siaa.core.model.jpa.pago.DetPlanPagos;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+
+/**
+ * La Class DetPlanPagosDaoImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 19:53:31 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+public class DetPlanPagosDaoImpl extends  GenericAcademicoDAOImpl<String, DetPlanPagos> implements DetPlanPagosDaoLocal  {
+
+	@Override
+	public String generarIdDetPlanPagos(String idPlanPagos) throws Exception {
+		String resultado = idPlanPagos + "001";
+		Query query = createQuery("select max(dp.idDetPlanPagos) from DetPlanPagos dp where  dp.planPagos.idPlanPagos=:idPlanPago ", null);
+		query.setParameter("idPlanPago",  idPlanPagos);
+		List<String> listLong =  query.getResultList();
+		if (listLong != null && listLong.size() > 0) {
+			String ultimoCodigoGenerado = listLong.get(0);
+			if (StringUtils.isNotNullOrBlank(ultimoCodigoGenerado)) {
+				long ultimoCodigo = Long.parseLong(ultimoCodigoGenerado.trim());
+				 ultimoCodigo++;
+				resultado = "" + ultimoCodigo;
+			}
+		}
+		return resultado;
+	}
+	
+	
+	/* (non-Javadoc)
+	 * @see pe.edu.upp.siaa.pago.dao.DetPlanPagosDaoLocal#actualizarMontoResta(pe.edu.upp.siaa.entity.DetPlanPagos)
+	 */
+	@Override
+	public void actualizarMontoResta(DetPlanPagos detPlanPagos ) {
+		Query query = createQuery("update DetPlanPagos set montoResta=:montoResta where idDetPlanPagos=:idDetPlanPagos",null);
+		query.setParameter("montoResta", detPlanPagos.getMontoResta());
+		query.setParameter("idDetPlanPagos", detPlanPagos.getIdDetPlanPagos());
+		query.executeUpdate();
+	}
+	
+	@Override
+	public List<DetPlanPagos> listarConceptoPagoAlumnoSemestre(String idAlumno,String idAnhoSemestre,boolean flagFaltaMontoResta) throws Exception {
+		List<DetPlanPagos> resultado = new ArrayList<DetPlanPagos>();
+		Map<String, Object> parametros = new HashMap<String, Object>();
+		StringBuilder jpaql = new StringBuilder();
+		
+		jpaql.append("from DetPlanPagos detPlanPagos left join fetch detPlanPagos.cuotaConcepto ");		
+		jpaql.append(" cc left join fetch detPlanPagos.cuotaConcepto.anhoSemestre ass left join fetch cc.catalogoCuenta cat  ");
+		jpaql.append(" left join fetch cat.clasificacion left join fetch detPlanPagos.planPagos.anhoSemestre ");
+		jpaql.append(" left join fetch cat.producto pro left join fetch pro.planContableVenta    ");
+		
+		jpaql.append(" where detPlanPagos.planPagos.alumno.idAlumno=:idAlumno ");
+		parametros.put("idAlumno", idAlumno);
+		if (StringUtils.isNotNullOrBlank(idAnhoSemestre)) {
+			jpaql.append(" and detPlanPagos.planPagos.anhoSemestre.idAnhoSemestre = :idSemestre ");
+			parametros.put("idSemestre", idAnhoSemestre);
+		}
+		if (flagFaltaMontoResta) {
+			jpaql.append(" and (montoResta is null or montoResta > 0) ");
+		}
+		jpaql.append(" order by  detPlanPagos.planPagos.anhoSemestre.idAnhoSemestre ");
+		Query query = this.createQuery(jpaql.toString(),parametros);
+		resultado = query.getResultList();
+		return resultado;
+	}
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.DetPlanPagosDaoLocal#listarDetPlanPagos(pe.com.edu.siaa.core.model.jpa.seguridad.DetPlanPagos)
+     */  
+    @Override	 
+    public List<DetPlanPagos> listarDetPlanPagos(DetPlanPagosDTO detPlanPagos) {
+        Query query = generarQueryListaDetPlanPagos(detPlanPagos, false);
+        query.setFirstResult(detPlanPagos.getStartRow());
+        query.setMaxResults(detPlanPagos.getOffset());
+        return query.getResultList();
+    }   
+
+    /**
+     * Generar query lista DetPlanPagos.
+     *
+     * @param DetPlanPagosDTO el detPlanPagos
+     * @param esContador el es contador
+     * @return the query
+     */
+    private Query generarQueryListaDetPlanPagos(DetPlanPagosDTO detPlanPagos, boolean esContador) {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        if (esContador) {
+            jpaql.append(" select count(o.idDetPlanPagos) from DetPlanPagos o where 1=1 ");
+        } else {
+            jpaql.append(" select o from DetPlanPagos o  left join fetch o.cuotaConcepto cc  left join fetch cc.catalogoCuenta   where 1=1 ");           
+        }
+        jpaql.append(" and o.planPagos.idPlanPagos =:idPlanPagos ");
+        parametros.put("idPlanPagos", detPlanPagos.getId());
+        
+		if (!StringUtils.isNullOrEmpty(detPlanPagos.getSearch())) {
+	          jpaql.append(" and upper(o.idDetPlanPagos) like :search ");
+	          parametros.put("search", "%" + detPlanPagos.getSearch().toUpperCase() + "%");
+	    } else {
+			if (!StringUtils.isNullOrEmptyNumeric(detPlanPagos.getCuota())) {
+				jpaql.append(" and o.cuota = :cuota ");
+				parametros.put("cuota", detPlanPagos.getCuota());
+			}
+			if (!StringUtils.isNullOrEmptyNumeric(detPlanPagos.getMontoResta())) {
+				jpaql.append(" and o.montoResta = :montoResta ");
+				parametros.put("montoResta", detPlanPagos.getMontoResta());
+			}
+			if (!StringUtils.isNullOrEmpty(detPlanPagos.getFechaVencimiento())) {
+				jpaql.append(" and o.fechaVencimiento = :fechaVencimiento ");
+				parametros.put("fechaVencimiento", detPlanPagos.getFechaVencimiento());
+			}
+			if (!StringUtils.isNullOrEmpty(detPlanPagos.getFlagFraccionado())) {
+				jpaql.append(" and upper(o.flagFraccionado) like :flagFraccionado ");
+				parametros.put("flagFraccionado", "%" + detPlanPagos.getFlagFraccionado().toUpperCase() + "%");
+			}
+		}
+        if (!esContador) {
+            //jpaql.append(" ORDER BY 1 ");
+        }
+        Query query = createQuery(jpaql.toString(), parametros);
+        return query;
+    }
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.DetPlanPagosDaoLocal#contarListar{entity.getClassName()}(pe.com.edu.siaa.core.model.jpa.seguridad.DetPlanPagosDTO)
+     */
+	@Override
+    public int contarListarDetPlanPagos(DetPlanPagosDTO detPlanPagos) {
+        int resultado = 0;
+        try {
+            //StringBuilder jpaql = new StringBuilder();
+            Query query = generarQueryListaDetPlanPagos(detPlanPagos, true);
+            resultado = ((Long) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            resultado = 0;
+        }
+        return resultado;
+    }
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.DetPlanPagosDaoLocal#generarIdDetPlanPagos()
+     */
+	 @Override
+    public String generarIdDetPlanPagos() {
+        String resultado = "1";
+        Query query = createQuery("select max(o.idDetPlanPagos) from DetPlanPagos o", null);
+        List<Object> listLong =  query.getResultList();
+        if (listLong != null && listLong.size() > 0 && listLong.get(0) != null)  {
+            Long ultimoIdGenerado = Long.valueOf(listLong.get(0).toString());
+            if (!StringUtils.isNullOrEmpty(ultimoIdGenerado)) {
+                resultado = resultado + ultimoIdGenerado;
+            }
+        }
+        return resultado;
+    }
+   
+}

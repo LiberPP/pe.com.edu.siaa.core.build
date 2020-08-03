@@ -1,0 +1,393 @@
+package pe.com.edu.siaa.core.model.dto.matricula;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import pe.com.edu.siaa.core.model.dto.BasePaginator;
+import pe.com.edu.siaa.core.model.dto.common.ItemDTO;
+import pe.com.edu.siaa.core.model.dto.nota.AsistenciaDTO;
+import pe.com.edu.siaa.core.model.dto.nota.ConceptoNotaDTO;
+import pe.com.edu.siaa.core.model.dto.nota.DefinirCriterioEvaluacionDTO;
+
+/**
+ * La Class DetCargaLectivaDTO.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 1.0, Tue Apr 18 09:56:54 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+public class DetCargaLectivaDTO extends BasePaginator implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id det carga lectiva. */
+    private String idDetCargaLectiva;
+   
+    /** El carga lectiva. */
+    private CargaLectivaDTO cargaLectiva;
+   
+    /** El personal by docente. */
+    private PersonalDTO personalByDocente;
+   
+    /** El personal by docente practica. */
+    private PersonalDTO personalByDocentePractica;
+   
+    /** El det plan estudio. */
+    private DetPlanEstudioDTO detPlanEstudio;
+   
+    /** El aula. */
+    private AulaDTO aula;
+   
+    /** El codigo acta. */
+    private String codigoActa;
+   
+    /** El item by turno. */
+    private ItemDTO itemByTurno;
+   
+    /** El det carga lectiva asistencia list. */
+    private List<AsistenciaDTO> detCargaLectivaAsistenciaList = new ArrayList<AsistenciaDTO>();
+   
+    /** El det carga lectiva concepto nota list. */
+    private List<ConceptoNotaDTO> detCargaLectivaConceptoNotaList = new ArrayList<ConceptoNotaDTO>();
+   
+    /** El det carga lectiva definir criterio evaluacion list. */
+    private List<DefinirCriterioEvaluacionDTO> detCargaLectivaDefinirCriterioEvaluacionList = new ArrayList<DefinirCriterioEvaluacionDTO>();
+   
+    /** El det carga lectiva det matricula list. */
+    private List<DetMatriculaDTO> detCargaLectivaDetMatriculaList = new ArrayList<DetMatriculaDTO>();
+   
+    /** El det carga lectiva horario list. */
+    private List<HorarioDTO> detCargaLectivaHorarioList = new ArrayList<HorarioDTO>();
+   
+    
+    /** El flag curso llevar. */
+	private boolean cursoLlevar;
+	
+	/** El flag disabled. */
+	private boolean disabled;
+	
+    /**
+     * Instancia un nuevo det carga lectivaDTO.
+     */
+    public DetCargaLectivaDTO() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo det carga lectivaDTO.
+     *
+     * @param idDetCargaLectiva el id det carga lectiva
+     * @param cargaLectiva el carga lectiva
+     * @param personalByDocente el personal by docente
+     * @param personalByDocentePractica el personal by docente practica
+     * @param detPlanEstudio el det plan estudio
+     * @param aula el aula
+     * @param codigoActa el codigo acta
+     * @param itemByTurno el item by turno
+     */
+    public DetCargaLectivaDTO(String idDetCargaLectiva, CargaLectivaDTO cargaLectiva,PersonalDTO personalByDocente,PersonalDTO personalByDocentePractica,DetPlanEstudioDTO detPlanEstudio,AulaDTO aula,String codigoActa, ItemDTO itemByTurno) {
+        super();
+        this.idDetCargaLectiva = idDetCargaLectiva;
+        this.cargaLectiva = cargaLectiva;
+        this.personalByDocente = personalByDocente;
+        this.personalByDocentePractica = personalByDocentePractica;
+        this.detPlanEstudio = detPlanEstudio;
+        this.aula = aula;
+        this.codigoActa = codigoActa;
+        this.itemByTurno = itemByTurno;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id det carga lectiva.
+     *
+     * @return id det carga lectiva
+     */
+     public String getIdDetCargaLectiva() {
+        return this.idDetCargaLectiva;
+    }
+    /**
+     * Establece el id det carga lectiva.
+     *
+     * @param idDetCargaLectiva el new id det carga lectiva
+     */
+    public void setIdDetCargaLectiva(String idDetCargaLectiva) {
+        this.idDetCargaLectiva = idDetCargaLectiva;
+    }
+    /**
+     * Obtiene carga lectiva.
+     *
+     * @return carga lectiva
+     */
+     public CargaLectivaDTO getCargaLectiva() {
+        return this.cargaLectiva;
+    }
+    /**
+     * Establece el carga lectiva.
+     *
+     * @param cargaLectiva el new carga lectiva
+     */
+    public void setCargaLectiva(CargaLectivaDTO cargaLectiva) {
+        this.cargaLectiva = cargaLectiva;
+    }
+    /**
+     * Obtiene personal by docente.
+     *
+     * @return personal by docente
+     */
+     public PersonalDTO getPersonalByDocente() {
+        return this.personalByDocente;
+    }
+    /**
+     * Establece el personal by docente.
+     *
+     * @param personalByDocente el new personal by docente
+     */
+    public void setPersonalByDocente(PersonalDTO personalByDocente) {
+        this.personalByDocente = personalByDocente;
+    }
+    /**
+     * Obtiene personal by docente practica.
+     *
+     * @return personal by docente practica
+     */
+     public PersonalDTO getPersonalByDocentePractica() {
+        return this.personalByDocentePractica;
+    }
+    /**
+     * Establece el personal by docente practica.
+     *
+     * @param personalByDocentePractica el new personal by docente practica
+     */
+    public void setPersonalByDocentePractica(PersonalDTO personalByDocentePractica) {
+        this.personalByDocentePractica = personalByDocentePractica;
+    }
+    /**
+     * Obtiene det plan estudio.
+     *
+     * @return det plan estudio
+     */
+     public DetPlanEstudioDTO getDetPlanEstudio() {
+        return this.detPlanEstudio;
+    }
+    /**
+     * Establece el det plan estudio.
+     *
+     * @param detPlanEstudio el new det plan estudio
+     */
+    public void setDetPlanEstudio(DetPlanEstudioDTO detPlanEstudio) {
+        this.detPlanEstudio = detPlanEstudio;
+    }
+    /**
+     * Obtiene aula.
+     *
+     * @return aula
+     */
+     public AulaDTO getAula() {
+        return this.aula;
+    }
+    /**
+     * Establece el aula.
+     *
+     * @param aula el new aula
+     */
+    public void setAula(AulaDTO aula) {
+        this.aula = aula;
+    }
+    /**
+     * Obtiene codigo acta.
+     *
+     * @return codigo acta
+     */
+     public String getCodigoActa() {
+        return this.codigoActa;
+    }
+    /**
+     * Establece el codigo acta.
+     *
+     * @param codigoActa el new codigo acta
+     */
+    public void setCodigoActa(String codigoActa) {
+        this.codigoActa = codigoActa;
+    }
+    /**
+     * Obtiene item by turno.
+     *
+     * @return item by turno
+     */
+     public ItemDTO getItemByTurno() {
+        return this.itemByTurno;
+    }
+    /**
+     * Establece el item by turno.
+     *
+     * @param itemByTurno el new item by turno
+     */
+    public void setItemByTurno(ItemDTO itemByTurno) {
+        this.itemByTurno = itemByTurno;
+    }
+    /**
+     * Establece el det carga lectiva asistencia list.
+     *
+     * @param detCargaLectivaAsistenciaList el new det carga lectiva asistencia list
+     */
+    public List<AsistenciaDTO> getDetCargaLectivaAsistenciaList(){
+        return this.detCargaLectivaAsistenciaList;
+    }
+    /**
+     * Establece el det carga lectiva list.
+     *
+     * @param detCargaLectivaList el new det carga lectiva list
+     */
+    public void setDetCargaLectivaAsistenciaList(List<AsistenciaDTO> detCargaLectivaAsistenciaList) {
+        this.detCargaLectivaAsistenciaList = detCargaLectivaAsistenciaList;
+    }   
+    /**
+     * Establece el det carga lectiva concepto nota list.
+     *
+     * @param detCargaLectivaConceptoNotaList el new det carga lectiva concepto nota list
+     */
+    public List<ConceptoNotaDTO> getDetCargaLectivaConceptoNotaList(){
+        return this.detCargaLectivaConceptoNotaList;
+    }
+    /**
+     * Establece el det carga lectiva list.
+     *
+     * @param detCargaLectivaList el new det carga lectiva list
+     */
+    public void setDetCargaLectivaConceptoNotaList(List<ConceptoNotaDTO> detCargaLectivaConceptoNotaList) {
+        this.detCargaLectivaConceptoNotaList = detCargaLectivaConceptoNotaList;
+    }   
+    /**
+     * Establece el det carga lectiva definir criterio evaluacion list.
+     *
+     * @param detCargaLectivaDefinirCriterioEvaluacionList el new det carga lectiva definir criterio evaluacion list
+     */
+    public List<DefinirCriterioEvaluacionDTO> getDetCargaLectivaDefinirCriterioEvaluacionList(){
+        return this.detCargaLectivaDefinirCriterioEvaluacionList;
+    }
+    /**
+     * Establece el det carga lectiva list.
+     *
+     * @param detCargaLectivaList el new det carga lectiva list
+     */
+    public void setDetCargaLectivaDefinirCriterioEvaluacionList(List<DefinirCriterioEvaluacionDTO> detCargaLectivaDefinirCriterioEvaluacionList) {
+        this.detCargaLectivaDefinirCriterioEvaluacionList = detCargaLectivaDefinirCriterioEvaluacionList;
+    }   
+    /**
+     * Establece el det carga lectiva det matricula list.
+     *
+     * @param detCargaLectivaDetMatriculaList el new det carga lectiva det matricula list
+     */
+    public List<DetMatriculaDTO> getDetCargaLectivaDetMatriculaList(){
+        return this.detCargaLectivaDetMatriculaList;
+    }
+    /**
+     * Establece el det carga lectiva list.
+     *
+     * @param detCargaLectivaList el new det carga lectiva list
+     */
+    public void setDetCargaLectivaDetMatriculaList(List<DetMatriculaDTO> detCargaLectivaDetMatriculaList) {
+        this.detCargaLectivaDetMatriculaList = detCargaLectivaDetMatriculaList;
+    }   
+    /**
+     * Establece el det carga lectiva horario list.
+     *
+     * @param detCargaLectivaHorarioList el new det carga lectiva horario list
+     */
+    public List<HorarioDTO> getDetCargaLectivaHorarioList(){
+        return this.detCargaLectivaHorarioList;
+    }
+    /**
+     * Establece el det carga lectiva list.
+     *
+     * @param detCargaLectivaList el new det carga lectiva list
+     */
+    public void setDetCargaLectivaHorarioList(List<HorarioDTO> detCargaLectivaHorarioList) {
+        this.detCargaLectivaHorarioList = detCargaLectivaHorarioList;
+    }   
+    
+    public boolean isCursoLlevar() {
+		return cursoLlevar;
+	}
+
+	/**
+	 * Establece el curso llevar.
+	 *
+	 * @param cursoLlevar el new curso llevar
+	 */
+	public void setCursoLlevar(boolean cursoLlevar) {
+		this.cursoLlevar = cursoLlevar;
+	}
+	
+	
+
+	/**
+	 * Comprueba si es disabled.
+	 *
+	 * @return true, si es disabled
+	 */
+	public boolean isDisabled() {
+		return disabled;
+	}
+
+	/**
+	 * Establece el disabled.
+	 *
+	 * @param disabled el new disabled
+	 */
+	public void setDisabled(boolean disabled) {
+		this.disabled = disabled;
+	}
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idDetCargaLectiva == null) ? 0 : idDetCargaLectiva.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        DetCargaLectivaDTO other = (DetCargaLectivaDTO) obj;
+        if (idDetCargaLectiva == null) {
+            if (other.idDetCargaLectiva != null) {
+                return false;
+            }
+        } else if (!idDetCargaLectiva.equals(other.idDetCargaLectiva)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "DetCargaLectivaDTO [idDetCargaLectiva=" + idDetCargaLectiva + "]";
+    }
+   
+}

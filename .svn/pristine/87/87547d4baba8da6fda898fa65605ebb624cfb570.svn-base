@@ -1,0 +1,497 @@
+package pe.com.edu.siaa.core.ejb.service.admision.local;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.model.dto.admision.AnhoSemestreDTO;
+import pe.com.edu.siaa.core.model.dto.admision.CierreAnhoSemestreDTO;
+import pe.com.edu.siaa.core.model.dto.admision.CronogramaDTO;
+import pe.com.edu.siaa.core.model.dto.admision.DocumentoRequeridoDTO;
+import pe.com.edu.siaa.core.model.dto.admision.EntidadUniversitariaDTO;
+import pe.com.edu.siaa.core.model.dto.admision.EscuelaDTO;
+import pe.com.edu.siaa.core.model.dto.admision.EstablecimientoDTO;
+import pe.com.edu.siaa.core.model.dto.admision.FacultadDTO;
+import pe.com.edu.siaa.core.model.dto.admision.NacionalidadDTO;
+import pe.com.edu.siaa.core.model.dto.admision.PersonaDTO;
+import pe.com.edu.siaa.core.model.dto.admision.PostulanteDTO;
+import pe.com.edu.siaa.core.model.dto.admision.ProcedenciaDTO;
+import pe.com.edu.siaa.core.model.dto.admision.TipoPersonaDTO;
+import pe.com.edu.siaa.core.model.dto.admision.TipoSectorDTO;
+import pe.com.edu.siaa.core.model.dto.admision.UniversidadDTO;
+import pe.com.edu.siaa.core.model.estate.EstadoAnhoSemestreState;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.model.type.CronogramaType;
+import pe.com.edu.siaa.core.model.vo.SelectItemVO;
+
+/**
+ * La Class SeguridadServiceLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:23 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface AdmisionServiceLocal {
+	
+	
+	/**
+	 * Listar tipo persona select item.
+	 *
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<SelectItemVO> listarTipoPersonaSelectItem() throws Exception;
+	
+	/**
+     * Listar procedencia select item.
+     *
+     * @return the list
+     * @throws Exception the exception
+     */
+    List<SelectItemVO> listarProcedenciaSelectItem() throws Exception;
+    
+	 /**
+ 	 * Listar cronograma map.
+ 	 *
+ 	 * @param listaIdAnhoSemestre el lista id anho semestre
+ 	 * @param cronogramaType el cronograma type
+ 	 * @param entidadUniversitaria el entidad universitaria
+ 	 * @return the map
+ 	 * @throws Exception the exception
+ 	 */
+ 	Map<String,CronogramaDTO> listarCronogramaMap(List<String> listaIdAnhoSemestre,CronogramaType cronogramaType,Long idEntidadUniversitaria) throws Exception;
+ 	
+	/**
+	 * Existe cronograma valido by semestre.
+	 *
+	 * @param cronograma el cronograma
+	 * @return true, en caso de exito
+	 * @throws Exception the exception
+	 */
+	boolean existeCronogramaValidoBySemestre(String idAnhoSemestre, Long tipoCronograma,Long codigoCronograma, Long idEntidadUniversitaria) throws Exception;
+	
+	CronogramaDTO obtenerCronogramaBySemestre(String idAnhoSemestre, Long tipoCronograma,Long codigoCronograma, Long idEntidadUniversitaria)throws Exception;
+	/**
+	 * Obtener anho semestre by estado.
+	 *
+	 * @param estadoAnhoSemestreState el estado anho semestre state
+	 * @return the anho semestre
+	 * @throws Exception the business exception
+	 */
+	AnhoSemestreDTO obtenerAnhoSemestreByEstado(EstadoAnhoSemestreState estadoAnhoSemestreState) throws Exception;
+	
+	
+	/**
+	 * Controlador accion cronograma.
+	 *
+	 * @param cronograma el cronograma
+	 * @param accionType el accion type
+	 * @return the cronograma
+	 * @throws Exception the exception
+	 */
+	CronogramaDTO controladorAccionCronograma(CronogramaDTO cronograma,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar cronograma.
+	 *
+	 * @param cronograma el cronograma
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<CronogramaDTO> listarCronograma(CronogramaDTO cronograma) throws Exception;
+	
+	/**
+	 * contar lista cronograma.
+	 *
+	 * @param cronograma el cronograma
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarCronograma(CronogramaDTO cronograma);
+	
+	
+	/**
+	 * Controlador accion anho semestre.
+	 *
+	 * @param anhoSemestre el anho semestre
+	 * @param accionType el accion type
+	 * @return the anho semestre
+	 * @throws Exception the exception
+	 */
+	AnhoSemestreDTO controladorAccionAnhoSemestre(AnhoSemestreDTO anhoSemestre,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar anho semestre.
+	 *
+	 * @param anhoSemestre el anho semestre
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<AnhoSemestreDTO> listarAnhoSemestre(AnhoSemestreDTO anhoSemestre) throws Exception;
+	
+	/**
+	 * contar lista anho semestre.
+	 *
+	 * @param anhoSemestre el anho semestre
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarAnhoSemestre(AnhoSemestreDTO anhoSemestre);
+	
+	
+	/**
+	 * Controlador accion cierre anho semestre.
+	 *
+	 * @param cierreAnhoSemestre el cierre anho semestre
+	 * @param accionType el accion type
+	 * @return the cierre anho semestre
+	 * @throws Exception the exception
+	 */
+	CierreAnhoSemestreDTO controladorAccionCierreAnhoSemestre(CierreAnhoSemestreDTO cierreAnhoSemestre,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar cierre anho semestre.
+	 *
+	 * @param cierreAnhoSemestre el cierre anho semestre
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<CierreAnhoSemestreDTO> listarCierreAnhoSemestre(CierreAnhoSemestreDTO cierreAnhoSemestre) throws Exception;
+	
+	/**
+	 * contar lista cierre anho semestre.
+	 *
+	 * @param cierreAnhoSemestre el cierre anho semestre
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarCierreAnhoSemestre(CierreAnhoSemestreDTO cierreAnhoSemestre);
+	
+	/**
+	 * Listar documento requerido.
+	 *
+	 * @param documentoRequerido el documento requerido
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<DocumentoRequeridoDTO> listarDocumentoRequerido(String idPostulante) throws Exception;
+	
+	
+	/**
+	 * Controlador accion escuela.
+	 *
+	 * @param escuela el escuela
+	 * @param accionType el accion type
+	 * @return the escuela
+	 * @throws Exception the exception
+	 */
+	EscuelaDTO controladorAccionEscuela(EscuelaDTO escuela,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar escuela.
+	 *
+	 * @param escuela el escuela
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<EscuelaDTO> listarEscuela(EscuelaDTO escuela) throws Exception;
+	
+	/**
+	 * contar lista escuela.
+	 *
+	 * @param escuela el escuela
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarEscuela(EscuelaDTO escuela);
+	
+	
+	/**
+	 * Controlador accion nacionalidad.
+	 *
+	 * @param nacionalidad el nacionalidad
+	 * @param accionType el accion type
+	 * @return the nacionalidad
+	 * @throws Exception the exception
+	 */
+	NacionalidadDTO controladorAccionNacionalidad(NacionalidadDTO nacionalidad,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar nacionalidad.
+	 *
+	 * @param nacionalidad el nacionalidad
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<NacionalidadDTO> listarNacionalidad(NacionalidadDTO nacionalidad) throws Exception;
+	
+	/**
+	 * contar lista nacionalidad.
+	 *
+	 * @param nacionalidad el nacionalidad
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarNacionalidad(NacionalidadDTO nacionalidad);
+	
+	/**
+	 * Controlador accion tipo sector.
+	 *
+	 * @param tipoSector el tipo sector
+	 * @param accionType el accion type
+	 * @return the tipo sector
+	 * @throws Exception the exception
+	 */
+	TipoSectorDTO controladorAccionTipoSector(TipoSectorDTO tipoSector,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar tipo sector.
+	 *
+	 * @param tipoSector el tipo sector
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<TipoSectorDTO> listarTipoSector(TipoSectorDTO tipoSector) throws Exception;
+	
+	/**
+	 * contar lista tipo sector.
+	 *
+	 * @param tipoSector el tipo sector
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarTipoSector(TipoSectorDTO tipoSector);
+	
+	/**
+	 * Controlador accion tipo persona.
+	 *
+	 * @param tipoPersona el tipo persona
+	 * @param accionType el accion type
+	 * @return the tipo persona
+	 * @throws Exception the exception
+	 */
+	TipoPersonaDTO controladorAccionTipoPersona(TipoPersonaDTO tipoPersona,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar tipo persona.
+	 *
+	 * @param tipoPersona el tipo persona
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<TipoPersonaDTO> listarTipoPersona(TipoPersonaDTO tipoPersona) throws Exception;
+	
+	/**
+	 * contar lista tipo persona.
+	 *
+	 * @param tipoPersona el tipo persona
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarTipoPersona(TipoPersonaDTO tipoPersona);
+	
+	
+	/**
+	 * Controlador accion entidad universitaria.
+	 *
+	 * @param entidadUniversitaria el entidad universitaria
+	 * @param accionType el accion type
+	 * @return the entidad universitaria
+	 * @throws Exception the exception
+	 */
+	EntidadUniversitariaDTO controladorAccionEntidadUniversitaria(EntidadUniversitariaDTO entidadUniversitaria,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar entidad universitaria.
+	 *
+	 * @param entidadUniversitaria el entidad universitaria
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<EntidadUniversitariaDTO> listarEntidadUniversitaria(EntidadUniversitariaDTO entidadUniversitaria) throws Exception;
+	
+	/**
+	 * contar lista entidad universitaria.
+	 *
+	 * @param entidadUniversitaria el entidad universitaria
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarEntidadUniversitaria(EntidadUniversitariaDTO entidadUniversitaria);
+	
+	/**
+	 * Controlador accion universidad.
+	 *
+	 * @param universidad el universidad
+	 * @param accionType el accion type
+	 * @return the universidad
+	 * @throws Exception the exception
+	 */
+	UniversidadDTO controladorAccionUniversidad(UniversidadDTO universidad,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar universidad.
+	 *
+	 * @param universidad el universidad
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<UniversidadDTO> listarUniversidad(UniversidadDTO universidad) throws Exception;
+	
+	/**
+	 * contar lista universidad.
+	 *
+	 * @param universidad el universidad
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarUniversidad(UniversidadDTO universidad);
+	
+	/**
+	 * Controlador accion persona.
+	 *
+	 * @param persona el persona
+	 * @param accionType el accion type
+	 * @return the persona
+	 * @throws Exception the exception
+	 */
+	PersonaDTO controladorAccionPersona(PersonaDTO persona,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar persona.
+	 *
+	 * @param persona el persona
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<PersonaDTO> listarPersona(PersonaDTO persona) throws Exception;
+	
+	/**
+	 * contar lista persona.
+	 *
+	 * @param persona el persona
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarPersona(PersonaDTO persona);
+	
+	/**
+	 * Controlador accion establecimiento.
+	 *
+	 * @param establecimiento el establecimiento
+	 * @param accionType el accion type
+	 * @return the establecimiento
+	 * @throws Exception the exception
+	 */
+	EstablecimientoDTO controladorAccionEstablecimiento(EstablecimientoDTO establecimiento,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar establecimiento.
+	 *
+	 * @param establecimiento el establecimiento
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<EstablecimientoDTO> listarEstablecimiento(EstablecimientoDTO establecimiento) throws Exception;
+	
+	/**
+	 * contar lista establecimiento.
+	 *
+	 * @param establecimiento el establecimiento
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarEstablecimiento(EstablecimientoDTO establecimiento);
+	
+	/**
+	 * Controlador accion procedencia.
+	 *
+	 * @param procedencia el procedencia
+	 * @param accionType el accion type
+	 * @return the procedencia
+	 * @throws Exception the exception
+	 */
+	ProcedenciaDTO controladorAccionProcedencia(ProcedenciaDTO procedencia,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar procedencia.
+	 *
+	 * @param procedencia el procedencia
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<ProcedenciaDTO> listarProcedencia(ProcedenciaDTO procedencia) throws Exception;
+	
+	/**
+	 * contar lista procedencia.
+	 *
+	 * @param procedencia el procedencia
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarProcedencia(ProcedenciaDTO procedencia);
+	
+	/**
+	 * Controlador accion postulante.
+	 *
+	 * @param postulante el postulante
+	 * @param accionType el accion type
+	 * @return the postulante
+	 * @throws Exception the exception
+	 */
+	PostulanteDTO controladorAccionPostulante(PostulanteDTO postulante,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar postulante.
+	 *
+	 * @param postulante el postulante
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<PostulanteDTO> listarPostulante(PostulanteDTO postulante) throws Exception;
+	
+	/**
+	 * contar lista postulante.
+	 *
+	 * @param postulante el postulante
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarPostulante(PostulanteDTO postulante);
+	
+	/**
+	 * Controlador accion facultad.
+	 *
+	 * @param facultad el facultad
+	 * @param accionType el accion type
+	 * @return the facultad
+	 * @throws Exception the exception
+	 */
+	FacultadDTO controladorAccionFacultad(FacultadDTO facultad,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar facultad.
+	 *
+	 * @param facultad el facultad
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<FacultadDTO> listarFacultad(FacultadDTO facultad) throws Exception;
+	
+	/**
+	 * contar lista facultad.
+	 *
+	 * @param facultad el facultad
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarFacultad(FacultadDTO facultad);
+	
+	
+}

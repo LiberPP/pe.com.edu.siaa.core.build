@@ -1,0 +1,381 @@
+package pe.com.builderp.core.escalafon.model.dto;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import pe.com.edu.siaa.core.model.dto.BasePaginator;
+import pe.com.edu.siaa.core.model.dto.admision.EntidadUniversitariaDTO;
+import pe.com.edu.siaa.core.model.dto.common.ItemDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.PersonalDTO;
+
+/**
+ * La Class ProyectoInvestigacionDTO.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 1.0, Sun Dec 31 00:35:59 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+public class ProyectoInvestigacionDTO extends BasePaginator implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id proyecto investigacion. */
+    private String idProyectoInvestigacion;
+   
+    /** El item by linea investigacion. */
+    private ItemDTO itemByLineaInvestigacion;
+   
+    /** El nombre. */
+    private String nombre;
+   
+    /** El objetivo general. */
+    private String objetivoGeneral;
+   
+    /** El objetivo especifico. */
+    private String objetivoEspecifico;
+   
+    /** El personal. */
+    private PersonalDTO personal;
+   
+    /** El entidad universitaria. */
+    private EntidadUniversitariaDTO entidadUniversitaria;
+   
+    /** El fecha inicio. */
+    private Date fechaInicio;
+   
+    /** El fecha fin. */
+    private Date fechaFin;
+   
+    /** El presupuesto. */
+    private BigDecimal presupuesto;
+   
+    /** El item by fuente financiamiento. */
+    private ItemDTO itemByFuenteFinanciamiento;
+   
+    /** El estado. */
+    private String estado;
+   
+    /** El proyecto investigacion proyecto investigacion difusion list. */
+    private List<ProyectoInvestigacionDifusionDTO> proyectoInvestigacionProyectoInvestigacionDifusionList = new ArrayList<ProyectoInvestigacionDifusionDTO>();
+   
+    /** El proyecto investigacion proyecto investigacion equipo list. */
+    private List<ProyectoInvestigacionEquipoDTO> proyectoInvestigacionProyectoInvestigacionEquipoList = new ArrayList<ProyectoInvestigacionEquipoDTO>();
+   
+    /**
+     * Instancia un nuevo proyecto investigacionDTO.
+     */
+    public ProyectoInvestigacionDTO() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo proyecto investigacionDTO.
+     *
+     * @param idProyectoInvestigacion el id proyecto investigacion
+     * @param itemByLineaInvestigacion el item by linea investigacion
+     * @param nombre el nombre
+     * @param objetivoGeneral el objetivo general
+     * @param objetivoEspecifico el objetivo especifico
+     * @param personal el personal
+     * @param entidadUniversitaria el entidad universitaria
+     * @param fechaInicio el fecha inicio
+     * @param fechaFin el fecha fin
+     * @param presupuesto el presupuesto
+     * @param itemByFuenteFinanciamiento el item by fuente financiamiento
+     * @param estado el estado
+     */
+    public ProyectoInvestigacionDTO(String idProyectoInvestigacion, ItemDTO itemByLineaInvestigacion,String nombre, String objetivoGeneral, String objetivoEspecifico, PersonalDTO personal,EntidadUniversitariaDTO entidadUniversitaria,Date fechaInicio, Date fechaFin, BigDecimal presupuesto, ItemDTO itemByFuenteFinanciamiento,String estado ) {
+        super();
+        this.idProyectoInvestigacion = idProyectoInvestigacion;
+        this.itemByLineaInvestigacion = itemByLineaInvestigacion;
+        this.nombre = nombre;
+        this.objetivoGeneral = objetivoGeneral;
+        this.objetivoEspecifico = objetivoEspecifico;
+        this.personal = personal;
+        this.entidadUniversitaria = entidadUniversitaria;
+        this.fechaInicio = fechaInicio;
+        this.fechaFin = fechaFin;
+        this.presupuesto = presupuesto;
+        this.itemByFuenteFinanciamiento = itemByFuenteFinanciamiento;
+        this.estado = estado;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id proyecto investigacion.
+     *
+     * @return id proyecto investigacion
+     */
+     public String getIdProyectoInvestigacion() {
+        return this.idProyectoInvestigacion;
+    }
+    /**
+     * Establece el id proyecto investigacion.
+     *
+     * @param idProyectoInvestigacion el new id proyecto investigacion
+     */
+    public void setIdProyectoInvestigacion(String idProyectoInvestigacion) {
+        this.idProyectoInvestigacion = idProyectoInvestigacion;
+    }
+    /**
+     * Obtiene item by linea investigacion.
+     *
+     * @return item by linea investigacion
+     */
+     public ItemDTO getItemByLineaInvestigacion() {
+        return this.itemByLineaInvestigacion;
+    }
+    /**
+     * Establece el item by linea investigacion.
+     *
+     * @param itemByLineaInvestigacion el new item by linea investigacion
+     */
+    public void setItemByLineaInvestigacion(ItemDTO itemByLineaInvestigacion) {
+        this.itemByLineaInvestigacion = itemByLineaInvestigacion;
+    }
+    /**
+     * Obtiene nombre.
+     *
+     * @return nombre
+     */
+     public String getNombre() {
+        return this.nombre;
+    }
+    /**
+     * Establece el nombre.
+     *
+     * @param nombre el new nombre
+     */
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+    /**
+     * Obtiene objetivo general.
+     *
+     * @return objetivo general
+     */
+     public String getObjetivoGeneral() {
+        return this.objetivoGeneral;
+    }
+    /**
+     * Establece el objetivo general.
+     *
+     * @param objetivoGeneral el new objetivo general
+     */
+    public void setObjetivoGeneral(String objetivoGeneral) {
+        this.objetivoGeneral = objetivoGeneral;
+    }
+    /**
+     * Obtiene objetivo especifico.
+     *
+     * @return objetivo especifico
+     */
+     public String getObjetivoEspecifico() {
+        return this.objetivoEspecifico;
+    }
+    /**
+     * Establece el objetivo especifico.
+     *
+     * @param objetivoEspecifico el new objetivo especifico
+     */
+    public void setObjetivoEspecifico(String objetivoEspecifico) {
+        this.objetivoEspecifico = objetivoEspecifico;
+    }
+    /**
+     * Obtiene personal.
+     *
+     * @return personal
+     */
+     public PersonalDTO getPersonal() {
+        return this.personal;
+    }
+    /**
+     * Establece el personal.
+     *
+     * @param personal el new personal
+     */
+    public void setPersonal(PersonalDTO personal) {
+        this.personal = personal;
+    }
+    /**
+     * Obtiene entidad universitaria.
+     *
+     * @return entidad universitaria
+     */
+     public EntidadUniversitariaDTO getEntidadUniversitaria() {
+        return this.entidadUniversitaria;
+    }
+    /**
+     * Establece el entidad universitaria.
+     *
+     * @param entidadUniversitaria el new entidad universitaria
+     */
+    public void setEntidadUniversitaria(EntidadUniversitariaDTO entidadUniversitaria) {
+        this.entidadUniversitaria = entidadUniversitaria;
+    }
+    /**
+     * Obtiene fecha inicio.
+     *
+     * @return fecha inicio
+     */
+     public Date getFechaInicio() {
+        return this.fechaInicio;
+    }
+    /**
+     * Establece el fecha inicio.
+     *
+     * @param fechaInicio el new fecha inicio
+     */
+    public void setFechaInicio(Date fechaInicio) {
+        this.fechaInicio = fechaInicio;
+    }
+    /**
+     * Obtiene fecha fin.
+     *
+     * @return fecha fin
+     */
+     public Date getFechaFin() {
+        return this.fechaFin;
+    }
+    /**
+     * Establece el fecha fin.
+     *
+     * @param fechaFin el new fecha fin
+     */
+    public void setFechaFin(Date fechaFin) {
+        this.fechaFin = fechaFin;
+    }
+    /**
+     * Obtiene presupuesto.
+     *
+     * @return presupuesto
+     */
+     public BigDecimal getPresupuesto() {
+        return this.presupuesto;
+    }
+    /**
+     * Establece el presupuesto.
+     *
+     * @param presupuesto el new presupuesto
+     */
+    public void setPresupuesto(BigDecimal presupuesto) {
+        this.presupuesto = presupuesto;
+    }
+    /**
+     * Obtiene item by fuente financiamiento.
+     *
+     * @return item by fuente financiamiento
+     */
+     public ItemDTO getItemByFuenteFinanciamiento() {
+        return this.itemByFuenteFinanciamiento;
+    }
+    /**
+     * Establece el item by fuente financiamiento.
+     *
+     * @param itemByFuenteFinanciamiento el new item by fuente financiamiento
+     */
+    public void setItemByFuenteFinanciamiento(ItemDTO itemByFuenteFinanciamiento) {
+        this.itemByFuenteFinanciamiento = itemByFuenteFinanciamiento;
+    }
+    /**
+     * Obtiene estado.
+     *
+     * @return estado
+     */
+     public String getEstado() {
+        return this.estado;
+    }
+    /**
+     * Establece el estado.
+     *
+     * @param estado el new estado
+     */
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+    /**
+     * Establece el proyecto investigacion proyecto investigacion difusion list.
+     *
+     * @param proyectoInvestigacionProyectoInvestigacionDifusionList el new proyecto investigacion proyecto investigacion difusion list
+     */
+    public List<ProyectoInvestigacionDifusionDTO> getProyectoInvestigacionProyectoInvestigacionDifusionList(){
+        return this.proyectoInvestigacionProyectoInvestigacionDifusionList;
+    }
+    /**
+     * Establece el proyecto investigacion list.
+     *
+     * @param proyectoInvestigacionList el new proyecto investigacion list
+     */
+    public void setProyectoInvestigacionProyectoInvestigacionDifusionList(List<ProyectoInvestigacionDifusionDTO> proyectoInvestigacionProyectoInvestigacionDifusionList) {
+        this.proyectoInvestigacionProyectoInvestigacionDifusionList = proyectoInvestigacionProyectoInvestigacionDifusionList;
+    }   
+    /**
+     * Establece el proyecto investigacion proyecto investigacion equipo list.
+     *
+     * @param proyectoInvestigacionProyectoInvestigacionEquipoList el new proyecto investigacion proyecto investigacion equipo list
+     */
+    public List<ProyectoInvestigacionEquipoDTO> getProyectoInvestigacionProyectoInvestigacionEquipoList(){
+        return this.proyectoInvestigacionProyectoInvestigacionEquipoList;
+    }
+    /**
+     * Establece el proyecto investigacion list.
+     *
+     * @param proyectoInvestigacionList el new proyecto investigacion list
+     */
+    public void setProyectoInvestigacionProyectoInvestigacionEquipoList(List<ProyectoInvestigacionEquipoDTO> proyectoInvestigacionProyectoInvestigacionEquipoList) {
+        this.proyectoInvestigacionProyectoInvestigacionEquipoList = proyectoInvestigacionProyectoInvestigacionEquipoList;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idProyectoInvestigacion == null) ? 0 : idProyectoInvestigacion.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        ProyectoInvestigacionDTO other = (ProyectoInvestigacionDTO) obj;
+        if (idProyectoInvestigacion == null) {
+            if (other.idProyectoInvestigacion != null) {
+                return false;
+            }
+        } else if (!idProyectoInvestigacion.equals(other.idProyectoInvestigacion)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "ProyectoInvestigacionDTO [idProyectoInvestigacion=" + idProyectoInvestigacion + "]";
+    }
+   
+}

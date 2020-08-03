@@ -1,0 +1,120 @@
+package pe.com.edu.siaa.core.ejb.service.rest.admision.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.admision.local.AdmisionServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.admision.PersonaDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class PersonaRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:32 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/personaRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class PersonaRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient AdmisionServiceLocal admisionServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<PersonaDTO> crear(PersonaDTO persona) throws Exception {
+		return controladorAccion(persona,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<PersonaDTO> modificar(PersonaDTO persona) throws Exception {
+		return controladorAccion(persona,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<PersonaDTO> eliminar(@PathParam("id") String idPersona) throws Exception {
+		PersonaDTO persona = new PersonaDTO();
+		persona.setIdPersona(idPersona);		
+		return controladorAccion(persona,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<PersonaDTO> controladorAccion(PersonaDTO persona, AccionType accionType){
+		ResultadoRestVO<PersonaDTO> resultado = new ResultadoRestVO<PersonaDTO>();
+		 try {
+    		resultado.setObjetoResultado(admisionServiceLocal.controladorAccionPersona(persona,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<PersonaDTO> finById(@PathParam("id") String idPersona) throws Exception {
+		PersonaDTO persona = new PersonaDTO();
+		persona.setIdPersona(idPersona);
+		return controladorAccion(persona,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<PersonaDTO> listarPersona(@Context UriInfo info){
+		ResultadoRestVO<PersonaDTO> resultado = new ResultadoRestVO<PersonaDTO>();
+		PersonaDTO persona = transferUriInfo(info);
+		 try {
+    		resultado.setListaResultado(admisionServiceLocal.listarPersona(persona));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<PersonaDTO> contarListarPersona(@Context UriInfo info){
+		ResultadoRestVO<PersonaDTO> resultado = new ResultadoRestVO<PersonaDTO>();
+		PersonaDTO persona = transferUriInfo(info);
+		 try {
+    		resultado.setContador(admisionServiceLocal.contarListarPersona(persona));
+    		if (resultado.isData()) {
+    			resultado.setListaResultado(admisionServiceLocal.listarPersona(persona));
+    		}
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<PersonaDTO> inicializarPersona(@Context UriInfo info) throws Exception {
+	     PersonaDTO persona = transferUriInfo(info);
+		 ResultadoRestVO<PersonaDTO> resultado = new ResultadoRestVO<PersonaDTO>();
+		 try {
+    		resultado.setObjetoResultado(persona);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private PersonaDTO transferUriInfo(@Context UriInfo info) {
+		PersonaDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,PersonaDTO.class);
+		return resultado;
+	}
+}

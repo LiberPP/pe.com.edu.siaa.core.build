@@ -1,0 +1,344 @@
+package pe.com.edu.siaa.core.ejb.service.contabilidad.impl;
+
+import java.util.Date;
+import java.util.List;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+
+import pe.com.edu.siaa.core.ejb.dao.contabilidad.local.AsientoContableDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.contabilidad.local.AsientoContableDetDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.contabilidad.local.ConfigDependenciaItemDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.contabilidad.local.ConfiguracionCuentaDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.contabilidad.local.PlanContableDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.HibernateUtil;
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.contabilidad.local.ContabilidadServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.util.FechaUtil;
+import pe.com.edu.siaa.core.ejb.util.jms.UUIDUtil;
+import pe.com.edu.siaa.core.model.dto.contabilidad.AsientoContableDTO;
+import pe.com.edu.siaa.core.model.dto.contabilidad.AsientoContableDetDTO;
+import pe.com.edu.siaa.core.model.dto.contabilidad.ConfigDependenciaItemDTO;
+import pe.com.edu.siaa.core.model.dto.contabilidad.ConfiguracionCuentaDTO;
+import pe.com.edu.siaa.core.model.dto.contabilidad.PlanContableDTO;
+import pe.com.edu.siaa.core.model.jpa.contabilidad.AsientoContable;
+import pe.com.edu.siaa.core.model.jpa.contabilidad.AsientoContableDet;
+import pe.com.edu.siaa.core.model.jpa.contabilidad.ConfigDependenciaItem;
+import pe.com.edu.siaa.core.model.jpa.contabilidad.ConfiguracionCuenta;
+import pe.com.edu.siaa.core.model.jpa.contabilidad.PlanContable;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+
+
+/**
+ * La Class ContabilidadServiceImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Fri Sep 08 19:44:49 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+ @Stateless
+ @EJB(name = "java:app/ContabilidadService", beanInterface = ContabilidadServiceLocal.class)
+ @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+public class ContabilidadServiceImpl implements ContabilidadServiceLocal{
+	/** El servicio asiento contable det dao impl. */
+	@EJB
+	private AsientoContableDetDaoLocal asientoContableDetDaoImpl; 
+	
+	/** El servicio asiento contable dao impl. */
+	@EJB
+	private AsientoContableDaoLocal asientoContableDaoImpl; 
+	
+	
+	/** El servicio plan contable dao impl. */
+	@EJB
+	private PlanContableDaoLocal planContableDaoImpl; 
+	
+	/** El servicio config dependencia item dao impl. */
+	@EJB
+	private ConfigDependenciaItemDaoLocal configDependenciaItemDaoImpl; 
+	
+	/** El servicio configuracion cuenta dao impl. */
+	@EJB
+	private ConfiguracionCuentaDaoLocal configuracionCuentaDaoImpl; 
+	
+	
+	/*@Override
+	public  Map<String,Integer> obtenerCantidadEmpresaAsignadaMap(List<String> listaIdUsuario) throws Exception {
+		return this.asociarEmpresaDaoImpl.obtenerCantidadEmpresaAsignadaMap(listaIdUsuario);
+	}*/
+	
+	private AsientoContableDetDTO controladorAccionAsientoContableDet(AsientoContableDetDTO asientoContableDet, AsientoContable asientoContable , AccionType accionType) throws Exception {
+		AsientoContableDetDTO resultado = null;
+		AsientoContableDet resultadoEntity = null;
+		asientoContableDet.setNroCuenta(asientoContableDet.getPlanContable().getCodigo());
+		asientoContableDet.setDescripcionCuenta(asientoContableDet.getPlanContable().getNombre());
+		switch (accionType) {
+			case CREAR:
+				asientoContableDet.setIdAsientoContableDet(this.asientoContableDetDaoImpl.generarIdAsientoContableDet());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(asientoContableDet, AsientoContableDet.class,"planContable@PK@");
+				resultadoEntity.setAsientoContable(asientoContable);
+				this.asientoContableDetDaoImpl.save(resultadoEntity);	
+				resultado = asientoContableDet;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(asientoContableDet, AsientoContableDet.class,"planContable@PK@");
+			    resultadoEntity.setAsientoContable(asientoContable);
+				this.asientoContableDetDaoImpl.update(resultadoEntity);
+				resultado = asientoContableDet;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.asientoContableDetDaoImpl.find(AsientoContableDet.class, asientoContableDet.getIdAsientoContableDet());
+				this.asientoContableDetDaoImpl.delete(resultadoEntity);
+				resultado = asientoContableDet;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.asientoContableDetDaoImpl.find(AsientoContableDet.class, asientoContableDet.getIdAsientoContableDet());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,AsientoContableDetDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.asientoContableDetDaoImpl.findByNombre(asientoContableDet),AsientoContableDetDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<AsientoContableDetDTO> listarAsientoContableDet(AsientoContableDetDTO asientoContableDet) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.asientoContableDetDaoImpl.listarAsientoContableDet(asientoContableDet),AsientoContableDetDTO.class,"planContable");
+	}
+	@Override
+	public int contarListarAsientoContableDet(AsientoContableDetDTO asientoContableDet){
+		return  this.asientoContableDetDaoImpl.contarListarAsientoContableDet(asientoContableDet);
+	}
+	@Override
+	public AsientoContableDTO registrarAsientoContable(AsientoContableDTO asientoContable, String userName,AccionType accionType) throws Exception {
+		AsientoContableDTO resultado = null;
+		AsientoContable resultadoEntity = null;
+		boolean crearDetalle = false;
+		switch (accionType) {
+			case CREAR:
+				Integer anho = FechaUtil.anio(FechaUtil.obtenerFecha());
+				asientoContable.setFechaCreacion(new Date());
+				asientoContable.setUsuarioCreacion(userName);
+				asientoContable.setIdAsientoContable(this.asientoContableDaoImpl.generarIdAsientoContable());
+				asientoContable.setNroCorrelativoAsiento(this.asientoContableDaoImpl.generarNumeroAsiento(anho,asientoContable.getIdEntidadSelect()));
+				if (!StringUtils.isNotNullOrBlank(asientoContable.getNroCorrelativoOperacion())) {
+					//asientoContable.setNroCorrelativoOperacion(asientoContable.getNroCorrelativoAsiento());//TODO:VER AQUI YA QUE DEBERIA SER POR LIBRO Y SUB LIBRO
+					asientoContable.setNroCorrelativoOperacion(this.asientoContableDaoImpl.generarNumeroOperacion(anho,asientoContable.getIdEntidadSelect(),asientoContable.getItemByLibro().getIdItem(),asientoContable.getItemBySubLibro().getIdItem()));
+				}
+				if (!StringUtils.isNotNullOrBlank(asientoContable.getIdOperacion())) {
+					asientoContable.setIdOperacion(asientoContable.getIdAsientoContable());
+				}
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(asientoContable, AsientoContable.class,"itemByLibro@PK@","itemBySubLibro@PK@","entidad@PK@");
+				this.asientoContableDaoImpl.save(resultadoEntity);	
+				resultado = asientoContable;
+				crearDetalle = true;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(asientoContable, AsientoContable.class,"itemByLibro@PK@","itemBySubLibro@PK@","entidad@PK@");
+				this.asientoContableDaoImpl.update(resultadoEntity);
+				resultado = asientoContable;
+				crearDetalle = true;
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.asientoContableDaoImpl.find(AsientoContable.class, asientoContable.getIdAsientoContable());
+				this.asientoContableDaoImpl.delete(resultadoEntity);
+				resultado = asientoContable;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.asientoContableDaoImpl.find(AsientoContable.class, asientoContable.getIdAsientoContable());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,AsientoContableDTO.class);
+				break;
+				
+			default:
+				break;
+		}
+		if (crearDetalle) {
+			if (asientoContable.getAsientoContableAsientoContableDetList() != null) {
+				for (AsientoContableDetDTO asientoContableDet : asientoContable.getAsientoContableAsientoContableDetList()) {
+					if (!asientoContable.isEsEliminado()) {
+						if (StringUtils.isNullOrEmpty(asientoContableDet.getIdAsientoContableDet())) {
+							controladorAccionAsientoContableDet(asientoContableDet,resultadoEntity,AccionType.CREAR);
+						} else {
+							controladorAccionAsientoContableDet(asientoContableDet,resultadoEntity,AccionType.MODIFICAR);
+						}
+						
+					} else {
+						controladorAccionAsientoContableDet(asientoContableDet,resultadoEntity, AccionType.ELIMINAR);
+					}
+				}
+			}
+			HibernateUtil.setListaNull(asientoContable);
+		}
+		return resultado;
+	}
+	@Override
+	public List<AsientoContableDTO> listarAsientoContable(AsientoContableDTO asientoContable) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.asientoContableDaoImpl.listarAsientoContable(asientoContable),AsientoContableDTO.class,"itemByLibro","itemBySubLibro","entidad");
+	}
+	@Override
+	public int contarListarAsientoContable(AsientoContableDTO asientoContable){
+		return  this.asientoContableDaoImpl.contarListarAsientoContable(asientoContable);
+	}
+	/*
+	@Override
+	public List<Long> obtenerIdByUser(AsociarEmpresaDTO asociarEmpresa) throws Exception {
+		return this.asociarEmpresaDaoImpl.obtenerIdByUser(asociarEmpresa);
+	}*/
+	@Override
+	public PlanContableDTO controladorAccionPlanContable(PlanContableDTO planContable, AccionType accionType) throws Exception {
+		PlanContableDTO resultado = null;
+		PlanContable resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				planContable.setIdPlanContable(UUIDUtil.generarElementUUID());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(planContable, PlanContable.class,"planContableDepedencia@PK@","planContableDebe@PK@","planContableHaber@PK@","cliente@PK@");
+				this.planContableDaoImpl.save(resultadoEntity);	
+				resultado = planContable;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(planContable, PlanContable.class,"planContableDepedencia@PK@","planContableDebe@PK@","planContableHaber@PK@","cliente@PK@");
+				this.planContableDaoImpl.update(resultadoEntity);
+				resultado = planContable;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.planContableDaoImpl.find(PlanContable.class, planContable.getIdPlanContable());
+				this.planContableDaoImpl.delete(resultadoEntity);
+				resultado = planContable;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.planContableDaoImpl.find(PlanContable.class, planContable.getIdPlanContable());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,PlanContableDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.planContableDaoImpl.findByNombre(planContable),PlanContableDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<PlanContableDTO> listarPlanContable(PlanContableDTO planContable) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.planContableDaoImpl.listarPlanContable(planContable),PlanContableDTO.class,"planContableDepedencia","entidad","planContableDebe","planContableHaber");
+	}
+	@Override
+	public int contarListarPlanContable(PlanContableDTO planContable){
+		return  this.planContableDaoImpl.contarListarPlanContable(planContable);
+	}
+	
+	@Override
+	public ConfigDependenciaItemDTO controladorAccionConfigDependenciaItem(ConfigDependenciaItemDTO configDependenciaItem, AccionType accionType) throws Exception {
+		ConfigDependenciaItemDTO resultado = null;
+		ConfigDependenciaItem resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				configDependenciaItem.setIdConfigDependenciaItem(this.configDependenciaItemDaoImpl.generarIdConfigDependenciaItem());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(configDependenciaItem, ConfigDependenciaItem.class,"item@PK@","itemHijo@PK@");
+				this.configDependenciaItemDaoImpl.save(resultadoEntity);	
+				resultado = configDependenciaItem;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(configDependenciaItem, ConfigDependenciaItem.class,"item@PK@","itemHijo@PK@");
+				this.configDependenciaItemDaoImpl.update(resultadoEntity);
+				resultado = configDependenciaItem;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.configDependenciaItemDaoImpl.find(ConfigDependenciaItem.class, configDependenciaItem.getIdConfigDependenciaItem());
+				this.configDependenciaItemDaoImpl.delete(resultadoEntity);
+				resultado = configDependenciaItem;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.configDependenciaItemDaoImpl.find(ConfigDependenciaItem.class, configDependenciaItem.getIdConfigDependenciaItem());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,ConfigDependenciaItemDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.configDependenciaItemDaoImpl.findByNombre(configDependenciaItem),ConfigDependenciaItemDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<ConfigDependenciaItemDTO> listarConfigDependenciaItem(ConfigDependenciaItemDTO configDependenciaItem) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.configDependenciaItemDaoImpl.listarConfigDependenciaItem(configDependenciaItem),ConfigDependenciaItemDTO.class,"item","itemHijo");
+	}
+	@Override
+	public int contarListarConfigDependenciaItem(ConfigDependenciaItemDTO configDependenciaItem){
+		return  this.configDependenciaItemDaoImpl.contarListarConfigDependenciaItem(configDependenciaItem);
+	}
+
+	@Override
+	public ConfiguracionCuentaDTO controladorAccionConfiguracionCuenta(ConfiguracionCuentaDTO configuracionCuenta, AccionType accionType) throws Exception {
+		ConfiguracionCuentaDTO resultado = null;
+		ConfiguracionCuenta resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				configuracionCuenta.setIdConfiguracionCuenta(this.configuracionCuentaDaoImpl.generarIdConfiguracionCuenta());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(configuracionCuenta, ConfiguracionCuenta.class,"itemByLibro@PK@","planContable@PK@");
+				this.configuracionCuentaDaoImpl.save(resultadoEntity);	
+				resultado = configuracionCuenta;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(configuracionCuenta, ConfiguracionCuenta.class,"itemByLibro@PK@","planContable@PK@");
+				this.configuracionCuentaDaoImpl.update(resultadoEntity);
+				resultado = configuracionCuenta;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.configuracionCuentaDaoImpl.find(ConfiguracionCuenta.class, configuracionCuenta.getIdConfiguracionCuenta());
+				this.configuracionCuentaDaoImpl.delete(resultadoEntity);
+				resultado = configuracionCuenta;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.configuracionCuentaDaoImpl.find(ConfiguracionCuenta.class, configuracionCuenta.getIdConfiguracionCuenta());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,ConfiguracionCuentaDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.configuracionCuentaDaoImpl.findByNombre(configuracionCuenta),ConfiguracionCuentaDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<ConfiguracionCuentaDTO> listarConfiguracionCuenta(ConfiguracionCuentaDTO configuracionCuenta) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.configuracionCuentaDaoImpl.listarConfiguracionCuenta(configuracionCuenta),ConfiguracionCuentaDTO.class,"planContable","itemByLibro","entidad");
+	}
+	@Override
+	public int contarListarConfiguracionCuenta(ConfiguracionCuentaDTO configuracionCuenta){
+		return  this.configuracionCuentaDaoImpl.contarListarConfiguracionCuenta(configuracionCuenta);
+	}
+	
+}

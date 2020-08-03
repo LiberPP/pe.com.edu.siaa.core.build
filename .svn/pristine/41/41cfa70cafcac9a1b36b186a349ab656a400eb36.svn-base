@@ -1,0 +1,211 @@
+package pe.com.edu.siaa.core.model.jpa.matricula;
+
+import java.io.Serializable;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import pe.com.edu.siaa.core.model.util.ConfiguracionEntityManagerUtil;
+
+/**
+ * La Class AsignaPlanEstudio.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 09:56:57 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Entity
+@Table(name = "AsignaPlanEstudio", schema = ConfiguracionEntityManagerUtil.ESQUEMA_ACADEMICO)
+public class AsignaPlanEstudio implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id asigna planestudio. */
+    @Id
+    @Column(name = "idAsignaPlanestudio" , length = 20)
+    private String idAsignaPlanestudio;
+   
+    /** El alumno. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idAlumno", referencedColumnName = "idAlumno")
+    private Alumno alumno;
+   
+    /** El plan estudio. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idPlanEstudio", referencedColumnName = "idPlanEstudio")
+    private PlanEstudio planEstudio;
+   
+    /** El estado. */
+    @Column(name = "estado" , length = 1)
+    private String estado;
+   
+    /** El fecha crea. */
+    @Temporal( TemporalType.TIMESTAMP)
+    @Column(name = "fechaCrea")
+    private Date fechaCrea;
+   
+    /**
+     * Instancia un nuevo asigna plan estudio.
+     */
+    public AsignaPlanEstudio() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo asigna plan estudio.
+     *
+     * @param idAsignaPlanestudio el id asigna planestudio
+     * @param alumno el alumno
+     * @param planEstudio el plan estudio
+     * @param estado el estado
+     * @param fechaCrea el fecha crea
+     */
+    public AsignaPlanEstudio(String idAsignaPlanestudio, Alumno alumno,PlanEstudio planEstudio,String estado, Date fechaCrea ) {
+        super();
+        this.idAsignaPlanestudio = idAsignaPlanestudio;
+        this.alumno = alumno;
+        this.planEstudio = planEstudio;
+        this.estado = estado;
+        this.fechaCrea = fechaCrea;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id asigna planestudio.
+     *
+     * @return id asigna planestudio
+     */
+     public String getIdAsignaPlanestudio() {
+        return this.idAsignaPlanestudio;
+    }
+    /**
+     * Establece el id asigna planestudio.
+     *
+     * @param idAsignaPlanestudio el new id asigna planestudio
+     */
+    public void setIdAsignaPlanestudio(String idAsignaPlanestudio) {
+        this.idAsignaPlanestudio = idAsignaPlanestudio;
+    }
+    /**
+     * Obtiene alumno.
+     *
+     * @return alumno
+     */
+     public Alumno getAlumno() {
+        return this.alumno;
+    }
+    /**
+     * Establece el alumno.
+     *
+     * @param alumno el new alumno
+     */
+    public void setAlumno(Alumno alumno) {
+        this.alumno = alumno;
+    }
+    /**
+     * Obtiene plan estudio.
+     *
+     * @return plan estudio
+     */
+     public PlanEstudio getPlanEstudio() {
+        return this.planEstudio;
+    }
+    /**
+     * Establece el plan estudio.
+     *
+     * @param planEstudio el new plan estudio
+     */
+    public void setPlanEstudio(PlanEstudio planEstudio) {
+        this.planEstudio = planEstudio;
+    }
+    /**
+     * Obtiene estado.
+     *
+     * @return estado
+     */
+     public String getEstado() {
+        return this.estado;
+    }
+    /**
+     * Establece el estado.
+     *
+     * @param estado el new estado
+     */
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+    /**
+     * Obtiene fecha crea.
+     *
+     * @return fecha crea
+     */
+     public Date getFechaCrea() {
+        return this.fechaCrea;
+    }
+    /**
+     * Establece el fecha crea.
+     *
+     * @param fechaCrea el new fecha crea
+     */
+    public void setFechaCrea(Date fechaCrea) {
+        this.fechaCrea = fechaCrea;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idAsignaPlanestudio == null) ? 0 : idAsignaPlanestudio.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        AsignaPlanEstudio other = (AsignaPlanEstudio) obj;
+        if (idAsignaPlanestudio == null) {
+            if (other.idAsignaPlanestudio != null) {
+                return false;
+            }
+        } else if (!idAsignaPlanestudio.equals(other.idAsignaPlanestudio)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "AsignaPlanEstudio [idAsignaPlanestudio=" + idAsignaPlanestudio + "]";
+    }
+   
+}

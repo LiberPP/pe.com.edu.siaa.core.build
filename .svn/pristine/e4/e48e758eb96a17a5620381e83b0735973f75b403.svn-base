@@ -1,0 +1,116 @@
+package pe.com.edu.siaa.core.ejb.dao.pago.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.persistence.Query;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericAcademicoDAOImpl;
+import pe.com.edu.siaa.core.ejb.dao.pago.local.ConceptoAlumnoConvenioDaoLocal;
+import pe.com.edu.siaa.core.model.dto.pago.ConceptoAlumnoConvenioDTO;
+import pe.com.edu.siaa.core.model.jpa.pago.ConceptoAlumnoConvenio;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+
+/**
+ * La Class ConceptoAlumnoConvenioDaoImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 19:53:31 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+public class ConceptoAlumnoConvenioDaoImpl extends  GenericAcademicoDAOImpl<Long, ConceptoAlumnoConvenio> implements ConceptoAlumnoConvenioDaoLocal  {
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.ConceptoAlumnoConvenioDaoLocal#listarConceptoAlumnoConvenio(pe.com.edu.siaa.core.model.jpa.seguridad.ConceptoAlumnoConvenio)
+     */  
+    @Override	 
+    public List<ConceptoAlumnoConvenio> listarConceptoAlumnoConvenio(ConceptoAlumnoConvenioDTO conceptoAlumnoConvenio) {
+        Query query = generarQueryListaConceptoAlumnoConvenio(conceptoAlumnoConvenio, false);
+        query.setFirstResult(conceptoAlumnoConvenio.getStartRow());
+        query.setMaxResults(conceptoAlumnoConvenio.getOffset());
+        return query.getResultList();
+    }   
+   
+    /**
+     * Generar query lista ConceptoAlumnoConvenio.
+     *
+     * @param ConceptoAlumnoConvenioDTO el conceptoAlumnoConvenio
+     * @param esContador el es contador
+     * @return the query
+     */
+    private Query generarQueryListaConceptoAlumnoConvenio(ConceptoAlumnoConvenioDTO conceptoAlumnoConvenio, boolean esContador) {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        if (esContador) {
+            jpaql.append(" select count(o.idConceptoAlumnoconvenio) from ConceptoAlumnoConvenio o where 1=1 ");
+        } else {
+            jpaql.append(" select o from ConceptoAlumnoConvenio o where 1=1 ");           
+        }
+		if (!StringUtils.isNullOrEmpty(conceptoAlumnoConvenio.getSearch())) {
+	          jpaql.append(" and upper(o.idConceptoAlumnoconvenio) like :search ");
+	          parametros.put("search", "%" + conceptoAlumnoConvenio.getSearch().toUpperCase() + "%");
+	    } else {
+			if (!StringUtils.isNullOrEmptyNumeric(conceptoAlumnoConvenio.getMonto())) {
+				jpaql.append(" and o.monto = :monto ");
+				parametros.put("monto", conceptoAlumnoConvenio.getMonto());
+			}
+			if (!StringUtils.isNullOrEmpty(conceptoAlumnoConvenio.getFraccionado())) {
+				jpaql.append(" and upper(o.fraccionado) like :fraccionado ");
+				parametros.put("fraccionado", "%" + conceptoAlumnoConvenio.getFraccionado().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmptyNumeric(conceptoAlumnoConvenio.getNroFraccionamiento())) {
+				jpaql.append(" and o.nroFraccionamiento = :nroFraccionamiento ");
+				parametros.put("nroFraccionamiento", conceptoAlumnoConvenio.getNroFraccionamiento());
+			}
+			if (!StringUtils.isNullOrEmpty(conceptoAlumnoConvenio.getEstado())) {
+				jpaql.append(" and upper(o.estado) like :estado ");
+				parametros.put("estado", "%" + conceptoAlumnoConvenio.getEstado().toUpperCase() + "%");
+			}
+		}
+        if (!esContador) {
+            //jpaql.append(" ORDER BY 1 ");
+        }
+        Query query = createQuery(jpaql.toString(), parametros);
+        return query;
+    }
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.ConceptoAlumnoConvenioDaoLocal#contarListar{entity.getClassName()}(pe.com.edu.siaa.core.model.jpa.seguridad.ConceptoAlumnoConvenioDTO)
+     */
+	@Override
+    public int contarListarConceptoAlumnoConvenio(ConceptoAlumnoConvenioDTO conceptoAlumnoConvenio) {
+        int resultado = 0;
+        try {
+            //StringBuilder jpaql = new StringBuilder();
+            Query query = generarQueryListaConceptoAlumnoConvenio(conceptoAlumnoConvenio, true);
+            resultado = ((Long) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            resultado = 0;
+        }
+        return resultado;
+    }
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.ConceptoAlumnoConvenioDaoLocal#generarIdConceptoAlumnoConvenio()
+     */
+	 @Override
+    public Long generarIdConceptoAlumnoConvenio() {
+        Long resultado = 1L;
+        Query query = createQuery("select max(o.idConceptoAlumnoconvenio) from ConceptoAlumnoConvenio o", null);
+        List<Object> listLong =  query.getResultList();
+        if (listLong != null && listLong.size() > 0 && listLong.get(0) != null)  {
+            Long ultimoIdGenerado = Long.valueOf(listLong.get(0).toString());
+            if (!StringUtils.isNullOrEmpty(ultimoIdGenerado)) {
+                resultado = resultado + ultimoIdGenerado;
+            }
+        }
+        return resultado;
+    }
+   
+}

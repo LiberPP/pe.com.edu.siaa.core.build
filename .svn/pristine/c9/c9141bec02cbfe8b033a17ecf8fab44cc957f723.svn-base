@@ -1,0 +1,68 @@
+package pe.com.edu.siaa.core.ejb.dao.matricula.local;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.dto.matricula.DetCargaLectivaDTO;
+import pe.com.edu.siaa.core.model.jpa.matricula.DetCargaLectiva;
+
+/**
+ * La Class DetCargaLectivaDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 11:25:12 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface DetCargaLectivaDaoLocal  extends GenericDAOLocal<String,DetCargaLectiva> {
+	
+	/**
+	 * Obtener det carga lectiva.
+	 *
+	 * @param detCargaLectiva el det carga lectiva
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<DetCargaLectiva> obtenerDetCargaLectiva(DetCargaLectivaDTO detCargaLectiva) throws Exception;
+	
+	/**
+	 * Listar det plan estudio.
+	 *
+	 * @param detCargaLectiva el det plan estudio
+	 * @param alumno el alumno
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<DetCargaLectivaDTO> listarDetCargaLectiva(Map<String,Object> parametrosMap) throws Exception;
+	/**
+	 * Listar det carga lectiva.
+	 *
+	 * @param detCargaLectiva el det carga lectivaDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<DetCargaLectiva> listarDetCargaLectiva(DetCargaLectivaDTO detCargaLectiva) throws Exception;
+	
+	/**
+	 * contar lista det carga lectiva.
+	 *
+	 * @param detCargaLectiva el det carga lectiva
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarDetCargaLectiva(DetCargaLectivaDTO detCargaLectiva);
+	/**
+	 * Generar id detCargaLectiva.
+	 *
+	 * @return the String
+	 * @throws Exception the exception
+	 */
+	String generarIdDetCargaLectiva() throws Exception;
+}

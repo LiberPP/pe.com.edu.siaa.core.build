@@ -1,0 +1,324 @@
+package pe.com.edu.siaa.core.model.jpa.matricula;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import pe.com.edu.siaa.core.model.jpa.admision.AnhoSemestre;
+import pe.com.edu.siaa.core.model.util.ConfiguracionEntityManagerUtil;
+
+/**
+ * La Class Traslado.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 09:56:56 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Entity
+@Table(name = "Traslado", schema = ConfiguracionEntityManagerUtil.ESQUEMA_ACADEMICO)
+public class Traslado implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id traslado. */
+    @Id
+    @Column(name = "idTraslado" , length = 16)
+    private String idTraslado;
+   
+    /** El alumno. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idAlumno", referencedColumnName = "idAlumno")
+    private Alumno alumno;
+   
+    /** El anho semestre. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idAnhoSemestre", referencedColumnName = "idAnhoSemestre")
+    private AnhoSemestre anhoSemestre;
+   
+    /** El codigo resolucion. */
+    @Column(name = "codigoResolucion" , length = 50)
+    private String codigoResolucion;
+   
+    /** El tipo traslado. */
+    @Column(name = "tipoTraslado" , length = 1)
+    private String tipoTraslado;
+   
+    /** El usuario creacion. */
+    @Column(name = "usuarioCreacion" , length = 50)
+    private String usuarioCreacion;
+   
+    /** El fecha creacion. */
+    @Temporal( TemporalType.TIMESTAMP)
+    @Column(name = "fechaCreacion")
+    private Date fechaCreacion;
+   
+    /** El fecha modificacion. */
+    @Temporal( TemporalType.TIMESTAMP)
+    @Column(name = "fechaModificacion")
+    private Date fechaModificacion;
+   
+    /** El usuario modificacion. */
+    @Column(name = "usuarioModificacion" , length = 50)
+    private String usuarioModificacion;
+   
+    /** El traslado det traslado list. */
+    @OneToMany(mappedBy = "traslado", fetch = FetchType.LAZY)
+    private List<DetTraslado> trasladoDetTrasladoList = new ArrayList<DetTraslado>();
+    
+    /**
+     * Instancia un nuevo traslado.
+     */
+    public Traslado() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo traslado.
+     *
+     * @param idTraslado el id traslado
+     * @param alumno el alumno
+     * @param anhoSemestre el anho semestre
+     * @param codigoResolucion el codigo resolucion
+     * @param tipoTraslado el tipo traslado
+     * @param usuarioCreacion el usuario creacion
+     * @param fechaCreacion el fecha creacion
+     * @param fechaModificacion el fecha modificacion
+     * @param usuarioModificacion el usuario modificacion
+     */
+    public Traslado(String idTraslado, Alumno alumno,AnhoSemestre anhoSemestre,String codigoResolucion, String tipoTraslado, String usuarioCreacion, Date fechaCreacion, Date fechaModificacion, String usuarioModificacion ) {
+        super();
+        this.idTraslado = idTraslado;
+        this.alumno = alumno;
+        this.anhoSemestre = anhoSemestre;
+        this.codigoResolucion = codigoResolucion;
+        this.tipoTraslado = tipoTraslado;
+        this.usuarioCreacion = usuarioCreacion;
+        this.fechaCreacion = fechaCreacion;
+        this.fechaModificacion = fechaModificacion;
+        this.usuarioModificacion = usuarioModificacion;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id traslado.
+     *
+     * @return id traslado
+     */
+     public String getIdTraslado() {
+        return this.idTraslado;
+    }
+    /**
+     * Establece el id traslado.
+     *
+     * @param idTraslado el new id traslado
+     */
+    public void setIdTraslado(String idTraslado) {
+        this.idTraslado = idTraslado;
+    }
+    /**
+     * Obtiene alumno.
+     *
+     * @return alumno
+     */
+     public Alumno getAlumno() {
+        return this.alumno;
+    }
+    /**
+     * Establece el alumno.
+     *
+     * @param alumno el new alumno
+     */
+    public void setAlumno(Alumno alumno) {
+        this.alumno = alumno;
+    }
+    /**
+     * Obtiene anho semestre.
+     *
+     * @return anho semestre
+     */
+     public AnhoSemestre getAnhoSemestre() {
+        return this.anhoSemestre;
+    }
+    /**
+     * Establece el anho semestre.
+     *
+     * @param anhoSemestre el new anho semestre
+     */
+    public void setAnhoSemestre(AnhoSemestre anhoSemestre) {
+        this.anhoSemestre = anhoSemestre;
+    }
+    /**
+     * Obtiene codigo resolucion.
+     *
+     * @return codigo resolucion
+     */
+     public String getCodigoResolucion() {
+        return this.codigoResolucion;
+    }
+    /**
+     * Establece el codigo resolucion.
+     *
+     * @param codigoResolucion el new codigo resolucion
+     */
+    public void setCodigoResolucion(String codigoResolucion) {
+        this.codigoResolucion = codigoResolucion;
+    }
+    /**
+     * Obtiene tipo traslado.
+     *
+     * @return tipo traslado
+     */
+     public String getTipoTraslado() {
+        return this.tipoTraslado;
+    }
+    /**
+     * Establece el tipo traslado.
+     *
+     * @param tipoTraslado el new tipo traslado
+     */
+    public void setTipoTraslado(String tipoTraslado) {
+        this.tipoTraslado = tipoTraslado;
+    }
+    /**
+     * Obtiene usuario creacion.
+     *
+     * @return usuario creacion
+     */
+     public String getUsuarioCreacion() {
+        return this.usuarioCreacion;
+    }
+    /**
+     * Establece el usuario creacion.
+     *
+     * @param usuarioCreacion el new usuario creacion
+     */
+    public void setUsuarioCreacion(String usuarioCreacion) {
+        this.usuarioCreacion = usuarioCreacion;
+    }
+    /**
+     * Obtiene fecha creacion.
+     *
+     * @return fecha creacion
+     */
+     public Date getFechaCreacion() {
+        return this.fechaCreacion;
+    }
+    /**
+     * Establece el fecha creacion.
+     *
+     * @param fechaCreacion el new fecha creacion
+     */
+    public void setFechaCreacion(Date fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
+    }
+    /**
+     * Obtiene fecha modificacion.
+     *
+     * @return fecha modificacion
+     */
+     public Date getFechaModificacion() {
+        return this.fechaModificacion;
+    }
+    /**
+     * Establece el fecha modificacion.
+     *
+     * @param fechaModificacion el new fecha modificacion
+     */
+    public void setFechaModificacion(Date fechaModificacion) {
+        this.fechaModificacion = fechaModificacion;
+    }
+    /**
+     * Obtiene usuario modificacion.
+     *
+     * @return usuario modificacion
+     */
+     public String getUsuarioModificacion() {
+        return this.usuarioModificacion;
+    }
+    /**
+     * Establece el usuario modificacion.
+     *
+     * @param usuarioModificacion el new usuario modificacion
+     */
+    public void setUsuarioModificacion(String usuarioModificacion) {
+        this.usuarioModificacion = usuarioModificacion;
+    }
+    /**
+     * Establece el traslado det traslado list.
+     *
+     * @param trasladoDetTrasladoList el new traslado det traslado list
+     */
+    public List<DetTraslado> getTrasladoDetTrasladoList(){
+        return this.trasladoDetTrasladoList;
+    }
+    /**
+     * Establece el traslado list.
+     *
+     * @param trasladoList el new traslado list
+     */
+    public void setTrasladoDetTrasladoList(List<DetTraslado> trasladoDetTrasladoList) {
+        this.trasladoDetTrasladoList = trasladoDetTrasladoList;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idTraslado == null) ? 0 : idTraslado.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Traslado other = (Traslado) obj;
+        if (idTraslado == null) {
+            if (other.idTraslado != null) {
+                return false;
+            }
+        } else if (!idTraslado.equals(other.idTraslado)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Traslado [idTraslado=" + idTraslado + "]";
+    }
+   
+}

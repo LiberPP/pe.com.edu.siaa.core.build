@@ -1,0 +1,498 @@
+package pe.com.edu.siaa.core.model.dto.matricula;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import pe.com.edu.siaa.core.model.dto.BasePaginator;
+import pe.com.edu.siaa.core.model.dto.admision.AnhoSemestreDTO;
+import pe.com.edu.siaa.core.model.dto.common.ItemDTO;
+
+/**
+ * La Class MatriculaDTO.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 1.0, Tue Apr 18 09:56:57 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+public class MatriculaDTO extends BasePaginator implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id matricula. */
+    private String idMatricula;
+   
+    /** El anho semestre. */
+    private AnhoSemestreDTO anhoSemestre;
+   
+    /** El alumno. */
+    private AlumnoDTO alumno;
+   
+    /** El item by ciclo. */
+    private ItemDTO itemByCiclo;
+   
+    /** El creditos. */
+    private Integer creditos;
+   
+    /** El tipo matricula. */
+    private String tipoMatricula;
+   
+    /** El fecha matricula. */
+    private Date fechaMatricula;
+   
+    /** El usuariocreacion. */
+    private String usuarioCreacion;
+   
+    /** El fecha creacion. */
+    private Date fechaCreacion;
+   
+    /** El usuario modificacion. */
+    private String usuarioModificacion;
+   
+    /** El fecha modificacion. */
+    private Date fechaModificacion;
+   
+    /** El observacion. */
+    private String observacion;
+   
+    /** El estado. */
+    private String estado;
+    
+    /** El curso nota map. */
+	private Map<String,BigDecimal> cursoNotaMap = new HashMap<String, BigDecimal>();
+
+	/** La lista det car lectiva. */
+	private List<DetCargaLectivaDTO> listaDetCarLectiva = new ArrayList<DetCargaLectivaDTO>();
+	
+	/** La numero veces levo curso map. */
+	private Map<String,Integer> numeroVecesLevoCursoMap = new HashMap<String, Integer>();
+	
+	/** La nota minima. */
+	private double notaMinima;
+   
+    /**
+     * Instancia un nuevo matriculaDTO.
+     */
+    public MatriculaDTO() {
+    }
+   
+    /**
+	 * Instancia un nuevo matricula.
+	 *
+	 * @param idMatricula el id matricula
+	 */
+	public MatriculaDTO(String idMatricula) {
+		this.idMatricula = idMatricula;
+	}
+   
+    /**
+     * Instancia un nuevo matriculaDTO.
+     *
+     * @param idMatricula el id matricula
+     * @param anhoSemestre el anho semestre
+     * @param alumno el alumno
+     * @param itemByCiclo el item by ciclo
+     * @param creditos el creditos
+     * @param tipoMatricula el tipo matricula
+     * @param fechaMatricula el fecha matricula
+     * @param usuariocreacion el usuariocreacion
+     * @param fechaCreacion el fecha creacion
+     * @param usuarioModificacion el usuario modificacion
+     * @param fechaModificacion el fecha modificacion
+     * @param observacion el observacion
+     * @param estado el estado
+     */
+    public MatriculaDTO(String idMatricula, AnhoSemestreDTO anhoSemestre,AlumnoDTO alumno,ItemDTO itemByCiclo,Integer creditos, String tipoMatricula, Date fechaMatricula, String usuariocreacion, Date fechaCreacion, String usuarioModificacion, Date fechaModificacion, String observacion, String estado ) {
+        super();
+        this.idMatricula = idMatricula;
+        this.anhoSemestre = anhoSemestre;
+        this.alumno = alumno;
+        this.itemByCiclo = itemByCiclo;
+        this.creditos = creditos;
+        this.tipoMatricula = tipoMatricula;
+        this.fechaMatricula = fechaMatricula;
+        this.usuarioCreacion = usuariocreacion;
+        this.fechaCreacion = fechaCreacion;
+        this.usuarioModificacion = usuarioModificacion;
+        this.fechaModificacion = fechaModificacion;
+        this.observacion = observacion;
+        this.estado = estado;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id matricula.
+     *
+     * @return id matricula
+     */
+     public String getIdMatricula() {
+        return this.idMatricula;
+    }
+    /**
+     * Establece el id matricula.
+     *
+     * @param idMatricula el new id matricula
+     */
+    public void setIdMatricula(String idMatricula) {
+        this.idMatricula = idMatricula;
+    }
+    /**
+     * Obtiene anho semestre.
+     *
+     * @return anho semestre
+     */
+     public AnhoSemestreDTO getAnhoSemestre() {
+        return this.anhoSemestre;
+    }
+    /**
+     * Establece el anho semestre.
+     *
+     * @param anhoSemestre el new anho semestre
+     */
+    public void setAnhoSemestre(AnhoSemestreDTO anhoSemestre) {
+        this.anhoSemestre = anhoSemestre;
+    }
+    /**
+     * Obtiene alumno.
+     *
+     * @return alumno
+     */
+     public AlumnoDTO getAlumno() {
+        return this.alumno;
+    }
+    /**
+     * Establece el alumno.
+     *
+     * @param alumno el new alumno
+     */
+    public void setAlumno(AlumnoDTO alumno) {
+        this.alumno = alumno;
+    }
+    /**
+     * Obtiene item by ciclo.
+     *
+     * @return item by ciclo
+     */
+     public ItemDTO getItemByCiclo() {
+        return this.itemByCiclo;
+    }
+    /**
+     * Establece el item by ciclo.
+     *
+     * @param itemByCiclo el new item by ciclo
+     */
+    public void setItemByCiclo(ItemDTO itemByCiclo) {
+        this.itemByCiclo = itemByCiclo;
+    }
+    /**
+     * Obtiene creditos.
+     *
+     * @return creditos
+     */
+     public Integer getCreditos() {
+        return this.creditos;
+    }
+    /**
+     * Establece el creditos.
+     *
+     * @param creditos el new creditos
+     */
+    public void setCreditos(Integer creditos) {
+        this.creditos = creditos;
+    }
+    /**
+     * Obtiene tipo matricula.
+     *
+     * @return tipo matricula
+     */
+     public String getTipoMatricula() {
+        return this.tipoMatricula;
+    }
+    /**
+     * Establece el tipo matricula.
+     *
+     * @param tipoMatricula el new tipo matricula
+     */
+    public void setTipoMatricula(String tipoMatricula) {
+        this.tipoMatricula = tipoMatricula;
+    }
+    /**
+     * Obtiene fecha matricula.
+     *
+     * @return fecha matricula
+     */
+     public Date getFechaMatricula() {
+        return this.fechaMatricula;
+    }
+    /**
+     * Establece el fecha matricula.
+     *
+     * @param fechaMatricula el new fecha matricula
+     */
+    public void setFechaMatricula(Date fechaMatricula) {
+        this.fechaMatricula = fechaMatricula;
+    }
+    /**
+     * Obtiene usuariocreacion.
+     *
+     * @return usuariocreacion
+     */
+     public String getUsuarioCreacion() {
+        return this.usuarioCreacion;
+    }
+    /**
+     * Establece el usuariocreacion.
+     *
+     * @param usuarioCreacion el new usuariocreacion
+     */
+    public void setUsuarioCreacion(String usuarioCreacion) {
+        this.usuarioCreacion = usuarioCreacion;
+    }
+    /**
+     * Obtiene fecha creacion.
+     *
+     * @return fecha creacion
+     */
+     public Date getFechaCreacion() {
+        return this.fechaCreacion;
+    }
+    /**
+     * Establece el fecha creacion.
+     *
+     * @param fechaCreacion el new fecha creacion
+     */
+    public void setFechaCreacion(Date fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
+    }
+    /**
+     * Obtiene usuario modificacion.
+     *
+     * @return usuario modificacion
+     */
+     public String getUsuarioModificacion() {
+        return this.usuarioModificacion;
+    }
+    /**
+     * Establece el usuario modificacion.
+     *
+     * @param usuarioModificacion el new usuario modificacion
+     */
+    public void setUsuarioModificacion(String usuarioModificacion) {
+        this.usuarioModificacion = usuarioModificacion;
+    }
+    /**
+     * Obtiene fecha modificacion.
+     *
+     * @return fecha modificacion
+     */
+     public Date getFechaModificacion() {
+        return this.fechaModificacion;
+    }
+    /**
+     * Establece el fecha modificacion.
+     *
+     * @param fechaModificacion el new fecha modificacion
+     */
+    public void setFechaModificacion(Date fechaModificacion) {
+        this.fechaModificacion = fechaModificacion;
+    }
+    /**
+     * Obtiene observacion.
+     *
+     * @return observacion
+     */
+     public String getObservacion() {
+        return this.observacion;
+    }
+    /**
+     * Establece el observacion.
+     *
+     * @param observacion el new observacion
+     */
+    public void setObservacion(String observacion) {
+        this.observacion = observacion;
+    }
+    /**
+     * Obtiene estado.
+     *
+     * @return estado
+     */
+     public String getEstado() {
+        return this.estado;
+    }
+    /**
+     * Establece el estado.
+     *
+     * @param estado el new estado
+     */
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+    
+    /**
+	 * Aprobo curso.
+	 *
+	 * @param detPlanEstudio el det plan estudio
+	 * @return true, en caso de exito
+	 */
+	public boolean aproboCurso(DetPlanEstudioDTO detPlanEstudio) {
+		boolean resultado = false;
+		BigDecimal nota = getCursoNotaMap().get(detPlanEstudio.getIdDetPlanEstudio());
+		if (nota == null || nota.doubleValue() < getNotaMinima()) {
+			resultado = true;
+		} 	
+	    return resultado;
+   }
+			
+	/**
+	 * Aprobo todos cursos pre requisitos.
+	 *
+	 * @param detPlanEstudio el det plan estudio
+	 * @return true, en caso de exito
+	 */
+	public  boolean aproboTodosCursosPreRequisitos(DetPlanEstudioDTO detPlanEstudio) {
+		boolean resultado = true;
+		for (DetPlanEstudioDTO cursoPlan : detPlanEstudio.getListaPrequisitos()) {
+			 BigDecimal nota = getCursoNotaMap().get(cursoPlan.getIdDetPlanEstudio());
+			 if (nota == null || nota.doubleValue() < getNotaMinima() ) {
+				resultado = false;
+				break;
+			 } 
+		}
+		if (resultado) {
+			BigDecimal notaPapa = getCursoNotaMap().get(detPlanEstudio.getIdDetPlanEstudio());
+			if (notaPapa != null && notaPapa.doubleValue() >= getNotaMinima()) {
+				resultado = false;
+			} 	
+		}
+		return resultado;
+ }
+	
+	/**
+	 * Obtiene curso nota map.
+	 *
+	 * @return curso nota map
+	 */
+	public Map<String, BigDecimal> getCursoNotaMap() {
+		return cursoNotaMap;
+	}
+	
+	/**
+	 * Sets the curso nota map.
+	 *
+	 * @param cursoNotaMap el curso nota map
+	 */
+	public void setCursoNotaMap(Map<String, BigDecimal> cursoNotaMap) {
+		this.cursoNotaMap = cursoNotaMap;
+	}
+	
+	/**
+	 * Obtiene lista det car lectiva.
+	 *
+	 * @return lista det car lectiva
+	 */
+	public List<DetCargaLectivaDTO> getListaDetCarLectiva() {
+		return listaDetCarLectiva;
+	}
+	
+	/**
+	 * Establece el lista det car lectiva.
+	 *
+	 * @param listaDetCarLectiva el new lista det car lectiva
+	 */
+	public void setListaDetCarLectiva(List<DetCargaLectivaDTO> listaDetCarLectiva) {
+		this.listaDetCarLectiva = listaDetCarLectiva;
+	}
+	
+	/**
+	 * Obtiene numero veces levo curso map.
+	 *
+	 * @return numero veces levo curso map
+	 */
+	public Map<String, Integer> getNumeroVecesLevoCursoMap() {
+		return numeroVecesLevoCursoMap;
+	}
+	
+	/**
+	 * Sets the numero veces levo curso map.
+	 *
+	 * @param numeroVecesLevoCursoMap el numero veces levo curso map
+	 */
+	public void setNumeroVecesLevoCursoMap(
+			Map<String, Integer> numeroVecesLevoCursoMap) {
+		this.numeroVecesLevoCursoMap = numeroVecesLevoCursoMap;
+	}
+
+	/**
+	 * Obtiene nota minima.
+	 *
+	 * @return nota minima
+	 */
+	public double getNotaMinima() {
+		return notaMinima;
+	}
+
+	/**
+	 * Establece el nota minima.
+	 *
+	 * @param notaMinima el new nota minima
+	 */
+	public void setNotaMinima(double notaMinima) {
+		this.notaMinima = notaMinima;
+	}
+	
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idMatricula == null) ? 0 : idMatricula.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        MatriculaDTO other = (MatriculaDTO) obj;
+        if (idMatricula == null) {
+            if (other.idMatricula != null) {
+                return false;
+            }
+        } else if (!idMatricula.equals(other.idMatricula)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "MatriculaDTO [idMatricula=" + idMatricula + "]";
+    }
+   
+}

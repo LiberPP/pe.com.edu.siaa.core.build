@@ -1,0 +1,602 @@
+package pe.com.edu.siaa.core.model.dto.admision;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import pe.com.edu.siaa.core.model.dto.BasePaginator;
+import pe.com.edu.siaa.core.model.dto.common.ItemDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.AlumnoDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.CargaLectivaDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.ConsejeroDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.PlanEstudioDTO;
+import pe.com.edu.siaa.core.model.dto.pago.CuotaConceptoDTO;
+
+/**
+ * La Class EscuelaDTO.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 1.0, Tue Apr 18 09:56:49 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+public class EscuelaDTO extends BasePaginator implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id escuela. */
+    private String idEscuela;
+   
+    /** El codigo. */
+    private Integer codigo;
+   
+    /** El nombre. */
+    private String nombre;
+   
+    /** El nro ciclo. */
+    private Integer nroCiclo;
+   
+    /** El facultad. */
+    private FacultadDTO facultad;
+   
+    /** El item by tipo especialidad. */
+    private ItemDTO itemByTipoEspecialidad;
+   
+    /** El item by clase especialidad. */
+    private ItemDTO itemByClaseEspecialidad;
+   
+    /** El anho inicio. */
+    private String anhoInicio;
+   
+    /** El dispositivo creacion. */
+    private String dispositivoCreacion;
+   
+    /** El fecha funcionamiento. */
+    private Date fechaFuncionamiento;
+   
+    /** El nro credito. */
+    private Integer nroCredito;
+   
+    /** El total credito extracurricular. */
+    private Integer totalCreditoExtracurricular;
+   
+    /** El nro hra practica pre profesional. */
+    private Integer nroHraPracticaPreProfesional;
+   
+    /** El nro credito reconocido movilidad. */
+    private Integer nroCreditoReconocidoMovilidad;
+   
+    /** El nombre grado otorga. */
+    private String nombreGradoOtorga;
+   
+    /** El nombre titulo otorga. */
+    private String nombreTituloOtorga;
+   
+    /** El flag modalidad ensenanza. */
+    private String flagModalidadEnsenanza;
+   
+    /** El escuela alumno list. */
+    private List<AlumnoDTO> escuelaAlumnoList = new ArrayList<AlumnoDTO>();
+   
+    /** El escuela carga lectiva list. */
+    private List<CargaLectivaDTO> escuelaCargaLectivaList = new ArrayList<CargaLectivaDTO>();
+   
+    /** El escuela consejero list. */
+    private List<ConsejeroDTO> escuelaConsejeroList = new ArrayList<ConsejeroDTO>();
+   
+    /** El escuela cuota concepto list. */
+    private List<CuotaConceptoDTO> escuelaCuotaConceptoList = new ArrayList<CuotaConceptoDTO>();
+   
+    /** El escuela plan estudio list. */
+    private List<PlanEstudioDTO> escuelaPlanEstudioList = new ArrayList<PlanEstudioDTO>();
+   
+    /** El escuela by opcion1 postulante list. */
+    private List<PostulanteDTO> escuelaByOpcion1PostulanteList = new ArrayList<PostulanteDTO>();
+   
+    /** El escuela by opcion2 postulante list. */
+    private List<PostulanteDTO> escuelaByOpcion2PostulanteList = new ArrayList<PostulanteDTO>();
+   
+    /** El escuela by ingreso postulante list. */
+    private List<PostulanteDTO> escuelaByIngresoPostulanteList = new ArrayList<PostulanteDTO>();
+   
+    /**
+     * Instancia un nuevo escuelaDTO.
+     */
+    public EscuelaDTO() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo escuelaDTO.
+     *
+     * @param idEscuela el id escuela
+     * @param codigo el codigo
+     * @param nombre el nombre
+     * @param nroCiclo el nro ciclo
+     * @param facultad el facultad
+     * @param itemByTipoEspecialidad el item by tipo especialidad
+     * @param itemByClaseEspecialidad el item by clase especialidad
+     * @param anhoInicio el anho inicio
+     * @param dispositivoCreacion el dispositivo creacion
+     * @param fechaFuncionamiento el fecha funcionamiento
+     * @param nroCredito el nro credito
+     * @param totalCreditoExtracurricular el total credito extracurricular
+     * @param nroHraPracticaPreProfesional el nro hra practica pre profesional
+     * @param nroCreditoReconocidoMovilidad el nro credito reconocido movilidad
+     * @param nombreGradoOtorga el nombre grado otorga
+     * @param nombreTituloOtorga el nombre titulo otorga
+     * @param flagModalidadEnsenanza el flag modalidad ensenanza
+     */
+    public EscuelaDTO(String idEscuela, Integer codigo, String nombre, Integer nroCiclo, FacultadDTO facultad,ItemDTO itemByTipoEspecialidad,ItemDTO itemByClaseEspecialidad,String anhoInicio, String dispositivoCreacion, Date fechaFuncionamiento, Integer nroCredito, Integer totalCreditoExtracurricular, Integer nroHraPracticaPreProfesional, Integer nroCreditoReconocidoMovilidad, String nombreGradoOtorga, String nombreTituloOtorga, String flagModalidadEnsenanza ) {
+        super();
+        this.idEscuela = idEscuela;
+        this.codigo = codigo;
+        this.nombre = nombre;
+        this.nroCiclo = nroCiclo;
+        this.facultad = facultad;
+        this.itemByTipoEspecialidad = itemByTipoEspecialidad;
+        this.itemByClaseEspecialidad = itemByClaseEspecialidad;
+        this.anhoInicio = anhoInicio;
+        this.dispositivoCreacion = dispositivoCreacion;
+        this.fechaFuncionamiento = fechaFuncionamiento;
+        this.nroCredito = nroCredito;
+        this.totalCreditoExtracurricular = totalCreditoExtracurricular;
+        this.nroHraPracticaPreProfesional = nroHraPracticaPreProfesional;
+        this.nroCreditoReconocidoMovilidad = nroCreditoReconocidoMovilidad;
+        this.nombreGradoOtorga = nombreGradoOtorga;
+        this.nombreTituloOtorga = nombreTituloOtorga;
+        this.flagModalidadEnsenanza = flagModalidadEnsenanza;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id escuela.
+     *
+     * @return id escuela
+     */
+     public String getIdEscuela() {
+        return this.idEscuela;
+    }
+    /**
+     * Establece el id escuela.
+     *
+     * @param idEscuela el new id escuela
+     */
+    public void setIdEscuela(String idEscuela) {
+        this.idEscuela = idEscuela;
+    }
+    /**
+     * Obtiene codigo.
+     *
+     * @return codigo
+     */
+     public Integer getCodigo() {
+        return this.codigo;
+    }
+    /**
+     * Establece el codigo.
+     *
+     * @param codigo el new codigo
+     */
+    public void setCodigo(Integer codigo) {
+        this.codigo = codigo;
+    }
+    /**
+     * Obtiene nombre.
+     *
+     * @return nombre
+     */
+     public String getNombre() {
+        return this.nombre;
+    }
+    /**
+     * Establece el nombre.
+     *
+     * @param nombre el new nombre
+     */
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+    /**
+     * Obtiene nro ciclo.
+     *
+     * @return nro ciclo
+     */
+     public Integer getNroCiclo() {
+        return this.nroCiclo;
+    }
+    /**
+     * Establece el nro ciclo.
+     *
+     * @param nroCiclo el new nro ciclo
+     */
+    public void setNroCiclo(Integer nroCiclo) {
+        this.nroCiclo = nroCiclo;
+    }
+    /**
+     * Obtiene facultad.
+     *
+     * @return facultad
+     */
+     public FacultadDTO getFacultad() {
+        return this.facultad;
+    }
+    /**
+     * Establece el facultad.
+     *
+     * @param facultad el new facultad
+     */
+    public void setFacultad(FacultadDTO facultad) {
+        this.facultad = facultad;
+    }
+    /**
+     * Obtiene item by tipo especialidad.
+     *
+     * @return item by tipo especialidad
+     */
+     public ItemDTO getItemByTipoEspecialidad() {
+        return this.itemByTipoEspecialidad;
+    }
+    /**
+     * Establece el item by tipo especialidad.
+     *
+     * @param itemByTipoEspecialidad el new item by tipo especialidad
+     */
+    public void setItemByTipoEspecialidad(ItemDTO itemByTipoEspecialidad) {
+        this.itemByTipoEspecialidad = itemByTipoEspecialidad;
+    }
+    /**
+     * Obtiene item by clase especialidad.
+     *
+     * @return item by clase especialidad
+     */
+     public ItemDTO getItemByClaseEspecialidad() {
+        return this.itemByClaseEspecialidad;
+    }
+    /**
+     * Establece el item by clase especialidad.
+     *
+     * @param itemByClaseEspecialidad el new item by clase especialidad
+     */
+    public void setItemByClaseEspecialidad(ItemDTO itemByClaseEspecialidad) {
+        this.itemByClaseEspecialidad = itemByClaseEspecialidad;
+    }
+    /**
+     * Obtiene anho inicio.
+     *
+     * @return anho inicio
+     */
+     public String getAnhoInicio() {
+        return this.anhoInicio;
+    }
+    /**
+     * Establece el anho inicio.
+     *
+     * @param anhoInicio el new anho inicio
+     */
+    public void setAnhoInicio(String anhoInicio) {
+        this.anhoInicio = anhoInicio;
+    }
+    /**
+     * Obtiene dispositivo creacion.
+     *
+     * @return dispositivo creacion
+     */
+     public String getDispositivoCreacion() {
+        return this.dispositivoCreacion;
+    }
+    /**
+     * Establece el dispositivo creacion.
+     *
+     * @param dispositivoCreacion el new dispositivo creacion
+     */
+    public void setDispositivoCreacion(String dispositivoCreacion) {
+        this.dispositivoCreacion = dispositivoCreacion;
+    }
+    /**
+     * Obtiene fecha funcionamiento.
+     *
+     * @return fecha funcionamiento
+     */
+     public Date getFechaFuncionamiento() {
+        return this.fechaFuncionamiento;
+    }
+    /**
+     * Establece el fecha funcionamiento.
+     *
+     * @param fechaFuncionamiento el new fecha funcionamiento
+     */
+    public void setFechaFuncionamiento(Date fechaFuncionamiento) {
+        this.fechaFuncionamiento = fechaFuncionamiento;
+    }
+    /**
+     * Obtiene nro credito.
+     *
+     * @return nro credito
+     */
+     public Integer getNroCredito() {
+        return this.nroCredito;
+    }
+    /**
+     * Establece el nro credito.
+     *
+     * @param nroCredito el new nro credito
+     */
+    public void setNroCredito(Integer nroCredito) {
+        this.nroCredito = nroCredito;
+    }
+    /**
+     * Obtiene total credito extracurricular.
+     *
+     * @return total credito extracurricular
+     */
+     public Integer getTotalCreditoExtracurricular() {
+        return this.totalCreditoExtracurricular;
+    }
+    /**
+     * Establece el total credito extracurricular.
+     *
+     * @param totalCreditoExtracurricular el new total credito extracurricular
+     */
+    public void setTotalCreditoExtracurricular(Integer totalCreditoExtracurricular) {
+        this.totalCreditoExtracurricular = totalCreditoExtracurricular;
+    }
+    /**
+     * Obtiene nro hra practica pre profesional.
+     *
+     * @return nro hra practica pre profesional
+     */
+     public Integer getNroHraPracticaPreProfesional() {
+        return this.nroHraPracticaPreProfesional;
+    }
+    /**
+     * Establece el nro hra practica pre profesional.
+     *
+     * @param nroHraPracticaPreProfesional el new nro hra practica pre profesional
+     */
+    public void setNroHraPracticaPreProfesional(Integer nroHraPracticaPreProfesional) {
+        this.nroHraPracticaPreProfesional = nroHraPracticaPreProfesional;
+    }
+    /**
+     * Obtiene nro credito reconocido movilidad.
+     *
+     * @return nro credito reconocido movilidad
+     */
+     public Integer getNroCreditoReconocidoMovilidad() {
+        return this.nroCreditoReconocidoMovilidad;
+    }
+    /**
+     * Establece el nro credito reconocido movilidad.
+     *
+     * @param nroCreditoReconocidoMovilidad el new nro credito reconocido movilidad
+     */
+    public void setNroCreditoReconocidoMovilidad(Integer nroCreditoReconocidoMovilidad) {
+        this.nroCreditoReconocidoMovilidad = nroCreditoReconocidoMovilidad;
+    }
+    /**
+     * Obtiene nombre grado otorga.
+     *
+     * @return nombre grado otorga
+     */
+     public String getNombreGradoOtorga() {
+        return this.nombreGradoOtorga;
+    }
+    /**
+     * Establece el nombre grado otorga.
+     *
+     * @param nombreGradoOtorga el new nombre grado otorga
+     */
+    public void setNombreGradoOtorga(String nombreGradoOtorga) {
+        this.nombreGradoOtorga = nombreGradoOtorga;
+    }
+    /**
+     * Obtiene nombre titulo otorga.
+     *
+     * @return nombre titulo otorga
+     */
+     public String getNombreTituloOtorga() {
+        return this.nombreTituloOtorga;
+    }
+    /**
+     * Establece el nombre titulo otorga.
+     *
+     * @param nombreTituloOtorga el new nombre titulo otorga
+     */
+    public void setNombreTituloOtorga(String nombreTituloOtorga) {
+        this.nombreTituloOtorga = nombreTituloOtorga;
+    }
+    /**
+     * Obtiene flag modalidad ensenanza.
+     *
+     * @return flag modalidad ensenanza
+     */
+     public String getFlagModalidadEnsenanza() {
+        return this.flagModalidadEnsenanza;
+    }
+    /**
+     * Establece el flag modalidad ensenanza.
+     *
+     * @param flagModalidadEnsenanza el new flag modalidad ensenanza
+     */
+    public void setFlagModalidadEnsenanza(String flagModalidadEnsenanza) {
+        this.flagModalidadEnsenanza = flagModalidadEnsenanza;
+    }
+    /**
+     * Establece el escuela alumno list.
+     *
+     * @param escuelaAlumnoList el new escuela alumno list
+     */
+    public List<AlumnoDTO> getEscuelaAlumnoList(){
+        return this.escuelaAlumnoList;
+    }
+    /**
+     * Establece el escuela list.
+     *
+     * @param escuelaList el new escuela list
+     */
+    public void setEscuelaAlumnoList(List<AlumnoDTO> escuelaAlumnoList) {
+        this.escuelaAlumnoList = escuelaAlumnoList;
+    }   
+    /**
+     * Establece el escuela carga lectiva list.
+     *
+     * @param escuelaCargaLectivaList el new escuela carga lectiva list
+     */
+    public List<CargaLectivaDTO> getEscuelaCargaLectivaList(){
+        return this.escuelaCargaLectivaList;
+    }
+    /**
+     * Establece el escuela list.
+     *
+     * @param escuelaList el new escuela list
+     */
+    public void setEscuelaCargaLectivaList(List<CargaLectivaDTO> escuelaCargaLectivaList) {
+        this.escuelaCargaLectivaList = escuelaCargaLectivaList;
+    }   
+    /**
+     * Establece el escuela consejero list.
+     *
+     * @param escuelaConsejeroList el new escuela consejero list
+     */
+    public List<ConsejeroDTO> getEscuelaConsejeroList(){
+        return this.escuelaConsejeroList;
+    }
+    /**
+     * Establece el escuela list.
+     *
+     * @param escuelaList el new escuela list
+     */
+    public void setEscuelaConsejeroList(List<ConsejeroDTO> escuelaConsejeroList) {
+        this.escuelaConsejeroList = escuelaConsejeroList;
+    }   
+    /**
+     * Establece el escuela cuota concepto list.
+     *
+     * @param escuelaCuotaConceptoList el new escuela cuota concepto list
+     */
+    public List<CuotaConceptoDTO> getEscuelaCuotaConceptoList(){
+        return this.escuelaCuotaConceptoList;
+    }
+    /**
+     * Establece el escuela list.
+     *
+     * @param escuelaList el new escuela list
+     */
+    public void setEscuelaCuotaConceptoList(List<CuotaConceptoDTO> escuelaCuotaConceptoList) {
+        this.escuelaCuotaConceptoList = escuelaCuotaConceptoList;
+    }   
+    /**
+     * Establece el escuela plan estudio list.
+     *
+     * @param escuelaPlanEstudioList el new escuela plan estudio list
+     */
+    public List<PlanEstudioDTO> getEscuelaPlanEstudioList(){
+        return this.escuelaPlanEstudioList;
+    }
+    /**
+     * Establece el escuela list.
+     *
+     * @param escuelaList el new escuela list
+     */
+    public void setEscuelaPlanEstudioList(List<PlanEstudioDTO> escuelaPlanEstudioList) {
+        this.escuelaPlanEstudioList = escuelaPlanEstudioList;
+    }   
+    /**
+     * Establece el escuela by opcion1 postulante list.
+     *
+     * @param escuelaByOpcion1PostulanteList el new escuela by opcion1 postulante list
+     */
+    public List<PostulanteDTO> getEscuelaByOpcion1PostulanteList(){
+        return this.escuelaByOpcion1PostulanteList;
+    }
+    /**
+     * Establece el escuela by opcion1 list.
+     *
+     * @param escuelaByOpcion1List el new escuela by opcion1 list
+     */
+    public void setEscuelaByOpcion1PostulanteList(List<PostulanteDTO> escuelaByOpcion1PostulanteList) {
+        this.escuelaByOpcion1PostulanteList = escuelaByOpcion1PostulanteList;
+    }   
+    /**
+     * Establece el escuela by opcion2 postulante list.
+     *
+     * @param escuelaByOpcion2PostulanteList el new escuela by opcion2 postulante list
+     */
+    public List<PostulanteDTO> getEscuelaByOpcion2PostulanteList(){
+        return this.escuelaByOpcion2PostulanteList;
+    }
+    /**
+     * Establece el escuela by opcion2 list.
+     *
+     * @param escuelaByOpcion2List el new escuela by opcion2 list
+     */
+    public void setEscuelaByOpcion2PostulanteList(List<PostulanteDTO> escuelaByOpcion2PostulanteList) {
+        this.escuelaByOpcion2PostulanteList = escuelaByOpcion2PostulanteList;
+    }   
+    /**
+     * Establece el escuela by ingreso postulante list.
+     *
+     * @param escuelaByIngresoPostulanteList el new escuela by ingreso postulante list
+     */
+    public List<PostulanteDTO> getEscuelaByIngresoPostulanteList(){
+        return this.escuelaByIngresoPostulanteList;
+    }
+    /**
+     * Establece el escuela by ingreso list.
+     *
+     * @param escuelaByIngresoList el new escuela by ingreso list
+     */
+    public void setEscuelaByIngresoPostulanteList(List<PostulanteDTO> escuelaByIngresoPostulanteList) {
+        this.escuelaByIngresoPostulanteList = escuelaByIngresoPostulanteList;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idEscuela == null) ? 0 : idEscuela.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        EscuelaDTO other = (EscuelaDTO) obj;
+        if (idEscuela == null) {
+            if (other.idEscuela != null) {
+                return false;
+            }
+        } else if (!idEscuela.equals(other.idEscuela)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "EscuelaDTO [idEscuela=" + idEscuela + "]";
+    }
+   
+}

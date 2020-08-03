@@ -1,0 +1,136 @@
+package pe.com.edu.siaa.core.ejb.service.rest.pago.impl;
+
+import java.util.List;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.CollectionUtil;
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.seguridad.jwt.rsa.util.AppHTTPHeaderNames;
+import pe.com.edu.siaa.core.ejb.service.pago.local.PagoServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.admision.AnhoSemestreDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.AlumnoDTO;
+import pe.com.edu.siaa.core.model.dto.pago.PlanPagosDTO;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class PlanPagosRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:35 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/planPagosRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class PlanPagosRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient PagoServiceLocal pagoServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<PlanPagosDTO> crear(@Context HttpHeaders httpHeaders,PlanPagosDTO planPagos) throws Exception {
+		return registrarPlanPagos(httpHeaders,planPagos);
+	}
+	@PUT
+	public ResultadoRestVO<PlanPagosDTO> modificar(@Context HttpHeaders httpHeaders,PlanPagosDTO planPagos) throws Exception {
+		return registrarPlanPagos(httpHeaders,planPagos);
+	}
+
+	private ResultadoRestVO<PlanPagosDTO> registrarPlanPagos(HttpHeaders httpHeaders,PlanPagosDTO planPagos){
+		String serviceKey = httpHeaders.getHeaderString( AppHTTPHeaderNames.SERVICE_KEY );
+		String authToken = httpHeaders.getHeaderString( AppHTTPHeaderNames.AUTH_TOKEN );
+		planPagos.setServiceKey(serviceKey);
+		planPagos.setAuthToken(authToken);
+		ResultadoRestVO<PlanPagosDTO> resultado = new ResultadoRestVO<PlanPagosDTO>();
+		 try {
+    		resultado.setObjetoResultado(pagoServiceLocal.registrarPlanPagos(planPagos));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	
+	@GET
+	@Path("/obtenerPlanPagosByIdAlumno/{idAnhoSemestre}/{idAlumno}")
+	public ResultadoRestVO<PlanPagosDTO> obtenerPlanPagosByIdAlumno(@PathParam("idAnhoSemestre") String idAnhoSemestre, @PathParam("idAlumno") String idAlumno ) throws Exception {
+		ResultadoRestVO<PlanPagosDTO> resultado = new ResultadoRestVO<PlanPagosDTO>();
+		PlanPagosDTO planPagos = new PlanPagosDTO();
+		planPagos.setAnhoSemestre(new AnhoSemestreDTO());
+		planPagos.getAnhoSemestre().setIdAnhoSemestre(idAnhoSemestre);
+		planPagos.setAlumno(new AlumnoDTO());
+		planPagos.getAlumno().setIdAlumno(idAlumno);
+		 try {
+			 List<PlanPagosDTO> listaPlanPagos = pagoServiceLocal.listarPlanPagos(planPagos);
+			 if (!CollectionUtil.isEmpty(listaPlanPagos)) {
+				 resultado.setObjetoResultado(listaPlanPagos.get(0));
+			 }
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<PlanPagosDTO> listarPlanPagos(@Context UriInfo info){
+		ResultadoRestVO<PlanPagosDTO> resultado = new ResultadoRestVO<PlanPagosDTO>();
+		PlanPagosDTO planPagos = transferUriInfo(info);
+		 try {
+    		resultado.setListaResultado(pagoServiceLocal.listarPlanPagos(planPagos));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<PlanPagosDTO> contarListarPlanPagos(@Context UriInfo info){
+		ResultadoRestVO<PlanPagosDTO> resultado = new ResultadoRestVO<PlanPagosDTO>();
+		PlanPagosDTO planPagos = transferUriInfo(info);
+		 try {
+    		resultado.setContador(pagoServiceLocal.contarListarPlanPagos(planPagos));
+    		if (resultado.isData()) {
+    			resultado.setListaResultado(pagoServiceLocal.listarPlanPagos(planPagos));
+    		}
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<PlanPagosDTO> inicializarPlanPagos(@Context UriInfo info) throws Exception {
+	     PlanPagosDTO planPagos = transferUriInfo(info);
+		 ResultadoRestVO<PlanPagosDTO> resultado = new ResultadoRestVO<PlanPagosDTO>();
+		 try {
+    		resultado.setObjetoResultado(planPagos);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private PlanPagosDTO transferUriInfo(@Context UriInfo info) {
+		PlanPagosDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,PlanPagosDTO.class);
+		return resultado;
+	}
+}

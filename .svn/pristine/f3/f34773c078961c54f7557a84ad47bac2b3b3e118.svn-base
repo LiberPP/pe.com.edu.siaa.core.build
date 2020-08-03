@@ -1,0 +1,229 @@
+package pe.com.edu.siaa.core.model.jpa.matricula;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import pe.com.edu.siaa.core.model.util.ConfiguracionEntityManagerUtil;
+
+/**
+ * La Class Aula.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 09:56:54 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Entity
+@Table(name = "Aula", schema = ConfiguracionEntityManagerUtil.ESQUEMA_ACADEMICO)
+public class Aula implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id aula. */
+    @Id
+    @Column(name = "idAula" , precision = 18 , scale = 0)
+    private Long idAula;
+   
+    /** El pabellon. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idPabellon", referencedColumnName = "idPabellon")
+    private Pabellon pabellon;
+   
+    /** El descripcion. */
+    @Column(name = "descripcion" , length = 100)
+    private String descripcion;
+   
+    /** El abreviatura. */
+    @Column(name = "abreviatura" , length = 50)
+    private String abreviatura;
+   
+    /** El estado. */
+    @Column(name = "estado" , length = 1)
+    private String estado;
+   
+    /** El aula det carga lectiva list. */
+    @OneToMany(mappedBy = "aula", fetch = FetchType.LAZY)
+    private List<DetCargaLectiva> aulaDetCargaLectivaList = new ArrayList<DetCargaLectiva>();
+    
+    /**
+     * Instancia un nuevo aula.
+     */
+    public Aula() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo aula.
+     *
+     * @param idAula el id aula
+     * @param pabellon el pabellon
+     * @param descripcion el descripcion
+     * @param abreviatura el abreviatura
+     * @param estado el estado
+     */
+    public Aula(Long idAula, Pabellon pabellon,String descripcion, String abreviatura, String estado ) {
+        super();
+        this.idAula = idAula;
+        this.pabellon = pabellon;
+        this.descripcion = descripcion;
+        this.abreviatura = abreviatura;
+        this.estado = estado;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id aula.
+     *
+     * @return id aula
+     */
+     public Long getIdAula() {
+        return this.idAula;
+    }
+    /**
+     * Establece el id aula.
+     *
+     * @param idAula el new id aula
+     */
+    public void setIdAula(Long idAula) {
+        this.idAula = idAula;
+    }
+    /**
+     * Obtiene pabellon.
+     *
+     * @return pabellon
+     */
+     public Pabellon getPabellon() {
+        return this.pabellon;
+    }
+    /**
+     * Establece el pabellon.
+     *
+     * @param pabellon el new pabellon
+     */
+    public void setPabellon(Pabellon pabellon) {
+        this.pabellon = pabellon;
+    }
+    /**
+     * Obtiene descripcion.
+     *
+     * @return descripcion
+     */
+     public String getDescripcion() {
+        return this.descripcion;
+    }
+    /**
+     * Establece el descripcion.
+     *
+     * @param descripcion el new descripcion
+     */
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+    /**
+     * Obtiene abreviatura.
+     *
+     * @return abreviatura
+     */
+     public String getAbreviatura() {
+        return this.abreviatura;
+    }
+    /**
+     * Establece el abreviatura.
+     *
+     * @param abreviatura el new abreviatura
+     */
+    public void setAbreviatura(String abreviatura) {
+        this.abreviatura = abreviatura;
+    }
+    /**
+     * Obtiene estado.
+     *
+     * @return estado
+     */
+     public String getEstado() {
+        return this.estado;
+    }
+    /**
+     * Establece el estado.
+     *
+     * @param estado el new estado
+     */
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+    /**
+     * Establece el aula det carga lectiva list.
+     *
+     * @param aulaDetCargaLectivaList el new aula det carga lectiva list
+     */
+    public List<DetCargaLectiva> getAulaDetCargaLectivaList(){
+        return this.aulaDetCargaLectivaList;
+    }
+    /**
+     * Establece el aula list.
+     *
+     * @param aulaList el new aula list
+     */
+    public void setAulaDetCargaLectivaList(List<DetCargaLectiva> aulaDetCargaLectivaList) {
+        this.aulaDetCargaLectivaList = aulaDetCargaLectivaList;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idAula == null) ? 0 : idAula.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Aula other = (Aula) obj;
+        if (idAula == null) {
+            if (other.idAula != null) {
+                return false;
+            }
+        } else if (!idAula.equals(other.idAula)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Aula [idAula=" + idAula + "]";
+    }
+   
+}

@@ -1,0 +1,163 @@
+package pe.com.edu.siaa.core.model.jpa.encuesta;
+
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+import pe.com.edu.siaa.core.model.util.ConfiguracionEntityManagerUtil;
+
+/**
+ * La Class EncuestaCampoDet.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Fri Sep 08 19:33:16 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Entity
+@Table(name = "EncuestaCampoDet", schema = ConfiguracionEntityManagerUtil.ESQUEMA_ENCUESTA)
+public class EncuestaCampoDet implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id encuesta campo det. */
+    @Id
+    @Column(name = "idEncuestaCampoDet" , length = 32)
+    private String idEncuestaCampoDet;
+   
+    /** El encuesta campo. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idEncuestaCampo", referencedColumnName = "idEncuestaCampo")
+    private EncuestaCampo encuestaCampo;
+   
+    /** El alternativa. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idAlternativa", referencedColumnName = "idAlternativa")
+    private Alternativa alternativa;
+   
+    /**
+     * Instancia un nuevo encuesta campo det.
+     */
+    public EncuestaCampoDet() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo encuesta campo det.
+     *
+     * @param idEncuestaCampoDet el id encuesta campo det
+     * @param encuestaCampo el encuesta campo
+     * @param alternativa el alternativa
+     */
+    public EncuestaCampoDet(String idEncuestaCampoDet, EncuestaCampo encuestaCampo,Alternativa alternativa) {
+        super();
+        this.idEncuestaCampoDet = idEncuestaCampoDet;
+        this.encuestaCampo = encuestaCampo;
+        this.alternativa = alternativa;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id encuesta campo det.
+     *
+     * @return id encuesta campo det
+     */
+     public String getIdEncuestaCampoDet() {
+        return this.idEncuestaCampoDet;
+    }
+    /**
+     * Establece el id encuesta campo det.
+     *
+     * @param idEncuestaCampoDet el new id encuesta campo det
+     */
+    public void setIdEncuestaCampoDet(String idEncuestaCampoDet) {
+        this.idEncuestaCampoDet = idEncuestaCampoDet;
+    }
+    /**
+     * Obtiene encuesta campo.
+     *
+     * @return encuesta campo
+     */
+     public EncuestaCampo getEncuestaCampo() {
+        return this.encuestaCampo;
+    }
+    /**
+     * Establece el encuesta campo.
+     *
+     * @param encuestaCampo el new encuesta campo
+     */
+    public void setEncuestaCampo(EncuestaCampo encuestaCampo) {
+        this.encuestaCampo = encuestaCampo;
+    }
+    /**
+     * Obtiene alternativa.
+     *
+     * @return alternativa
+     */
+     public Alternativa getAlternativa() {
+        return this.alternativa;
+    }
+    /**
+     * Establece el alternativa.
+     *
+     * @param alternativa el new alternativa
+     */
+    public void setAlternativa(Alternativa alternativa) {
+        this.alternativa = alternativa;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idEncuestaCampoDet == null) ? 0 : idEncuestaCampoDet.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        EncuestaCampoDet other = (EncuestaCampoDet) obj;
+        if (idEncuestaCampoDet == null) {
+            if (other.idEncuestaCampoDet != null) {
+                return false;
+            }
+        } else if (!idEncuestaCampoDet.equals(other.idEncuestaCampoDet)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "EncuestaCampoDet [idEncuestaCampoDet=" + idEncuestaCampoDet + "]";
+    }
+   
+}

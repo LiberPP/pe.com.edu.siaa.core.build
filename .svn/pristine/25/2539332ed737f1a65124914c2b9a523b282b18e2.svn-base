@@ -1,0 +1,48 @@
+package pe.com.edu.siaa.core.ejb.dao.encuesta.local;
+
+import java.util.List;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.dto.encuesta.EncuestaCampoDTO;
+import pe.com.edu.siaa.core.model.jpa.encuesta.EncuestaCampo;
+
+/**
+ * La Class EncuestaCampoDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Fri Sep 08 16:22:18 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface EncuestaCampoDaoLocal  extends GenericDAOLocal<String,EncuestaCampo> {
+	/**
+	 * Listar encuesta campo.
+	 *
+	 * @param encuestaCampo el encuesta campoDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<EncuestaCampo> listarEncuestaCampo(EncuestaCampoDTO encuestaCampo) throws Exception;
+	
+	/**
+	 * contar lista encuesta campo.
+	 *
+	 * @param encuestaCampo el encuesta campo
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarEncuestaCampo(EncuestaCampoDTO encuestaCampo);
+	/**
+	 * Generar id encuestaCampo.
+	 *
+	 * @return the String
+	 * @throws Exception the exception
+	 */
+	String generarIdEncuestaCampo() throws Exception;
+}

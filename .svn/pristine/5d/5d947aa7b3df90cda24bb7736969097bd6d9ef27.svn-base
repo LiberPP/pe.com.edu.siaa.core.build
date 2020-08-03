@@ -1,0 +1,120 @@
+package pe.com.edu.siaa.core.ejb.service.rest.encuesta.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.encuesta.local.EncuestaServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.encuesta.TemaDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class TemaRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Fri Sep 08 16:33:14 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/temaRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class TemaRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient EncuestaServiceLocal encuestaServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<TemaDTO> crear(TemaDTO tema) throws Exception {
+		return controladorAccion(tema,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<TemaDTO> modificar(TemaDTO tema) throws Exception {
+		return controladorAccion(tema,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<TemaDTO> eliminar(@PathParam("id") Long idTema) throws Exception {
+		TemaDTO tema = new TemaDTO();
+		tema.setIdTema(idTema);		
+		return controladorAccion(tema,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<TemaDTO> controladorAccion(TemaDTO tema, AccionType accionType){
+		ResultadoRestVO<TemaDTO> resultado = new ResultadoRestVO<TemaDTO>();
+		 try {
+    		resultado.setObjetoResultado(encuestaServiceLocal.controladorAccionTema(tema,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<TemaDTO> finById(@PathParam("id") Long idTema) throws Exception {
+		TemaDTO tema = new TemaDTO();
+		tema.setIdTema(idTema);
+		return controladorAccion(tema,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<TemaDTO> listarTema(@Context UriInfo info){
+		ResultadoRestVO<TemaDTO> resultado = new ResultadoRestVO<TemaDTO>();
+		TemaDTO tema = transferUriInfo(info);
+		 try {
+			resultado.setListaResultado(encuestaServiceLocal.listarTema(tema));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<TemaDTO> contarTema(@Context UriInfo info){
+		ResultadoRestVO<TemaDTO> resultado = new ResultadoRestVO<TemaDTO>();
+		TemaDTO tema = transferUriInfo(info);
+		 try {
+			 resultado.setContador(encuestaServiceLocal.contarListarTema(tema));
+			 if (resultado.isData()) {
+				resultado.setListaResultado(encuestaServiceLocal.listarTema(tema));
+			 }
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<TemaDTO> inicializarTema(@Context UriInfo info) throws Exception {
+	     TemaDTO tema = transferUriInfo(info);
+		 ResultadoRestVO<TemaDTO> resultado = new ResultadoRestVO<TemaDTO>();
+		 try {
+    		resultado.setObjetoResultado(tema);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private TemaDTO transferUriInfo(@Context UriInfo info) {
+		TemaDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,TemaDTO.class);
+		return resultado;
+	}
+}

@@ -1,0 +1,169 @@
+package pe.com.edu.siaa.core.model.dto.matricula;
+
+import java.io.Serializable;
+
+import pe.com.edu.siaa.core.model.dto.BasePaginator;
+import pe.com.edu.siaa.core.model.dto.admision.EscuelaDTO;
+
+/**
+ * La Class ConsejeroDTO.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 1.0, Tue Apr 18 09:56:47 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+public class ConsejeroDTO extends BasePaginator implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id consejero. */
+    private String idConsejero;
+   
+    /** El organodirectivo. */
+    private OrganoDirectivoDTO organodirectivo;
+   
+    /** El escuela. */
+    private EscuelaDTO escuela;
+   
+    /** El estado. */
+    private String estado;
+   
+    /**
+     * Instancia un nuevo consejeroDTO.
+     */
+    public ConsejeroDTO() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo consejeroDTO.
+     *
+     * @param idConsejero el id consejero
+     * @param organodirectivo el organodirectivo
+     * @param escuela el escuela
+     * @param estado el estado
+     */
+    public ConsejeroDTO(String idConsejero, OrganoDirectivoDTO organodirectivo,EscuelaDTO escuela,String estado ) {
+        super();
+        this.idConsejero = idConsejero;
+        this.organodirectivo = organodirectivo;
+        this.escuela = escuela;
+        this.estado = estado;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id consejero.
+     *
+     * @return id consejero
+     */
+     public String getIdConsejero() {
+        return this.idConsejero;
+    }
+    /**
+     * Establece el id consejero.
+     *
+     * @param idConsejero el new id consejero
+     */
+    public void setIdConsejero(String idConsejero) {
+        this.idConsejero = idConsejero;
+    }
+    /**
+     * Obtiene organodirectivo.
+     *
+     * @return organodirectivo
+     */
+     public OrganoDirectivoDTO getOrganodirectivo() {
+        return this.organodirectivo;
+    }
+    /**
+     * Establece el organodirectivo.
+     *
+     * @param organodirectivo el new organodirectivo
+     */
+    public void setOrganodirectivo(OrganoDirectivoDTO organodirectivo) {
+        this.organodirectivo = organodirectivo;
+    }
+    /**
+     * Obtiene escuela.
+     *
+     * @return escuela
+     */
+     public EscuelaDTO getEscuela() {
+        return this.escuela;
+    }
+    /**
+     * Establece el escuela.
+     *
+     * @param escuela el new escuela
+     */
+    public void setEscuela(EscuelaDTO escuela) {
+        this.escuela = escuela;
+    }
+    /**
+     * Obtiene estado.
+     *
+     * @return estado
+     */
+     public String getEstado() {
+        return this.estado;
+    }
+    /**
+     * Establece el estado.
+     *
+     * @param estado el new estado
+     */
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idConsejero == null) ? 0 : idConsejero.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        ConsejeroDTO other = (ConsejeroDTO) obj;
+        if (idConsejero == null) {
+            if (other.idConsejero != null) {
+                return false;
+            }
+        } else if (!idConsejero.equals(other.idConsejero)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "ConsejeroDTO [idConsejero=" + idConsejero + "]";
+    }
+   
+}

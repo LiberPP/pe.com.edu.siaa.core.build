@@ -1,0 +1,100 @@
+package pe.com.edu.siaa.core.ejb.dao.encuesta.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.persistence.Query;
+
+import pe.com.edu.siaa.core.ejb.dao.encuesta.local.EncuestaCampoDetDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericAcademicoDAOImpl;
+import pe.com.edu.siaa.core.model.dto.encuesta.EncuestaCampoDetDTO;
+import pe.com.edu.siaa.core.model.jpa.encuesta.EncuestaCampoDet;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+
+/**
+ * La Class EncuestaCampoDetDaoImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Fri Sep 08 19:44:51 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+public class EncuestaCampoDetDaoImpl extends  GenericAcademicoDAOImpl<String, EncuestaCampoDet> implements EncuestaCampoDetDaoLocal  {
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.encuesta.local.EncuestaCampoDetDaoLocal#listarEncuestaCampoDet(pe.com.edu.siaa.core.model.jpa.encuesta.EncuestaCampoDet)
+     */  
+    @Override	 
+    public List<EncuestaCampoDet> listarEncuestaCampoDet(EncuestaCampoDetDTO encuestaCampoDet) {
+        Query query = generarQueryListaEncuestaCampoDet(encuestaCampoDet, false);
+        query.setFirstResult(encuestaCampoDet.getStartRow());
+        query.setMaxResults(encuestaCampoDet.getOffset());
+        return query.getResultList();
+    }   
+   
+    /**
+     * Generar query lista EncuestaCampoDet.
+     *
+     * @param EncuestaCampoDetDTO el encuestaCampoDet
+     * @param esContador el es contador
+     * @return the query
+     */
+    private Query generarQueryListaEncuestaCampoDet(EncuestaCampoDetDTO encuestaCampoDet, boolean esContador) {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        if (esContador) {
+            jpaql.append(" select count(o.idEncuestaCampoDet) from EncuestaCampoDet o where 1=1 ");
+        } else {
+            jpaql.append(" select o from EncuestaCampoDet o where 1=1 ");           
+        }
+		if (!StringUtils.isNullOrEmpty(encuestaCampoDet.getSearch())) {
+	          jpaql.append(" and upper(o.idEncuestaCampoDet) like :search ");
+	          parametros.put("search", "%" + encuestaCampoDet.getSearch().toUpperCase() + "%");
+	    } else {
+		}
+        if (!esContador) {
+            //jpaql.append(" ORDER BY 1 ");
+        }
+        Query query = createQuery(jpaql.toString(), parametros);
+        return query;
+    }
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.encuesta.local.EncuestaCampoDetDaoLocal#contarListar{entity.getClassName()}(pe.com.edu.siaa.core.model.jpa.encuesta.EncuestaCampoDetDTO)
+     */
+	@Override
+    public int contarListarEncuestaCampoDet(EncuestaCampoDetDTO encuestaCampoDet) {
+        int resultado = 0;
+        try {
+            //StringBuilder jpaql = new StringBuilder();
+            Query query = generarQueryListaEncuestaCampoDet(encuestaCampoDet, true);
+            resultado = ((Long) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            resultado = 0;
+        }
+        return resultado;
+    }
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.encuesta.local.EncuestaCampoDetDaoLocal#generarIdEncuestaCampoDet()
+     */
+	 @Override
+    public String generarIdEncuestaCampoDet() {
+        String resultado = "1";
+        Query query = createQuery("select max(o.idEncuestaCampoDet) from EncuestaCampoDet o", null);
+        List<Object> listLong =  query.getResultList();
+        if (listLong != null && listLong.size() > 0 && listLong.get(0) != null)  {
+            Long ultimoIdGenerado = Long.valueOf(listLong.get(0).toString());
+            if (!StringUtils.isNullOrEmpty(ultimoIdGenerado)) {
+                resultado = resultado + ultimoIdGenerado;
+            }
+        }
+        return resultado;
+    }
+   
+}

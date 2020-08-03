@@ -1,0 +1,169 @@
+package pe.com.edu.siaa.core.model.dto.matricula;
+
+import java.io.Serializable;
+
+import pe.com.edu.siaa.core.model.dto.BasePaginator;
+
+/**
+ * La Class ProfesionDTO.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 1.0, Tue Apr 18 09:56:46 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+public class ProfesionDTO extends BasePaginator implements Serializable {
+	 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id profesion. */
+    private Long idProfesion;
+   
+    /** El descripcion. */
+    private String descripcion;
+   
+    /** El codigo. */
+    private String codigo;
+   
+    /** El estado. */
+    private String estado;
+   
+    /**
+     * Instancia un nuevo profesionDTO.
+     */
+    public ProfesionDTO() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo profesionDTO.
+     *
+     * @param idProfesion el id profesion
+     * @param descripcion el descripcion
+     * @param codigo el codigo
+     * @param estado el estado
+     */
+    public ProfesionDTO(Long idProfesion, String descripcion, String codigo, String estado ) {
+        super();
+        this.idProfesion = idProfesion;
+        this.descripcion = descripcion;
+        this.codigo = codigo;
+        this.estado = estado;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id profesion.
+     *
+     * @return id profesion
+     */
+     public Long getIdProfesion() {
+        return this.idProfesion;
+    }
+    /**
+     * Establece el id profesion.
+     *
+     * @param idProfesion el new id profesion
+     */
+    public void setIdProfesion(Long idProfesion) {
+        this.idProfesion = idProfesion;
+    }
+    /**
+     * Obtiene descripcion.
+     *
+     * @return descripcion
+     */
+     public String getDescripcion() {
+        return this.descripcion;
+    }
+    /**
+     * Establece el descripcion.
+     *
+     * @param descripcion el new descripcion
+     */
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+    /**
+     * Obtiene codigo.
+     *
+     * @return codigo
+     */
+     public String getCodigo() {
+        return this.codigo;
+    }
+    /**
+     * Establece el codigo.
+     *
+     * @param codigo el new codigo
+     */
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+    /**
+     * Obtiene estado.
+     *
+     * @return estado
+     */
+     public String getEstado() {
+        return this.estado;
+    }
+    /**
+     * Establece el estado.
+     *
+     * @param estado el new estado
+     */
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idProfesion == null) ? 0 : idProfesion.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        ProfesionDTO other = (ProfesionDTO) obj;
+        if (idProfesion == null) {
+            if (other.idProfesion != null) {
+                return false;
+            }
+        } else if (!idProfesion.equals(other.idProfesion)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "ProfesionDTO [idProfesion=" + idProfesion + "]";
+    }
+   
+}

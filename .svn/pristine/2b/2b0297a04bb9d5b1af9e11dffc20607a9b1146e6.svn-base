@@ -1,0 +1,866 @@
+package pe.com.edu.siaa.core.ejb.service.matricula.local;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.model.dto.matricula.AlumnoDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.AperturaCierreMatriculaDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.AsignaPlanEstudioDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.AulaDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.CargaLectivaDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.CargoDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.ConsejeroDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.ConvalidacionPlanEstudioDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.DetCargaLectivaDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.DetMatriculaDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.DetPlanEstudioDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.DetTrasladoDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.HorarioDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.HorarioTemDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.MatriculaDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.OrganoDirectivoDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.PabellonDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.PersonalDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.PlanEstudioDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.PreRequisitoDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.ProfesionDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.RegimenPensionarioDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.TrasladoDTO;
+import pe.com.edu.siaa.core.model.dto.seguridad.UsuarioDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.model.vo.SelectItemVO;
+
+/**
+ * La Class SeguridadServiceLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:23 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface MatriculaServiceLocal {
+	
+	
+	List<HorarioDTO> transferListHorario(List<String> listaIdDetCargaLectiva) throws Exception;
+	/**
+	 * Listar carga lectiva select item.
+	 *
+	 * @param cargaLectiva el carga lectiva
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<SelectItemVO> listarCargaLectivaSelectItem(CargaLectivaDTO cargaLectiva) throws Exception;
+	
+	/**
+	 * Obtener det carga lectiva.
+	 *
+	 * @param detCargaLectiva el det carga lectiva
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<DetCargaLectivaDTO> obtenerDetCargaLectiva(DetCargaLectivaDTO detCargaLectiva) throws Exception;
+	
+	void enviarNotificacion(final MatriculaDTO matricula,List<DetCargaLectivaDTO> listaDetCargaLectivaTemp, UsuarioDTO usuario, String fileName);
+	String generarReporteFichaMatricula(String idAnhoSemestre,String idAlumno,String usuario, boolean esCopiaCorreo) throws Exception;
+	
+	/**
+	 * Listar profesion select item.
+	 *
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<SelectItemVO> listarProfesionSelectItem() throws Exception;
+	
+	/**
+	 * Listar cargo select item.
+	 *
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<SelectItemVO> listarCargoSelectItem() throws Exception;
+	
+	/**
+	 * Listar regimen pensionario select item.
+	 *
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<SelectItemVO> listarRegimenPensionarioSelectItem() throws Exception;
+	
+	 /**
+	  * Obtener personal directivo.
+	  *
+	  * @param personal el personal
+	  * @return the personal
+	  */
+	 PersonalDTO obtenerPersonalDirectivo(PersonalDTO personal)throws Exception;
+	 
+	/**
+	 * Obtener semestre mariculado ordenado by semestre.
+	 *
+	 * @param String el idAlumno
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<SelectItemVO> obtenerSemestreMariculadoOrdenadoBySemestre(String idAlumno) throws Exception;
+	
+	/**
+	 * Find alumno by persona.
+	 *
+	 * @param persona el persona
+	 * @return the alumno
+	 * @throws Exception the exception
+	 */
+	AlumnoDTO findAlumnoByPersona(String idPersona) throws Exception;
+	
+	/**
+	 * Listar horario para  obtener los horarios de los cursos seleccionados.
+	 *
+	 * @param listaDia el lista dia
+	 * @param listaIdDetCargaLectiva el lista id det carga lectiva
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<HorarioDTO> listarHorario(List<String> listaIdDetCargaLectiva) throws Exception;
+	
+	/**
+	 * Listar horario alumno.
+	 *
+	 * @param listaDia el lista dia
+	 * @param alumno el alumno
+	 * @param anhoSemestre el anho semestre
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<HorarioDTO> listarHorarioAlumno(String idAlumno,String idAnhoSemestre) throws Exception;
+	
+	/**
+	 * Listar horario ciclo.
+	 *
+	 * @param horario el horario
+	 * @param listaDia el lista dia
+	 * @param conCoclor el con coclor
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<HorarioDTO> listarHorarioCiclo(HorarioDTO horario,boolean conCoclor) throws Exception;
+	
+	/**
+	 * Listar horario docenete.
+	 *
+	 * @param listaDia el lista dia
+	 * @param docente el docente
+	 * @param anhoSemestre el anho semestre
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<HorarioDTO> listarHorarioDocenete(String idDocente,String idAnhoSemestre) throws Exception ;
+
+	
+	/**
+	 * Obtener cursos posibles llevar para el alumno seleccionado.
+	 *
+	 * @param detCargaLectiva el det carga lectiva
+	 * @param alumno el alumno
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<DetCargaLectivaDTO> obtenerCursosPosiblesLlevar(Map<String,Object> parametroMap) throws Exception;
+	
+	/**
+	 * Registrar matricula.
+	 *
+	 * @param matricula el matricula
+	 * @param alumno el alumno
+	 * @param listaDetCargaLectiva el lista det carga lectiva
+	 * @throws Exception the exception
+	 */
+	MatriculaDTO registrarMatricula(MatriculaDTO matricula) throws Exception;
+	
+	/**
+	 * Eliminar registrar matricula.
+	 *
+	 * @param matricula el matricula
+	 * @throws Exception the exception
+	 */
+	void eliminarRegistrarMatricula(String idMatricula) throws Exception;
+	
+	/**
+	 * Obtener matricula.
+	 *
+	 * @param matricula el matricula
+	 * @return the matricula
+	 * @throws Exception the exception
+	 */
+	MatriculaDTO obtenerMatricula(String idAlumno, String idAnhoSemestre)throws Exception;
+	
+	
+	/**
+	 * Obtener limite credito.
+	 *
+	 * @param alumno el alumno
+	 * @param idCiclo el id ciclo
+	 * @return the int
+	 * @throws Exception the exception
+	 */
+	int obtenerLimiteCredito(String idAlumno,String idPlanEstudio,Long idCiclo) throws Exception;
+	
+	/**
+	 * Find personal by persona.
+	 *
+	 * @param persona el persona
+	 * @return the Personal
+	 * @throws Exception the exception
+	 */
+	PersonalDTO findPersonalByPersona(String idPersona) throws Exception;
+	
+	/**
+	 * Controlador accion profesion.
+	 *
+	 * @param profesion el profesion
+	 * @param accionType el accion type
+	 * @return the profesion
+	 * @throws Exception the exception
+	 */
+	ProfesionDTO controladorAccionProfesion(ProfesionDTO profesion,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar profesion.
+	 *
+	 * @param profesion el profesion
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<ProfesionDTO> listarProfesion(ProfesionDTO profesion) throws Exception;
+	
+	/**
+	 * contar lista profesion.
+	 *
+	 * @param profesion el profesion
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarProfesion(ProfesionDTO profesion);
+	
+	
+	/**
+	 * Controlador accion regimen pensionario.
+	 *
+	 * @param regimenPensionario el regimen pensionario
+	 * @param accionType el accion type
+	 * @return the regimen pensionario
+	 * @throws Exception the exception
+	 */
+	RegimenPensionarioDTO controladorAccionRegimenPensionario(RegimenPensionarioDTO regimenPensionario,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar regimen pensionario.
+	 *
+	 * @param regimenPensionario el regimen pensionario
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<RegimenPensionarioDTO> listarRegimenPensionario(RegimenPensionarioDTO regimenPensionario) throws Exception;
+	
+	/**
+	 * contar lista regimen pensionario.
+	 *
+	 * @param regimenPensionario el regimen pensionario
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarRegimenPensionario(RegimenPensionarioDTO regimenPensionario);
+	
+	/**
+	 * Controlador accion consejero.
+	 *
+	 * @param consejero el consejero
+	 * @param accionType el accion type
+	 * @return the consejero
+	 * @throws Exception the exception
+	 */
+	ConsejeroDTO controladorAccionConsejero(ConsejeroDTO consejero,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar consejero.
+	 *
+	 * @param consejero el consejero
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<ConsejeroDTO> listarConsejero(ConsejeroDTO consejero) throws Exception;
+	
+	/**
+	 * contar lista consejero.
+	 *
+	 * @param consejero el consejero
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarConsejero(ConsejeroDTO consejero);
+	
+	/**
+	 * Controlador accion pre requisito.
+	 *
+	 * @param preRequisito el pre requisito
+	 * @param accionType el accion type
+	 * @return the pre requisito
+	 * @throws Exception the exception
+	 */
+	PreRequisitoDTO controladorAccionPreRequisito(PreRequisitoDTO preRequisito,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar pre requisito.
+	 *
+	 * @param preRequisito el pre requisito
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<PreRequisitoDTO> listarPreRequisito(PreRequisitoDTO preRequisito) throws Exception;
+	
+	/**
+	 * contar lista pre requisito.
+	 *
+	 * @param preRequisito el pre requisito
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarPreRequisito(PreRequisitoDTO preRequisito);
+	
+	
+	/**
+	 * Controlador accion horario tem.
+	 *
+	 * @param horarioTem el horario tem
+	 * @param accionType el accion type
+	 * @return the horario tem
+	 * @throws Exception the exception
+	 */
+	HorarioTemDTO controladorAccionHorarioTem(HorarioTemDTO horarioTem,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar horario tem.
+	 *
+	 * @param horarioTem el horario tem
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<HorarioTemDTO> listarHorarioTem(HorarioTemDTO horarioTem) throws Exception;
+	
+	/**
+	 * contar lista horario tem.
+	 *
+	 * @param horarioTem el horario tem
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarHorarioTem(HorarioTemDTO horarioTem);
+	
+	/**
+	 * Controlador accion det matricula.
+	 *
+	 * @param detMatricula el det matricula
+	 * @param accionType el accion type
+	 * @return the det matricula
+	 * @throws Exception the exception
+	 */
+	DetMatriculaDTO controladorAccionDetMatricula(DetMatriculaDTO detMatricula,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar det matricula.
+	 *
+	 * @param detMatricula el det matricula
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<DetMatriculaDTO> listarDetMatricula(DetMatriculaDTO detMatricula) throws Exception;
+	
+	/**
+	 * contar lista det matricula.
+	 *
+	 * @param detMatricula el det matricula
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarDetMatricula(DetMatriculaDTO detMatricula);
+	
+	/**
+	 * Controlador accion personal.
+	 *
+	 * @param personal el personal
+	 * @param accionType el accion type
+	 * @return the personal
+	 * @throws Exception the exception
+	 */
+	PersonalDTO controladorAccionPersonal(PersonalDTO personal,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar personal.
+	 *
+	 * @param personal el personal
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<PersonalDTO> listarPersonal(PersonalDTO personal) throws Exception;
+	
+	/**
+	 * contar lista personal.
+	 *
+	 * @param personal el personal
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarPersonal(PersonalDTO personal);
+	
+	/**
+	 * Controlador accion det traslado.
+	 *
+	 * @param detTraslado el det traslado
+	 * @param accionType el accion type
+	 * @return the det traslado
+	 * @throws Exception the exception
+	 */
+	DetTrasladoDTO controladorAccionDetTraslado(DetTrasladoDTO detTraslado,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar det traslado.
+	 *
+	 * @param detTraslado el det traslado
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<DetTrasladoDTO> listarDetTraslado(DetTrasladoDTO detTraslado) throws Exception;
+	
+	/**
+	 * contar lista det traslado.
+	 *
+	 * @param detTraslado el det traslado
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarDetTraslado(DetTrasladoDTO detTraslado);
+	
+	/**
+	 * Controlador accion alumno.
+	 *
+	 * @param alumno el alumno
+	 * @param accionType el accion type
+	 * @return the alumno
+	 * @throws Exception the exception
+	 */
+	AlumnoDTO controladorAccionAlumno(AlumnoDTO alumno,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar alumno.
+	 *
+	 * @param alumno el alumno
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<AlumnoDTO> listarAlumno(AlumnoDTO alumno) throws Exception;
+	
+	/**
+	 * contar lista alumno.
+	 *
+	 * @param alumno el alumno
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarAlumno(AlumnoDTO alumno);
+
+	
+	/**
+	 * Controlador accion det plan estudio.
+	 *
+	 * @param detPlanEstudio el det plan estudio
+	 * @param accionType el accion type
+	 * @return the det plan estudio
+	 * @throws Exception the exception
+	 */
+	DetPlanEstudioDTO controladorAccionDetPlanEstudio(DetPlanEstudioDTO detPlanEstudio,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar det plan estudio.
+	 *
+	 * @param detPlanEstudio el det plan estudio
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<DetPlanEstudioDTO> listarDetPlanEstudio(DetPlanEstudioDTO detPlanEstudio) throws Exception;
+	
+	/**
+	 * contar lista det plan estudio.
+	 *
+	 * @param detPlanEstudio el det plan estudio
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarDetPlanEstudio(DetPlanEstudioDTO detPlanEstudio);
+	
+	/**
+	 * Controlador accion cargo.
+	 *
+	 * @param cargo el cargo
+	 * @param accionType el accion type
+	 * @return the cargo
+	 * @throws Exception the exception
+	 */
+	CargoDTO controladorAccionCargo(CargoDTO cargo,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar cargo.
+	 *
+	 * @param cargo el cargo
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<CargoDTO> listarCargo(CargoDTO cargo) throws Exception;
+	
+	/**
+	 * contar lista cargo.
+	 *
+	 * @param cargo el cargo
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarCargo(CargoDTO cargo);
+	
+	
+	/**
+	 * Controlador accion apertura cierre matricula.
+	 *
+	 * @param aperturaCierreMatricula el apertura cierre matricula
+	 * @param accionType el accion type
+	 * @return the apertura cierre matricula
+	 * @throws Exception the exception
+	 */
+	AperturaCierreMatriculaDTO controladorAccionAperturaCierreMatricula(AperturaCierreMatriculaDTO aperturaCierreMatricula,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar apertura cierre matricula.
+	 *
+	 * @param aperturaCierreMatricula el apertura cierre matricula
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<AperturaCierreMatriculaDTO> listarAperturaCierreMatricula(AperturaCierreMatriculaDTO aperturaCierreMatricula) throws Exception;
+	
+	/**
+	 * contar lista apertura cierre matricula.
+	 *
+	 * @param aperturaCierreMatricula el apertura cierre matricula
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarAperturaCierreMatricula(AperturaCierreMatriculaDTO aperturaCierreMatricula);
+	
+	
+	/**
+	 * Controlador accion aula.
+	 *
+	 * @param aula el aula
+	 * @param accionType el accion type
+	 * @return the aula
+	 * @throws Exception the exception
+	 */
+	AulaDTO controladorAccionAula(AulaDTO aula,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar aula.
+	 *
+	 * @param aula el aula
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<AulaDTO> listarAula(AulaDTO aula) throws Exception;
+	
+	/**
+	 * contar lista aula.
+	 *
+	 * @param aula el aula
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarAula(AulaDTO aula);
+	
+	/**
+	 * Controlador accion det carga lectiva.
+	 *
+	 * @param detCargaLectiva el det carga lectiva
+	 * @param accionType el accion type
+	 * @return the det carga lectiva
+	 * @throws Exception the exception
+	 */
+	DetCargaLectivaDTO controladorAccionDetCargaLectiva(DetCargaLectivaDTO detCargaLectiva,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar det carga lectiva.
+	 *
+	 * @param detCargaLectiva el det carga lectiva
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<DetCargaLectivaDTO> listarDetCargaLectiva(DetCargaLectivaDTO detCargaLectiva) throws Exception;
+	
+	/**
+	 * contar lista det carga lectiva.
+	 *
+	 * @param detCargaLectiva el det carga lectiva
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarDetCargaLectiva(DetCargaLectivaDTO detCargaLectiva);
+	
+	/**
+	 * Controlador accion horario.
+	 *
+	 * @param horario el horario
+	 * @param accionType el accion type
+	 * @return the horario
+	 * @throws Exception the exception
+	 */
+	HorarioDTO controladorAccionHorario(HorarioDTO horario,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar horario.
+	 *
+	 * @param horario el horario
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<HorarioDTO> listarHorario(HorarioDTO horario) throws Exception;
+	
+	/**
+	 * contar lista horario.
+	 *
+	 * @param horario el horario
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarHorario(HorarioDTO horario);
+	
+	
+	/**
+	 * Controlador accion pabellon.
+	 *
+	 * @param pabellon el pabellon
+	 * @param accionType el accion type
+	 * @return the pabellon
+	 * @throws Exception the exception
+	 */
+	PabellonDTO controladorAccionPabellon(PabellonDTO pabellon,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar pabellon.
+	 *
+	 * @param pabellon el pabellon
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<PabellonDTO> listarPabellon(PabellonDTO pabellon) throws Exception;
+	
+	/**
+	 * contar lista pabellon.
+	 *
+	 * @param pabellon el pabellon
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarPabellon(PabellonDTO pabellon);
+	
+	
+	/**
+	 * Controlador accion traslado.
+	 *
+	 * @param traslado el traslado
+	 * @param accionType el accion type
+	 * @return the traslado
+	 * @throws Exception the exception
+	 */
+	TrasladoDTO controladorAccionTraslado(TrasladoDTO traslado,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar traslado.
+	 *
+	 * @param traslado el traslado
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<TrasladoDTO> listarTraslado(TrasladoDTO traslado) throws Exception;
+	
+	/**
+	 * contar lista traslado.
+	 *
+	 * @param traslado el traslado
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarTraslado(TrasladoDTO traslado);
+	
+	
+	/**
+	 * Listar matricula.
+	 *
+	 * @param matricula el matricula
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<MatriculaDTO> listarMatricula(MatriculaDTO matricula) throws Exception;
+	
+	/**
+	 * contar lista matricula.
+	 *
+	 * @param matricula el matricula
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarMatricula(MatriculaDTO matricula);
+	
+	/**
+	 * Controlador accion asigna plan estudio.
+	 *
+	 * @param asignaPlanEstudio el asigna plan estudio
+	 * @param accionType el accion type
+	 * @return the asigna plan estudio
+	 * @throws Exception the exception
+	 */
+	AsignaPlanEstudioDTO controladorAccionAsignaPlanEstudio(AsignaPlanEstudioDTO asignaPlanEstudio,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar asigna plan estudio.
+	 *
+	 * @param asignaPlanEstudio el asigna plan estudio
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<AsignaPlanEstudioDTO> listarAsignaPlanEstudio(AsignaPlanEstudioDTO asignaPlanEstudio) throws Exception;
+	
+	/**
+	 * contar lista asigna plan estudio.
+	 *
+	 * @param asignaPlanEstudio el asigna plan estudio
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarAsignaPlanEstudio(AsignaPlanEstudioDTO asignaPlanEstudio);
+	
+	
+	/**
+	 * Controlador accion carga lectiva.
+	 *
+	 * @param cargaLectiva el carga lectiva
+	 * @param accionType el accion type
+	 * @return the carga lectiva
+	 * @throws Exception the exception
+	 */
+	CargaLectivaDTO controladorAccionCargaLectiva(CargaLectivaDTO cargaLectiva,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar carga lectiva.
+	 *
+	 * @param cargaLectiva el carga lectiva
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<CargaLectivaDTO> listarCargaLectiva(CargaLectivaDTO cargaLectiva) throws Exception;
+	
+	/**
+	 * contar lista carga lectiva.
+	 *
+	 * @param cargaLectiva el carga lectiva
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarCargaLectiva(CargaLectivaDTO cargaLectiva);
+	
+	/**
+	 * Controlador accion convalidacion plan estudio.
+	 *
+	 * @param convalidacionPlanEstudio el convalidacion plan estudio
+	 * @param accionType el accion type
+	 * @return the convalidacion plan estudio
+	 * @throws Exception the exception
+	 */
+	ConvalidacionPlanEstudioDTO controladorAccionConvalidacionPlanEstudio(ConvalidacionPlanEstudioDTO convalidacionPlanEstudio,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar convalidacion plan estudio.
+	 *
+	 * @param convalidacionPlanEstudio el convalidacion plan estudio
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<ConvalidacionPlanEstudioDTO> listarConvalidacionPlanEstudio(ConvalidacionPlanEstudioDTO convalidacionPlanEstudio) throws Exception;
+	
+	/**
+	 * contar lista convalidacion plan estudio.
+	 *
+	 * @param convalidacionPlanEstudio el convalidacion plan estudio
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarConvalidacionPlanEstudio(ConvalidacionPlanEstudioDTO convalidacionPlanEstudio);
+	
+	/**
+	 * Controlador accion organo directivo.
+	 *
+	 * @param organoDirectivo el organo directivo
+	 * @param accionType el accion type
+	 * @return the organo directivo
+	 * @throws Exception the exception
+	 */
+	OrganoDirectivoDTO controladorAccionOrganoDirectivo(OrganoDirectivoDTO organoDirectivo,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar organo directivo.
+	 *
+	 * @param organoDirectivo el organo directivo
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<OrganoDirectivoDTO> listarOrganoDirectivo(OrganoDirectivoDTO organoDirectivo) throws Exception;
+	
+	/**
+	 * contar lista organo directivo.
+	 *
+	 * @param organoDirectivo el organo directivo
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarOrganoDirectivo(OrganoDirectivoDTO organoDirectivo);
+	
+	/**
+	 * Controlador accion plan estudio.
+	 *
+	 * @param planEstudio el plan estudio
+	 * @param accionType el accion type
+	 * @return the plan estudio
+	 * @throws Exception the exception
+	 */
+	PlanEstudioDTO controladorAccionPlanEstudio(PlanEstudioDTO planEstudio,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar plan estudio.
+	 *
+	 * @param planEstudio el plan estudio
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<PlanEstudioDTO> listarPlanEstudio(PlanEstudioDTO planEstudio) throws Exception;
+	
+	/**
+	 * contar lista plan estudio.
+	 *
+	 * @param planEstudio el plan estudio
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarPlanEstudio(PlanEstudioDTO planEstudio);
+	
+}

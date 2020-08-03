@@ -1,0 +1,190 @@
+package pe.com.edu.siaa.core.model.dto.pago;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import pe.com.edu.siaa.core.model.dto.BasePaginator;
+import pe.com.edu.siaa.core.model.dto.common.ItemDTO;
+
+/**
+ * La Class ClasificacionDTO.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 1.0, Tue Apr 18 09:57:00 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+public class ClasificacionDTO extends BasePaginator implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id clasificacion. */
+    private Long idClasificacion;
+   
+    /** El item by tipo clasificacion. */
+    private ItemDTO itemByTipoClasificacion;
+   
+    /** El descripcion. */
+    private String descripcion;
+   
+    /** El abreviatura. */
+    private String abreviatura;
+   
+    /** El clasificacion catalogo cuenta list. */
+    private List<CatalogoCuentaDTO> clasificacionCatalogoCuentaList = new ArrayList<CatalogoCuentaDTO>();
+   
+    /**
+     * Instancia un nuevo clasificacionDTO.
+     */
+    public ClasificacionDTO() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo clasificacionDTO.
+     *
+     * @param idClasificacion el id clasificacion
+     * @param itemByTipoClasificacion el item by tipo clasificacion
+     * @param descripcion el descripcion
+     * @param abreviatura el abreviatura
+     */
+    public ClasificacionDTO(Long idClasificacion, ItemDTO itemByTipoClasificacion,String descripcion, String abreviatura ) {
+        super();
+        this.idClasificacion = idClasificacion;
+        this.itemByTipoClasificacion = itemByTipoClasificacion;
+        this.descripcion = descripcion;
+        this.abreviatura = abreviatura;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id clasificacion.
+     *
+     * @return id clasificacion
+     */
+     public Long getIdClasificacion() {
+        return this.idClasificacion;
+    }
+    /**
+     * Establece el id clasificacion.
+     *
+     * @param idClasificacion el new id clasificacion
+     */
+    public void setIdClasificacion(Long idClasificacion) {
+        this.idClasificacion = idClasificacion;
+    }
+    /**
+     * Obtiene item by tipo clasificacion.
+     *
+     * @return item by tipo clasificacion
+     */
+     public ItemDTO getItemByTipoClasificacion() {
+        return this.itemByTipoClasificacion;
+    }
+    /**
+     * Establece el item by tipo clasificacion.
+     *
+     * @param itemByTipoClasificacion el new item by tipo clasificacion
+     */
+    public void setItemByTipoClasificacion(ItemDTO itemByTipoClasificacion) {
+        this.itemByTipoClasificacion = itemByTipoClasificacion;
+    }
+    /**
+     * Obtiene descripcion.
+     *
+     * @return descripcion
+     */
+     public String getDescripcion() {
+        return this.descripcion;
+    }
+    /**
+     * Establece el descripcion.
+     *
+     * @param descripcion el new descripcion
+     */
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+    /**
+     * Obtiene abreviatura.
+     *
+     * @return abreviatura
+     */
+     public String getAbreviatura() {
+        return this.abreviatura;
+    }
+    /**
+     * Establece el abreviatura.
+     *
+     * @param abreviatura el new abreviatura
+     */
+    public void setAbreviatura(String abreviatura) {
+        this.abreviatura = abreviatura;
+    }
+    /**
+     * Establece el clasificacion catalogo cuenta list.
+     *
+     * @param clasificacionCatalogoCuentaList el new clasificacion catalogo cuenta list
+     */
+    public List<CatalogoCuentaDTO> getClasificacionCatalogoCuentaList(){
+        return this.clasificacionCatalogoCuentaList;
+    }
+    /**
+     * Establece el clasificacion list.
+     *
+     * @param clasificacionList el new clasificacion list
+     */
+    public void setClasificacionCatalogoCuentaList(List<CatalogoCuentaDTO> clasificacionCatalogoCuentaList) {
+        this.clasificacionCatalogoCuentaList = clasificacionCatalogoCuentaList;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idClasificacion == null) ? 0 : idClasificacion.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        ClasificacionDTO other = (ClasificacionDTO) obj;
+        if (idClasificacion == null) {
+            if (other.idClasificacion != null) {
+                return false;
+            }
+        } else if (!idClasificacion.equals(other.idClasificacion)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "ClasificacionDTO [idClasificacion=" + idClasificacion + "]";
+    }
+   
+}

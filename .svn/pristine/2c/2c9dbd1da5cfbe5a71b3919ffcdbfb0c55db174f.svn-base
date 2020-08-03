@@ -1,0 +1,176 @@
+/*
+ * 
+ */
+package pe.com.edu.siaa.core.model.dto.matricula;
+
+import java.io.Serializable;
+
+// TODO: Auto-generated Javadoc
+/**
+ * <ul>
+ * <li>Copyright 2012 BUILD SOFT S.A.C - BS. Todos los derechos reservados.</li>
+ * </ul>
+ * 
+ * La Class LimiteCreditoDTO.
+ *
+ * @author ndavilal.
+ * @version 1.0 , 22/09/2013
+ * @since SIAA 2.0
+ */
+public class LimiteCreditoDTO  implements Serializable {
+
+	/** La Constante serialVersionUID. */
+	private static final long serialVersionUID = 1L;
+
+	/** El ponderado semestre pasado. */
+	private Double ponderadoSemestrePasado = Double.valueOf("0"); 
+	
+	/** El credito plan estudio. */
+	private Long creditoPlanEstudio = Long.valueOf("0");
+	
+	/** El max limite credito. */
+	private Long maxLimiteCredito = Long.valueOf("0");
+	
+	/** El id ciclo. */
+	private Long idCiclo =  Long.valueOf("1");
+	
+	/** El limite credito. */
+	private int limiteCredito;
+	
+	
+	
+	
+	
+	/**
+	 * Instancia un nuevo limite credito dto.
+	 */
+	public LimiteCreditoDTO() {
+		super();
+	}
+
+
+
+	/**
+	 * Obtiene ponderado semestre pasado.
+	 *
+	 * @return ponderado semestre pasado
+	 */
+	public Double getPonderadoSemestrePasado() {
+		return ponderadoSemestrePasado;
+	}
+
+
+
+	/**
+	 * Establece el ponderado semestre pasado.
+	 *
+	 * @param ponderadoSemestrePasado el new ponderado semestre pasado
+	 */
+	public void setPonderadoSemestrePasado(Double ponderadoSemestrePasado) {
+		this.ponderadoSemestrePasado = ponderadoSemestrePasado;
+	}
+
+
+
+	/**
+	 * Obtiene credito plan estudio.
+	 *
+	 * @return credito plan estudio
+	 */
+	public Long getCreditoPlanEstudio() {
+		return creditoPlanEstudio;
+	}
+
+
+
+	/**
+	 * Establece el credito plan estudio.
+	 *
+	 * @param creditoPlanEstudio el new credito plan estudio
+	 */
+	public void setCreditoPlanEstudio(Long creditoPlanEstudio) {
+		this.creditoPlanEstudio = creditoPlanEstudio;
+	}
+
+
+
+	/**
+	 * Obtiene max limite credito.
+	 *
+	 * @return max limite credito
+	 */
+	public Long getMaxLimiteCredito() {
+		return maxLimiteCredito;
+	}
+
+
+
+	/**
+	 * Establece el max limite credito.
+	 *
+	 * @param maxLimiteCredito el new max limite credito
+	 */
+	public void setMaxLimiteCredito(Long maxLimiteCredito) {
+		this.maxLimiteCredito = maxLimiteCredito;
+	}
+
+
+
+	/**
+	 * Obtiene id ciclo.
+	 *
+	 * @return id ciclo
+	 */
+	public Long getIdCiclo() {
+		return idCiclo;
+	}
+
+
+
+	/**
+	 * Establece el id ciclo.
+	 *
+	 * @param idCiclo el new id ciclo
+	 */
+	public void setIdCiclo(Long idCiclo) {
+		this.idCiclo = idCiclo;
+	}
+
+
+
+	/**
+	 * Obtiene limite credito.
+	 *
+	 * @return limite credito
+	 */
+	public int getLimiteCredito() {
+		return limiteCredito;
+	}
+
+
+
+	/**
+	 * Establece el limite credito.
+	 *
+	 * @param limiteCredito el new limite credito
+	 */
+	public void setLimiteCredito(int limiteCredito) {
+		this.limiteCredito = limiteCredito;
+	}
+
+
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "LimiteCreditoDTO [ponderadoSemestrePasado="
+				+ ponderadoSemestrePasado + ", creditoPlanEstudio="
+				+ creditoPlanEstudio + ", maxLimiteCredito=" + maxLimiteCredito
+				+ ", idCiclo=" + idCiclo + ", limiteCredito=" + limiteCredito
+				+ "]";
+	}
+	
+	
+}

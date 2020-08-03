@@ -1,0 +1,48 @@
+package pe.com.edu.siaa.core.ejb.dao.admision.local;
+
+import java.util.List;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.dto.admision.TipoPersonaDTO;
+import pe.com.edu.siaa.core.model.jpa.admision.TipoPersona;
+
+/**
+ * La Class TipoPersonaDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 11:25:08 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface TipoPersonaDaoLocal  extends GenericDAOLocal<Long,TipoPersona> {
+	/**
+	 * Listar tipo persona.
+	 *
+	 * @param tipoPersona el tipo personaDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<TipoPersona> listarTipoPersona(TipoPersonaDTO tipoPersona) throws Exception;
+	
+	/**
+	 * contar lista tipo persona.
+	 *
+	 * @param tipoPersona el tipo persona
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarTipoPersona(TipoPersonaDTO tipoPersona);
+	/**
+	 * Generar id tipoPersona.
+	 *
+	 * @return the Long
+	 * @throws Exception the exception
+	 */
+	Long generarIdTipoPersona() throws Exception;
+}

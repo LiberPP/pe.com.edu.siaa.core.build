@@ -1,0 +1,170 @@
+package pe.com.edu.siaa.core.model.dto.encuesta;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import pe.com.edu.siaa.core.model.dto.BasePaginator;
+
+ 
+
+/**
+ * La Class OpcionAlternativaDTO.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 1.0, Fri Sep 08 19:59:08 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+public class OpcionAlternativaDTO extends BasePaginator implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id opcion alternativa. */
+    private Long idOpcionAlternativa;
+   
+    /** El descripcion. */
+    private String descripcion;
+   
+    /** El estado. */
+    private String estado;
+   
+    /** El opcion alternativa alternativa list. */
+    private List<AlternativaDTO> opcionAlternativaAlternativaList = new ArrayList<AlternativaDTO>();
+   
+    /**
+     * Instancia un nuevo opcion alternativaDTO.
+     */
+    public OpcionAlternativaDTO() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo opcion alternativaDTO.
+     *
+     * @param idOpcionAlternativa el id opcion alternativa
+     * @param descripcion el descripcion
+     * @param estado el estado
+     */
+    public OpcionAlternativaDTO(Long idOpcionAlternativa, String descripcion, String estado ) {
+        super();
+        this.idOpcionAlternativa = idOpcionAlternativa;
+        this.descripcion = descripcion;
+        this.estado = estado;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id opcion alternativa.
+     *
+     * @return id opcion alternativa
+     */
+     public Long getIdOpcionAlternativa() {
+        return this.idOpcionAlternativa;
+    }
+    /**
+     * Establece el id opcion alternativa.
+     *
+     * @param idOpcionAlternativa el new id opcion alternativa
+     */
+    public void setIdOpcionAlternativa(Long idOpcionAlternativa) {
+        this.idOpcionAlternativa = idOpcionAlternativa;
+    }
+    /**
+     * Obtiene descripcion.
+     *
+     * @return descripcion
+     */
+     public String getDescripcion() {
+        return this.descripcion;
+    }
+    /**
+     * Establece el descripcion.
+     *
+     * @param descripcion el new descripcion
+     */
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+    /**
+     * Obtiene estado.
+     *
+     * @return estado
+     */
+     public String getEstado() {
+        return this.estado;
+    }
+    /**
+     * Establece el estado.
+     *
+     * @param estado el new estado
+     */
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+    /**
+     * Establece el opcion alternativa alternativa list.
+     *
+     * @param opcionAlternativaAlternativaList el new opcion alternativa alternativa list
+     */
+    public List<AlternativaDTO> getOpcionAlternativaAlternativaList(){
+        return this.opcionAlternativaAlternativaList;
+    }
+    /**
+     * Establece el opcion alternativa list.
+     *
+     * @param opcionAlternativaList el new opcion alternativa list
+     */
+    public void setOpcionAlternativaAlternativaList(List<AlternativaDTO> opcionAlternativaAlternativaList) {
+        this.opcionAlternativaAlternativaList = opcionAlternativaAlternativaList;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idOpcionAlternativa == null) ? 0 : idOpcionAlternativa.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        OpcionAlternativaDTO other = (OpcionAlternativaDTO) obj;
+        if (idOpcionAlternativa == null) {
+            if (other.idOpcionAlternativa != null) {
+                return false;
+            }
+        } else if (!idOpcionAlternativa.equals(other.idOpcionAlternativa)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "OpcionAlternativaDTO [idOpcionAlternativa=" + idOpcionAlternativa + "]";
+    }
+   
+}

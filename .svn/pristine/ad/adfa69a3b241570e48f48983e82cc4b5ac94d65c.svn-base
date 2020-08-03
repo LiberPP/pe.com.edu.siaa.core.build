@@ -1,0 +1,48 @@
+package pe.com.edu.siaa.core.ejb.dao.matricula.local;
+
+import java.util.List;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.dto.matricula.TrasladoDTO;
+import pe.com.edu.siaa.core.model.jpa.matricula.Traslado;
+
+/**
+ * La Class TrasladoDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 11:25:17 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface TrasladoDaoLocal  extends GenericDAOLocal<String,Traslado> {
+	/**
+	 * Listar traslado.
+	 *
+	 * @param traslado el trasladoDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<Traslado> listarTraslado(TrasladoDTO traslado) throws Exception;
+	
+	/**
+	 * contar lista traslado.
+	 *
+	 * @param traslado el traslado
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarTraslado(TrasladoDTO traslado);
+	/**
+	 * Generar id traslado.
+	 *
+	 * @return the String
+	 * @throws Exception the exception
+	 */
+	String generarIdTraslado() throws Exception;
+}

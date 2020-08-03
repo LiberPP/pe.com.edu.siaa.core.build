@@ -1,0 +1,291 @@
+package pe.com.builderp.core.escalafon.ejb.service.impl;
+
+import java.util.List;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+
+import pe.com.builderp.core.escalafon.ejb.dao.local.ContratoAcademicoDaoLocal;
+import pe.com.builderp.core.escalafon.ejb.dao.local.FormacionProfesionalDaoLocal;
+import pe.com.builderp.core.escalafon.ejb.dao.local.ProyectoInvestigacionDaoLocal;
+import pe.com.builderp.core.escalafon.ejb.dao.local.ProyectoInvestigacionDifusionDaoLocal;
+import pe.com.builderp.core.escalafon.ejb.dao.local.ProyectoInvestigacionEquipoDaoLocal;
+import pe.com.builderp.core.escalafon.ejb.service.local.EscalafonServiceLocal;
+import pe.com.builderp.core.escalafon.model.dto.ContratoAcademicoDTO;
+import pe.com.builderp.core.escalafon.model.dto.FormacionProfesionalDTO;
+import pe.com.builderp.core.escalafon.model.dto.ProyectoInvestigacionDTO;
+import pe.com.builderp.core.escalafon.model.dto.ProyectoInvestigacionDifusionDTO;
+import pe.com.builderp.core.escalafon.model.dto.ProyectoInvestigacionEquipoDTO;
+import pe.com.builderp.core.escalafon.model.jpa.ContratoAcademico;
+import pe.com.builderp.core.escalafon.model.jpa.FormacionProfesional;
+import pe.com.builderp.core.escalafon.model.jpa.ProyectoInvestigacion;
+import pe.com.builderp.core.escalafon.model.jpa.ProyectoInvestigacionDifusion;
+import pe.com.builderp.core.escalafon.model.jpa.ProyectoInvestigacionEquipo;
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.model.type.AccionType;
+
+
+/**
+ * La Class EscalafonServiceImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Sun Dec 31 00:35:58 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+ @Stateless
+public class EscalafonServiceImpl implements EscalafonServiceLocal{
+	/** El servicio contrato academico dao impl. */
+	@EJB
+	private ContratoAcademicoDaoLocal contratoAcademicoDaoImpl; 
+	
+	/** El servicio formacion profesional dao impl. */
+	@EJB
+	private FormacionProfesionalDaoLocal formacionProfesionalDaoImpl; 
+	
+	/** El servicio proyecto investigacion dao impl. */
+	@EJB
+	private ProyectoInvestigacionDaoLocal proyectoInvestigacionDaoImpl; 
+	
+	/** El servicio proyecto investigacion difusion dao impl. */
+	@EJB
+	private ProyectoInvestigacionDifusionDaoLocal proyectoInvestigacionDifusionDaoImpl; 
+	
+	/** El servicio proyecto investigacion equipo dao impl. */
+	@EJB
+	private ProyectoInvestigacionEquipoDaoLocal proyectoInvestigacionEquipoDaoImpl; 
+	
+	@Override
+	public ContratoAcademicoDTO controladorAccionContratoAcademico(ContratoAcademicoDTO contratoAcademico, AccionType accionType) throws Exception {
+		ContratoAcademicoDTO resultado = null;
+		ContratoAcademico resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				contratoAcademico.setIdContratoAcademico(this.contratoAcademicoDaoImpl.generarIdContratoAcademico());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(contratoAcademico, ContratoAcademico.class,"anhoSemestre@PK@","personal@PK@","itemByCategoriaDocente@PK@","itemByDedicacionDocente@PK@");
+				this.contratoAcademicoDaoImpl.save(resultadoEntity);	
+				resultado = contratoAcademico;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(contratoAcademico, ContratoAcademico.class,"anhoSemestre@PK@","personal@PK@","itemByCategoriaDocente@PK@","itemByDedicacionDocente@PK@");
+				this.contratoAcademicoDaoImpl.update(resultadoEntity);
+				resultado = contratoAcademico;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.contratoAcademicoDaoImpl.find(ContratoAcademico.class, contratoAcademico.getIdContratoAcademico());
+				this.contratoAcademicoDaoImpl.delete(resultadoEntity);
+				resultado = contratoAcademico;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.contratoAcademicoDaoImpl.find(ContratoAcademico.class, contratoAcademico.getIdContratoAcademico());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,ContratoAcademicoDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.contratoAcademicoDaoImpl.findByNombre(contratoAcademico),ContratoAcademicoDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<ContratoAcademicoDTO> listarContratoAcademico(ContratoAcademicoDTO contratoAcademico) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.contratoAcademicoDaoImpl.listarContratoAcademico(contratoAcademico),ContratoAcademicoDTO.class);
+	}
+	@Override
+	public int contarListarContratoAcademico(ContratoAcademicoDTO contratoAcademico){
+		return  this.contratoAcademicoDaoImpl.contarListarContratoAcademico(contratoAcademico);
+	}
+	@Override
+	public FormacionProfesionalDTO controladorAccionFormacionProfesional(FormacionProfesionalDTO formacionProfesional, AccionType accionType) throws Exception {
+		FormacionProfesionalDTO resultado = null;
+		FormacionProfesional resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				formacionProfesional.setIdFormacionProfesional(this.formacionProfesionalDaoImpl.generarIdFormacionProfesional());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(formacionProfesional, FormacionProfesional.class,"personal@PK@","itemByGradoAcademico@PK@","itemByGradoAcademicoOtorga@PK@","universidad@PK@");
+				this.formacionProfesionalDaoImpl.save(resultadoEntity);	
+				resultado = formacionProfesional;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(formacionProfesional, FormacionProfesional.class,"personal@PK@","itemByGradoAcademico@PK@","itemByGradoAcademicoOtorga@PK@","universidad@PK@");
+				this.formacionProfesionalDaoImpl.update(resultadoEntity);
+				resultado = formacionProfesional;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.formacionProfesionalDaoImpl.find(FormacionProfesional.class, formacionProfesional.getIdFormacionProfesional());
+				this.formacionProfesionalDaoImpl.delete(resultadoEntity);
+				resultado = formacionProfesional;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.formacionProfesionalDaoImpl.find(FormacionProfesional.class, formacionProfesional.getIdFormacionProfesional());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,FormacionProfesionalDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.formacionProfesionalDaoImpl.findByNombre(formacionProfesional),FormacionProfesionalDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<FormacionProfesionalDTO> listarFormacionProfesional(FormacionProfesionalDTO formacionProfesional) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.formacionProfesionalDaoImpl.listarFormacionProfesional(formacionProfesional),FormacionProfesionalDTO.class);
+	}
+	@Override
+	public int contarListarFormacionProfesional(FormacionProfesionalDTO formacionProfesional){
+		return  this.formacionProfesionalDaoImpl.contarListarFormacionProfesional(formacionProfesional);
+	}
+	@Override
+	public ProyectoInvestigacionDTO controladorAccionProyectoInvestigacion(ProyectoInvestigacionDTO proyectoInvestigacion, AccionType accionType) throws Exception {
+		ProyectoInvestigacionDTO resultado = null;
+		ProyectoInvestigacion resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				proyectoInvestigacion.setIdProyectoInvestigacion(this.proyectoInvestigacionDaoImpl.generarIdProyectoInvestigacion());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(proyectoInvestigacion, ProyectoInvestigacion.class,"itemByLineaInvestigacion@PK@","personal@PK@","entidadUniversitaria@PK@","itemByFuenteFinanciamiento@PK@");
+				this.proyectoInvestigacionDaoImpl.save(resultadoEntity);	
+				resultado = proyectoInvestigacion;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(proyectoInvestigacion, ProyectoInvestigacion.class,"itemByLineaInvestigacion@PK@","personal@PK@","entidadUniversitaria@PK@","itemByFuenteFinanciamiento@PK@");
+				this.proyectoInvestigacionDaoImpl.update(resultadoEntity);
+				resultado = proyectoInvestigacion;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.proyectoInvestigacionDaoImpl.find(ProyectoInvestigacion.class, proyectoInvestigacion.getIdProyectoInvestigacion());
+				this.proyectoInvestigacionDaoImpl.delete(resultadoEntity);
+				resultado = proyectoInvestigacion;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.proyectoInvestigacionDaoImpl.find(ProyectoInvestigacion.class, proyectoInvestigacion.getIdProyectoInvestigacion());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,ProyectoInvestigacionDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.proyectoInvestigacionDaoImpl.findByNombre(proyectoInvestigacion),ProyectoInvestigacionDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<ProyectoInvestigacionDTO> listarProyectoInvestigacion(ProyectoInvestigacionDTO proyectoInvestigacion) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.proyectoInvestigacionDaoImpl.listarProyectoInvestigacion(proyectoInvestigacion),ProyectoInvestigacionDTO.class);
+	}
+	@Override
+	public int contarListarProyectoInvestigacion(ProyectoInvestigacionDTO proyectoInvestigacion){
+		return  this.proyectoInvestigacionDaoImpl.contarListarProyectoInvestigacion(proyectoInvestigacion);
+	}
+	@Override
+	public ProyectoInvestigacionDifusionDTO controladorAccionProyectoInvestigacionDifusion(ProyectoInvestigacionDifusionDTO proyectoInvestigacionDifusion, AccionType accionType) throws Exception {
+		ProyectoInvestigacionDifusionDTO resultado = null;
+		ProyectoInvestigacionDifusion resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				proyectoInvestigacionDifusion.setIdProyectoInvestigacionDifusion(this.proyectoInvestigacionDifusionDaoImpl.generarIdProyectoInvestigacionDifusion());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(proyectoInvestigacionDifusion, ProyectoInvestigacionDifusion.class,"proyectoInvestigacion@PK@","itemByTipoDifusion@PK@");
+				this.proyectoInvestigacionDifusionDaoImpl.save(resultadoEntity);	
+				resultado = proyectoInvestigacionDifusion;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(proyectoInvestigacionDifusion, ProyectoInvestigacionDifusion.class,"proyectoInvestigacion@PK@","itemByTipoDifusion@PK@");
+				this.proyectoInvestigacionDifusionDaoImpl.update(resultadoEntity);
+				resultado = proyectoInvestigacionDifusion;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.proyectoInvestigacionDifusionDaoImpl.find(ProyectoInvestigacionDifusion.class, proyectoInvestigacionDifusion.getIdProyectoInvestigacionDifusion());
+				this.proyectoInvestigacionDifusionDaoImpl.delete(resultadoEntity);
+				resultado = proyectoInvestigacionDifusion;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.proyectoInvestigacionDifusionDaoImpl.find(ProyectoInvestigacionDifusion.class, proyectoInvestigacionDifusion.getIdProyectoInvestigacionDifusion());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,ProyectoInvestigacionDifusionDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.proyectoInvestigacionDifusionDaoImpl.findByNombre(proyectoInvestigacionDifusion),ProyectoInvestigacionDifusionDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<ProyectoInvestigacionDifusionDTO> listarProyectoInvestigacionDifusion(ProyectoInvestigacionDifusionDTO proyectoInvestigacionDifusion) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.proyectoInvestigacionDifusionDaoImpl.listarProyectoInvestigacionDifusion(proyectoInvestigacionDifusion),ProyectoInvestigacionDifusionDTO.class);
+	}
+	@Override
+	public int contarListarProyectoInvestigacionDifusion(ProyectoInvestigacionDifusionDTO proyectoInvestigacionDifusion){
+		return  this.proyectoInvestigacionDifusionDaoImpl.contarListarProyectoInvestigacionDifusion(proyectoInvestigacionDifusion);
+	}
+	@Override
+	public ProyectoInvestigacionEquipoDTO controladorAccionProyectoInvestigacionEquipo(ProyectoInvestigacionEquipoDTO proyectoInvestigacionEquipo, AccionType accionType) throws Exception {
+		ProyectoInvestigacionEquipoDTO resultado = null;
+		ProyectoInvestigacionEquipo resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				proyectoInvestigacionEquipo.setIdProyectoInvestigacionDifusion(this.proyectoInvestigacionEquipoDaoImpl.generarIdProyectoInvestigacionEquipo());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(proyectoInvestigacionEquipo, ProyectoInvestigacionEquipo.class,"proyectoInvestigacion@PK@","personal@PK@","itemByRol@PK@");
+				this.proyectoInvestigacionEquipoDaoImpl.save(resultadoEntity);	
+				resultado = proyectoInvestigacionEquipo;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(proyectoInvestigacionEquipo, ProyectoInvestigacionEquipo.class,"proyectoInvestigacion@PK@","personal@PK@","itemByRol@PK@");
+				this.proyectoInvestigacionEquipoDaoImpl.update(resultadoEntity);
+				resultado = proyectoInvestigacionEquipo;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.proyectoInvestigacionEquipoDaoImpl.find(ProyectoInvestigacionEquipo.class, proyectoInvestigacionEquipo.getIdProyectoInvestigacionDifusion());
+				this.proyectoInvestigacionEquipoDaoImpl.delete(resultadoEntity);
+				resultado = proyectoInvestigacionEquipo;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.proyectoInvestigacionEquipoDaoImpl.find(ProyectoInvestigacionEquipo.class, proyectoInvestigacionEquipo.getIdProyectoInvestigacionDifusion());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,ProyectoInvestigacionEquipoDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.proyectoInvestigacionEquipoDaoImpl.findByNombre(proyectoInvestigacionEquipo),ProyectoInvestigacionEquipoDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<ProyectoInvestigacionEquipoDTO> listarProyectoInvestigacionEquipo(ProyectoInvestigacionEquipoDTO proyectoInvestigacionEquipo) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.proyectoInvestigacionEquipoDaoImpl.listarProyectoInvestigacionEquipo(proyectoInvestigacionEquipo),ProyectoInvestigacionEquipoDTO.class);
+	}
+	@Override
+	public int contarListarProyectoInvestigacionEquipo(ProyectoInvestigacionEquipoDTO proyectoInvestigacionEquipo){
+		return  this.proyectoInvestigacionEquipoDaoImpl.contarListarProyectoInvestigacionEquipo(proyectoInvestigacionEquipo);
+	}
+}

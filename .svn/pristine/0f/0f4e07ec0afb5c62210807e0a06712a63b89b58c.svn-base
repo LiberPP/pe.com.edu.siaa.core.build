@@ -1,0 +1,169 @@
+package pe.com.edu.siaa.core.ejb.dao.nota.impl;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.persistence.Query;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericAcademicoDAOImpl;
+import pe.com.edu.siaa.core.ejb.dao.nota.local.RegistroNotaDaoLocal;
+import pe.com.edu.siaa.core.model.dto.nota.RegistroNotaDTO;
+import pe.com.edu.siaa.core.model.jpa.nota.RegistroNota;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+
+/**
+ * La Class RegistroNotaDaoImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 19:53:45 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+public class RegistroNotaDaoImpl extends  GenericAcademicoDAOImpl<String, RegistroNota> implements RegistroNotaDaoLocal  {
+
+	@Override
+	public List<RegistroNota> listarRegistroNota(String idSemestre, String idAlumno) throws Exception {
+		Map<String, Object> parametros = new HashMap<String, Object>();
+		boolean ejecutarQuery = false;
+		StringBuilder jpaql = new StringBuilder();
+		jpaql.append(" from RegistroNota o left join fetch o.matricula mat left join fetch mat.anhoSemestre where 1 = 1 ");
+			if (idAlumno != null) {
+				if (StringUtils.isNotNullOrBlank(idAlumno)) {
+					jpaql.append(" and o.matricula.alumno.idAlumno = :idAlumno ");
+					parametros.put("idAlumno", idAlumno);
+					ejecutarQuery = true;
+				}
+				if (StringUtils.isNotNullOrBlank(idSemestre)) {
+					jpaql.append(" and o.matricula.anhoSemestre.idAnhoSemestre = :idAnhoSemestre ");
+					parametros.put("idAnhoSemestre", idSemestre);
+					ejecutarQuery = true;
+				}
+			}
+			
+		jpaql.append(" order by o.matricula.anhoSemestre.idAnhoSemestre ");
+		if (ejecutarQuery) {		
+			Query query = createQuery(jpaql.toString(), parametros);
+			return query.getResultList();
+		} 
+		return new ArrayList<RegistroNota>();
+	}
+	
+	@Override
+	public RegistroNota obtenerRegistroNotaByMatricula(String idMatricula) throws Exception {
+		Map<String, Object> parametros = new HashMap<String, Object>();
+		boolean ejecutarQuery = false;
+		StringBuilder jpaql = new StringBuilder();
+		jpaql.append(" from RegistroNota o where 1 = 1 ");
+		if (StringUtils.isNotNullOrBlank(idMatricula)) {
+			jpaql.append(" and o.matricula.idMatricula = :idMatricula ");
+			parametros.put("idMatricula", idMatricula);
+			ejecutarQuery = true;
+		}
+		if (ejecutarQuery) {		
+			Query query = createQuery(jpaql.toString(), parametros);
+			List<RegistroNota> resulTemp =  query.getResultList();
+			if (resulTemp != null && resulTemp.size() > 0) {
+				return resulTemp.get(0);
+			}
+		} 
+		return null;
+	}
+	
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.RegistroNotaDaoLocal#listarRegistroNota(pe.com.edu.siaa.core.model.jpa.seguridad.RegistroNota)
+     */  
+    @Override	 
+    public List<RegistroNota> listarRegistroNota(RegistroNotaDTO registroNota) {
+        Query query = generarQueryListaRegistroNota(registroNota, false);
+        query.setFirstResult(registroNota.getStartRow());
+        query.setMaxResults(registroNota.getOffset());
+        return query.getResultList();
+    }   
+   
+    /**
+     * Generar query lista RegistroNota.
+     *
+     * @param RegistroNotaDTO el registroNota
+     * @param esContador el es contador
+     * @return the query
+     */
+    private Query generarQueryListaRegistroNota(RegistroNotaDTO registroNota, boolean esContador) {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        if (esContador) {
+            jpaql.append(" select count(o.idRegistroNota) from RegistroNota o where 1=1 ");
+        } else {
+            jpaql.append(" select o from RegistroNota o where 1=1 ");           
+        }
+		if (!StringUtils.isNullOrEmpty(registroNota.getSearch())) {
+	          jpaql.append(" and upper(o.idRegistroNota) like :search ");
+	          parametros.put("search", "%" + registroNota.getSearch().toUpperCase() + "%");
+	    } else {
+			if (!StringUtils.isNullOrEmptyNumeric(registroNota.getNotaFinal())) {
+				jpaql.append(" and o.notaFinal = :notaFinal ");
+				parametros.put("notaFinal", registroNota.getNotaFinal());
+			}
+			if (!StringUtils.isNullOrEmpty(registroNota.getUsuarioCreacion())) {
+				jpaql.append(" and upper(o.usuarioCreacion) like :usuarioCreacion ");
+				parametros.put("usuarioCreacion", "%" + registroNota.getUsuarioCreacion().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(registroNota.getFechaCreacion())) {
+				jpaql.append(" and o.fechaCreacion = :fechaCreacion ");
+				parametros.put("fechaCreacion", registroNota.getFechaCreacion());
+			}
+			if (!StringUtils.isNullOrEmpty(registroNota.getUsuarioModificacion())) {
+				jpaql.append(" and upper(o.usuarioModificacion) like :usuarioModificacion ");
+				parametros.put("usuarioModificacion", "%" + registroNota.getUsuarioModificacion().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(registroNota.getFechaModificacion())) {
+				jpaql.append(" and o.fechaModificacion = :fechaModificacion ");
+				parametros.put("fechaModificacion", registroNota.getFechaModificacion());
+			}
+		}
+        if (!esContador) {
+            //jpaql.append(" ORDER BY 1 ");
+        }
+        Query query = createQuery(jpaql.toString(), parametros);
+        return query;
+    }
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.RegistroNotaDaoLocal#contarListar{entity.getClassName()}(pe.com.edu.siaa.core.model.jpa.seguridad.RegistroNotaDTO)
+     */
+	@Override
+    public int contarListarRegistroNota(RegistroNotaDTO registroNota) {
+        int resultado = 0;
+        try {
+            //StringBuilder jpaql = new StringBuilder();
+            Query query = generarQueryListaRegistroNota(registroNota, true);
+            resultado = ((Long) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            resultado = 0;
+        }
+        return resultado;
+    }
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.RegistroNotaDaoLocal#generarIdRegistroNota()
+     */
+	 @Override
+    public String generarIdRegistroNota() {
+        String resultado = "1";
+        Query query = createQuery("select max(o.idRegistroNota) from RegistroNota o", null);
+        List<Object> listLong =  query.getResultList();
+        if (listLong != null && listLong.size() > 0 && listLong.get(0) != null)  {
+            Long ultimoIdGenerado = Long.valueOf(listLong.get(0).toString());
+            if (!StringUtils.isNullOrEmpty(ultimoIdGenerado)) {
+                resultado = resultado + ultimoIdGenerado;
+            }
+        }
+        return resultado;
+    }
+   
+}

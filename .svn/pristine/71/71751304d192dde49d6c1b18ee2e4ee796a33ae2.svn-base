@@ -1,0 +1,59 @@
+package pe.com.edu.siaa.core.ejb.dao.matricula.local;
+
+import java.util.List;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.dto.matricula.CargaLectivaDTO;
+import pe.com.edu.siaa.core.model.jpa.matricula.CargaLectiva;
+
+/**
+ * La Class CargaLectivaDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 11:25:18 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface CargaLectivaDaoLocal  extends GenericDAOLocal<String,CargaLectiva> {
+	
+
+	/**
+	 * Listar carga lectiva.
+	 *
+	 * @param cargaLectiva el carga lectiva
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<CargaLectiva> listarCargaLectivaFiltro(CargaLectivaDTO cargaLectiva) throws Exception;
+	
+	/**
+	 * Listar carga lectiva.
+	 *
+	 * @param cargaLectiva el carga lectivaDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<CargaLectiva> listarCargaLectiva(CargaLectivaDTO cargaLectiva) throws Exception;
+	
+	/**
+	 * contar lista carga lectiva.
+	 *
+	 * @param cargaLectiva el carga lectiva
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarCargaLectiva(CargaLectivaDTO cargaLectiva);
+	/**
+	 * Generar id cargaLectiva.
+	 *
+	 * @return the String
+	 * @throws Exception the exception
+	 */
+	String generarIdCargaLectiva() throws Exception;
+}

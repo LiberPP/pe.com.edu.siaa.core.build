@@ -1,0 +1,104 @@
+package pe.com.edu.siaa.core.ejb.dao.nota.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.persistence.Query;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericAcademicoDAOImpl;
+import pe.com.edu.siaa.core.ejb.dao.nota.local.DefinirCriterioEvaluacionDaoLocal;
+import pe.com.edu.siaa.core.model.dto.nota.DefinirCriterioEvaluacionDTO;
+import pe.com.edu.siaa.core.model.jpa.nota.DefinirCriterioEvaluacion;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+
+/**
+ * La Class DefinirCriterioEvaluacionDaoImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 19:53:49 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+public class DefinirCriterioEvaluacionDaoImpl extends  GenericAcademicoDAOImpl<String, DefinirCriterioEvaluacion> implements DefinirCriterioEvaluacionDaoLocal  {
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.DefinirCriterioEvaluacionDaoLocal#listarDefinirCriterioEvaluacion(pe.com.edu.siaa.core.model.jpa.seguridad.DefinirCriterioEvaluacion)
+     */  
+    @Override	 
+    public List<DefinirCriterioEvaluacion> listarDefinirCriterioEvaluacion(DefinirCriterioEvaluacionDTO definirCriterioEvaluacion) {
+        Query query = generarQueryListaDefinirCriterioEvaluacion(definirCriterioEvaluacion, false);
+        query.setFirstResult(definirCriterioEvaluacion.getStartRow());
+        query.setMaxResults(definirCriterioEvaluacion.getOffset());
+        return query.getResultList();
+    }   
+   
+    /**
+     * Generar query lista DefinirCriterioEvaluacion.
+     *
+     * @param DefinirCriterioEvaluacionDTO el definirCriterioEvaluacion
+     * @param esContador el es contador
+     * @return the query
+     */
+    private Query generarQueryListaDefinirCriterioEvaluacion(DefinirCriterioEvaluacionDTO definirCriterioEvaluacion, boolean esContador) {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        if (esContador) {
+            jpaql.append(" select count(o.idDefinirCriterioEvaluacion) from DefinirCriterioEvaluacion o where 1=1 ");
+        } else {
+            jpaql.append(" select o from DefinirCriterioEvaluacion o where 1=1 ");           
+        }
+		if (!StringUtils.isNullOrEmpty(definirCriterioEvaluacion.getSearch())) {
+	          jpaql.append(" and upper(o.idDefinirCriterioEvaluacion) like :search ");
+	          parametros.put("search", "%" + definirCriterioEvaluacion.getSearch().toUpperCase() + "%");
+	    } else {
+			if (!StringUtils.isNullOrEmptyNumeric(definirCriterioEvaluacion.getPorcentaje())) {
+				jpaql.append(" and o.porcentaje = :porcentaje ");
+				parametros.put("porcentaje", definirCriterioEvaluacion.getPorcentaje());
+			}
+		}
+        if (!esContador) {
+            //jpaql.append(" ORDER BY 1 ");
+        }
+        Query query = createQuery(jpaql.toString(), parametros);
+        return query;
+    }
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.DefinirCriterioEvaluacionDaoLocal#contarListar{entity.getClassName()}(pe.com.edu.siaa.core.model.jpa.seguridad.DefinirCriterioEvaluacionDTO)
+     */
+	@Override
+    public int contarListarDefinirCriterioEvaluacion(DefinirCriterioEvaluacionDTO definirCriterioEvaluacion) {
+        int resultado = 0;
+        try {
+            //StringBuilder jpaql = new StringBuilder();
+            Query query = generarQueryListaDefinirCriterioEvaluacion(definirCriterioEvaluacion, true);
+            resultado = ((Long) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            resultado = 0;
+        }
+        return resultado;
+    }
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.DefinirCriterioEvaluacionDaoLocal#generarIdDefinirCriterioEvaluacion()
+     */
+	 @Override
+    public String generarIdDefinirCriterioEvaluacion() {
+        String resultado = "1";
+        Query query = createQuery("select max(o.idDefinirCriterioEvaluacion) from DefinirCriterioEvaluacion o", null);
+        List<Object> listLong =  query.getResultList();
+        if (listLong != null && listLong.size() > 0 && listLong.get(0) != null)  {
+            Long ultimoIdGenerado = Long.valueOf(listLong.get(0).toString());
+            if (!StringUtils.isNullOrEmpty(ultimoIdGenerado)) {
+                resultado = resultado + ultimoIdGenerado;
+            }
+        }
+        return resultado;
+    }
+   
+}

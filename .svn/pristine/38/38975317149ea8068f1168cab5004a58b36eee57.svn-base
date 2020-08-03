@@ -1,0 +1,943 @@
+package pe.com.edu.siaa.core.ejb.service.pago.impl;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+
+import pe.com.builderp.core.facturacion.ejb.dao.venta.local.TipoDocSunatEntidadDaoLocal;
+import pe.com.builderp.core.facturacion.model.dto.venta.ClienteDTO;
+import pe.com.builderp.core.facturacion.model.dto.venta.ProductoDTO;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.AlumnoDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.pago.local.AlumnoConvenioDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.pago.local.CatalogoCuentaDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.pago.local.ClasificacionDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.pago.local.ConceptoAlumnoConvenioDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.pago.local.ControlPagoDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.pago.local.ConvenioDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.pago.local.CuotaConceptoDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.pago.local.DetControlPagoDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.pago.local.DetPlanPagosDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.pago.local.FraccionamientoDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.pago.local.PlanPagosDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.seguridad.local.PropertiesDaoLocal;
+import pe.com.edu.siaa.core.ejb.factory.CollectionUtil;
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.contabilidad.local.ContabilidadServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.local.GenerarReporteServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.matricula.local.MatriculaServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.pago.local.PagoServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.util.FechaUtil;
+import pe.com.edu.siaa.core.ejb.util.cache.AppAuthenticator;
+import pe.com.edu.siaa.core.ejb.util.cache.ConstanteCommonUtil;
+import pe.com.edu.siaa.core.ejb.util.cache.ContabilidadCacheUtil;
+import pe.com.edu.siaa.core.ejb.util.cache.ParametroCacheUtil;
+import pe.com.edu.siaa.core.ejb.util.cache.SelectItemServiceCacheUtil;
+import pe.com.edu.siaa.core.ejb.util.jms.UUIDUtil;
+import pe.com.edu.siaa.core.ejb.util.log.Logger;
+import pe.com.edu.siaa.core.model.dto.admision.AnhoSemestreDTO;
+import pe.com.edu.siaa.core.model.dto.admision.EscuelaDTO;
+import pe.com.edu.siaa.core.model.dto.contabilidad.AsientoContableDTO;
+import pe.com.edu.siaa.core.model.dto.contabilidad.AsientoContableDetDTO;
+import pe.com.edu.siaa.core.model.dto.contabilidad.ConfiguracionCuentaDTO;
+import pe.com.edu.siaa.core.model.dto.contabilidad.PlanContableDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.AlumnoConvenioDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.AlumnoDTO;
+import pe.com.edu.siaa.core.model.dto.pago.CatalogoCuentaDTO;
+import pe.com.edu.siaa.core.model.dto.pago.ClasificacionDTO;
+import pe.com.edu.siaa.core.model.dto.pago.ConceptoAlumnoConvenioDTO;
+import pe.com.edu.siaa.core.model.dto.pago.ConceptoPagoDTO;
+import pe.com.edu.siaa.core.model.dto.pago.ControlPagoDTO;
+import pe.com.edu.siaa.core.model.dto.pago.ConvenioDTO;
+import pe.com.edu.siaa.core.model.dto.pago.CuotaConceptoDTO;
+import pe.com.edu.siaa.core.model.dto.pago.DetControlPagoDTO;
+import pe.com.edu.siaa.core.model.dto.pago.DetPlanPagosDTO;
+import pe.com.edu.siaa.core.model.dto.pago.FraccionamientoDTO;
+import pe.com.edu.siaa.core.model.dto.pago.PlanPagosDTO;
+import pe.com.edu.siaa.core.model.dto.pago.TipoDocSunatEntidadDTO;
+import pe.com.edu.siaa.core.model.dto.seguridad.EntidadDTO;
+import pe.com.edu.siaa.core.model.estate.EstadoGeneralState;
+import pe.com.edu.siaa.core.model.jpa.pago.AlumnoConvenio;
+import pe.com.edu.siaa.core.model.jpa.pago.CatalogoCuenta;
+import pe.com.edu.siaa.core.model.jpa.pago.Clasificacion;
+import pe.com.edu.siaa.core.model.jpa.pago.ConceptoAlumnoConvenio;
+import pe.com.edu.siaa.core.model.jpa.pago.ControlPago;
+import pe.com.edu.siaa.core.model.jpa.pago.Convenio;
+import pe.com.edu.siaa.core.model.jpa.pago.CuotaConcepto;
+import pe.com.edu.siaa.core.model.jpa.pago.DetControlPago;
+import pe.com.edu.siaa.core.model.jpa.pago.DetPlanPagos;
+import pe.com.edu.siaa.core.model.jpa.pago.Fraccionamiento;
+import pe.com.edu.siaa.core.model.jpa.pago.PlanPagos;
+import pe.com.edu.siaa.core.model.jpa.pago.TipoDocSunatEntidad;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.model.type.FlagConceptoPagoFraccionadoType;
+import pe.com.edu.siaa.core.model.type.NombreReporteType;
+import pe.com.edu.siaa.core.model.type.TipoMovimientoType;
+import pe.com.edu.siaa.core.model.type.TipoReporteGenerarType;
+import pe.com.edu.siaa.core.model.util.ObjectUtil;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+import pe.com.edu.siaa.core.model.vo.ParametroReporteVO;
+
+
+/**
+ * La Class PagoServiceImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:23 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+ @Stateless
+ @EJB(name = "java:app/PagoService", beanInterface = PagoServiceLocal.class)
+ @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+public class PagoServiceImpl implements PagoServiceLocal{
+	 
+	 private Logger log = Logger.getLogger(PagoServiceImpl.class);
+	
+	/** El servicio cuota concepto dao impl. */
+	@EJB
+	private CuotaConceptoDaoLocal cuotaConceptoDaoImpl; 
+	
+	/** El servicio det plan pagos dao impl. */
+	@EJB
+	private DetPlanPagosDaoLocal detPlanPagosDaoImpl; 
+	
+	/** El servicio concepto alumno convenio dao impl. */
+	@EJB
+	private ConceptoAlumnoConvenioDaoLocal conceptoAlumnoConvenioDaoImpl; 
+		
+	/** El servicio alumno convenio dao impl. */
+	@EJB
+	private AlumnoConvenioDaoLocal alumnoConvenioDaoImpl; 
+	
+	/** El servicio alumno convenio dao impl. */
+	@EJB
+	private AlumnoDaoLocal alumnoDaoImpl; 
+	
+	/** El servicio catalogo cuenta dao impl. */
+	@EJB
+	private CatalogoCuentaDaoLocal catalogoCuentaDaoImpl; 
+	
+	/** El servicio fraccionamiento dao impl. */
+	@EJB
+	private FraccionamientoDaoLocal fraccionamientoDaoImpl; 
+
+	/** El servicio tipo doc sunat entidad dao impl. */
+	@EJB
+	private TipoDocSunatEntidadDaoLocal tipoDocSunatEntidadDaoImpl; 
+	
+	/** El servicio convenio dao impl. */
+	@EJB
+	private ConvenioDaoLocal convenioDaoImpl; 
+	
+	/** El servicio properties dao impl. */
+	@EJB
+	private PropertiesDaoLocal propertiesDaoImpl; 
+	
+	/** El servicio plan pagos dao impl. */
+	@EJB
+	private PlanPagosDaoLocal planPagosDaoImpl; 
+	
+	/** El servicio control pago dao impl. */
+	@EJB
+	private ControlPagoDaoLocal controlPagoDaoImpl; 
+		
+	/** El servicio det control pago dao impl. */
+	@EJB
+	private DetControlPagoDaoLocal detControlPagoDaoImpl;  
+	
+	/** El servicio clasificacion dao impl. */
+	@EJB
+	private ClasificacionDaoLocal clasificacionDaoImpl; 
+	
+	/** El servicio matricula service impl. */
+	@EJB
+	private MatriculaServiceLocal matriculaServiceImpl; 
+	
+	@EJB
+	private GenerarReporteServiceLocal	 generarReporteServiceImpl;
+	
+	//Integrando con la contabilidad para generar asientos contables
+	
+	/** El servicio contabilidad service impl. */
+	@EJB
+	private ContabilidadServiceLocal contabilidadServiceImpl; 
+	
+	@Override
+	public List<CuotaConceptoDTO> listarConceptoPagoSemestre(String idSemestre,String idEscuela,String search) throws Exception {
+		CuotaConceptoDTO cuotaConcepto = new CuotaConceptoDTO();
+		cuotaConcepto.setAnhoSemestre(new AnhoSemestreDTO());
+		cuotaConcepto.getAnhoSemestre().setIdAnhoSemestre(idSemestre);
+		cuotaConcepto.setEscuela(new EscuelaDTO());
+		cuotaConcepto.getEscuela().setIdEscuela(idEscuela);
+		cuotaConcepto.setSearch(search);
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(cuotaConceptoDaoImpl.listarCuotaConcepto(cuotaConcepto), CuotaConceptoDTO.class,"catalogoCuenta:{clasificacion}");
+	}
+	
+	@Override
+	public List<DetControlPagoDTO> verDetallePagosRealizados(String idControlPago) throws Exception {
+		List<DetControlPagoDTO> resultado = new ArrayList<DetControlPagoDTO>();
+		List<DetControlPago> listaTemo = detControlPagoDaoImpl.listarDetControlPago(idControlPago);
+		for (DetControlPago detControlPago : listaTemo) {
+			DetControlPagoDTO detControlPagoDTO = TransferDataObjectUtil.transferObjetoEntityDTO(detControlPago, DetControlPagoDTO.class,"fraccionamiento");
+			CuotaConceptoDTO cuotaConceptoDTO = TransferDataObjectUtil.transferObjetoEntityDTO(detControlPago.getCuotaConcepto(), CuotaConceptoDTO.class, "anhoSemestre","catalogoCuenta");
+			detControlPagoDTO.setCuotaConceptoDTO(cuotaConceptoDTO);
+			resultado.add(detControlPagoDTO);
+		}
+		listaTemo = null;
+		return resultado;
+	}
+	
+	@Override
+	public String generarReportePago(String idControlPago,String idAlumno,String usuario) throws Exception {
+		String fileName = UUIDUtil.generarElementUUID();
+		String codigoGeneradoReporte = fileName;
+		try {
+			AlumnoDTO alumno = new AlumnoDTO();
+			alumno.setIdAlumno(idAlumno);		
+			alumno = this.matriculaServiceImpl.controladorAccionAlumno(alumno, AccionType.FIND_BY_ID);
+			Map<String, Object> parametros = new HashMap<String, Object>();
+			String[] subreportes;
+			subreportes = new String[0];	
+			parametros.put("codCarnet", alumno.getCodigoCarnet());
+			parametros.put("nombreEscuela", alumno.getEscuela().getNombre());
+			parametros.put("nombreAlumno", alumno.getPostulante().getPersona().getNombre() + " " +  alumno.getPostulante().getPersona().getApellidoPaterno() + " " + alumno.getPostulante().getPersona().getApellidoMaterno());
+			parametros.put("ruta", "");
+			List<ControlPagoDTO> listaControlPagoGenerar = new ArrayList<ControlPagoDTO>();
+			ControlPagoDTO controlPagoReporte = new ControlPagoDTO();
+			controlPagoReporte.setIdControlPago(idControlPago);
+			controlPagoReporte.setId(idAlumno);
+			controlPagoReporte.setAlumno(alumno);
+			controlPagoReporte = this.listarControlPago(controlPagoReporte).get(0);
+			if (controlPagoReporte.getCliente() == null || controlPagoReporte.getCliente().getIdCliente() == null) {
+				controlPagoReporte.setCliente(new ClienteDTO());
+			}
+			controlPagoReporte.setAlumno(alumno);
+			List<DetControlPagoDTO> listaDetControlPago = verDetallePagosRealizados(idControlPago);
+			controlPagoReporte.setControlPagoDetControlPagoList(listaDetControlPago);
+			listaControlPagoGenerar.add(controlPagoReporte);
+			NombreReporteType reporte = NombreReporteType.JR_REP_BOLETA_PAGOS_REALIZADOS_ALUMNO;
+			ParametroReporteVO parametroReporteVO = new ParametroReporteVO(parametros, listaControlPagoGenerar, reporte, subreportes, null, true, "", "");
+			parametroReporteVO.setFormato(TipoReporteGenerarType.PDF.getKey());
+			parametroReporteVO.setUserName(usuario);
+			parametroReporteVO.setFileName(fileName);
+			codigoGeneradoReporte = generarReporteServiceImpl.obtenerParametroReporteBigMemory(parametroReporteVO);
+			return codigoGeneradoReporte;
+		} catch (Exception e) {
+			log.error(e);
+		}
+		return codigoGeneradoReporte;
+	}
+	
+	//TODO:NATAN ver tema de entidad
+	@Override
+	public ControlPagoDTO registrarPago(ControlPagoDTO controlPago) throws Exception {
+		String userName = AppAuthenticator.getInstance().getUserName(controlPago.getAuthToken());
+		//Alumno alumno = this.alumnoDaoImpl.findAlumno(controlPago.getAlumno().getIdAlumno());
+		ControlPago controlPagoPersist = null;
+		List<ConceptoPagoDTO> listaConceptoPagoDTO = controlPago.getListaConceptoPagoDTO();
+		
+		if (StringUtils.isNotNullOrBlank(controlPago.getTipoDocSunat().getIdItem())) {
+			String nroDocCalc = tipoDocSunatEntidadDaoImpl.actualizarTipoDocSunat(controlPago.getTipoDocSunat().getIdItem(),controlPago.getIdEntidadSelect(),controlPago.getNroDoc());
+			if (!StringUtils.isNotNullOrBlank(controlPago.getNroDoc())) {
+				//generar el nro doc
+				controlPago.setNroDoc(nroDocCalc);
+			}
+		}
+
+		if (!StringUtils.isNotNullOrBlank(controlPago.getIdControlPago())) {
+			controlPago.setFechaCreacion(FechaUtil.obtenerFecha());
+			controlPago.setFechaPago(FechaUtil.obtenerFecha());
+			controlPago.setUsuarioCreacion(userName);
+			//controlPago.setNroCorrelativoOperacion(controlPagoDaoImpl.generarNumeroOperacion(FechaUtil.anio(FechaUtil.obtenerFecha())));
+			controlPago.setIdControlPago(controlPagoDaoImpl.generarIdControlPago(controlPago.getAnhoSemestre().getIdAnhoSemestre()));
+			controlPagoPersist = TransferDataObjectUtil.transferObjetoEntity(controlPago, ControlPago.class,"anhoSemestre@PK@","alumno@PK@","tipoDocSunat@PK@","itemByTipoMoneda@PK@","cliente@PK@");
+			controlPagoPersist = controlPagoDaoImpl.save(controlPagoPersist);
+			//integracion contable
+			String numeroCorrelativo = this.registrarAsientoContable(controlPago,userName);
+			controlPagoPersist.setNroCorrelativoOperacion(numeroCorrelativo);
+		} else {
+			controlPago.setFechaModificacion(FechaUtil.obtenerFecha());
+			controlPago.setUsuarioModificacion(userName);
+			controlPagoPersist = TransferDataObjectUtil.transferObjetoEntity(controlPago, ControlPago.class,"anhoSemestre@PK@","alumno@PK@","tipoDocSunat@PK@","itemByTipoMoneda@PK@","cliente@PK@");
+			controlPagoPersist = controlPagoDaoImpl.update(controlPagoPersist);
+		}
+		if (listaConceptoPagoDTO == null) {
+			listaConceptoPagoDTO = new ArrayList<ConceptoPagoDTO>();
+		}
+		Map<String,BigDecimal> montoPagoFraccionadoMap = new HashMap<String, BigDecimal>();
+		//registrando detalle de pago y actualizando montos restantes
+		for (ConceptoPagoDTO conceptoPagoDTO : listaConceptoPagoDTO) {
+			if (conceptoPagoDTO.isCheck()) {
+				DetControlPago detControlPago = new DetControlPago();
+				detControlPago.setControlPago(controlPagoPersist);
+				if (conceptoPagoDTO.isEsFraccionado()) {
+					BigDecimal montoPago = conceptoPagoDTO.getMontoTotal().subtract(conceptoPagoDTO.getMontoResta());
+					if (montoPagoFraccionadoMap.containsKey(conceptoPagoDTO.getIdPadre())) {
+						BigDecimal montoPagoMap =  montoPagoFraccionadoMap.get(conceptoPagoDTO.getIdPadre());
+						montoPago = montoPago.add(montoPagoMap);
+					}
+					montoPagoFraccionadoMap.put(conceptoPagoDTO.getIdPadre(), montoPago);
+					Fraccionamiento fraccionamiento = new Fraccionamiento();
+					fraccionamiento.setIdFraccionamiento(conceptoPagoDTO.getId() + "");
+					fraccionamiento.setMontoFraccionadoResta(conceptoPagoDTO.getMontoResta());
+					//detControlPago.setFraccionamiento(fraccionamiento);
+					detControlPago.setNroCuota(conceptoPagoDTO.getNroCuota());
+					fraccionamientoDaoImpl.actualizarMontoResta(fraccionamiento);
+				} else {
+					if (conceptoPagoDTO.getId() != null && !conceptoPagoDTO.getId().toString().contains("Artificio")) {
+						DetPlanPagos detPlanPagos = new DetPlanPagos();
+						detPlanPagos.setIdDetPlanPagos(conceptoPagoDTO.getId() + "");
+						detPlanPagos.setMontoResta(conceptoPagoDTO.getMontoResta());
+						//detControlPago.setDetPlanPagos(detPlanPagos);
+						detPlanPagosDaoImpl.actualizarMontoResta(detPlanPagos);
+					}
+				}
+				detControlPago.setCuotaConcepto(new CuotaConcepto());
+				detControlPago.getCuotaConcepto().setIdCuotaConcepto(conceptoPagoDTO.getIdCuotaConcepto()  + "");
+				detControlPago.setMonto(conceptoPagoDTO.getMonto().subtract(conceptoPagoDTO.getMontoResta()));
+				detControlPago.setDescripcionConcepto(conceptoPagoDTO.getDescripcion());
+				detControlPago.setIdDetControlPago(detControlPagoDaoImpl.generarIdDetControlPago(controlPagoPersist.getIdControlPago()));
+				
+				detControlPago.setUsuarioCreacion(controlPago.getUsuarioCreacion());
+				detControlPago.setFechaCreacion(controlPago.getFechaCreacion());
+				detControlPago.setIp(controlPago.getIp());
+				detControlPago.setEstado(EstadoGeneralState.ACTIVO.getKey());
+				
+				detControlPago = detControlPagoDaoImpl.save(detControlPago);
+			}
+		}
+		//actualizando los datos del padre
+		for (Map.Entry<String,BigDecimal> entryMap : montoPagoFraccionadoMap.entrySet()) {
+			DetPlanPagos detPlanPagos = detPlanPagosDaoImpl.find(DetPlanPagos.class, entryMap.getKey());
+			BigDecimal montoPago = new BigDecimal("0");
+			if (detPlanPagos.getMontoResta() != null) {
+				montoPago = detPlanPagos.getMontoResta();
+			} else {
+				montoPago = detPlanPagos.getCuota();
+			}
+			detPlanPagos.setMontoResta(montoPago.subtract(entryMap.getValue()));
+			detPlanPagosDaoImpl.update(detPlanPagos);
+		}
+		return controlPago;
+	}
+	
+	private String registrarAsientoContable(ControlPagoDTO controlPago,String userName) throws Exception {
+		String resultado = "";
+		AsientoContableDTO asientoContable = new AsientoContableDTO();
+		asientoContable.setIdEntidadSelect(controlPago.getIdEntidadSelect());
+		asientoContable.setEntidad(new EntidadDTO());
+		asientoContable.getEntidad().setIdEntidad(controlPago.getIdEntidadSelect());
+		//asientoContable.setIdAsientoContable();
+		String keyLibro =  "49" + "" + "5";
+		String keySubLibro =  "49" + "" + "14";
+		asientoContable.setItemByLibro(SelectItemServiceCacheUtil.getInstance().obtenerItemByCodigo(keyLibro));
+		asientoContable.setItemBySubLibro(SelectItemServiceCacheUtil.getInstance().obtenerItemByCodigo(keySubLibro));
+		//asientoContable.setNroCorrelativoAsiento(0L);//Generar en el servicio
+		asientoContable.setFechaOperacion(controlPago.getFechaPago());//TODO:VER_NATAN_CONTABILIDAD
+		String glosa = "Provision de la venta {nuroDocumento}, {alumno}";
+		glosa = glosa.replace("{nuroDocumento}", controlPago.getNroDoc());
+		glosa = glosa.replace("{alumno}", controlPago.getAlumno().getPostulante().getPersona().getNombre() + " " + controlPago.getAlumno().getPostulante().getPersona().getApellidoPaterno() + " " + controlPago.getAlumno().getPostulante().getPersona().getApellidoPaterno());
+		asientoContable.setGlosa(glosa);//TODO:VER_NATAN Pasar al parametro
+		asientoContable.setNroCorrelativoOperacion(controlPago.getNroCorrelativoOperacion());
+		asientoContable.setNroDocumentoOperacion(controlPago.getNroDoc());
+		asientoContable.setIdOperacion(controlPago.getIdControlPago() + "");
+		asientoContable.setFechaCreacion(FechaUtil.obtenerFecha());
+		asientoContable.setUsuarioCreacion(controlPago.getUsuarioCreacion());
+		asientoContable.setFechaModificacion(null);
+		asientoContable.setUsuarioModificacion(null);
+		asientoContable.setIpAcceso(controlPago.getIp());
+		//detalle
+		boolean isFlagAplicaIGV = false;
+		for (ConceptoPagoDTO conceptoPagoDTO : controlPago.getListaConceptoPagoDTO()) {//TODO:Mejorar esto
+			if (conceptoPagoDTO.isCheck()) {
+				if (conceptoPagoDTO.isFlagAplicaIGV()) {
+					isFlagAplicaIGV = true;
+					break;
+				}
+			}
+		}
+		//Cuenta libro venta 14 ==> cuenta 12
+		String keyCuenta =  controlPago.getIdEntidadSelect() + "14";
+		ConfiguracionCuentaDTO configuracionCuentaDTO = ContabilidadCacheUtil.getInstance().getConfiguracionCuentaMap().get(keyCuenta);
+		AsientoContableDetDTO asientoContableDet = new AsientoContableDetDTO();
+		asientoContableDet.setPlanContable(configuracionCuentaDTO.getPlanContable());
+		asientoContableDet.setMonto(controlPago.getMontoTotal());
+		asientoContableDet.setTipo(TipoMovimientoType.DEBE.getKey());
+		asientoContable.getAsientoContableAsientoContableDetList().add(asientoContableDet);
+        // cuenta 40
+		String porcentajeIGV = "";
+		if (isFlagAplicaIGV) {
+			String procentajeIgvKey = controlPago.getIdEntidadSelect() +  ConstanteCommonUtil.PARAMETRO_IGV;
+			porcentajeIGV = ParametroCacheUtil.getInstance().getParamtroMap().get(procentajeIgvKey) + "";			
+		}
+		//cuenta 70
+		BigDecimal montoIGV = BigDecimal.ZERO;
+		for (ConceptoPagoDTO conceptoPagoDTO : controlPago.getListaConceptoPagoDTO()) {//TODO:Mejorar esto
+			if (conceptoPagoDTO.isCheck()) {
+				String keyCuentaVenta =  conceptoPagoDTO.getIdPlanContable();
+				PlanContableDTO planContableDTO = ContabilidadCacheUtil.getInstance().getPlanContableMap().get(keyCuentaVenta);
+				asientoContableDet = new AsientoContableDetDTO();
+				asientoContableDet.setPlanContable(planContableDTO);
+				asientoContableDet.setMonto(conceptoPagoDTO.getMonto().subtract(conceptoPagoDTO.getMontoResta()));
+				//asientoContableDet.setMonto(conceptoPagoDTO.getMontoTotal());
+				asientoContableDet.setTipo(TipoMovimientoType.HABER.getKey());
+				asientoContable.getAsientoContableAsientoContableDetList().add(asientoContableDet);
+				if (conceptoPagoDTO.isFlagAplicaIGV()) {
+					 montoIGV = montoIGV.add(asientoContableDet.getMonto().multiply(ObjectUtil.objectToBigDecimal(porcentajeIGV)));
+				 }
+			}
+		}
+		if (isFlagAplicaIGV) {
+			String igvCuentaAsignadaKey = controlPago.getIdEntidadSelect() +  ConstanteCommonUtil.PARAMETRO_IGV_CUENTA_ASIGANDA;
+			String IGVCuentaAsignadaValue =  ParametroCacheUtil.getInstance().getParamtroMap().get(igvCuentaAsignadaKey) + "";
+			PlanContableDTO planContableDTO = ContabilidadCacheUtil.getInstance().getPlanContableMap().get(IGVCuentaAsignadaValue);
+			asientoContableDet = new AsientoContableDetDTO();
+			asientoContableDet.setPlanContable(planContableDTO);
+			asientoContableDet.setMonto(montoIGV);
+			asientoContableDet.setTipo(TipoMovimientoType.HABER.getKey());
+			asientoContable.getAsientoContableAsientoContableDetList().add(asientoContableDet);
+		}
+		AsientoContableDTO asientoContablePersist = contabilidadServiceImpl.registrarAsientoContable(asientoContable ,userName, AccionType.CREAR);
+		resultado = asientoContablePersist.getNroCorrelativoOperacion();
+	    return resultado;
+	}
+	@Override
+	public  List<DetPlanPagosDTO> listarConceptoPagoAlumnoSemestre(String idAlumno,String idAnhoSemestre,boolean flagFaltaMontoResta) throws Exception {
+		List<DetPlanPagosDTO> resultado = new ArrayList<DetPlanPagosDTO>();
+		List<DetPlanPagos> resultadoTemp = detPlanPagosDaoImpl.listarConceptoPagoAlumnoSemestre(idAlumno, idAnhoSemestre, flagFaltaMontoResta);
+		List<String> listaDetPlanPagos = new ArrayList<String>();
+		for (DetPlanPagos objData : resultadoTemp) {
+			if (FlagConceptoPagoFraccionadoType.SI.getKey().equals(objData.getFlagFraccionado())) {
+				listaDetPlanPagos.add(objData.getIdDetPlanPagos());			
+			}
+			DetPlanPagosDTO detPlanPagos = TransferDataObjectUtil.transferObjetoEntityDTO(objData, DetPlanPagosDTO.class);
+			CuotaConceptoDTO cuotaConcepto = TransferDataObjectUtil.transferObjetoEntityDTO(objData.getCuotaConcepto(), CuotaConceptoDTO.class,"anhoSemestre","catalogoCuenta:{clasificacion}");
+			ProductoDTO producto = TransferDataObjectUtil.transferObjetoEntityDTO(objData.getCuotaConcepto().getCatalogoCuenta().getProducto(), ProductoDTO.class,"planContableVenta","planContableCompra");
+			cuotaConcepto.getCatalogoCuenta().setProducto(producto);
+			detPlanPagos.setCuotaConcepto(cuotaConcepto);
+			resultado.add(detPlanPagos);
+		}
+		Map<String,List<Fraccionamiento>> fraccionamientoMap = fraccionamientoDaoImpl.obtenerListaFraccionamientoMap(listaDetPlanPagos, flagFaltaMontoResta);
+		for (DetPlanPagosDTO objData : resultado) {
+			if (FlagConceptoPagoFraccionadoType.SI.getKey().equals(objData.getFlagFraccionado())) {
+				if (fraccionamientoMap.containsKey(objData.getIdDetPlanPagos())) {
+					List<FraccionamientoDTO> listaFraccionamiento = TransferDataObjectUtil.transferObjetoEntityDTOList(fraccionamientoMap.get(objData.getIdDetPlanPagos()),FraccionamientoDTO.class);
+					objData.setListaFraccionamientos(listaFraccionamiento);
+				}
+			}
+		}
+		
+		return resultado;
+	}
+	
+	
+	
+	@Override
+	public CuotaConceptoDTO controladorAccionCuotaConcepto(CuotaConceptoDTO cuotaConcepto, AccionType accionType) throws Exception {
+		CuotaConceptoDTO resultado = null;
+		CuotaConcepto resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				cuotaConcepto.setIdCuotaConcepto(this.cuotaConceptoDaoImpl.generarIdCuotaConcepto(cuotaConcepto.getAnhoSemestre().getIdAnhoSemestre()));
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(cuotaConcepto, CuotaConcepto.class,"anhoSemestre@PK@","escuela@PK@","catalogoCuenta@PK@");
+				this.cuotaConceptoDaoImpl.save(resultadoEntity);	
+				resultado = cuotaConcepto;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(cuotaConcepto, CuotaConcepto.class,"anhoSemestre@PK@","escuela@PK@","catalogoCuenta@PK@");
+				this.cuotaConceptoDaoImpl.update(resultadoEntity);
+				resultado = cuotaConcepto;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.cuotaConceptoDaoImpl.find(CuotaConcepto.class, cuotaConcepto.getIdCuotaConcepto());
+				this.cuotaConceptoDaoImpl.delete(resultadoEntity);
+				resultado = cuotaConcepto;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.cuotaConceptoDaoImpl.find(CuotaConcepto.class, cuotaConcepto.getIdCuotaConcepto());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,CuotaConceptoDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.cuotaConceptoDaoImpl.findByNombre(cuotaConcepto),CuotaConceptoDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<CuotaConceptoDTO> listarCuotaConcepto(CuotaConceptoDTO cuotaConcepto) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.cuotaConceptoDaoImpl.listarCuotaConcepto(cuotaConcepto),CuotaConceptoDTO.class,"catalogoCuenta:{clasificacion}");
+	}
+	
+	@Override
+	public int contarListarCuotaConcepto(CuotaConceptoDTO cuotaConcepto){
+		return  this.cuotaConceptoDaoImpl.contarListarCuotaConcepto(cuotaConcepto);
+	}
+	
+	private void registrarDetPlanPagos(String userName,PlanPagos planPagos, DetPlanPagosDTO detPlanPagos) throws Exception {
+		DetPlanPagos resultadoEntity = null;
+		//Map<String,Fraccionamiento> fraccionamientoMap = new HashMap<String,Fraccionamiento>();
+		detPlanPagos.setFlagFraccionado(FlagConceptoPagoFraccionadoType.NO.getKey());
+		if (!CollectionUtil.isEmpty(detPlanPagos.getListaFraccionamientos())) {
+			detPlanPagos.setFlagFraccionado(FlagConceptoPagoFraccionadoType.SI.getKey());
+		}
+		if (!StringUtils.isNotNullOrBlank(detPlanPagos.getIdDetPlanPagos())) {
+			detPlanPagos.setIdDetPlanPagos(this.detPlanPagosDaoImpl.generarIdDetPlanPagos(planPagos.getIdPlanPagos()));
+			resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(detPlanPagos, DetPlanPagos.class,"cuotaConcepto@PK@");
+			resultadoEntity.setPlanPagos(planPagos);
+			this.detPlanPagosDaoImpl.save(resultadoEntity);	
+		} else {
+			resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(detPlanPagos, DetPlanPagos.class,"cuotaConcepto@PK@");
+			resultadoEntity.setPlanPagos(planPagos);
+			this.detPlanPagosDaoImpl.update(resultadoEntity);
+			fraccionamientoDaoImpl.eliminarFraccionamiento(detPlanPagos.getIdDetPlanPagos());
+			/*boolean flagFaltaMontoResta;
+			List<String> listaDetPlanPagos = new ArrayList<String>();
+			listaDetPlanPagos.add(detPlanPagos.getIdDetPlanPagos());
+			fraccionamientoMap = this.fraccionamientoDaoImpl.obtenerListaFraccionamientoMap(listaDetPlanPagos , flagFaltaMontoResta).get(detPlanPagos.getIdDetPlanPagos()));
+			*/
+		}	
+		if (!CollectionUtil.isEmpty(detPlanPagos.getListaFraccionamientos())) {
+			for (FraccionamientoDTO fraccionamientoDTO : detPlanPagos.getListaFraccionamientos()) {
+				registrarFraccionamiento(userName,fraccionamientoDTO, resultadoEntity);
+			}
+		}
+	}
+
+	@Override
+	public List<DetPlanPagosDTO> listarDetPlanPagos(DetPlanPagosDTO detPlanPagos) throws Exception {
+		List<DetPlanPagosDTO> resultado = TransferDataObjectUtil.transferObjetoEntityDTOList(this.detPlanPagosDaoImpl.listarDetPlanPagos(detPlanPagos),DetPlanPagosDTO.class,"cuotaConcepto:{catalogoCuenta}");
+		List<String> listaDetPlanPagos = new ArrayList<String>();
+		for (DetPlanPagosDTO objData : resultado) {
+			if (FlagConceptoPagoFraccionadoType.SI.getKey().equals(objData.getFlagFraccionado())) {
+				listaDetPlanPagos.add(objData.getIdDetPlanPagos());			
+			}
+		}
+		Map<String,List<Fraccionamiento>> fraccionamientoMap = fraccionamientoDaoImpl.obtenerListaFraccionamientoMap(listaDetPlanPagos, false);
+		for (DetPlanPagosDTO objData : resultado) {
+			if (FlagConceptoPagoFraccionadoType.SI.getKey().equals(objData.getFlagFraccionado())) {
+				if (fraccionamientoMap.containsKey(objData.getIdDetPlanPagos())) {
+					List<FraccionamientoDTO> listaFraccionamiento = TransferDataObjectUtil.transferObjetoEntityDTOList(fraccionamientoMap.get(objData.getIdDetPlanPagos()),FraccionamientoDTO.class);
+					objData.setListaFraccionamientos(listaFraccionamiento);
+				}
+			}
+		}
+		return resultado;
+	}
+	
+	@Override
+	public DetPlanPagosDTO eliminarDetPlanPagos(DetPlanPagosDTO detPlanPagos) {
+		DetPlanPagos resultadoEntity = this.detPlanPagosDaoImpl.find(DetPlanPagos.class, detPlanPagos.getIdDetPlanPagos());
+		resultadoEntity.getDetPlanPagosFraccionamientoList().size();
+		for (Fraccionamiento objFracc : resultadoEntity.getDetPlanPagosFraccionamientoList()) {
+			fraccionamientoDaoImpl.delete(objFracc);
+		}
+		this.detPlanPagosDaoImpl.delete(resultadoEntity);
+		return detPlanPagos;
+	}
+	
+	@Override
+	public int contarListarDetPlanPagos(DetPlanPagosDTO detPlanPagos){
+		return  this.detPlanPagosDaoImpl.contarListarDetPlanPagos(detPlanPagos);
+	}
+	
+	@Override
+	public ConceptoAlumnoConvenioDTO controladorAccionConceptoAlumnoConvenio(ConceptoAlumnoConvenioDTO conceptoAlumnoConvenio, AccionType accionType) throws Exception {
+		ConceptoAlumnoConvenioDTO resultado = null;
+		ConceptoAlumnoConvenio resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				conceptoAlumnoConvenio.setIdConceptoAlumnoconvenio(this.conceptoAlumnoConvenioDaoImpl.generarIdConceptoAlumnoConvenio());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(conceptoAlumnoConvenio, ConceptoAlumnoConvenio.class,"alumnoConvenio@PK@","catalogoCuenta@PK@");
+				this.conceptoAlumnoConvenioDaoImpl.save(resultadoEntity);	
+				resultado = conceptoAlumnoConvenio;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(conceptoAlumnoConvenio, ConceptoAlumnoConvenio.class,"alumnoConvenio@PK@","catalogoCuenta@PK@");
+				this.conceptoAlumnoConvenioDaoImpl.update(resultadoEntity);
+				resultado = conceptoAlumnoConvenio;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.conceptoAlumnoConvenioDaoImpl.find(ConceptoAlumnoConvenio.class, conceptoAlumnoConvenio.getIdConceptoAlumnoconvenio());
+				this.conceptoAlumnoConvenioDaoImpl.delete(resultadoEntity);
+				resultado = conceptoAlumnoConvenio;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.conceptoAlumnoConvenioDaoImpl.find(ConceptoAlumnoConvenio.class, conceptoAlumnoConvenio.getIdConceptoAlumnoconvenio());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,ConceptoAlumnoConvenioDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.conceptoAlumnoConvenioDaoImpl.findByNombre(conceptoAlumnoConvenio),ConceptoAlumnoConvenioDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<ConceptoAlumnoConvenioDTO> listarConceptoAlumnoConvenio(ConceptoAlumnoConvenioDTO conceptoAlumnoConvenio) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.conceptoAlumnoConvenioDaoImpl.listarConceptoAlumnoConvenio(conceptoAlumnoConvenio),ConceptoAlumnoConvenioDTO.class);
+	}
+	@Override
+	public int contarListarConceptoAlumnoConvenio(ConceptoAlumnoConvenioDTO conceptoAlumnoConvenio){
+		return  this.conceptoAlumnoConvenioDaoImpl.contarListarConceptoAlumnoConvenio(conceptoAlumnoConvenio);
+	}
+	
+	@Override
+	public AlumnoConvenioDTO controladorAccionAlumnoConvenio(AlumnoConvenioDTO alumnoConvenio, AccionType accionType) throws Exception {
+		AlumnoConvenioDTO resultado = null;
+		AlumnoConvenio resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				alumnoConvenio.setIdAlumnoConvenio(this.alumnoConvenioDaoImpl.generarIdAlumnoConvenio());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(alumnoConvenio, AlumnoConvenio.class,"alumno@PK@","convenio@PK@","anhoSemestre@PK@","itemByTipoDocumento@PK@");
+				this.alumnoConvenioDaoImpl.save(resultadoEntity);	
+				resultado = alumnoConvenio;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(alumnoConvenio, AlumnoConvenio.class,"alumno@PK@","convenio@PK@","anhoSemestre@PK@","itemByTipoDocumento@PK@");
+				this.alumnoConvenioDaoImpl.update(resultadoEntity);
+				resultado = alumnoConvenio;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.alumnoConvenioDaoImpl.find(AlumnoConvenio.class, alumnoConvenio.getIdAlumnoConvenio());
+				this.alumnoConvenioDaoImpl.delete(resultadoEntity);
+				resultado = alumnoConvenio;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.alumnoConvenioDaoImpl.find(AlumnoConvenio.class, alumnoConvenio.getIdAlumnoConvenio());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,AlumnoConvenioDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.alumnoConvenioDaoImpl.findByNombre(alumnoConvenio),AlumnoConvenioDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<AlumnoConvenioDTO> listarAlumnoConvenio(AlumnoConvenioDTO alumnoConvenio) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.alumnoConvenioDaoImpl.listarAlumnoConvenio(alumnoConvenio),AlumnoConvenioDTO.class);
+	}
+	@Override
+	public int contarListarAlumnoConvenio(AlumnoConvenioDTO alumnoConvenio){
+		return  this.alumnoConvenioDaoImpl.contarListarAlumnoConvenio(alumnoConvenio);
+	}
+	
+	@Override
+	public CatalogoCuentaDTO controladorAccionCatalogoCuenta(CatalogoCuentaDTO catalogoCuenta, AccionType accionType) throws Exception {
+		CatalogoCuentaDTO resultado = null;
+		CatalogoCuenta resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				catalogoCuenta.setIdCatalogoCuenta(this.catalogoCuentaDaoImpl.generarIdCatalogoCuenta());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(catalogoCuenta, CatalogoCuenta.class,"catalogoCuenta@PK@","clasificacion@PK@");
+				this.catalogoCuentaDaoImpl.save(resultadoEntity);	
+				resultado = catalogoCuenta;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(catalogoCuenta, CatalogoCuenta.class,"catalogoCuenta@PK@","clasificacion@PK@");
+				this.catalogoCuentaDaoImpl.update(resultadoEntity);
+				resultado = catalogoCuenta;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.catalogoCuentaDaoImpl.find(CatalogoCuenta.class, catalogoCuenta.getIdCatalogoCuenta());
+				this.catalogoCuentaDaoImpl.delete(resultadoEntity);
+				resultado = catalogoCuenta;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.catalogoCuentaDaoImpl.find(CatalogoCuenta.class, catalogoCuenta.getIdCatalogoCuenta());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,CatalogoCuentaDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.catalogoCuentaDaoImpl.findByNombre(catalogoCuenta),CatalogoCuentaDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		return resultado;
+	}
+	@Override
+	public List<CatalogoCuentaDTO> listarCatalogoCuenta(CatalogoCuentaDTO catalogoCuenta) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.catalogoCuentaDaoImpl.listarCatalogoCuenta(catalogoCuenta),CatalogoCuentaDTO.class,"catalogoCuenta","clasificacion","producto");
+	}
+	@Override
+	public int contarListarCatalogoCuenta(CatalogoCuentaDTO catalogoCuenta){
+		return  this.catalogoCuentaDaoImpl.contarListarCatalogoCuenta(catalogoCuenta);
+	}
+
+	private void registrarFraccionamiento(String userName,FraccionamientoDTO fraccionamiento, DetPlanPagos detPlanPagos) throws Exception {
+		//TODO:RECUPERAR		
+		if (StringUtils.isNullOrEmpty(fraccionamiento.getIdFraccionamiento())) {
+			fraccionamiento.setIdFraccionamiento(this.fraccionamientoDaoImpl.generarIdFraccionamiento(detPlanPagos.getIdDetPlanPagos()));
+			Fraccionamiento resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(fraccionamiento, Fraccionamiento.class,"detPlanPagos@PK@");
+			resultadoEntity.setDetPlanPagos(detPlanPagos);
+			resultadoEntity.setFechaCreacion(FechaUtil.obtenerFecha());
+			resultadoEntity.setUsuarioCreacion(userName);
+			this.fraccionamientoDaoImpl.save(resultadoEntity);	
+		} else {
+			Fraccionamiento resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(fraccionamiento, Fraccionamiento.class,"detPlanPagos@PK@");
+			resultadoEntity.setDetPlanPagos(detPlanPagos);
+			this.fraccionamientoDaoImpl.update(resultadoEntity);	
+		}
+		
+	}
+
+	@Override
+	public PlanPagosDTO registrarPlanPagos(PlanPagosDTO planPagos) throws Exception {
+		PlanPagosDTO resultado = null;
+		PlanPagos resultadoEntity = null;
+		String userName = AppAuthenticator.getInstance().getUserName(planPagos.getAuthToken());
+		boolean isCrearDetPlanPagos = false;
+		if (!StringUtils.isNotNullOrBlank(planPagos.getIdPlanPagos())) {
+			planPagos.setIdPlanPagos(this.planPagosDaoImpl.generarIdPlanPagos(planPagos.getAlumno().getIdAlumno(), planPagos.getAnhoSemestre().getIdAnhoSemestre()));
+			planPagos.setUsuarioCreacion(userName);
+			planPagos.setFechaCreacion(FechaUtil.obtenerFecha());
+			resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(planPagos, PlanPagos.class,"anhoSemestre@PK@","alumno@PK@");
+			this.planPagosDaoImpl.save(resultadoEntity);	
+			resultado = planPagos;
+			isCrearDetPlanPagos = true;
+		} else {
+			planPagos.setUsuarioModificacion(userName);
+			planPagos.setFechaModificacion(FechaUtil.obtenerFecha());
+			resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(planPagos, PlanPagos.class,"anhoSemestre@PK@","alumno@PK@");
+			this.planPagosDaoImpl.update(resultadoEntity);
+			resultado = planPagos;	
+			isCrearDetPlanPagos = true;
+		}		
+		if (isCrearDetPlanPagos) {
+			if (!CollectionUtil.isEmpty(planPagos.getPlanPagosDetPlanPagosList())) {
+				registrarDetPlanPagos(userName,resultadoEntity, planPagos.getPlanPagosDetPlanPagosList().get(0));
+			}
+		}
+		return resultado;
+	}
+	@Override
+	public List<PlanPagosDTO> listarPlanPagos(PlanPagosDTO planPagos) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.planPagosDaoImpl.listarPlanPagos(planPagos),PlanPagosDTO.class);
+	}
+	@Override
+	public int contarListarPlanPagos(PlanPagosDTO planPagos){
+		return  this.planPagosDaoImpl.contarListarPlanPagos(planPagos);
+	}
+	
+	@Override
+	public ControlPagoDTO controladorAccionControlPago(ControlPagoDTO controlPago, AccionType accionType) throws Exception {
+		ControlPagoDTO resultado = null;
+		ControlPago resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				controlPago.setIdControlPago(this.controlPagoDaoImpl.generarIdControlPago());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(controlPago, ControlPago.class,"anhoSemestre@PK@","alumno@PK@","tipoDocSunat@PK@","itemByTipoMoneda@PK@","empresa@PK@");
+				this.controlPagoDaoImpl.save(resultadoEntity);	
+				resultado = controlPago;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(controlPago, ControlPago.class,"anhoSemestre@PK@","alumno@PK@","tipoDocSunat@PK@","itemByTipoMoneda@PK@","empresa@PK@");
+				this.controlPagoDaoImpl.update(resultadoEntity);
+				resultado = controlPago;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.controlPagoDaoImpl.find(ControlPago.class, controlPago.getIdControlPago());
+				this.controlPagoDaoImpl.delete(resultadoEntity);
+				resultado = controlPago;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.controlPagoDaoImpl.find(ControlPago.class, controlPago.getIdControlPago());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,ControlPagoDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.controlPagoDaoImpl.findByNombre(controlPago),ControlPagoDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<ControlPagoDTO> listarControlPago(ControlPagoDTO controlPago) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.controlPagoDaoImpl.listarControlPago(controlPago),ControlPagoDTO.class,"tipoDocSunat","anhoSemestre","tipoDocSunat","itemByTipoMoneda","cliente");
+	}
+	@Override
+	public int contarListarControlPago(ControlPagoDTO controlPago){
+		return  this.controlPagoDaoImpl.contarListarControlPago(controlPago);
+	}
+	
+	
+	@Override
+	public DetControlPagoDTO controladorAccionDetControlPago(DetControlPagoDTO detControlPago, AccionType accionType) throws Exception {
+		DetControlPagoDTO resultado = null;
+		DetControlPago resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				detControlPago.setIdDetControlPago(this.detControlPagoDaoImpl.generarIdDetControlPago());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(detControlPago, DetControlPago.class,"controlPago@PK@","detPlanPagos@PK@","fraccionamiento@PK@");
+				this.detControlPagoDaoImpl.save(resultadoEntity);	
+				resultado = detControlPago;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(detControlPago, DetControlPago.class,"controlPago@PK@","detPlanPagos@PK@","fraccionamiento@PK@");
+				this.detControlPagoDaoImpl.update(resultadoEntity);
+				resultado = detControlPago;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.detControlPagoDaoImpl.find(DetControlPago.class, detControlPago.getIdDetControlPago());
+				this.detControlPagoDaoImpl.delete(resultadoEntity);
+				resultado = detControlPago;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.detControlPagoDaoImpl.find(DetControlPago.class, detControlPago.getIdDetControlPago());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,DetControlPagoDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.detControlPagoDaoImpl.findByNombre(detControlPago),DetControlPagoDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<DetControlPagoDTO> listarDetControlPago(DetControlPagoDTO detControlPago) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.detControlPagoDaoImpl.listarDetControlPago(detControlPago),DetControlPagoDTO.class);
+	}
+	@Override
+	public int contarListarDetControlPago(DetControlPagoDTO detControlPago){
+		return  this.detControlPagoDaoImpl.contarListarDetControlPago(detControlPago);
+	}
+	
+	@Override
+	public ClasificacionDTO controladorAccionClasificacion(ClasificacionDTO clasificacion, AccionType accionType) throws Exception {
+		ClasificacionDTO resultado = null;
+		Clasificacion resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				clasificacion.setIdClasificacion(this.clasificacionDaoImpl.generarIdClasificacion());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(clasificacion, Clasificacion.class,"itemByTipoClasificacion@PK@");
+				this.clasificacionDaoImpl.save(resultadoEntity);	
+				resultado = clasificacion;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(clasificacion, Clasificacion.class,"itemByTipoClasificacion@PK@");
+				this.clasificacionDaoImpl.update(resultadoEntity);
+				resultado = clasificacion;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.clasificacionDaoImpl.find(Clasificacion.class, clasificacion.getIdClasificacion());
+				this.clasificacionDaoImpl.delete(resultadoEntity);
+				resultado = clasificacion;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.clasificacionDaoImpl.find(Clasificacion.class, clasificacion.getIdClasificacion());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,ClasificacionDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.clasificacionDaoImpl.findByNombre(clasificacion),ClasificacionDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<ClasificacionDTO> listarClasificacion(ClasificacionDTO clasificacion) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.clasificacionDaoImpl.listarClasificacion(clasificacion),ClasificacionDTO.class,"itemByTipoClasificacion");
+	}
+	@Override
+	public int contarListarClasificacion(ClasificacionDTO clasificacion){
+		return  this.clasificacionDaoImpl.contarListarClasificacion(clasificacion);
+	}
+	
+	@Override
+	public ConvenioDTO controladorAccionConvenio(ConvenioDTO convenio, AccionType accionType) throws Exception {
+		ConvenioDTO resultado = null;
+		Convenio resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				convenio.setIdConvenio(this.convenioDaoImpl.generarIdConvenio());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(convenio, Convenio.class,"itemByClasificacionConvenio@PK@","itemByTipoDocumento@PK@");
+				this.convenioDaoImpl.save(resultadoEntity);	
+				resultado = convenio;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(convenio, Convenio.class,"itemByClasificacionConvenio@PK@","itemByTipoDocumento@PK@");
+				this.convenioDaoImpl.update(resultadoEntity);
+				resultado = convenio;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.convenioDaoImpl.find(Convenio.class, convenio.getIdConvenio());
+				this.convenioDaoImpl.delete(resultadoEntity);
+				resultado = convenio;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.convenioDaoImpl.find(Convenio.class, convenio.getIdConvenio());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,ConvenioDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.convenioDaoImpl.findByNombre(convenio),ConvenioDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<ConvenioDTO> listarConvenio(ConvenioDTO convenio) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.convenioDaoImpl.listarConvenio(convenio),ConvenioDTO.class);
+	}
+	@Override
+	public int contarListarConvenio(ConvenioDTO convenio){
+		return  this.convenioDaoImpl.contarListarConvenio(convenio);
+	}
+}

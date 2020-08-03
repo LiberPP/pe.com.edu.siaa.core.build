@@ -1,0 +1,48 @@
+package pe.com.edu.siaa.core.ejb.dao.matricula.local;
+
+import java.util.List;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.dto.matricula.RegimenPensionarioDTO;
+import pe.com.edu.siaa.core.model.jpa.matricula.RegimenPensionario;
+
+/**
+ * La Class RegimenPensionarioDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 11:25:04 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface RegimenPensionarioDaoLocal  extends GenericDAOLocal<Integer,RegimenPensionario> {
+	/**
+	 * Listar regimen pensionario.
+	 *
+	 * @param regimenPensionario el regimen pensionarioDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<RegimenPensionario> listarRegimenPensionario(RegimenPensionarioDTO regimenPensionario) throws Exception;
+	
+	/**
+	 * contar lista regimen pensionario.
+	 *
+	 * @param regimenPensionario el regimen pensionario
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarRegimenPensionario(RegimenPensionarioDTO regimenPensionario);
+	/**
+	 * Generar id regimenPensionario.
+	 *
+	 * @return the Integer
+	 * @throws Exception the exception
+	 */
+	Integer generarIdRegimenPensionario() throws Exception;
+}

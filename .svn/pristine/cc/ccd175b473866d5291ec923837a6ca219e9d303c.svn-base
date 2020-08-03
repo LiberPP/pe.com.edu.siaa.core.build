@@ -1,0 +1,208 @@
+package pe.com.edu.siaa.core.model.jpa.encuesta;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import pe.com.edu.siaa.core.model.util.ConfiguracionEntityManagerUtil;
+
+/**
+ * La Class Alternativa.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Fri Sep 08 19:33:17 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Entity
+@Table(name = "Alternativa", schema = ConfiguracionEntityManagerUtil.ESQUEMA_ENCUESTA)
+public class Alternativa implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id alternativa. */
+    @Id
+    @Column(name = "idAlternativa" , length = 32)
+    private String idAlternativa;
+   
+    /** El cuestionario. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idCuestionario", referencedColumnName = "idCuestionario")
+    private Cuestionario cuestionario;
+   
+    /** El opcion alternativa. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idOpcionAlternativa", referencedColumnName = "idOpcionAlternativa")
+    private OpcionAlternativa opcionAlternativa;
+   
+    /** El estado. */
+    @Column(name = "estado" , length = 1)
+    private String estado;
+   
+    /** El alternativa encuesta campo det list. */
+    @OneToMany(mappedBy = "alternativa", fetch = FetchType.LAZY)
+    private List<EncuestaCampoDet> alternativaEncuestaCampoDetList = new ArrayList<EncuestaCampoDet>();
+    
+    /**
+     * Instancia un nuevo alternativa.
+     */
+    public Alternativa() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo alternativa.
+     *
+     * @param idAlternativa el id alternativa
+     * @param cuestionario el cuestionario
+     * @param opcionAlternativa el opcion alternativa
+     * @param estado el estado
+     */
+    public Alternativa(String idAlternativa, Cuestionario cuestionario,OpcionAlternativa opcionAlternativa,String estado ) {
+        super();
+        this.idAlternativa = idAlternativa;
+        this.cuestionario = cuestionario;
+        this.opcionAlternativa = opcionAlternativa;
+        this.estado = estado;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id alternativa.
+     *
+     * @return id alternativa
+     */
+     public String getIdAlternativa() {
+        return this.idAlternativa;
+    }
+    /**
+     * Establece el id alternativa.
+     *
+     * @param idAlternativa el new id alternativa
+     */
+    public void setIdAlternativa(String idAlternativa) {
+        this.idAlternativa = idAlternativa;
+    }
+    /**
+     * Obtiene cuestionario.
+     *
+     * @return cuestionario
+     */
+     public Cuestionario getCuestionario() {
+        return this.cuestionario;
+    }
+    /**
+     * Establece el cuestionario.
+     *
+     * @param cuestionario el new cuestionario
+     */
+    public void setCuestionario(Cuestionario cuestionario) {
+        this.cuestionario = cuestionario;
+    }
+    /**
+     * Obtiene opcion alternativa.
+     *
+     * @return opcion alternativa
+     */
+     public OpcionAlternativa getOpcionAlternativa() {
+        return this.opcionAlternativa;
+    }
+    /**
+     * Establece el opcion alternativa.
+     *
+     * @param opcionAlternativa el new opcion alternativa
+     */
+    public void setOpcionAlternativa(OpcionAlternativa opcionAlternativa) {
+        this.opcionAlternativa = opcionAlternativa;
+    }
+    /**
+     * Obtiene estado.
+     *
+     * @return estado
+     */
+     public String getEstado() {
+        return this.estado;
+    }
+    /**
+     * Establece el estado.
+     *
+     * @param estado el new estado
+     */
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+    /**
+     * Establece el alternativa encuesta campo det list.
+     *
+     * @param alternativaEncuestaCampoDetList el new alternativa encuesta campo det list
+     */
+    public List<EncuestaCampoDet> getAlternativaEncuestaCampoDetList(){
+        return this.alternativaEncuestaCampoDetList;
+    }
+    /**
+     * Establece el alternativa list.
+     *
+     * @param alternativaList el new alternativa list
+     */
+    public void setAlternativaEncuestaCampoDetList(List<EncuestaCampoDet> alternativaEncuestaCampoDetList) {
+        this.alternativaEncuestaCampoDetList = alternativaEncuestaCampoDetList;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idAlternativa == null) ? 0 : idAlternativa.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Alternativa other = (Alternativa) obj;
+        if (idAlternativa == null) {
+            if (other.idAlternativa != null) {
+                return false;
+            }
+        } else if (!idAlternativa.equals(other.idAlternativa)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Alternativa [idAlternativa=" + idAlternativa + "]";
+    }
+   
+}

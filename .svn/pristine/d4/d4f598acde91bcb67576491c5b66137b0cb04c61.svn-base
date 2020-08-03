@@ -1,0 +1,250 @@
+package pe.com.edu.siaa.core.model.dto.matricula;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import pe.com.edu.siaa.core.model.dto.BasePaginator;
+import pe.com.edu.siaa.core.model.dto.admision.EscuelaDTO;
+
+/**
+ * La Class PlanEstudioDTO.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 1.0, Tue Apr 18 09:57:00 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+public class PlanEstudioDTO extends BasePaginator implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id plan estudio. */
+    private String idPlanEstudio;
+   
+    /** El anho. */
+    private String anho;
+   
+    /** El escuela. */
+    private EscuelaDTO escuela;
+   
+    /** El estado. */
+    private String estado;
+   
+    /** El fecha creacion. */
+    private Date fechaCreacion;
+   
+    /** El plan estudio alumno list. */
+    private List<AlumnoDTO> planEstudioAlumnoList = new ArrayList<AlumnoDTO>();
+   
+    /** El plan estudio asigna plan estudio list. */
+    private List<AsignaPlanEstudioDTO> planEstudioAsignaPlanEstudioList = new ArrayList<AsignaPlanEstudioDTO>();
+   
+    /** El plan estudio det plan estudio list. */
+    private List<DetPlanEstudioDTO> planEstudioDetPlanEstudioList = new ArrayList<DetPlanEstudioDTO>();
+   
+    /**
+     * Instancia un nuevo plan estudioDTO.
+     */
+    public PlanEstudioDTO() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo plan estudioDTO.
+     *
+     * @param idPlanEstudio el id plan estudio
+     * @param anho el anho
+     * @param escuela el escuela
+     * @param estado el estado
+     * @param fechaCreacion el fecha creacion
+     */
+    public PlanEstudioDTO(String idPlanEstudio, String anho, EscuelaDTO escuela,String estado, Date fechaCreacion ) {
+        super();
+        this.idPlanEstudio = idPlanEstudio;
+        this.anho = anho;
+        this.escuela = escuela;
+        this.estado = estado;
+        this.fechaCreacion = fechaCreacion;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id plan estudio.
+     *
+     * @return id plan estudio
+     */
+     public String getIdPlanEstudio() {
+        return this.idPlanEstudio;
+    }
+    /**
+     * Establece el id plan estudio.
+     *
+     * @param idPlanEstudio el new id plan estudio
+     */
+    public void setIdPlanEstudio(String idPlanEstudio) {
+        this.idPlanEstudio = idPlanEstudio;
+    }
+    /**
+     * Obtiene anho.
+     *
+     * @return anho
+     */
+     public String getAnho() {
+        return this.anho;
+    }
+    /**
+     * Establece el anho.
+     *
+     * @param anho el new anho
+     */
+    public void setAnho(String anho) {
+        this.anho = anho;
+    }
+    /**
+     * Obtiene escuela.
+     *
+     * @return escuela
+     */
+     public EscuelaDTO getEscuela() {
+        return this.escuela;
+    }
+    /**
+     * Establece el escuela.
+     *
+     * @param escuela el new escuela
+     */
+    public void setEscuela(EscuelaDTO escuela) {
+        this.escuela = escuela;
+    }
+    /**
+     * Obtiene estado.
+     *
+     * @return estado
+     */
+     public String getEstado() {
+        return this.estado;
+    }
+    /**
+     * Establece el estado.
+     *
+     * @param estado el new estado
+     */
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+    /**
+     * Obtiene fecha creacion.
+     *
+     * @return fecha creacion
+     */
+     public Date getFechaCreacion() {
+        return this.fechaCreacion;
+    }
+    /**
+     * Establece el fecha creacion.
+     *
+     * @param fechaCreacion el new fecha creacion
+     */
+    public void setFechaCreacion(Date fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
+    }
+    /**
+     * Establece el plan estudio alumno list.
+     *
+     * @param planEstudioAlumnoList el new plan estudio alumno list
+     */
+    public List<AlumnoDTO> getPlanEstudioAlumnoList(){
+        return this.planEstudioAlumnoList;
+    }
+    /**
+     * Establece el plan estudio list.
+     *
+     * @param planEstudioList el new plan estudio list
+     */
+    public void setPlanEstudioAlumnoList(List<AlumnoDTO> planEstudioAlumnoList) {
+        this.planEstudioAlumnoList = planEstudioAlumnoList;
+    }   
+    /**
+     * Establece el plan estudio asigna plan estudio list.
+     *
+     * @param planEstudioAsignaPlanEstudioList el new plan estudio asigna plan estudio list
+     */
+    public List<AsignaPlanEstudioDTO> getPlanEstudioAsignaPlanEstudioList(){
+        return this.planEstudioAsignaPlanEstudioList;
+    }
+    /**
+     * Establece el plan estudio list.
+     *
+     * @param planEstudioList el new plan estudio list
+     */
+    public void setPlanEstudioAsignaPlanEstudioList(List<AsignaPlanEstudioDTO> planEstudioAsignaPlanEstudioList) {
+        this.planEstudioAsignaPlanEstudioList = planEstudioAsignaPlanEstudioList;
+    }   
+    /**
+     * Establece el plan estudio det plan estudio list.
+     *
+     * @param planEstudioDetPlanEstudioList el new plan estudio det plan estudio list
+     */
+    public List<DetPlanEstudioDTO> getPlanEstudioDetPlanEstudioList(){
+        return this.planEstudioDetPlanEstudioList;
+    }
+    /**
+     * Establece el plan estudio list.
+     *
+     * @param planEstudioList el new plan estudio list
+     */
+    public void setPlanEstudioDetPlanEstudioList(List<DetPlanEstudioDTO> planEstudioDetPlanEstudioList) {
+        this.planEstudioDetPlanEstudioList = planEstudioDetPlanEstudioList;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idPlanEstudio == null) ? 0 : idPlanEstudio.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        PlanEstudioDTO other = (PlanEstudioDTO) obj;
+        if (idPlanEstudio == null) {
+            if (other.idPlanEstudio != null) {
+                return false;
+            }
+        } else if (!idPlanEstudio.equals(other.idPlanEstudio)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "PlanEstudioDTO [idPlanEstudio=" + idPlanEstudio + "]";
+    }
+   
+}

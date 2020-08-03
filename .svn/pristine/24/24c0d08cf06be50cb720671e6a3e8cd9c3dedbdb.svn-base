@@ -1,0 +1,120 @@
+package pe.com.edu.siaa.core.ejb.service.rest.matricula.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.matricula.local.MatriculaServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.matricula.OrganoDirectivoDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class OrganoDirectivoRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Wed Dec 27 12:00:46 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/organoDirectivoRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class OrganoDirectivoRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient MatriculaServiceLocal matriculaServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<OrganoDirectivoDTO> crear(OrganoDirectivoDTO organoDirectivo) throws Exception {
+		return controladorAccion(organoDirectivo,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<OrganoDirectivoDTO> modificar(OrganoDirectivoDTO organoDirectivo) throws Exception {
+		return controladorAccion(organoDirectivo,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<OrganoDirectivoDTO> eliminar(@PathParam("id") String idOrganoDirectivo) throws Exception {
+		OrganoDirectivoDTO organoDirectivo = new OrganoDirectivoDTO();
+		organoDirectivo.setIdOrganoDirectivo(idOrganoDirectivo);		
+		return controladorAccion(organoDirectivo,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<OrganoDirectivoDTO> controladorAccion(OrganoDirectivoDTO organoDirectivo, AccionType accionType){
+		ResultadoRestVO<OrganoDirectivoDTO> resultado = new ResultadoRestVO<OrganoDirectivoDTO>();
+		 try {
+    		resultado.setObjetoResultado(matriculaServiceLocal.controladorAccionOrganoDirectivo(organoDirectivo,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<OrganoDirectivoDTO> finById(@PathParam("id") String idOrganoDirectivo) throws Exception {
+		OrganoDirectivoDTO organoDirectivo = new OrganoDirectivoDTO();
+		organoDirectivo.setIdOrganoDirectivo(idOrganoDirectivo);
+		return controladorAccion(organoDirectivo,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<OrganoDirectivoDTO> listarOrganoDirectivo(@Context UriInfo info){
+		ResultadoRestVO<OrganoDirectivoDTO> resultado = new ResultadoRestVO<OrganoDirectivoDTO>();
+		OrganoDirectivoDTO organoDirectivo = transferUriInfo(info);
+		 try {
+			resultado.setListaResultado(matriculaServiceLocal.listarOrganoDirectivo(organoDirectivo));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<OrganoDirectivoDTO> contarOrganoDirectivo(@Context UriInfo info){
+		ResultadoRestVO<OrganoDirectivoDTO> resultado = new ResultadoRestVO<OrganoDirectivoDTO>();
+		OrganoDirectivoDTO organoDirectivo = transferUriInfo(info);
+		 try {
+			 resultado.setContador(matriculaServiceLocal.contarListarOrganoDirectivo(organoDirectivo));
+			 if (resultado.isData()) {
+				resultado.setListaResultado(matriculaServiceLocal.listarOrganoDirectivo(organoDirectivo));
+			 }
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<OrganoDirectivoDTO> inicializarOrganoDirectivo(@Context UriInfo info) throws Exception {
+	     OrganoDirectivoDTO organoDirectivo = transferUriInfo(info);
+		 ResultadoRestVO<OrganoDirectivoDTO> resultado = new ResultadoRestVO<OrganoDirectivoDTO>();
+		 try {
+    		resultado.setObjetoResultado(organoDirectivo);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private OrganoDirectivoDTO transferUriInfo(@Context UriInfo info) {
+		OrganoDirectivoDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,OrganoDirectivoDTO.class);
+		return resultado;
+	}
+}

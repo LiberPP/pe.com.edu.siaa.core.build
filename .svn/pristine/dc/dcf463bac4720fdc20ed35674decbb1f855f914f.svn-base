@@ -1,0 +1,154 @@
+package pe.com.edu.siaa.core.ejb.dao.admision.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.persistence.Query;
+
+import pe.com.edu.siaa.core.ejb.dao.admision.local.EscuelaDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericAcademicoDAOImpl;
+import pe.com.edu.siaa.core.model.dto.admision.EscuelaDTO;
+import pe.com.edu.siaa.core.model.jpa.admision.Escuela;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+
+/**
+ * La Class EscuelaDaoImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 19:53:35 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+public class EscuelaDaoImpl extends  GenericAcademicoDAOImpl<String, Escuela> implements EscuelaDaoLocal  {
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.EscuelaDaoLocal#listarEscuela(pe.com.edu.siaa.core.model.jpa.seguridad.Escuela)
+     */  
+    @Override	 
+    public List<Escuela> listarEscuela(EscuelaDTO escuela) {
+        Query query = generarQueryListaEscuela(escuela, false);
+        query.setFirstResult(escuela.getStartRow());
+        query.setMaxResults(escuela.getOffset());
+        return query.getResultList();
+    }   
+   
+    /**
+     * Generar query lista Escuela.
+     *
+     * @param EscuelaDTO el escuela
+     * @param esContador el es contador
+     * @return the query
+     */
+    private Query generarQueryListaEscuela(EscuelaDTO escuela, boolean esContador) {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        if (esContador) {
+            jpaql.append(" select count(o.idEscuela) from Escuela o where 1=1 ");
+        } else {
+            jpaql.append(" select o from Escuela o left join fetch o.facultad  left join fetch o.itemByTipoEspecialidad left join fetch o.itemByClaseEspecialidad where 1=1 ");           
+        }
+		if (!StringUtils.isNullOrEmpty(escuela.getSearch())) {
+	          jpaql.append(" and upper(o.nombre) like :search ");
+	          parametros.put("search", "%" + escuela.getSearch().toUpperCase() + "%");
+	    } else {
+			if (!StringUtils.isNullOrEmptyNumeric(escuela.getCodigo())) {
+				jpaql.append(" and o.codigo = :codigo ");
+				parametros.put("codigo", escuela.getCodigo());
+			}
+			if (!StringUtils.isNullOrEmpty(escuela.getNombre())) {
+				jpaql.append(" and upper(o.nombre) like :nombre ");
+				parametros.put("nombre", "%" + escuela.getNombre().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmptyNumeric(escuela.getNroCiclo())) {
+				jpaql.append(" and o.nroCiclo = :nroCiclo ");
+				parametros.put("nroCiclo", escuela.getNroCiclo());
+			}
+			if (!StringUtils.isNullOrEmpty(escuela.getAnhoInicio())) {
+				jpaql.append(" and upper(o.anhoInicio) like :anhoInicio ");
+				parametros.put("anhoInicio", "%" + escuela.getAnhoInicio().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(escuela.getDispositivoCreacion())) {
+				jpaql.append(" and upper(o.dispositivoCreacion) like :dispositivoCreacion ");
+				parametros.put("dispositivoCreacion", "%" + escuela.getDispositivoCreacion().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(escuela.getFechaFuncionamiento())) {
+				jpaql.append(" and o.fechaFuncionamiento = :fechaFuncionamiento ");
+				parametros.put("fechaFuncionamiento", escuela.getFechaFuncionamiento());
+			}
+			if (!StringUtils.isNullOrEmptyNumeric(escuela.getNroCredito())) {
+				jpaql.append(" and o.nroCredito = :nroCredito ");
+				parametros.put("nroCredito", escuela.getNroCredito());
+			}
+			if (!StringUtils.isNullOrEmptyNumeric(escuela.getTotalCreditoExtracurricular())) {
+				jpaql.append(" and o.totalCreditoExtracurricular = :totalCreditoExtracurricular ");
+				parametros.put("totalCreditoExtracurricular", escuela.getTotalCreditoExtracurricular());
+			}
+			if (!StringUtils.isNullOrEmptyNumeric(escuela.getNroHraPracticaPreProfesional())) {
+				jpaql.append(" and o.nroHraPracticaPreProfesional = :nroHraPracticaPreProfesional ");
+				parametros.put("nroHraPracticaPreProfesional", escuela.getNroHraPracticaPreProfesional());
+			}
+			if (!StringUtils.isNullOrEmptyNumeric(escuela.getNroCreditoReconocidoMovilidad())) {
+				jpaql.append(" and o.nroCreditoReconocidoMovilidad = :nroCreditoReconocidoMovilidad ");
+				parametros.put("nroCreditoReconocidoMovilidad", escuela.getNroCreditoReconocidoMovilidad());
+			}
+			if (!StringUtils.isNullOrEmpty(escuela.getNombreGradoOtorga())) {
+				jpaql.append(" and upper(o.nombreGradoOtorga) like :nombreGradoOtorga ");
+				parametros.put("nombreGradoOtorga", "%" + escuela.getNombreGradoOtorga().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(escuela.getNombreTituloOtorga())) {
+				jpaql.append(" and upper(o.nombreTituloOtorga) like :nombreTituloOtorga ");
+				parametros.put("nombreTituloOtorga", "%" + escuela.getNombreTituloOtorga().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(escuela.getFlagModalidadEnsenanza())) {
+				jpaql.append(" and upper(o.flagModalidadEnsenanza) like :flagModalidadEnsenanza ");
+				parametros.put("flagModalidadEnsenanza", "%" + escuela.getFlagModalidadEnsenanza().toUpperCase() + "%");
+			}
+		}
+        if (!esContador) {
+            //jpaql.append(" ORDER BY 1 ");
+        }
+        Query query = createQuery(jpaql.toString(), parametros);
+        return query;
+    }
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.EscuelaDaoLocal#contarListar{entity.getClassName()}(pe.com.edu.siaa.core.model.jpa.seguridad.EscuelaDTO)
+     */
+	@Override
+    public int contarListarEscuela(EscuelaDTO escuela) {
+        int resultado = 0;
+        try {
+            //StringBuilder jpaql = new StringBuilder();
+            Query query = generarQueryListaEscuela(escuela, true);
+            resultado = ((Long) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            resultado = 0;
+        }
+        return resultado;
+    }
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.EscuelaDaoLocal#generarIdEscuela()
+     */
+	 @Override
+    public String generarIdEscuela() {
+        String resultado = "1";
+        Query query = createQuery("select max(o.idEscuela) from Escuela o", null);
+        List<Object> listLong =  query.getResultList();
+        if (listLong != null && listLong.size() > 0 && listLong.get(0) != null)  {
+            Long ultimoIdGenerado = Long.valueOf(listLong.get(0).toString());
+            if (!StringUtils.isNullOrEmpty(ultimoIdGenerado)) {
+                ultimoIdGenerado++;
+				resultado = "" + ultimoIdGenerado;
+				resultado = StringUtils.completeLeft(resultado, '0', 3);
+            }
+        }
+        return resultado;
+    }
+   
+}

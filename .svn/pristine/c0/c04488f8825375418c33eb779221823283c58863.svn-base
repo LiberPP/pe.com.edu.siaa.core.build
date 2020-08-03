@@ -1,0 +1,223 @@
+package pe.com.edu.siaa.core.model.dto;
+
+import java.io.Serializable;
+import java.util.Date;
+
+/**
+ * La Class BasePaginator.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * Mapfre. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 1.0, Wed Sep 30 11:24:54 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+public class BasePaginator implements Serializable {
+	
+	/** La Constante serialVersionUID. */
+	private static final long serialVersionUID = 1L;
+	
+	/** La offset. */
+	private int offset;
+	
+	/** La start row. */
+	private int startRow;
+	
+	private String search;
+	
+	private boolean checked;
+	
+	private Integer varCantidad = 0;
+	
+	private String idUsuarioLogin = "";
+	
+	private Long idEmpresaSelect = 0L;
+	
+	private boolean esEliminado = false;
+	
+	private Object id;
+	
+	private String descripcionView;
+	
+	private String serviceKey = "";
+	
+	private String authToken;
+	
+	private String codigoGeneradoReporte = "";
+	
+	private String ip = "";
+	
+	private String tipo = "";
+	
+	private Object idPadreView;
+	
+	private String idEntidadSelect = "";
+	
+	private Date fechaUltimoAcceso;
+	/**
+	 * Establece el start row.
+	 *
+	 * @param startRow el new start row
+	 */
+	public void setStartRow(int startRow) {
+		this.startRow = startRow;
+	}
+
+	/**
+	 * Obtiene start row.
+	 *
+	 * @return start row
+	 */
+	public int getStartRow() {
+		return startRow;
+	}
+
+	/**
+	 * Establece el offset.
+	 *
+	 * @param offset el new offset
+	 */
+	public void setOffset(int offset) {
+		this.offset = offset;
+	}
+
+	/**
+	 * Obtiene offset.
+	 *
+	 * @return offset
+	 */
+	public int getOffset() {
+		return offset;
+	}
+
+	public String getSearch() {
+		return search;
+	}
+
+	public void setSearch(String search) {
+		this.search = search;
+	}
+
+	public boolean isChecked() {
+		return checked;
+	}
+
+	public void setChecked(boolean checked) {
+		this.checked = checked;
+	}
+
+	public Integer getVarCantidad() {
+		return varCantidad;
+	}
+
+	public void setVarCantidad(Integer cantidad) {
+		this.varCantidad = cantidad;
+	}
+
+	public String getIdUsuarioLogin() {
+		return idUsuarioLogin;
+	}
+
+	public void setIdUsuarioLogin(String idUsuarioLogin) {
+		this.idUsuarioLogin = idUsuarioLogin;
+	}
+
+	public boolean isEsEliminado() {
+		return esEliminado;
+	}
+
+	public void setEsEliminado(boolean esEliminado) {
+		this.esEliminado = esEliminado;
+	}
+
+	public Object getId() {
+		return id;
+	}
+
+	public void setId(Object id) {
+		this.id = id;
+	}
+
+	public Long getIdEmpresaSelect() {
+		return idEmpresaSelect;
+	}
+
+	public void setIdEmpresaSelect(Long idEmpresaSelect) {
+		this.idEmpresaSelect = idEmpresaSelect;
+	}
+
+	public String getDescripcionView() {
+		return descripcionView;
+	}
+
+	public void setDescripcionView(String descripcionView) {
+		this.descripcionView = descripcionView;
+	}
+
+	public String getAuthToken() {
+		return authToken;
+	}
+
+	public void setAuthToken(String authToken) {
+		this.authToken = authToken;
+	}
+
+	public String getCodigoGeneradoReporte() {
+		return codigoGeneradoReporte;
+	}
+
+	public void setCodigoGeneradoReporte(String codigoGeneradoReporte) {
+		this.codigoGeneradoReporte = codigoGeneradoReporte;
+	}
+
+	public String getServiceKey() {
+		return serviceKey;
+	}
+
+	public void setServiceKey(String serviceKey) {
+		this.serviceKey = serviceKey;
+	}
+
+	public String getIp() {
+		return ip;
+	}
+
+	public void setIp(String ip) {
+		this.ip = ip;
+	}
+
+	public String getTipo() {
+		return tipo;
+	}
+
+	public void setTipo(String tipo) {
+		this.tipo = tipo;
+	}
+
+	public Object getIdPadreView() {
+		return idPadreView;
+	}
+
+	public void setIdPadreView(Object idPadreView) {
+		this.idPadreView = idPadreView;
+	}
+
+	public String getIdEntidadSelect() {
+		return idEntidadSelect;
+	}
+
+	public void setIdEntidadSelect(String idEntidadSelect) {
+		this.idEntidadSelect = idEntidadSelect;
+	}
+
+	public Date getFechaUltimoAcceso() {
+		return fechaUltimoAcceso;
+	}
+
+	public void setFechaUltimoAcceso(Date fechaUltimoAcceso) {
+		this.fechaUltimoAcceso = fechaUltimoAcceso;
+	}
+	
+}

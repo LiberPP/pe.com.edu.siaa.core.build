@@ -1,0 +1,48 @@
+package pe.com.edu.siaa.core.ejb.dao.pago.local;
+
+import java.util.List;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.dto.pago.ConceptoAlumnoConvenioDTO;
+import pe.com.edu.siaa.core.model.jpa.pago.ConceptoAlumnoConvenio;
+
+/**
+ * La Class ConceptoAlumnoConvenioDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 11:25:03 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface ConceptoAlumnoConvenioDaoLocal  extends GenericDAOLocal<Long,ConceptoAlumnoConvenio> {
+	/**
+	 * Listar concepto alumno convenio.
+	 *
+	 * @param conceptoAlumnoConvenio el concepto alumno convenioDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<ConceptoAlumnoConvenio> listarConceptoAlumnoConvenio(ConceptoAlumnoConvenioDTO conceptoAlumnoConvenio) throws Exception;
+	
+	/**
+	 * contar lista concepto alumno convenio.
+	 *
+	 * @param conceptoAlumnoConvenio el concepto alumno convenio
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarConceptoAlumnoConvenio(ConceptoAlumnoConvenioDTO conceptoAlumnoConvenio);
+	/**
+	 * Generar id conceptoAlumnoConvenio.
+	 *
+	 * @return the Long
+	 * @throws Exception the exception
+	 */
+	Long generarIdConceptoAlumnoConvenio() throws Exception;
+}

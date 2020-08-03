@@ -1,0 +1,108 @@
+package pe.com.edu.siaa.core.ejb.dao.matricula.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.persistence.Query;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericAcademicoDAOImpl;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.DetTrasladoDaoLocal;
+import pe.com.edu.siaa.core.model.dto.matricula.DetTrasladoDTO;
+import pe.com.edu.siaa.core.model.jpa.matricula.DetTraslado;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+
+/**
+ * La Class DetTrasladoDaoImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 19:53:36 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+public class DetTrasladoDaoImpl extends  GenericAcademicoDAOImpl<String, DetTraslado> implements DetTrasladoDaoLocal  {
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.DetTrasladoDaoLocal#listarDetTraslado(pe.com.edu.siaa.core.model.jpa.seguridad.DetTraslado)
+     */  
+    @Override	 
+    public List<DetTraslado> listarDetTraslado(DetTrasladoDTO detTraslado) {
+        Query query = generarQueryListaDetTraslado(detTraslado, false);
+        query.setFirstResult(detTraslado.getStartRow());
+        query.setMaxResults(detTraslado.getOffset());
+        return query.getResultList();
+    }   
+   
+    /**
+     * Generar query lista DetTraslado.
+     *
+     * @param DetTrasladoDTO el detTraslado
+     * @param esContador el es contador
+     * @return the query
+     */
+    private Query generarQueryListaDetTraslado(DetTrasladoDTO detTraslado, boolean esContador) {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        if (esContador) {
+            jpaql.append(" select count(o.idDetTraslado) from DetTraslado o where 1=1 ");
+        } else {
+            jpaql.append(" select o from DetTraslado o where 1=1 ");           
+        }
+		if (!StringUtils.isNullOrEmpty(detTraslado.getSearch())) {
+	          jpaql.append(" and upper(o.idDetTraslado) like :search ");
+	          parametros.put("search", "%" + detTraslado.getSearch().toUpperCase() + "%");
+	    } else {
+			if (!StringUtils.isNullOrEmptyNumeric(detTraslado.getCredito())) {
+				jpaql.append(" and o.credito = :credito ");
+				parametros.put("credito", detTraslado.getCredito());
+			}
+			if (!StringUtils.isNullOrEmpty(detTraslado.getCursoConvalidado())) {
+				jpaql.append(" and upper(o.cursoConvalidado) like :cursoConvalidado ");
+				parametros.put("cursoConvalidado", "%" + detTraslado.getCursoConvalidado().toUpperCase() + "%");
+			}
+		}
+        if (!esContador) {
+            //jpaql.append(" ORDER BY 1 ");
+        }
+        Query query = createQuery(jpaql.toString(), parametros);
+        return query;
+    }
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.DetTrasladoDaoLocal#contarListar{entity.getClassName()}(pe.com.edu.siaa.core.model.jpa.seguridad.DetTrasladoDTO)
+     */
+	@Override
+    public int contarListarDetTraslado(DetTrasladoDTO detTraslado) {
+        int resultado = 0;
+        try {
+            //StringBuilder jpaql = new StringBuilder();
+            Query query = generarQueryListaDetTraslado(detTraslado, true);
+            resultado = ((Long) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            resultado = 0;
+        }
+        return resultado;
+    }
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.DetTrasladoDaoLocal#generarIdDetTraslado()
+     */
+	 @Override
+    public String generarIdDetTraslado() {
+        String resultado = "1";
+        Query query = createQuery("select max(o.idDetTraslado) from DetTraslado o", null);
+        List<Object> listLong =  query.getResultList();
+        if (listLong != null && listLong.size() > 0 && listLong.get(0) != null)  {
+            Long ultimoIdGenerado = Long.valueOf(listLong.get(0).toString());
+            if (!StringUtils.isNullOrEmpty(ultimoIdGenerado)) {
+                resultado = resultado + ultimoIdGenerado;
+            }
+        }
+        return resultado;
+    }
+   
+}

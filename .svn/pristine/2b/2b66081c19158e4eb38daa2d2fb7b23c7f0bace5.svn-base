@@ -1,0 +1,404 @@
+package pe.com.edu.siaa.core.model.dto.admision;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import pe.com.edu.siaa.core.model.dto.BasePaginator;
+import pe.com.edu.siaa.core.model.dto.common.ItemDTO;
+import pe.com.edu.siaa.core.model.vo.SelectItemVO;
+
+/**
+ * La Class PostulanteDTO.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 1.0, Tue Apr 18 09:56:54 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+public class PostulanteDTO extends BasePaginator implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id postulante. */
+    private String idPostulante;
+   
+    /** El persona. */
+    private PersonaDTO persona;
+   
+    /** El anho semestre. */
+    private AnhoSemestreDTO anhoSemestre;
+   
+    /** El escuela by opcion1. */
+    private EscuelaDTO escuelaByOpcion1;
+   
+    /** El escuela by opcion2. */
+    private EscuelaDTO escuelaByOpcion2;
+   
+    /** El escuela by ingreso. */
+    private EscuelaDTO escuelaByIngreso;
+   
+    /** El item by modalidad. */
+    private ItemDTO itemByModalidad;
+   
+    /** El item by tipo preparacion. */
+    private ItemDTO itemByTipoPreparacion;
+   
+    /** El item by turno atencion. */
+    private ItemDTO itemByTurnoAtencion;
+   
+    /** El codigo postulante. */
+    private String codigoPostulante;
+   
+    /** El puntaje. */
+    private BigDecimal puntaje;
+   
+    /** El flag ingreso. */
+    private String flagIngreso;
+   
+    /** El estado. */
+    private String estado;
+   
+    /** El fecha creacion. */
+    private Date fechaCreacion;
+   
+       /** El postulante documento requerido list. */
+    private List<SelectItemVO> listaDocumentoRequerido = new ArrayList<SelectItemVO>();
+   
+    /**
+     * Instancia un nuevo postulanteDTO.
+     */
+    public PostulanteDTO() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo postulanteDTO.
+     *
+     * @param idPostulante el id postulante
+     * @param persona el persona
+     * @param anhoSemestre el anho semestre
+     * @param escuelaByOpcion1 el escuela by opcion1
+     * @param escuelaByOpcion2 el escuela by opcion2
+     * @param escuelaByIngreso el escuela by ingreso
+     * @param itemByModalidad el item by modalidad
+     * @param itemByTipoPreparacion el item by tipo preparacion
+     * @param itemByTurnoAtencion el item by turno atencion
+     * @param codigoPostulante el codigo postulante
+     * @param puntaje el puntaje
+     * @param flagIngreso el flag ingreso
+     * @param estado el estado
+     * @param fechaCreacion el fecha creacion
+     */
+    public PostulanteDTO(String idPostulante, PersonaDTO persona,AnhoSemestreDTO anhoSemestre,EscuelaDTO escuelaByOpcion1,EscuelaDTO escuelaByOpcion2,EscuelaDTO escuelaByIngreso,ItemDTO itemByModalidad,ItemDTO itemByTipoPreparacion,ItemDTO itemByTurnoAtencion,String codigoPostulante, BigDecimal puntaje, String flagIngreso, String estado, Date fechaCreacion ) {
+        super();
+        this.idPostulante = idPostulante;
+        this.persona = persona;
+        this.anhoSemestre = anhoSemestre;
+        this.escuelaByOpcion1 = escuelaByOpcion1;
+        this.escuelaByOpcion2 = escuelaByOpcion2;
+        this.escuelaByIngreso = escuelaByIngreso;
+        this.itemByModalidad = itemByModalidad;
+        this.itemByTipoPreparacion = itemByTipoPreparacion;
+        this.itemByTurnoAtencion = itemByTurnoAtencion;
+        this.codigoPostulante = codigoPostulante;
+        this.puntaje = puntaje;
+        this.flagIngreso = flagIngreso;
+        this.estado = estado;
+        this.fechaCreacion = fechaCreacion;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id postulante.
+     *
+     * @return id postulante
+     */
+     public String getIdPostulante() {
+        return this.idPostulante;
+    }
+    /**
+     * Establece el id postulante.
+     *
+     * @param idPostulante el new id postulante
+     */
+    public void setIdPostulante(String idPostulante) {
+        this.idPostulante = idPostulante;
+    }
+    /**
+     * Obtiene persona.
+     *
+     * @return persona
+     */
+     public PersonaDTO getPersona() {
+        return this.persona;
+    }
+    /**
+     * Establece el persona.
+     *
+     * @param persona el new persona
+     */
+    public void setPersona(PersonaDTO persona) {
+        this.persona = persona;
+    }
+    /**
+     * Obtiene anho semestre.
+     *
+     * @return anho semestre
+     */
+     public AnhoSemestreDTO getAnhoSemestre() {
+        return this.anhoSemestre;
+    }
+    /**
+     * Establece el anho semestre.
+     *
+     * @param anhoSemestre el new anho semestre
+     */
+    public void setAnhoSemestre(AnhoSemestreDTO anhoSemestre) {
+        this.anhoSemestre = anhoSemestre;
+    }
+    /**
+     * Obtiene escuela by opcion1.
+     *
+     * @return escuela by opcion1
+     */
+     public EscuelaDTO getEscuelaByOpcion1() {
+        return this.escuelaByOpcion1;
+    }
+    /**
+     * Establece el escuela by opcion1.
+     *
+     * @param escuelaByOpcion1 el new escuela by opcion1
+     */
+    public void setEscuelaByOpcion1(EscuelaDTO escuelaByOpcion1) {
+        this.escuelaByOpcion1 = escuelaByOpcion1;
+    }
+    /**
+     * Obtiene escuela by opcion2.
+     *
+     * @return escuela by opcion2
+     */
+     public EscuelaDTO getEscuelaByOpcion2() {
+        return this.escuelaByOpcion2;
+    }
+    /**
+     * Establece el escuela by opcion2.
+     *
+     * @param escuelaByOpcion2 el new escuela by opcion2
+     */
+    public void setEscuelaByOpcion2(EscuelaDTO escuelaByOpcion2) {
+        this.escuelaByOpcion2 = escuelaByOpcion2;
+    }
+    /**
+     * Obtiene escuela by ingreso.
+     *
+     * @return escuela by ingreso
+     */
+     public EscuelaDTO getEscuelaByIngreso() {
+        return this.escuelaByIngreso;
+    }
+    /**
+     * Establece el escuela by ingreso.
+     *
+     * @param escuelaByIngreso el new escuela by ingreso
+     */
+    public void setEscuelaByIngreso(EscuelaDTO escuelaByIngreso) {
+        this.escuelaByIngreso = escuelaByIngreso;
+    }
+    /**
+     * Obtiene item by modalidad.
+     *
+     * @return item by modalidad
+     */
+     public ItemDTO getItemByModalidad() {
+        return this.itemByModalidad;
+    }
+    /**
+     * Establece el item by modalidad.
+     *
+     * @param itemByModalidad el new item by modalidad
+     */
+    public void setItemByModalidad(ItemDTO itemByModalidad) {
+        this.itemByModalidad = itemByModalidad;
+    }
+    /**
+     * Obtiene item by tipo preparacion.
+     *
+     * @return item by tipo preparacion
+     */
+     public ItemDTO getItemByTipoPreparacion() {
+        return this.itemByTipoPreparacion;
+    }
+    /**
+     * Establece el item by tipo preparacion.
+     *
+     * @param itemByTipoPreparacion el new item by tipo preparacion
+     */
+    public void setItemByTipoPreparacion(ItemDTO itemByTipoPreparacion) {
+        this.itemByTipoPreparacion = itemByTipoPreparacion;
+    }
+    /**
+     * Obtiene item by turno atencion.
+     *
+     * @return item by turno atencion
+     */
+     public ItemDTO getItemByTurnoAtencion() {
+        return this.itemByTurnoAtencion;
+    }
+    /**
+     * Establece el item by turno atencion.
+     *
+     * @param itemByTurnoAtencion el new item by turno atencion
+     */
+    public void setItemByTurnoAtencion(ItemDTO itemByTurnoAtencion) {
+        this.itemByTurnoAtencion = itemByTurnoAtencion;
+    }
+    /**
+     * Obtiene codigo postulante.
+     *
+     * @return codigo postulante
+     */
+     public String getCodigoPostulante() {
+        return this.codigoPostulante;
+    }
+    /**
+     * Establece el codigo postulante.
+     *
+     * @param codigoPostulante el new codigo postulante
+     */
+    public void setCodigoPostulante(String codigoPostulante) {
+        this.codigoPostulante = codigoPostulante;
+    }
+    /**
+     * Obtiene puntaje.
+     *
+     * @return puntaje
+     */
+     public BigDecimal getPuntaje() {
+        return this.puntaje;
+    }
+    /**
+     * Establece el puntaje.
+     *
+     * @param puntaje el new puntaje
+     */
+    public void setPuntaje(BigDecimal puntaje) {
+        this.puntaje = puntaje;
+    }
+    /**
+     * Obtiene flag ingreso.
+     *
+     * @return flag ingreso
+     */
+     public String getFlagIngreso() {
+        return this.flagIngreso;
+    }
+    /**
+     * Establece el flag ingreso.
+     *
+     * @param flagIngreso el new flag ingreso
+     */
+    public void setFlagIngreso(String flagIngreso) {
+        this.flagIngreso = flagIngreso;
+    }
+    /**
+     * Obtiene estado.
+     *
+     * @return estado
+     */
+     public String getEstado() {
+        return this.estado;
+    }
+    /**
+     * Establece el estado.
+     *
+     * @param estado el new estado
+     */
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+    /**
+     * Obtiene fecha creacion.
+     *
+     * @return fecha creacion
+     */
+     public Date getFechaCreacion() {
+        return this.fechaCreacion;
+    }
+    /**
+     * Establece el fecha creacion.
+     *
+     * @param fechaCreacion el new fecha creacion
+     */
+    public void setFechaCreacion(Date fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
+    }
+   
+    /**
+     * Establece el postulante documento requerido list.
+     *
+     * @param postulanteDocumentoRequeridoList el new postulante documento requerido list
+     */
+    public List<SelectItemVO> getListaDocumentoRequerido(){
+        return this.listaDocumentoRequerido;
+    }
+    /**
+     * Establece el postulante list.
+     *
+     * @param postulanteList el new postulante list
+     */
+    public void setListaDocumentoRequerido(List<SelectItemVO> listaDocumentoRequerido) {
+        this.listaDocumentoRequerido = listaDocumentoRequerido;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idPostulante == null) ? 0 : idPostulante.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        PostulanteDTO other = (PostulanteDTO) obj;
+        if (idPostulante == null) {
+            if (other.idPostulante != null) {
+                return false;
+            }
+        } else if (!idPostulante.equals(other.idPostulante)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "PostulanteDTO [idPostulante=" + idPostulante + "]";
+    }
+   
+}

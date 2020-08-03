@@ -1,0 +1,117 @@
+package pe.com.edu.siaa.core.ejb.service.rest.matricula.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.matricula.local.MatriculaServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.matricula.PreRequisitoDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class PreRequisitoRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:27 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/preRequisitoRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class PreRequisitoRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient MatriculaServiceLocal matriculaServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<PreRequisitoDTO> crear(PreRequisitoDTO preRequisito) throws Exception {
+		return controladorAccion(preRequisito,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<PreRequisitoDTO> modificar(PreRequisitoDTO preRequisito) throws Exception {
+		return controladorAccion(preRequisito,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<PreRequisitoDTO> eliminar(@PathParam("id") String idPreRequisito) throws Exception {
+		PreRequisitoDTO preRequisito = new PreRequisitoDTO();
+		preRequisito.setIdPreRequisito(idPreRequisito);		
+		return controladorAccion(preRequisito,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<PreRequisitoDTO> controladorAccion(PreRequisitoDTO preRequisito, AccionType accionType){
+		ResultadoRestVO<PreRequisitoDTO> resultado = new ResultadoRestVO<PreRequisitoDTO>();
+		 try {
+    		resultado.setObjetoResultado(matriculaServiceLocal.controladorAccionPreRequisito(preRequisito,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<PreRequisitoDTO> finById(@PathParam("id") String idPreRequisito) throws Exception {
+		PreRequisitoDTO preRequisito = new PreRequisitoDTO();
+		preRequisito.setIdPreRequisito(idPreRequisito);
+		return controladorAccion(preRequisito,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<PreRequisitoDTO> listarPreRequisito(@Context UriInfo info){
+		ResultadoRestVO<PreRequisitoDTO> resultado = new ResultadoRestVO<PreRequisitoDTO>();
+		PreRequisitoDTO preRequisito = transferUriInfo(info);
+		 try {
+    		resultado.setListaResultado(matriculaServiceLocal.listarPreRequisito(preRequisito));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<Integer> contarListarPreRequisito(@Context UriInfo info){
+		ResultadoRestVO<Integer> resultado = new ResultadoRestVO<Integer>();
+		PreRequisitoDTO preRequisito = transferUriInfo(info);
+		 try {
+    		resultado.setObjetoResultado(matriculaServiceLocal.contarListarPreRequisito(preRequisito));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<PreRequisitoDTO> inicializarPreRequisito(@Context UriInfo info) throws Exception {
+	     PreRequisitoDTO preRequisito = transferUriInfo(info);
+		 ResultadoRestVO<PreRequisitoDTO> resultado = new ResultadoRestVO<PreRequisitoDTO>();
+		 try {
+    		resultado.setObjetoResultado(preRequisito);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private PreRequisitoDTO transferUriInfo(@Context UriInfo info) {
+		PreRequisitoDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,PreRequisitoDTO.class);
+		return resultado;
+	}
+}

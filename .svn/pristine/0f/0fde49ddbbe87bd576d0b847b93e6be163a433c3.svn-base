@@ -1,0 +1,821 @@
+package pe.com.builderp.core.facturacion.ejb.service.venta.impl;
+
+import java.util.List;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+
+import pe.com.builderp.core.facturacion.ejb.dao.venta.local.CategoriaDaoLocal;
+import pe.com.builderp.core.facturacion.ejb.dao.venta.local.ClienteDaoLocal;
+import pe.com.builderp.core.facturacion.ejb.dao.venta.local.ConfiguracionAtributoDaoLocal;
+import pe.com.builderp.core.facturacion.ejb.dao.venta.local.ConfiguracionAtributoValueDaoLocal;
+import pe.com.builderp.core.facturacion.ejb.dao.venta.local.DetallePedidoDaoLocal;
+import pe.com.builderp.core.facturacion.ejb.dao.venta.local.DetalleProformaDaoLocal;
+import pe.com.builderp.core.facturacion.ejb.dao.venta.local.DetalleVentaDaoLocal;
+import pe.com.builderp.core.facturacion.ejb.dao.venta.local.LineaDaoLocal;
+import pe.com.builderp.core.facturacion.ejb.dao.venta.local.MarcaDaoLocal;
+import pe.com.builderp.core.facturacion.ejb.dao.venta.local.ModeloDaoLocal;
+import pe.com.builderp.core.facturacion.ejb.dao.venta.local.PedidoDaoLocal;
+import pe.com.builderp.core.facturacion.ejb.dao.venta.local.ProductoDaoLocal;
+import pe.com.builderp.core.facturacion.ejb.dao.venta.local.ProformaDaoLocal;
+import pe.com.builderp.core.facturacion.ejb.dao.venta.local.TipoDocSunatEntidadDaoLocal;
+import pe.com.builderp.core.facturacion.ejb.dao.venta.local.VentaDaoLocal;
+import pe.com.builderp.core.facturacion.ejb.service.venta.local.VentaServiceLocal;
+import pe.com.builderp.core.facturacion.model.dto.venta.CategoriaDTO;
+import pe.com.builderp.core.facturacion.model.dto.venta.ClienteDTO;
+import pe.com.builderp.core.facturacion.model.dto.venta.ConfiguracionAtributoDTO;
+import pe.com.builderp.core.facturacion.model.dto.venta.ConfiguracionAtributoValueDTO;
+import pe.com.builderp.core.facturacion.model.dto.venta.DetallePedidoDTO;
+import pe.com.builderp.core.facturacion.model.dto.venta.DetalleProformaDTO;
+import pe.com.builderp.core.facturacion.model.dto.venta.DetalleVentaDTO;
+import pe.com.builderp.core.facturacion.model.dto.venta.LineaDTO;
+import pe.com.builderp.core.facturacion.model.dto.venta.MarcaDTO;
+import pe.com.builderp.core.facturacion.model.dto.venta.ModeloDTO;
+import pe.com.builderp.core.facturacion.model.dto.venta.PedidoDTO;
+import pe.com.builderp.core.facturacion.model.dto.venta.ProductoDTO;
+import pe.com.builderp.core.facturacion.model.dto.venta.ProformaDTO;
+import pe.com.builderp.core.facturacion.model.dto.venta.VentaDTO;
+import pe.com.builderp.core.facturacion.model.jpa.venta.Categoria;
+import pe.com.builderp.core.facturacion.model.jpa.venta.Cliente;
+import pe.com.builderp.core.facturacion.model.jpa.venta.ConfiguracionAtributo;
+import pe.com.builderp.core.facturacion.model.jpa.venta.ConfiguracionAtributoValue;
+import pe.com.builderp.core.facturacion.model.jpa.venta.DetallePedido;
+import pe.com.builderp.core.facturacion.model.jpa.venta.DetalleProforma;
+import pe.com.builderp.core.facturacion.model.jpa.venta.DetalleVenta;
+import pe.com.builderp.core.facturacion.model.jpa.venta.Linea;
+import pe.com.builderp.core.facturacion.model.jpa.venta.Marca;
+import pe.com.builderp.core.facturacion.model.jpa.venta.Modelo;
+import pe.com.builderp.core.facturacion.model.jpa.venta.Pedido;
+import pe.com.builderp.core.facturacion.model.jpa.venta.Producto;
+import pe.com.builderp.core.facturacion.model.jpa.venta.Proforma;
+import pe.com.builderp.core.facturacion.model.jpa.venta.Venta;
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.model.dto.pago.TipoDocSunatEntidadDTO;
+import pe.com.edu.siaa.core.model.jpa.pago.TipoDocSunatEntidad;
+import pe.com.edu.siaa.core.model.type.AccionType;
+
+
+/**
+ * La Class VentaServiceImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Thu Dec 28 12:32:52 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+ @Stateless
+public class VentaServiceImpl implements VentaServiceLocal{
+	/** El servicio categoria dao impl. */
+	@EJB
+	private CategoriaDaoLocal categoriaDaoImpl; 
+	
+	/** El servicio cliente dao impl. */
+	@EJB
+	private ClienteDaoLocal clienteDaoImpl; 
+	
+	/** El servicio configuracion atributo dao impl. */
+	@EJB
+	private ConfiguracionAtributoDaoLocal configuracionAtributoDaoImpl; 
+	
+	/** El servicio configuracion atributo value dao impl. */
+	@EJB
+	private ConfiguracionAtributoValueDaoLocal configuracionAtributoValueDaoImpl; 
+	
+	/** El servicio detalle pedido dao impl. */
+	@EJB
+	private DetallePedidoDaoLocal detallePedidoDaoImpl; 
+	
+	/** El servicio detalle proforma dao impl. */
+	@EJB
+	private DetalleProformaDaoLocal detalleProformaDaoImpl; 
+	
+	/** El servicio detalle venta dao impl. */
+	@EJB
+	private DetalleVentaDaoLocal detalleVentaDaoImpl; 
+	
+	/** El servicio linea dao impl. */
+	@EJB
+	private LineaDaoLocal lineaDaoImpl; 
+	
+	/** El servicio marca dao impl. */
+	@EJB
+	private MarcaDaoLocal marcaDaoImpl; 
+	
+	/** El servicio modelo dao impl. */
+	@EJB
+	private ModeloDaoLocal modeloDaoImpl; 
+	
+	/** El servicio pedido dao impl. */
+	@EJB
+	private PedidoDaoLocal pedidoDaoImpl; 
+	
+	/** El servicio producto dao impl. */
+	@EJB
+	private ProductoDaoLocal productoDaoImpl; 
+	
+	/** El servicio proforma dao impl. */
+	@EJB
+	private ProformaDaoLocal proformaDaoImpl; 
+	
+	/** El servicio tipo doc sunat entidad dao impl. */
+	@EJB
+	private TipoDocSunatEntidadDaoLocal tipoDocSunatEntidadDaoImpl; 
+	
+	/** El servicio venta dao impl. */
+	@EJB
+	private VentaDaoLocal ventaDaoImpl; 
+	
+	@Override
+	public CategoriaDTO controladorAccionCategoria(CategoriaDTO categoria, AccionType accionType) throws Exception {
+		CategoriaDTO resultado = null;
+		Categoria resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				categoria.setIdCategoria(this.categoriaDaoImpl.generarIdCategoria());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(categoria, Categoria.class,"linea@PK@","subCategoria@PK@","entidad@PK@");
+				this.categoriaDaoImpl.save(resultadoEntity);	
+				resultado = categoria;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(categoria, Categoria.class,"linea@PK@","subCategoria@PK@","entidad@PK@");
+				this.categoriaDaoImpl.update(resultadoEntity);
+				resultado = categoria;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.categoriaDaoImpl.find(Categoria.class, categoria.getIdCategoria());
+				this.categoriaDaoImpl.delete(resultadoEntity);
+				resultado = categoria;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.categoriaDaoImpl.find(Categoria.class, categoria.getIdCategoria());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,CategoriaDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.categoriaDaoImpl.findByNombre(categoria),CategoriaDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<CategoriaDTO> listarCategoria(CategoriaDTO categoria) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.categoriaDaoImpl.listarCategoria(categoria),CategoriaDTO.class,"linea","subCategoria");
+	}
+	@Override
+	public int contarListarCategoria(CategoriaDTO categoria){
+		return  this.categoriaDaoImpl.contarListarCategoria(categoria);
+	}
+	@Override
+	public ClienteDTO controladorAccionCliente(ClienteDTO cliente, AccionType accionType) throws Exception {
+		ClienteDTO resultado = null;
+		Cliente resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				cliente.setIdCliente(this.clienteDaoImpl.generarIdCliente());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(cliente, Cliente.class,"entidad@PK@","itemByTipoDocumentoIdentidad@PK@","itemByCategoriaCliente@PK@");
+				this.clienteDaoImpl.save(resultadoEntity);	
+				resultado = cliente;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(cliente, Cliente.class,"entidad@PK@","itemByTipoDocumentoIdentidad@PK@","itemByCategoriaCliente@PK@");
+				this.clienteDaoImpl.update(resultadoEntity);
+				resultado = cliente;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.clienteDaoImpl.find(Cliente.class, cliente.getIdCliente());
+				this.clienteDaoImpl.delete(resultadoEntity);
+				resultado = cliente;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.clienteDaoImpl.find(Cliente.class, cliente.getIdCliente());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,ClienteDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.clienteDaoImpl.findByNombre(cliente),ClienteDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<ClienteDTO> listarCliente(ClienteDTO cliente) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.clienteDaoImpl.listarCliente(cliente),ClienteDTO.class,"itemByTipoDocumentoIdentidad","itemByCategoriaCliente");
+	}
+	@Override
+	public int contarListarCliente(ClienteDTO cliente){
+		return  this.clienteDaoImpl.contarListarCliente(cliente);
+	}
+	@Override
+	public ConfiguracionAtributoDTO controladorAccionConfiguracionAtributo(ConfiguracionAtributoDTO configuracionAtributo, AccionType accionType) throws Exception {
+		ConfiguracionAtributoDTO resultado = null;
+		ConfiguracionAtributo resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				configuracionAtributo.setIdConfiguracionAtributo(this.configuracionAtributoDaoImpl.generarIdConfiguracionAtributo());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(configuracionAtributo, ConfiguracionAtributo.class,"itemByIdNombreEntidad@PK@","itemByIdComponte@PK@","listaItem@PK@");
+				this.configuracionAtributoDaoImpl.save(resultadoEntity);	
+				resultado = configuracionAtributo;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(configuracionAtributo, ConfiguracionAtributo.class,"itemByIdNombreEntidad@PK@","itemByIdComponte@PK@","listaItem@PK@");
+				this.configuracionAtributoDaoImpl.update(resultadoEntity);
+				resultado = configuracionAtributo;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.configuracionAtributoDaoImpl.find(ConfiguracionAtributo.class, configuracionAtributo.getIdConfiguracionAtributo());
+				this.configuracionAtributoDaoImpl.delete(resultadoEntity);
+				resultado = configuracionAtributo;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.configuracionAtributoDaoImpl.find(ConfiguracionAtributo.class, configuracionAtributo.getIdConfiguracionAtributo());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,ConfiguracionAtributoDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.configuracionAtributoDaoImpl.findByNombre(configuracionAtributo),ConfiguracionAtributoDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<ConfiguracionAtributoDTO> listarConfiguracionAtributo(ConfiguracionAtributoDTO configuracionAtributo) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.configuracionAtributoDaoImpl.listarConfiguracionAtributo(configuracionAtributo),ConfiguracionAtributoDTO.class);
+	}
+	@Override
+	public int contarListarConfiguracionAtributo(ConfiguracionAtributoDTO configuracionAtributo){
+		return  this.configuracionAtributoDaoImpl.contarListarConfiguracionAtributo(configuracionAtributo);
+	}
+	@Override
+	public ConfiguracionAtributoValueDTO controladorAccionConfiguracionAtributoValue(ConfiguracionAtributoValueDTO configuracionAtributoValue, AccionType accionType) throws Exception {
+		ConfiguracionAtributoValueDTO resultado = null;
+		ConfiguracionAtributoValue resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				configuracionAtributoValue.setIdConfiguracionAtributoValue(this.configuracionAtributoValueDaoImpl.generarIdConfiguracionAtributoValue());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(configuracionAtributoValue, ConfiguracionAtributoValue.class,"configuracionAtributo@PK@");
+				this.configuracionAtributoValueDaoImpl.save(resultadoEntity);	
+				resultado = configuracionAtributoValue;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(configuracionAtributoValue, ConfiguracionAtributoValue.class,"configuracionAtributo@PK@");
+				this.configuracionAtributoValueDaoImpl.update(resultadoEntity);
+				resultado = configuracionAtributoValue;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.configuracionAtributoValueDaoImpl.find(ConfiguracionAtributoValue.class, configuracionAtributoValue.getIdConfiguracionAtributoValue());
+				this.configuracionAtributoValueDaoImpl.delete(resultadoEntity);
+				resultado = configuracionAtributoValue;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.configuracionAtributoValueDaoImpl.find(ConfiguracionAtributoValue.class, configuracionAtributoValue.getIdConfiguracionAtributoValue());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,ConfiguracionAtributoValueDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.configuracionAtributoValueDaoImpl.findByNombre(configuracionAtributoValue),ConfiguracionAtributoValueDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<ConfiguracionAtributoValueDTO> listarConfiguracionAtributoValue(ConfiguracionAtributoValueDTO configuracionAtributoValue) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.configuracionAtributoValueDaoImpl.listarConfiguracionAtributoValue(configuracionAtributoValue),ConfiguracionAtributoValueDTO.class);
+	}
+	@Override
+	public int contarListarConfiguracionAtributoValue(ConfiguracionAtributoValueDTO configuracionAtributoValue){
+		return  this.configuracionAtributoValueDaoImpl.contarListarConfiguracionAtributoValue(configuracionAtributoValue);
+	}
+	@Override
+	public DetallePedidoDTO controladorAccionDetallePedido(DetallePedidoDTO detallePedido, AccionType accionType) throws Exception {
+		DetallePedidoDTO resultado = null;
+		DetallePedido resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				detallePedido.setIdDetallePedido(this.detallePedidoDaoImpl.generarIdDetallePedido());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(detallePedido, DetallePedido.class,"pedido@PK@","producto@PK@");
+				this.detallePedidoDaoImpl.save(resultadoEntity);	
+				resultado = detallePedido;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(detallePedido, DetallePedido.class,"pedido@PK@","producto@PK@");
+				this.detallePedidoDaoImpl.update(resultadoEntity);
+				resultado = detallePedido;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.detallePedidoDaoImpl.find(DetallePedido.class, detallePedido.getIdDetallePedido());
+				this.detallePedidoDaoImpl.delete(resultadoEntity);
+				resultado = detallePedido;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.detallePedidoDaoImpl.find(DetallePedido.class, detallePedido.getIdDetallePedido());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,DetallePedidoDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.detallePedidoDaoImpl.findByNombre(detallePedido),DetallePedidoDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<DetallePedidoDTO> listarDetallePedido(DetallePedidoDTO detallePedido) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.detallePedidoDaoImpl.listarDetallePedido(detallePedido),DetallePedidoDTO.class);
+	}
+	@Override
+	public int contarListarDetallePedido(DetallePedidoDTO detallePedido){
+		return  this.detallePedidoDaoImpl.contarListarDetallePedido(detallePedido);
+	}
+	@Override
+	public DetalleProformaDTO controladorAccionDetalleProforma(DetalleProformaDTO detalleProforma, AccionType accionType) throws Exception {
+		DetalleProformaDTO resultado = null;
+		DetalleProforma resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				detalleProforma.setIdDetalleProforma(this.detalleProformaDaoImpl.generarIdDetalleProforma());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(detalleProforma, DetalleProforma.class,"proforma@PK@","producto@PK@");
+				this.detalleProformaDaoImpl.save(resultadoEntity);	
+				resultado = detalleProforma;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(detalleProforma, DetalleProforma.class,"proforma@PK@","producto@PK@");
+				this.detalleProformaDaoImpl.update(resultadoEntity);
+				resultado = detalleProforma;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.detalleProformaDaoImpl.find(DetalleProforma.class, detalleProforma.getIdDetalleProforma());
+				this.detalleProformaDaoImpl.delete(resultadoEntity);
+				resultado = detalleProforma;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.detalleProformaDaoImpl.find(DetalleProforma.class, detalleProforma.getIdDetalleProforma());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,DetalleProformaDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.detalleProformaDaoImpl.findByNombre(detalleProforma),DetalleProformaDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<DetalleProformaDTO> listarDetalleProforma(DetalleProformaDTO detalleProforma) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.detalleProformaDaoImpl.listarDetalleProforma(detalleProforma),DetalleProformaDTO.class);
+	}
+	@Override
+	public int contarListarDetalleProforma(DetalleProformaDTO detalleProforma){
+		return  this.detalleProformaDaoImpl.contarListarDetalleProforma(detalleProforma);
+	}
+	@Override
+	public DetalleVentaDTO controladorAccionDetalleVenta(DetalleVentaDTO detalleVenta, AccionType accionType) throws Exception {
+		DetalleVentaDTO resultado = null;
+		DetalleVenta resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				detalleVenta.setIdDetalleVenta(this.detalleVentaDaoImpl.generarIdDetalleVenta());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(detalleVenta, DetalleVenta.class,"venta@PK@","producto@PK@");
+				this.detalleVentaDaoImpl.save(resultadoEntity);	
+				resultado = detalleVenta;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(detalleVenta, DetalleVenta.class,"venta@PK@","producto@PK@");
+				this.detalleVentaDaoImpl.update(resultadoEntity);
+				resultado = detalleVenta;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.detalleVentaDaoImpl.find(DetalleVenta.class, detalleVenta.getIdDetalleVenta());
+				this.detalleVentaDaoImpl.delete(resultadoEntity);
+				resultado = detalleVenta;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.detalleVentaDaoImpl.find(DetalleVenta.class, detalleVenta.getIdDetalleVenta());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,DetalleVentaDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.detalleVentaDaoImpl.findByNombre(detalleVenta),DetalleVentaDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<DetalleVentaDTO> listarDetalleVenta(DetalleVentaDTO detalleVenta) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.detalleVentaDaoImpl.listarDetalleVenta(detalleVenta),DetalleVentaDTO.class);
+	}
+	@Override
+	public int contarListarDetalleVenta(DetalleVentaDTO detalleVenta){
+		return  this.detalleVentaDaoImpl.contarListarDetalleVenta(detalleVenta);
+	}
+	@Override
+	public LineaDTO controladorAccionLinea(LineaDTO linea, AccionType accionType) throws Exception {
+		LineaDTO resultado = null;
+		Linea resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				linea.setIdLinea(this.lineaDaoImpl.generarIdLinea());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(linea, Linea.class,"entidad@PK@");
+				this.lineaDaoImpl.save(resultadoEntity);	
+				resultado = linea;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(linea, Linea.class,"entidad@PK@");
+				this.lineaDaoImpl.update(resultadoEntity);
+				resultado = linea;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.lineaDaoImpl.find(Linea.class, linea.getIdLinea());
+				this.lineaDaoImpl.delete(resultadoEntity);
+				resultado = linea;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.lineaDaoImpl.find(Linea.class, linea.getIdLinea());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,LineaDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.lineaDaoImpl.findByNombre(linea),LineaDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<LineaDTO> listarLinea(LineaDTO linea) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.lineaDaoImpl.listarLinea(linea),LineaDTO.class);
+	}
+	@Override
+	public int contarListarLinea(LineaDTO linea){
+		return  this.lineaDaoImpl.contarListarLinea(linea);
+	}
+	@Override
+	public MarcaDTO controladorAccionMarca(MarcaDTO marca, AccionType accionType) throws Exception {
+		MarcaDTO resultado = null;
+		Marca resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				marca.setIdMarca(this.marcaDaoImpl.generarIdMarca());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(marca, Marca.class,"entidad@PK@");
+				this.marcaDaoImpl.save(resultadoEntity);	
+				resultado = marca;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(marca, Marca.class,"entidad@PK@");
+				this.marcaDaoImpl.update(resultadoEntity);
+				resultado = marca;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.marcaDaoImpl.find(Marca.class, marca.getIdMarca());
+				this.marcaDaoImpl.delete(resultadoEntity);
+				resultado = marca;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.marcaDaoImpl.find(Marca.class, marca.getIdMarca());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,MarcaDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.marcaDaoImpl.findByNombre(marca),MarcaDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<MarcaDTO> listarMarca(MarcaDTO marca) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.marcaDaoImpl.listarMarca(marca),MarcaDTO.class);
+	}
+	@Override
+	public int contarListarMarca(MarcaDTO marca){
+		return  this.marcaDaoImpl.contarListarMarca(marca);
+	}
+	@Override
+	public ModeloDTO controladorAccionModelo(ModeloDTO modelo, AccionType accionType) throws Exception {
+		ModeloDTO resultado = null;
+		Modelo resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				modelo.setIdModelo(this.modeloDaoImpl.generarIdModelo());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(modelo, Modelo.class,"marca@PK@","subModelo@PK@","entidad@PK@");
+				this.modeloDaoImpl.save(resultadoEntity);	
+				resultado = modelo;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(modelo, Modelo.class,"marca@PK@","subModelo@PK@","entidad@PK@");
+				this.modeloDaoImpl.update(resultadoEntity);
+				resultado = modelo;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.modeloDaoImpl.find(Modelo.class, modelo.getIdModelo());
+				this.modeloDaoImpl.delete(resultadoEntity);
+				resultado = modelo;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.modeloDaoImpl.find(Modelo.class, modelo.getIdModelo());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,ModeloDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.modeloDaoImpl.findByNombre(modelo),ModeloDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<ModeloDTO> listarModelo(ModeloDTO modelo) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.modeloDaoImpl.listarModelo(modelo),ModeloDTO.class,"marca","subModelo");
+	}
+	@Override
+	public int contarListarModelo(ModeloDTO modelo){
+		return  this.modeloDaoImpl.contarListarModelo(modelo);
+	}
+	@Override
+	public PedidoDTO controladorAccionPedido(PedidoDTO pedido, AccionType accionType) throws Exception {
+		PedidoDTO resultado = null;
+		Pedido resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				pedido.setIdPedido(this.pedidoDaoImpl.generarIdPedido());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(pedido, Pedido.class,"entidad@PK@","cliente@PK@","tipoDocSunat@PK@","itemByTipoMoneda@PK@");
+				this.pedidoDaoImpl.save(resultadoEntity);	
+				resultado = pedido;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(pedido, Pedido.class,"entidad@PK@","cliente@PK@","tipoDocSunat@PK@","itemByTipoMoneda@PK@");
+				this.pedidoDaoImpl.update(resultadoEntity);
+				resultado = pedido;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.pedidoDaoImpl.find(Pedido.class, pedido.getIdPedido());
+				this.pedidoDaoImpl.delete(resultadoEntity);
+				resultado = pedido;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.pedidoDaoImpl.find(Pedido.class, pedido.getIdPedido());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,PedidoDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.pedidoDaoImpl.findByNombre(pedido),PedidoDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<PedidoDTO> listarPedido(PedidoDTO pedido) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.pedidoDaoImpl.listarPedido(pedido),PedidoDTO.class);
+	}
+	@Override
+	public int contarListarPedido(PedidoDTO pedido){
+		return  this.pedidoDaoImpl.contarListarPedido(pedido);
+	}
+	@Override
+	public ProductoDTO controladorAccionProducto(ProductoDTO producto, AccionType accionType) throws Exception {
+		ProductoDTO resultado = null;
+		Producto resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				producto.setIdProducto(this.productoDaoImpl.generarIdProducto());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(producto, Producto.class,"categoria@PK@","itemByUnidadMedida@PK@","modelo@PK@","itemByColor@PK@","planContableVenta@PK@","planContableCompra@PK@","entidad@PK@");
+				this.productoDaoImpl.save(resultadoEntity);	
+				resultado = producto;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(producto, Producto.class,"categoria@PK@","itemByUnidadMedida@PK@","modelo@PK@","itemByColor@PK@","planContableVenta@PK@","planContableCompra@PK@","entidad@PK@");
+				this.productoDaoImpl.update(resultadoEntity);
+				resultado = producto;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.productoDaoImpl.find(Producto.class, producto.getIdProducto());
+				this.productoDaoImpl.delete(resultadoEntity);
+				resultado = producto;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.productoDaoImpl.find(Producto.class, producto.getIdProducto());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,ProductoDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.productoDaoImpl.findByNombre(producto),ProductoDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<ProductoDTO> listarProducto(ProductoDTO producto) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.productoDaoImpl.listarProducto(producto),ProductoDTO.class,"categoria","itemByUnidadMedida","modelo","itemByColor","planContableVenta","planContableCompra");
+	}
+	@Override
+	public int contarListarProducto(ProductoDTO producto){
+		return  this.productoDaoImpl.contarListarProducto(producto);
+	}
+	@Override
+	public ProformaDTO controladorAccionProforma(ProformaDTO proforma, AccionType accionType) throws Exception {
+		ProformaDTO resultado = null;
+		Proforma resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				proforma.setIdProforma(this.proformaDaoImpl.generarIdProforma());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(proforma, Proforma.class,"entidad@PK@","cliente@PK@","tipoDocSunat@PK@","itemByTipoMoneda@PK@");
+				this.proformaDaoImpl.save(resultadoEntity);	
+				resultado = proforma;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(proforma, Proforma.class,"entidad@PK@","cliente@PK@","tipoDocSunat@PK@","itemByTipoMoneda@PK@");
+				this.proformaDaoImpl.update(resultadoEntity);
+				resultado = proforma;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.proformaDaoImpl.find(Proforma.class, proforma.getIdProforma());
+				this.proformaDaoImpl.delete(resultadoEntity);
+				resultado = proforma;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.proformaDaoImpl.find(Proforma.class, proforma.getIdProforma());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,ProformaDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.proformaDaoImpl.findByNombre(proforma),ProformaDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<ProformaDTO> listarProforma(ProformaDTO proforma) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.proformaDaoImpl.listarProforma(proforma),ProformaDTO.class);
+	}
+	@Override
+	public int contarListarProforma(ProformaDTO proforma){
+		return  this.proformaDaoImpl.contarListarProforma(proforma);
+	}
+	@Override
+	public TipoDocSunatEntidadDTO controladorAccionTipoDocSunatEntidad(TipoDocSunatEntidadDTO tipoDocSunatEntidad, AccionType accionType) throws Exception {
+		TipoDocSunatEntidadDTO resultado = null;
+		TipoDocSunatEntidad resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				tipoDocSunatEntidad.setIdTipoDocSunatEntidad(this.tipoDocSunatEntidadDaoImpl.generarIdTipoDocSunatEntidad());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(tipoDocSunatEntidad, TipoDocSunatEntidad.class,"itemByTipoDocSunat@PK@","entidad@PK@");
+				this.tipoDocSunatEntidadDaoImpl.save(resultadoEntity);	
+				resultado = tipoDocSunatEntidad;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(tipoDocSunatEntidad, TipoDocSunatEntidad.class,"itemByTipoDocSunat@PK@","entidad@PK@");
+				this.tipoDocSunatEntidadDaoImpl.update(resultadoEntity);
+				resultado = tipoDocSunatEntidad;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.tipoDocSunatEntidadDaoImpl.find(TipoDocSunatEntidad.class, tipoDocSunatEntidad.getIdTipoDocSunatEntidad());
+				this.tipoDocSunatEntidadDaoImpl.delete(resultadoEntity);
+				resultado = tipoDocSunatEntidad;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.tipoDocSunatEntidadDaoImpl.find(TipoDocSunatEntidad.class, tipoDocSunatEntidad.getIdTipoDocSunatEntidad());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,TipoDocSunatEntidadDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.tipoDocSunatEntidadDaoImpl.findByNombre(tipoDocSunatEntidad),TipoDocSunatEntidadDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<TipoDocSunatEntidadDTO> listarTipoDocSunatEntidad(TipoDocSunatEntidadDTO tipoDocSunatEntidad) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.tipoDocSunatEntidadDaoImpl.listarTipoDocSunatEntidad(tipoDocSunatEntidad),TipoDocSunatEntidadDTO.class);
+	}
+	@Override
+	public int contarListarTipoDocSunatEntidad(TipoDocSunatEntidadDTO tipoDocSunatEntidad){
+		return  this.tipoDocSunatEntidadDaoImpl.contarListarTipoDocSunatEntidad(tipoDocSunatEntidad);
+	}
+	@Override
+	public VentaDTO controladorAccionVenta(VentaDTO venta, AccionType accionType) throws Exception {
+		VentaDTO resultado = null;
+		Venta resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				venta.setIdVenta(this.ventaDaoImpl.generarIdVenta());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(venta, Venta.class,"entidad@PK@","pedido@PK@","cliente@PK@","tipoDocSunat@PK@","itemByTipoMoneda@PK@");
+				this.ventaDaoImpl.save(resultadoEntity);	
+				resultado = venta;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(venta, Venta.class,"entidad@PK@","pedido@PK@","cliente@PK@","tipoDocSunat@PK@","itemByTipoMoneda@PK@");
+				this.ventaDaoImpl.update(resultadoEntity);
+				resultado = venta;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.ventaDaoImpl.find(Venta.class, venta.getIdVenta());
+				this.ventaDaoImpl.delete(resultadoEntity);
+				resultado = venta;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.ventaDaoImpl.find(Venta.class, venta.getIdVenta());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,VentaDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.ventaDaoImpl.findByNombre(venta),VentaDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<VentaDTO> listarVenta(VentaDTO venta) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.ventaDaoImpl.listarVenta(venta),VentaDTO.class);
+	}
+	@Override
+	public int contarListarVenta(VentaDTO venta){
+		return  this.ventaDaoImpl.contarListarVenta(venta);
+	}
+}

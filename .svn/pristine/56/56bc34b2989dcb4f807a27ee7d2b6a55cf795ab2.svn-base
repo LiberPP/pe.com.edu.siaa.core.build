@@ -1,0 +1,67 @@
+package pe.com.edu.siaa.core.ejb.dao.admision.local;
+
+import java.util.List;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.dto.admision.PostulanteDTO;
+import pe.com.edu.siaa.core.model.jpa.admision.Postulante;
+
+/**
+ * La Class PostulanteDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 11:25:11 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface PostulanteDaoLocal  extends GenericDAOLocal<String,Postulante> {
+	
+	
+	/**
+	 * Generar codigo postulante by  semestre idSemestre + corre (0001) ejemplo 2005100001.
+	 *
+	 * @param postulante el postulante
+	 * @return the string
+	 * @throws Exception the exception
+	 */
+	String generarCodigoPostulanteBySemestre(String idAnhoSemestre) throws Exception;
+	
+	/**
+	 * Generar codigo postulante idPersona + corre(001) ejemplo  .2005100001001, 2005100001002.
+	 *
+	 * @param postulante el postulante
+	 * @return the string
+	 * @throws Exception the exception
+	 */
+	String generarCodigoPostulante(String idPersona) throws Exception;
+	/**
+	 * Listar postulante.
+	 *
+	 * @param postulante el postulanteDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<Postulante> listarPostulante(PostulanteDTO postulante) throws Exception;
+	
+	/**
+	 * contar lista postulante.
+	 *
+	 * @param postulante el postulante
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarPostulante(PostulanteDTO postulante);
+	/**
+	 * Generar id postulante.
+	 *
+	 * @return the String
+	 * @throws Exception the exception
+	 */
+	String generarIdPostulante() throws Exception;
+}

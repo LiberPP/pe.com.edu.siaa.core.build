@@ -1,0 +1,130 @@
+package pe.com.edu.siaa.core.ejb.service.rest.matricula.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.HibernateUtil;
+import pe.com.edu.siaa.core.ejb.seguridad.jwt.rsa.util.AppHTTPHeaderNames;
+import pe.com.edu.siaa.core.ejb.service.matricula.local.MatriculaServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.ejb.util.cache.AppAuthenticator;
+import pe.com.edu.siaa.core.model.dto.matricula.MatriculaDTO;
+import pe.com.edu.siaa.core.model.dto.seguridad.UsuarioDTO;
+import pe.com.edu.siaa.core.model.vo.SelectItemVO;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class MatriculaRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:38 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/matriculaRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class MatriculaRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient MatriculaServiceLocal matriculaServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<MatriculaDTO> registrarMatricula(@Context HttpHeaders httpHeaders,MatriculaDTO matricula) throws Exception {
+		ResultadoRestVO<MatriculaDTO> resultado = new ResultadoRestVO<MatriculaDTO>();
+		String serviceKey = httpHeaders.getHeaderString( AppHTTPHeaderNames.SERVICE_KEY );
+		String authToken = httpHeaders.getHeaderString( AppHTTPHeaderNames.AUTH_TOKEN );
+		matricula.setServiceKey(serviceKey);
+		matricula.setAuthToken(authToken);
+		String userName = AppAuthenticator.getInstance().getUserName(matricula.getAuthToken());
+		UsuarioDTO usuario = AppAuthenticator.getInstance().getUsuario(matricula.getServiceKey(), matricula.getAuthToken());
+		 try {
+			 resultado.setObjetoResultado(matriculaServiceLocal.registrarMatricula(matricula));
+			 String codigoGeneradoReporte = matriculaServiceLocal.generarReporteFichaMatricula(matricula.getAnhoSemestre().getIdAnhoSemestre(),matricula.getAlumno().getIdAlumno(),userName,true);
+			 resultado.getObjetoResultado().setCodigoGeneradoReporte(codigoGeneradoReporte);
+			 matriculaServiceLocal.enviarNotificacion(matricula, matricula.getListaDetCarLectiva(),usuario,codigoGeneradoReporte);
+			 HibernateUtil.setListaNull(resultado.getObjetoResultado());
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	
+	@GET
+    @Path("/generarReporteFichaMatricula/{idAnhoSemestre}/{idAlumno}")
+	public ResultadoRestVO<String> generarReporteFichaMatricula(@Context HttpHeaders httpHeaders,@PathParam("idAnhoSemestre") String idAnhoSemestre,@PathParam("idAlumno") String idAlumno){
+		ResultadoRestVO<String> resultado = new ResultadoRestVO<String>();
+		String serviceKey = httpHeaders.getHeaderString( AppHTTPHeaderNames.SERVICE_KEY );
+		String authToken = httpHeaders.getHeaderString( AppHTTPHeaderNames.AUTH_TOKEN );
+		 try {
+			String userName = AppAuthenticator.getInstance().getUserName(authToken);
+    		resultado.setObjetoResultado(matriculaServiceLocal.generarReporteFichaMatricula(idAnhoSemestre,idAlumno, userName,false));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<String> eliminar(@PathParam("id") String idMatricula) throws Exception {
+		ResultadoRestVO<String> resultado = new ResultadoRestVO<String>();
+		 try {
+			 matriculaServiceLocal.eliminarRegistrarMatricula(idMatricula);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/obtenerLimiteCredito/{idAlumno}/{idPlanEstudio}/{idCiclo}")
+	public ResultadoRestVO<Integer> obtenerLimiteCredito(@PathParam("idAlumno") String idAlumno, @PathParam("idPlanEstudio") String idPlanEstudio, @PathParam("idCiclo") Long idCiclo) throws Exception {
+		ResultadoRestVO<Integer> resultado = new ResultadoRestVO<Integer>();
+		 try {
+    		resultado.setObjetoResultado(matriculaServiceLocal.obtenerLimiteCredito(idAlumno,idPlanEstudio, idCiclo));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	
+	@GET
+	@Path("/obtenerMatricula/{idAlumno}/{idAnhoSemestre}")
+	public ResultadoRestVO<MatriculaDTO>  obtenerMatricula(@PathParam("idAlumno") String idAlumno, @PathParam("idAnhoSemestre") String idAnhoSemestre) throws Exception {
+		ResultadoRestVO<MatriculaDTO> resultado = new ResultadoRestVO<MatriculaDTO>();
+		 try {
+   		resultado.setObjetoResultado(matriculaServiceLocal.obtenerMatricula(idAlumno,idAnhoSemestre));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	
+	@GET
+	@Path("/obtenerSemestreMariculadoOrdenadoBySemestre/{idAlumno}")
+	public ResultadoRestVO<SelectItemVO>  obtenerSemestreMariculadoOrdenadoBySemestre(@PathParam("idAlumno") String idAlumno) throws Exception {
+		ResultadoRestVO<SelectItemVO> resultado = new ResultadoRestVO<SelectItemVO>();
+		try {
+			 resultado.setListaResultado(matriculaServiceLocal.obtenerSemestreMariculadoOrdenadoBySemestre(idAlumno));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+
+}

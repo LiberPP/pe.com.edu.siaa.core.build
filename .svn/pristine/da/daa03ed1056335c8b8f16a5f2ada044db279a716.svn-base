@@ -1,0 +1,112 @@
+package pe.com.edu.siaa.core.ejb.dao.matricula.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.persistence.Query;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericAcademicoDAOImpl;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.AulaDaoLocal;
+import pe.com.edu.siaa.core.model.dto.matricula.AulaDTO;
+import pe.com.edu.siaa.core.model.jpa.matricula.Aula;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+
+/**
+ * La Class AulaDaoImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 19:53:41 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+public class AulaDaoImpl extends  GenericAcademicoDAOImpl<Long, Aula> implements AulaDaoLocal  {
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.AulaDaoLocal#listarAula(pe.com.edu.siaa.core.model.jpa.seguridad.Aula)
+     */  
+    @Override	 
+    public List<Aula> listarAula(AulaDTO aula) {
+        Query query = generarQueryListaAula(aula, false);
+        query.setFirstResult(aula.getStartRow());
+        query.setMaxResults(aula.getOffset());
+        return query.getResultList();
+    }   
+   
+    /**
+     * Generar query lista Aula.
+     *
+     * @param AulaDTO el aula
+     * @param esContador el es contador
+     * @return the query
+     */
+    private Query generarQueryListaAula(AulaDTO aula, boolean esContador) {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        if (esContador) {
+            jpaql.append(" select count(o.idAula) from Aula o where 1=1 ");
+        } else {
+            jpaql.append(" select o from Aula o left join fetch o.pabellon  where 1=1 ");           
+        }
+		if (!StringUtils.isNullOrEmpty(aula.getSearch())) {
+	          jpaql.append(" and upper(o.idAula) like :search ");
+	          parametros.put("search", "%" + aula.getSearch().toUpperCase() + "%");
+	    } else {
+			if (!StringUtils.isNullOrEmpty(aula.getDescripcion())) {
+				jpaql.append(" and upper(o.descripcion) like :descripcion ");
+				parametros.put("descripcion", "%" + aula.getDescripcion().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(aula.getAbreviatura())) {
+				jpaql.append(" and upper(o.abreviatura) like :abreviatura ");
+				parametros.put("abreviatura", "%" + aula.getAbreviatura().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(aula.getEstado())) {
+				jpaql.append(" and upper(o.estado) like :estado ");
+				parametros.put("estado", "%" + aula.getEstado().toUpperCase() + "%");
+			}
+		}
+        if (!esContador) {
+            //jpaql.append(" ORDER BY 1 ");
+        }
+        Query query = createQuery(jpaql.toString(), parametros);
+        return query;
+    }
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.AulaDaoLocal#contarListar{entity.getClassName()}(pe.com.edu.siaa.core.model.jpa.seguridad.AulaDTO)
+     */
+	@Override
+    public int contarListarAula(AulaDTO aula) {
+        int resultado = 0;
+        try {
+            //StringBuilder jpaql = new StringBuilder();
+            Query query = generarQueryListaAula(aula, true);
+            resultado = ((Long) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            resultado = 0;
+        }
+        return resultado;
+    }
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.AulaDaoLocal#generarIdAula()
+     */
+	 @Override
+    public Long generarIdAula() {
+        Long resultado = 1L;
+        Query query = createQuery("select max(o.idAula) from Aula o", null);
+        List<Object> listLong =  query.getResultList();
+        if (listLong != null && listLong.size() > 0 && listLong.get(0) != null)  {
+            Long ultimoIdGenerado = Long.valueOf(listLong.get(0).toString());
+            if (!StringUtils.isNullOrEmpty(ultimoIdGenerado)) {
+                resultado = resultado + ultimoIdGenerado;
+            }
+        }
+        return resultado;
+    }
+   
+}

@@ -1,0 +1,51 @@
+package pe.com.edu.siaa.core.ejb.dao.encuesta.local;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.dto.encuesta.CuestionarioDTO;
+import pe.com.edu.siaa.core.model.jpa.encuesta.Cuestionario;
+
+/**
+ * La Class CuestionarioDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Fri Sep 08 16:22:18 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface CuestionarioDaoLocal  extends GenericDAOLocal<String,Cuestionario> {
+	/**
+	 * Listar cuestionario.
+	 *
+	 * @param cuestionario el cuestionarioDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<Cuestionario> listarCuestionario(CuestionarioDTO cuestionario) throws Exception;
+	
+	
+	String updateOrdenCuestionario(Map<String, Object> parametrosMap) throws Exception;
+	/**
+	 * contar lista cuestionario.
+	 *
+	 * @param cuestionario el cuestionario
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarCuestionario(CuestionarioDTO cuestionario);
+	/**
+	 * Generar id cuestionario.
+	 *
+	 * @return the String
+	 * @throws Exception the exception
+	 */
+	String generarIdCuestionario() throws Exception;
+}	

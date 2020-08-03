@@ -1,0 +1,192 @@
+package pe.com.edu.siaa.core.model.dto.matricula;
+
+import java.io.Serializable;
+
+import pe.com.edu.siaa.core.model.dto.BasePaginator;
+import pe.com.edu.siaa.core.model.dto.seguridad.EntidadDTO;
+
+/**
+ * La Class PabellonDTO.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 1.0, Tue Apr 18 09:56:56 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+public class PabellonDTO extends BasePaginator implements Serializable {
+	 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id pabellon. */
+    private Long idPabellon;
+   
+    /** El entidad. */
+    private EntidadDTO entidad;
+   
+    /** El descripcion. */
+    private String descripcion;
+   
+    /** El abreviatura. */
+    private String abreviatura;
+   
+    /** El estado. */
+    private String estado;
+   
+   
+    /**
+     * Instancia un nuevo pabellonDTO.
+     */
+    public PabellonDTO() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo pabellonDTO.
+     *
+     * @param idPabellon el id pabellon
+     * @param entidad el entidad
+     * @param descripcion el descripcion
+     * @param abreviatura el abreviatura
+     * @param estado el estado
+     */
+    public PabellonDTO(Long idPabellon, EntidadDTO entidad,String descripcion, String abreviatura, String estado ) {
+        super();
+        this.idPabellon = idPabellon;
+        this.entidad = entidad;
+        this.descripcion = descripcion;
+        this.abreviatura = abreviatura;
+        this.estado = estado;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id pabellon.
+     *
+     * @return id pabellon
+     */
+     public Long getIdPabellon() {
+        return this.idPabellon;
+    }
+    /**
+     * Establece el id pabellon.
+     *
+     * @param idPabellon el new id pabellon
+     */
+    public void setIdPabellon(Long idPabellon) {
+        this.idPabellon = idPabellon;
+    }
+    /**
+     * Obtiene entidad.
+     *
+     * @return entidad
+     */
+     public EntidadDTO getEntidad() {
+        return this.entidad;
+    }
+    /**
+     * Establece el entidad.
+     *
+     * @param entidad el new entidad
+     */
+    public void setEntidad(EntidadDTO entidad) {
+        this.entidad = entidad;
+    }
+    /**
+     * Obtiene descripcion.
+     *
+     * @return descripcion
+     */
+     public String getDescripcion() {
+        return this.descripcion;
+    }
+    /**
+     * Establece el descripcion.
+     *
+     * @param descripcion el new descripcion
+     */
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+    /**
+     * Obtiene abreviatura.
+     *
+     * @return abreviatura
+     */
+     public String getAbreviatura() {
+        return this.abreviatura;
+    }
+    /**
+     * Establece el abreviatura.
+     *
+     * @param abreviatura el new abreviatura
+     */
+    public void setAbreviatura(String abreviatura) {
+        this.abreviatura = abreviatura;
+    }
+    /**
+     * Obtiene estado.
+     *
+     * @return estado
+     */
+     public String getEstado() {
+        return this.estado;
+    }
+    /**
+     * Establece el estado.
+     *
+     * @param estado el new estado
+     */
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idPabellon == null) ? 0 : idPabellon.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        PabellonDTO other = (PabellonDTO) obj;
+        if (idPabellon == null) {
+            if (other.idPabellon != null) {
+                return false;
+            }
+        } else if (!idPabellon.equals(other.idPabellon)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "PabellonDTO [idPabellon=" + idPabellon + "]";
+    }
+   
+}

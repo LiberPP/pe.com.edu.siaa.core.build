@@ -1,0 +1,135 @@
+package pe.com.edu.siaa.core.ejb.dao.admision.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.persistence.Query;
+
+import pe.com.edu.siaa.core.ejb.dao.admision.local.AnhoSemestreDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericAcademicoDAOImpl;
+import pe.com.edu.siaa.core.model.dto.admision.AnhoSemestreDTO;
+import pe.com.edu.siaa.core.model.estate.EstadoAnhoSemestreState;
+import pe.com.edu.siaa.core.model.jpa.admision.AnhoSemestre;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+
+/**
+ * La Class AnhoSemestreDaoImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 19:53:31 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+public class AnhoSemestreDaoImpl extends  GenericAcademicoDAOImpl<String, AnhoSemestre> implements AnhoSemestreDaoLocal  {
+
+	@Override
+	public AnhoSemestre obtenerAnhoSemestreByEstado(EstadoAnhoSemestreState estadoAnhoSemestreState) throws Exception {
+		AnhoSemestre resultado = null;
+		Map<String, Object> parametros = new HashMap<String, Object>();
+		parametros.put("estado", estadoAnhoSemestreState.getKey());
+		Query query = createQuery("from AnhoSemestre a where   a.estado =:estado",parametros);
+	
+		List<AnhoSemestre> listaAnhoSemestre = query.getResultList();
+		if (listaAnhoSemestre != null && listaAnhoSemestre.size() > 0) {
+			resultado = listaAnhoSemestre.get(0);
+		} 
+		return resultado;
+	}
+	
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.AnhoSemestreDaoLocal#listarAnhoSemestre(pe.com.edu.siaa.core.model.jpa.seguridad.AnhoSemestre)
+     */  
+    @Override	 
+    public List<AnhoSemestre> listarAnhoSemestre(AnhoSemestreDTO anhoSemestre) {
+        Query query = generarQueryListaAnhoSemestre(anhoSemestre, false);
+        query.setFirstResult(anhoSemestre.getStartRow());
+        query.setMaxResults(anhoSemestre.getOffset());
+        return query.getResultList();
+    }   
+   
+    /**
+     * Generar query lista AnhoSemestre.
+     *
+     * @param AnhoSemestreDTO el anhoSemestre
+     * @param esContador el es contador
+     * @return the query
+     */
+    private Query generarQueryListaAnhoSemestre(AnhoSemestreDTO anhoSemestre, boolean esContador) {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        if (esContador) {
+            jpaql.append(" select count(o.idAnhoSemestre) from AnhoSemestre o where 1=1 ");
+        } else {
+            jpaql.append(" select o from AnhoSemestre o where 1=1 ");           
+        }
+		if (!StringUtils.isNullOrEmpty(anhoSemestre.getSearch())) {
+	          jpaql.append(" and upper(o.idAnhoSemestre) like :search ");
+	          parametros.put("search", "%" + anhoSemestre.getSearch().toUpperCase() + "%");
+	    } else {
+			if (!StringUtils.isNullOrEmpty(anhoSemestre.getAnho())) {
+				jpaql.append(" and upper(o.anho) like :anho ");
+				parametros.put("anho", "%" + anhoSemestre.getAnho().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(anhoSemestre.getSemestre())) {
+				jpaql.append(" and upper(o.semestre) like :semestre ");
+				parametros.put("semestre", "%" + anhoSemestre.getSemestre().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(anhoSemestre.getFechaInicio())) {
+				jpaql.append(" and o.fechaInicio = :fechaInicio ");
+				parametros.put("fechaInicio", anhoSemestre.getFechaInicio());
+			}
+			if (!StringUtils.isNullOrEmpty(anhoSemestre.getFechaCierre())) {
+				jpaql.append(" and o.fechaCierre = :fechaCierre ");
+				parametros.put("fechaCierre", anhoSemestre.getFechaCierre());
+			}
+			if (!StringUtils.isNullOrEmpty(anhoSemestre.getEstado())) {
+				jpaql.append(" and upper(o.estado) like :estado ");
+				parametros.put("estado", "%" + anhoSemestre.getEstado().toUpperCase() + "%");
+			}
+		}
+        if (!esContador) {
+            //jpaql.append(" ORDER BY 1 ");
+        }
+        Query query = createQuery(jpaql.toString(), parametros);
+        return query;
+    }
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.AnhoSemestreDaoLocal#contarListar{entity.getClassName()}(pe.com.edu.siaa.core.model.jpa.seguridad.AnhoSemestreDTO)
+     */
+	@Override
+    public int contarListarAnhoSemestre(AnhoSemestreDTO anhoSemestre) {
+        int resultado = 0;
+        try {
+            //StringBuilder jpaql = new StringBuilder();
+            Query query = generarQueryListaAnhoSemestre(anhoSemestre, true);
+            resultado = ((Long) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            resultado = 0;
+        }
+        return resultado;
+    }
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.AnhoSemestreDaoLocal#generarIdAnhoSemestre()
+     */
+	 @Override
+    public String generarIdAnhoSemestre() {
+        String resultado = "1";
+        Query query = createQuery("select max(o.idAnhoSemestre) from AnhoSemestre o", null);
+        List<Object> listLong =  query.getResultList();
+        if (listLong != null && listLong.size() > 0 && listLong.get(0) != null)  {
+            Long ultimoIdGenerado = Long.valueOf(listLong.get(0).toString());
+            if (!StringUtils.isNullOrEmpty(ultimoIdGenerado)) {
+                resultado = resultado + ultimoIdGenerado;
+            }
+        }
+        return resultado;
+    }
+   
+}

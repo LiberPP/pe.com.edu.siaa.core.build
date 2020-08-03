@@ -1,0 +1,183 @@
+package pe.com.edu.siaa.core.ejb.service.rest.matricula.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.matricula.local.MatriculaServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.matricula.DetCargaLectivaDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.model.vo.SelectItemVO;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class DetCargaLectivaRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:34 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/detCargaLectivaRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class DetCargaLectivaRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient MatriculaServiceLocal matriculaServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<DetCargaLectivaDTO> crear(DetCargaLectivaDTO detCargaLectiva) throws Exception {
+		return controladorAccion(detCargaLectiva,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<DetCargaLectivaDTO> modificar(DetCargaLectivaDTO detCargaLectiva) throws Exception {
+		return controladorAccion(detCargaLectiva,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<DetCargaLectivaDTO> eliminar(@PathParam("id") String idDetCargaLectiva) throws Exception {
+		DetCargaLectivaDTO detCargaLectiva = new DetCargaLectivaDTO();
+		detCargaLectiva.setIdDetCargaLectiva(idDetCargaLectiva);		
+		return controladorAccion(detCargaLectiva,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<DetCargaLectivaDTO> controladorAccion(DetCargaLectivaDTO detCargaLectiva, AccionType accionType){
+		ResultadoRestVO<DetCargaLectivaDTO> resultado = new ResultadoRestVO<DetCargaLectivaDTO>();
+		 try {
+    		resultado.setObjetoResultado(matriculaServiceLocal.controladorAccionDetCargaLectiva(detCargaLectiva,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<DetCargaLectivaDTO> finById(@PathParam("id") String idDetCargaLectiva) throws Exception {
+		DetCargaLectivaDTO detCargaLectiva = new DetCargaLectivaDTO();
+		detCargaLectiva.setIdDetCargaLectiva(idDetCargaLectiva);
+		return controladorAccion(detCargaLectiva,AccionType.FIND_BY_ID);
+	}
+	
+	@POST
+	@Path("/listarDetCargaLectivaFiltro")
+	public ResultadoRestVO<DetCargaLectivaDTO> listarDetCargaLectivaFiltro(DetCargaLectivaDTO detCargaLectiva){
+		ResultadoRestVO<DetCargaLectivaDTO> resultado = new ResultadoRestVO<DetCargaLectivaDTO>();
+		 try {
+    		resultado.setListaResultado(matriculaServiceLocal.listarDetCargaLectiva(detCargaLectiva));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	
+	@POST
+	@Path("/obtenerDetCargaLectiva")
+	public ResultadoRestVO<DetCargaLectivaDTO> obtenerDetCargaLectiva(DetCargaLectivaDTO detCargaLectiva){
+		ResultadoRestVO<DetCargaLectivaDTO> resultado = new ResultadoRestVO<DetCargaLectivaDTO>();
+		 try {
+    		resultado.setListaResultado(matriculaServiceLocal.obtenerDetCargaLectiva(detCargaLectiva));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	
+	@POST
+	@Path("/obtenerDetCargaLectivaSelectItem")
+	public ResultadoRestVO<SelectItemVO> obtenerDetCargaLectivaSelectItem(DetCargaLectivaDTO detCargaLectiva){
+		ResultadoRestVO<SelectItemVO> resultado = new ResultadoRestVO<SelectItemVO>();
+		 try {
+			 List<SelectItemVO> resul = new ArrayList<SelectItemVO>();
+			 List<DetCargaLectivaDTO> listaTemp  = matriculaServiceLocal.obtenerDetCargaLectiva(detCargaLectiva);
+			 for (DetCargaLectivaDTO detCargaLectivaDTO : listaTemp) {
+				 resul.add(new SelectItemVO(detCargaLectivaDTO.getIdDetCargaLectiva(), detCargaLectivaDTO.getDetPlanEstudio().getDescripcionCurso(), obtenerNombreDococente(detCargaLectivaDTO)));
+			 }
+    		resultado.setListaResultado(resul);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	
+	private String obtenerNombreDococente(DetCargaLectivaDTO detCargaLectivaDTO) {
+		StringBuilder resultado = new StringBuilder();
+		resultado.append(detCargaLectivaDTO.getPersonalByDocente().getPersona().getNombre());
+		resultado.append(" " + detCargaLectivaDTO.getPersonalByDocente().getPersona().getApellidoPaterno());
+		resultado.append(" " + detCargaLectivaDTO.getPersonalByDocente().getPersona().getApellidoMaterno());
+		return resultado.toString();
+	}
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<DetCargaLectivaDTO> listarDetCargaLectiva(@Context UriInfo info){
+		ResultadoRestVO<DetCargaLectivaDTO> resultado = new ResultadoRestVO<DetCargaLectivaDTO>();
+		DetCargaLectivaDTO detCargaLectiva = transferUriInfo(info);
+		 try {
+    		resultado.setListaResultado(matriculaServiceLocal.listarDetCargaLectiva(detCargaLectiva));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<Integer> contarListarDetCargaLectiva(@Context UriInfo info){
+		ResultadoRestVO<Integer> resultado = new ResultadoRestVO<Integer>();
+		DetCargaLectivaDTO detCargaLectiva = transferUriInfo(info);
+		 try {
+    		resultado.setObjetoResultado(matriculaServiceLocal.contarListarDetCargaLectiva(detCargaLectiva));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<DetCargaLectivaDTO> inicializarDetCargaLectiva(@Context UriInfo info) throws Exception {
+	     DetCargaLectivaDTO detCargaLectiva = transferUriInfo(info);
+		 ResultadoRestVO<DetCargaLectivaDTO> resultado = new ResultadoRestVO<DetCargaLectivaDTO>();
+		 try {
+    		resultado.setObjetoResultado(detCargaLectiva);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	
+	@GET
+	@Path("/obtenerCursosPosiblesLlevar")
+	public ResultadoRestVO<DetCargaLectivaDTO>  obtenerCursosPosiblesLlevar(@Context UriInfo info) throws Exception {
+		ResultadoRestVO<DetCargaLectivaDTO> resultado = new ResultadoRestVO<DetCargaLectivaDTO>();
+		 try {
+			 Map<String,Object> parametroMap = transferUriInfoMap(info);
+			 resultado.setListaResultado(matriculaServiceLocal.obtenerCursosPosiblesLlevar(parametroMap));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private DetCargaLectivaDTO transferUriInfo(@Context UriInfo info) {
+		DetCargaLectivaDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,DetCargaLectivaDTO.class);
+		return resultado;
+	}
+}

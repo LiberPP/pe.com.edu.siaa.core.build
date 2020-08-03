@@ -1,0 +1,830 @@
+package pe.com.edu.siaa.core.ejb.util.cache;
+
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import pe.com.edu.siaa.core.ejb.factory.CollectionUtil;
+import pe.com.edu.siaa.core.ejb.service.admision.local.AdmisionServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.common.local.CommonServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.helper.Referencia;
+import pe.com.edu.siaa.core.ejb.service.matricula.local.MatriculaServiceLocal;
+import pe.com.edu.siaa.core.ejb.util.log.Logger;
+import pe.com.edu.siaa.core.model.dto.admision.EscuelaDTO;
+import pe.com.edu.siaa.core.model.dto.admision.FacultadDTO;
+import pe.com.edu.siaa.core.model.dto.admision.ProcedenciaDTO;
+import pe.com.edu.siaa.core.model.dto.admision.TipoPersonaDTO;
+import pe.com.edu.siaa.core.model.dto.common.ItemDTO;
+import pe.com.edu.siaa.core.model.dto.common.UbigeoDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.CargoDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.ProfesionDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.RegimenPensionarioDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.model.type.ListaItemType;
+import pe.com.edu.siaa.core.model.type.TipoPersonaType;
+import pe.com.edu.siaa.core.model.type.TipoUbigeoType;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+import pe.com.edu.siaa.core.model.vo.SelectItemVO;
+
+/**
+ * <ul>
+ * <li>Copyright 2012 BUILD SOFT S.A.C - BS. Todos los derechos reservados.</li>
+ * </ul>
+ * 
+ * La Class SelectItemServiceCacheUtil.
+ *
+ * @author ndavilal.
+ * @version 1.0 , 25/03/2012
+ * @since SIAA 2.0
+ */
+
+public class SelectItemServiceCacheUtil implements Serializable {
+
+	/** La Constante serialVersionUID. */
+	private static final long serialVersionUID = 1L;
+	
+	/** 
+	 * Logger para el registro de errores.
+	 */
+	private Logger log = Logger.getLogger(SelectItemServiceCacheUtil.class);
+	 
+	/** La configurador cache utl. */
+	private static SelectItemServiceCacheUtil selectItemServiceCacheUtil = null;
+		
+  	/** El flag cargo listado. */
+	private boolean flagCargoListado = false;
+	
+	/** El service common impl. */
+	private CommonServiceLocal commonServiceImpl;
+	
+	/** El servicio de admision service impl. */
+	private AdmisionServiceLocal admisionServiceImpl;
+	
+	/** El service matricula impl. */
+	//private PagoServiceLocal pagoServiceImpl;
+	
+	/** El servicio de matricula service impl. */
+	private MatriculaServiceLocal matriculaServiceImpl;
+	
+	/** La lista item select item map. */
+	private Map<Long, List<SelectItemVO>> listaItemSelectItemVOMap = new HashMap<Long, List<SelectItemVO>>();
+	
+	/** La lista item cbo select one item map. */
+//	private Map<Long, List<SelectItemVO>> listaItemCboSelectOneItemMap = new HashMap<Long, List<SelectItemVO>>();
+		
+	/** La lista escuela. */
+	private Map<String,EscuelaDTO>  listaEscuelaMap = new HashMap<String, EscuelaDTO>();
+	
+	/** La escuela nro ciclo map. */
+	private Map<String,Integer> escuelaNroCicloMap = new HashMap<String, Integer>(); 
+	
+	/** La item map. */
+	private Map<Long,ItemDTO> itemMap = new HashMap<Long, ItemDTO>(); 
+	
+	/** La item map. */
+	private Map<String,ItemDTO> itemByCodigoMap = new HashMap<String, ItemDTO>(); 
+	
+	/** La ubigeo map. */
+	private Map<String,List<SelectItemVO>> ubigeoMap = new HashMap<String, List<SelectItemVO>>();
+
+	/** La ubigeo all map. */
+	private Map<String,UbigeoDTO> ubigeoAllMap = new HashMap<String, UbigeoDTO>();
+
+	/** La lista item select item map. */
+	private Map<String, List<SelectItemVO>> listaSelectItemVOMap = new HashMap<String, List<SelectItemVO>>();
+
+	/**
+	 * Instancia un nuevo select item service m bean.
+	 */
+	public SelectItemServiceCacheUtil() {
+		
+	} 
+	
+	/**
+	 * Instanciar.
+	 *
+	 * @return the configurador cache utl
+	 */
+	public static SelectItemServiceCacheUtil getInstance() {
+		if (selectItemServiceCacheUtil == null) {
+			createInstance();
+		} else if (!selectItemServiceCacheUtil.isFlagCargoListado()) {
+			selectItemServiceCacheUtil.sincronizarData();
+		}
+		return selectItemServiceCacheUtil;
+	}
+	 /**
+     * Creates the instance.
+     */
+    private static synchronized void createInstance() {
+    	if (selectItemServiceCacheUtil == null) {
+    		selectItemServiceCacheUtil = new SelectItemServiceCacheUtil();
+    		selectItemServiceCacheUtil.sincronizarData();
+		}
+    }
+
+	/**
+	 * Sincronizar data.
+	 *
+	 * @return the string
+	 */
+	public String sincronizarData() {
+		return inicializar();
+	}
+
+	
+	/**
+	 * Inicializar.
+	 */
+	public String inicializar() {
+		String resultado = "";
+		try {
+			commonServiceImpl = Referencia.getReference(CommonServiceLocal.class);
+			matriculaServiceImpl = Referencia.getReference(MatriculaServiceLocal.class);
+			admisionServiceImpl = Referencia.getReference(AdmisionServiceLocal.class);
+		} catch (Exception e) {
+			log.error(e);
+			resultado = e.getMessage();
+		}
+		cargarTipoPersona();
+		cargarProfesion();
+		cargarCargo();
+		cargarRegimenPensionario();
+		//cargarTipoDocSunat();
+		cargarProcedencia();
+		cargarEscuela();
+		cargarFacultad();
+		cargarUbigeo();
+		try {
+			
+			List<ListaItemType> listaItemType = new ArrayList<ListaItemType>();
+			for (ListaItemType objType : ListaItemType.values()) {
+				listaItemType.add(objType);
+			}
+			itemMap = new HashMap<Long, ItemDTO>();
+			itemByCodigoMap = new HashMap<String, ItemDTO>();
+			List<ItemDTO> listaItemTemp = commonServiceImpl.listarItem();
+			for (ItemDTO item : listaItemTemp) {
+				itemMap.put(item.getIdItem(), item);
+				itemByCodigoMap.put(item.getListaItems().getIdListaItems() + "" + item.getCodigoExterno(), item);
+			}
+			listaItemSelectItemVOMap = commonServiceImpl.convertirListaItemSelectItemMap(listaItemTemp);
+			generarListaLenguajeSelect();
+			this.flagCargoListado = true;
+		} catch (Exception e) {
+			log.error(e);
+			resultado = e.getMessage();
+		}
+		return resultado;
+	}
+	
+	/**
+	 * Cargar tipo doc sunat.
+	 */
+	/*
+	public void cargarTipoDocSunat() {
+		try {
+			List<SelectItemVO> listaTipoDocSunat = pagoServiceImpl.listarTipoDocSunatSelectItem();
+			this.listaSelectItemVOMap.put("tipoDocSunat", listaTipoDocSunat);
+		} catch (Exception e) {
+			log.error(e);
+		}
+	}*/
+	/**
+	 * Cargar escuela.
+	 */
+	public void cargarEscuela() {
+		try {
+			List<EscuelaDTO> listaEscuelaTemp = admisionServiceImpl.listarEscuela(new EscuelaDTO());
+			List<SelectItemVO> listaEscuela = new ArrayList<SelectItemVO>();
+			//listaEscuela.add(Utilidades.darSelectItemVOVacio());
+			for (EscuelaDTO escuela : listaEscuelaTemp) {
+				escuelaNroCicloMap.put(escuela.getIdEscuela(), escuela.getNroCiclo());
+				listaEscuelaMap.put(escuela.getIdEscuela(), escuela);
+				listaEscuela.add(new SelectItemVO(escuela.getIdEscuela(), escuela.getNombre(), escuela.getNroCiclo() + ""));
+			}
+			this.listaSelectItemVOMap.put("escuela",listaEscuela);
+		} catch (Exception e) {
+			log.error(e);
+		}
+		
+	}
+	
+	/**
+	 * Cargar facultad.
+	 */
+	public void cargarFacultad() {
+		try {
+			List<FacultadDTO> listaFacultadTemp = admisionServiceImpl.listarFacultad(new FacultadDTO());
+			List<SelectItemVO> listaFacultad = new ArrayList<SelectItemVO>();
+			//listaEscuela.add(Utilidades.darSelectItemVOVacio());
+			for (FacultadDTO facultad : listaFacultadTemp) {
+				listaFacultad.add(new SelectItemVO(facultad.getIdFacultad(), facultad.getDescripcion(), facultad.getDescripcion() + ""));
+			}
+			this.listaSelectItemVOMap.put("facultad",listaFacultad);
+		} catch (Exception e) {
+			log.error(e);
+		}
+		
+	}
+	/**
+	 * Cargar procedencia.
+	 */
+	public void cargarProcedencia() {
+		try {
+			List<SelectItemVO>  listaProcedencia = admisionServiceImpl.listarProcedenciaSelectItem();
+			this.listaSelectItemVOMap.put("procedencia", listaProcedencia);
+		} catch (Exception e) {
+			log.error(e);
+		}
+		
+	}
+	/**
+	 * Cargar ubigeo.
+	 */
+	public void  cargarUbigeo() {
+		try {
+			ubigeoMap = new HashMap<String, List<SelectItemVO>>();
+			UbigeoDTO ubigeoFiltro = new UbigeoDTO();
+	 		List<UbigeoDTO> listaUbigeoTempAll = commonServiceImpl.listarUbigeo(ubigeoFiltro);
+	 		List<UbigeoDTO> listaDepartamentoTemp = new ArrayList<UbigeoDTO>();
+	 		List<UbigeoDTO> listaUbigeoProvincia = new ArrayList<UbigeoDTO>();
+	 		List<UbigeoDTO> listaUbigeoDistrito = new ArrayList<UbigeoDTO>();
+	 		for (UbigeoDTO ubigeo : listaUbigeoTempAll) {
+	 			ubigeoAllMap.put(ubigeo.getIdUbigeo(), ubigeo);
+				if (TipoUbigeoType.DEPARTAMENTO.getKey().equals(ubigeo.getTipo())) {
+					listaDepartamentoTemp.add(ubigeo);
+				}
+				if (TipoUbigeoType.PROVINCIA.getKey().equals(ubigeo.getTipo())) {
+					listaUbigeoProvincia.add(ubigeo);
+				}
+				if (TipoUbigeoType.DISTRITO.getKey().equals(ubigeo.getTipo())) {
+					listaUbigeoDistrito.add(ubigeo);
+				}
+			}
+	 		List<SelectItemVO> listaDepatamento = commonServiceImpl.listarUbigeoSelectItem(listaDepartamentoTemp);
+	 		this.listaSelectItemVOMap.put("ubigeoDepartamento", listaDepatamento);
+			ubigeoFiltro.setTipo(TipoUbigeoType.PROVINCIA.getKey());
+			//List<Ubigeo> listaUbigeoProvincia = admisionServiceImpl.listarUbigeo(ubigeoFiltro);
+			for (SelectItemVO departamento : listaDepatamento) {
+				if (departamento.getId() == null) {
+					continue;
+				}
+				boolean encontroDependencia = false;
+				for (UbigeoDTO ubigeo : listaUbigeoProvincia) {
+					if (ubigeo.getUbigeoByDependencia() == null) {
+						continue;
+					}
+					if (departamento.getId().toString().equals(ubigeo.getUbigeoByDependencia().getIdUbigeo())) {
+						encontroDependencia = true;
+						if (!ubigeoMap.containsKey(departamento.getId().toString())) {
+							List<SelectItemVO> listaProvinciaValue = new ArrayList<SelectItemVO>();
+							//listaProvinciaValue.add(Utilidades.darSelectItemVOVacio());
+							listaProvinciaValue.add(new SelectItemVO(ubigeo.getIdUbigeo(), ubigeo.getDescripcion(), ubigeo.getUbigeoByDependencia().getIdUbigeo()));
+							ubigeoMap.put(departamento.getId().toString(), listaProvinciaValue);
+						} else {
+							List<SelectItemVO> listaProvinciaValue = ubigeoMap.get(departamento.getId().toString());
+							listaProvinciaValue.add(new SelectItemVO(ubigeo.getIdUbigeo(), ubigeo.getDescripcion(), ubigeo.getUbigeoByDependencia().getIdUbigeo()));
+							ubigeoMap.put(departamento.getId().toString(), listaProvinciaValue);
+						}
+					}
+				}
+				if (!encontroDependencia) {
+					List<SelectItemVO> listaProvinciaValue = new ArrayList<SelectItemVO>();
+					//listaProvinciaValue.add(Utilidades.darSelectItemVOVacio());
+					ubigeoMap.put(departamento.getId().toString(), listaProvinciaValue);
+				}
+			}
+			ubigeoFiltro.setTipo(TipoUbigeoType.DISTRITO.getKey());
+			//List<Ubigeo> listaUbigeoDistrito = admisionServiceImpl.listarUbigeo(ubigeoFiltro);
+		
+			for (UbigeoDTO provincia : listaUbigeoProvincia) {
+				boolean encontroDependencia = false;
+				for (UbigeoDTO ubigeo : listaUbigeoDistrito) {
+					if (ubigeo.getUbigeoByDependencia() == null) {
+						continue;
+					}
+					if (provincia.getIdUbigeo().equals(ubigeo.getUbigeoByDependencia().getIdUbigeo())) {
+						encontroDependencia = true;
+						if (!ubigeoMap.containsKey(provincia.getIdUbigeo())) {
+							List<SelectItemVO> listaDistritoValue = new ArrayList<SelectItemVO>();
+							//listaDistritoValue.add(Utilidades.darSelectItemVOVacio());
+							listaDistritoValue.add(new SelectItemVO(ubigeo.getIdUbigeo(), ubigeo.getDescripcion(), ubigeo.getUbigeoByDependencia().getIdUbigeo()));
+							ubigeoMap.put(provincia.getIdUbigeo(), listaDistritoValue);
+						} else {
+							List<SelectItemVO> listaDistritoValue = ubigeoMap.get(provincia.getIdUbigeo());
+							listaDistritoValue.add(new SelectItemVO(ubigeo.getIdUbigeo(), ubigeo.getDescripcion(), ubigeo.getUbigeoByDependencia().getIdUbigeo()));
+							ubigeoMap.put(provincia.getIdUbigeo(), listaDistritoValue);
+						}
+					}
+				}
+				if (!encontroDependencia) {
+					List<SelectItemVO> listaDistritoValue = new ArrayList<SelectItemVO>();
+					//listaDistritoValue.add(Utilidades.darSelectItemVOVacio());
+					ubigeoMap.put(provincia.getIdUbigeo(), listaDistritoValue);
+				}
+			}
+		} catch (Exception e) {
+			log.error(e);
+		}
+	}
+	/**
+	 * Generar lista lenguaje select.
+	 */
+	private void generarListaLenguajeSelect() {
+		List<SelectItemVO> listaLenguajeSelect = new ArrayList<SelectItemVO>();
+		List<SelectItemVO> listaLenguajeSelectTemp = listaItemSelectItemVOMap.get(ListaItemType.LENGUAJE.getKey());
+		for (SelectItemVO selectItemVO : listaLenguajeSelectTemp) {
+			if (selectItemVO.getId() == null) {
+				listaLenguajeSelect.add(selectItemVO);
+			} else {
+				ItemDTO item = itemMap.get(Long.valueOf(selectItemVO.getId().toString()));
+				listaLenguajeSelect.add(new SelectItemVO(item.getCodigoExterno(), item.getNombre(), selectItemVO.getDescripcion()));
+			}
+		}
+		this.listaSelectItemVOMap.put("lenguaje", listaLenguajeSelect);
+	}
+	
+	/**
+	 * Cargar regimen pensionario.
+	 */
+	private void cargarRegimenPensionario() {
+		try {
+			List<SelectItemVO>  listaRegimenPensionario = matriculaServiceImpl.listarRegimenPensionarioSelectItem();
+			this.listaSelectItemVOMap.put("regimenPensionario", listaRegimenPensionario);
+		} catch (Exception e) {
+			log.error(e);
+		}
+	}
+	
+	/**
+	 * Cargar cargo.
+	 */
+	private void cargarCargo() {
+		try {
+			List<SelectItemVO>  listaCargo = matriculaServiceImpl.listarCargoSelectItem();
+			this.listaSelectItemVOMap.put("cargo", listaCargo);
+		} catch (Exception e) {
+			log.error(e);
+		}
+	}
+	
+	/**
+	 * Cargar profesion.
+	 */
+	private void cargarProfesion() {
+		try {
+			List<SelectItemVO> listaProfesion = matriculaServiceImpl.listarProfesionSelectItem();
+			listaSelectItemVOMap.put("profesion", listaProfesion);
+		} catch (Exception e) {
+			log.error(e);
+		}
+	}
+
+	/**
+	 * Cargar tipo persona.
+	 */
+	private void cargarTipoPersona() {
+		try {
+			List<SelectItemVO> listaTipoPersonaTemp = admisionServiceImpl.listarTipoPersonaSelectItem();
+			List<SelectItemVO> listaTipoPersona = new ArrayList<SelectItemVO>();
+			for (SelectItemVO item : listaTipoPersonaTemp) {
+				if (!TipoPersonaType.ALUMNO.getKey().equals(item.getId())) {
+					listaTipoPersona.add(item);
+				}
+			}
+			this.listaSelectItemVOMap.put("tipoPersona", listaTipoPersona);
+		} catch (Exception e) {
+			log.error(e);
+		}
+	}
+
+	
+	/**
+	 * Actualizar regimen pensionario.
+	 *
+	 * @param regimenPensionario el regimen pensionario
+	 * @param accionType el accion type
+	 */
+	public void actualizarRegimenPensionario(RegimenPensionarioDTO regimenPensionario,AccionType accionType) {
+		List<SelectItemVO> listaAgregado = new ArrayList<SelectItemVO>();
+		boolean existe = false;
+		List<SelectItemVO> listaRegimenPensionario = this.listaSelectItemVOMap.get("regimenPensionario");
+		if (listaRegimenPensionario == null || listaRegimenPensionario.size() == 0) {
+			listaRegimenPensionario = new ArrayList<SelectItemVO>();
+			//listaRegimenPensionario.add(Utilidades.darSelectItemVOVacio());
+		}
+//		String SelectItemVOSelect = listaRegimenPensionario.get(0).getnombre();
+//		listaRegimenPensionario.get(0).setNombre("");
+	    int index = -1;
+		int posicion = -1;
+		for (SelectItemVO selectItemVO : listaRegimenPensionario) {
+			posicion++;
+			if (selectItemVO.getId() == null) {
+				continue;
+			}
+			Long key = Long.valueOf(selectItemVO.getId().toString());
+			if (regimenPensionario.getIdRegimenPensionario().equals(key)) {
+				selectItemVO.setNombre(regimenPensionario.getDescripcion());
+				selectItemVO.setDescripcion(regimenPensionario.getDescripcion());
+				index = posicion;
+				existe = true;
+				break;
+			}
+		}
+		if (!existe && !AccionType.ELIMINAR.equals(accionType)) {
+			listaAgregado.add(new SelectItemVO(regimenPensionario.getIdRegimenPensionario(), regimenPensionario.getDescripcion(), regimenPensionario.getDescripcion()));
+		}
+		if (AccionType.ELIMINAR.equals(accionType) && index >= 0) {
+			listaRegimenPensionario.remove(index);
+		}
+		listaRegimenPensionario.addAll(listaAgregado);
+		CollectionUtil.ordenador(false, listaRegimenPensionario, "nombre");
+		//listaRegimenPensionario.get(0).setNombre(SelectItemVOSelect);
+	}
+	
+	/**
+	 * Actualizar cargo.
+	 *
+	 * @param cargo el cargo
+	 * @param accionType el accion type
+	 */
+	public void actualizarCargo(CargoDTO cargo,AccionType accionType) {
+		List<SelectItemVO> listaAgregado = new ArrayList<SelectItemVO>();
+		boolean existe = false;
+		List<SelectItemVO> listaCargo = this.listaSelectItemVOMap.get("cargo");
+		if (listaCargo == null || listaCargo.size() == 0) {
+			listaCargo = new ArrayList<SelectItemVO>();
+			//listaCargo.add(Utilidades.darSelectItemVOVacio());
+		}
+//		String SelectItemVOSelect = listaCargo.get(0).getnombre();
+//		listaCargo.get(0).setNombre("");
+	    int index = -1;
+		int posicion = -1;
+		for (SelectItemVO selectItemVO : listaCargo) {
+			posicion++;
+			if (selectItemVO.getId() == null) {
+				continue;
+			}
+			Long key = Long.valueOf(selectItemVO.getId().toString());
+			if (cargo.getIdCargo().equals(key)) {
+				selectItemVO.setNombre(cargo.getDescripcion());
+				selectItemVO.setDescripcion(cargo.getDescripcion());
+				index = posicion;
+				existe = true;
+				break;
+			}
+		}
+		if (!existe && !AccionType.ELIMINAR.equals(accionType)) {
+			listaAgregado.add(new SelectItemVO(cargo.getIdCargo(), cargo.getDescripcion(),cargo.getDescripcion()));
+		}
+		if (AccionType.ELIMINAR.equals(accionType) && index >= 0) {
+			listaCargo.remove(index);
+		}
+		listaCargo.addAll(listaAgregado);
+		CollectionUtil.ordenador(false, listaCargo, "nombre");
+//		listaCargo.get(0).setNombre(SelectItemVOSelect);
+	}
+	
+	/**
+	 * Actualizar profesion.
+	 *
+	 * @param profesion el profesion
+	 * @param accionType el accion type
+	 */
+	public void actualizarProfesion(ProfesionDTO profesion,AccionType accionType) {
+		List<SelectItemVO> listaAgregado = new ArrayList<SelectItemVO>();
+		boolean existe = false;
+		List<SelectItemVO> listaProfesion  = this.listaSelectItemVOMap.get("profesion");
+		if (listaProfesion == null || listaProfesion.size() == 0) {
+			listaProfesion = new ArrayList<SelectItemVO>();
+			//listaProfesion.add(Utilidades.darSelectItemVOVacio());
+		}
+//		String SelectItemVOSelect = listaProfesion.get(0).getnombre();
+//		listaProfesion.get(0).setNombre("");
+	    int index = -1;
+		int posicion = -1;
+		for (SelectItemVO selectItemVO : listaProfesion) {
+			posicion++;
+			if (selectItemVO.getId() == null) {
+				continue;
+			}
+			Long key = Long.valueOf(selectItemVO.getId().toString());
+			if (profesion.getIdProfesion().equals(key)) {
+				selectItemVO.setNombre(profesion.getDescripcion());
+				selectItemVO.setDescripcion(profesion.getDescripcion());
+				index = posicion;
+				existe = true;
+				break;
+			}
+		}
+		if (!existe && !AccionType.ELIMINAR.equals(accionType)) {
+			listaAgregado.add(new SelectItemVO(profesion.getIdProfesion(), profesion.getDescripcion(),profesion.getDescripcion()));
+		}
+		if (AccionType.ELIMINAR.equals(accionType) && index >= 0) {
+			listaProfesion.remove(index);
+		}
+		listaProfesion.addAll(listaAgregado);
+		CollectionUtil.ordenador(false, listaProfesion, "nombre");
+//		listaProfesion.get(0).setNombre(SelectItemVOSelect);
+	}
+	
+	/**
+	 * Actualizar tipo persona.
+	 *
+	 * @param tipoPersona el tipo persona
+	 * @param accionType el accion type
+	 */
+	public void actualizarTipoPersona(TipoPersonaDTO tipoPersona,AccionType accionType) {
+		List<SelectItemVO> listaAgregado = new ArrayList<SelectItemVO>();
+		boolean existe = false;
+		List<SelectItemVO> listaTipoPersona = this.listaSelectItemVOMap.get("tipoPersona");
+		if (listaTipoPersona == null || listaTipoPersona.size() == 0) {
+			listaTipoPersona = new ArrayList<SelectItemVO>();
+			//listaTipoPersona.add(Utilidades.darSelectItemVOVacio());
+		}
+//		String SelectItemVOSelect = listaTipoPersona.get(0).getnombre();
+//		listaTipoPersona.get(0).setNombre("");
+	    int index = -1;
+		int posicion = -1;
+		for (SelectItemVO selectItemVO : listaTipoPersona) {
+			posicion++;
+			if (selectItemVO.getId() == null) {
+				continue;
+			}
+			Long key = Long.valueOf(selectItemVO.getId().toString());
+			if (tipoPersona.getIdTipoPersona().equals(key)) {
+				selectItemVO.setNombre(tipoPersona.getDescripcion());
+				selectItemVO.setDescripcion(tipoPersona.getDescripcion());
+				index = posicion;
+				existe = true;
+				break;
+			}
+		}
+		if (!existe && !AccionType.ELIMINAR.equals(accionType)) {
+			listaAgregado.add(new SelectItemVO(tipoPersona.getIdTipoPersona(), tipoPersona.getDescripcion(),tipoPersona.getDescripcion()));
+		}
+		if (AccionType.ELIMINAR.equals(accionType) && index >= 0) {
+			listaTipoPersona.remove(index);
+		}
+		listaTipoPersona.addAll(listaAgregado);
+		CollectionUtil.ordenador(false, listaTipoPersona, "nombre");
+//		listaTipoPersona.get(0).setNombre(SelectItemVOSelect);
+	}
+	/**
+	 * Actualizar item.
+	 *
+	 * @param item el item
+	 * @param accionType el accion type
+	 */
+	public void actualizarItem(ItemDTO item,AccionType accionType) {
+		List<SelectItemVO> listaAgregado = new ArrayList<SelectItemVO>();
+		List<SelectItemVO> listaSelectItemVOs = listaItemSelectItemVOMap.get(item.getListaItems().getIdListaItems());
+		if (listaSelectItemVOs == null) {
+			listaSelectItemVOs = new ArrayList<SelectItemVO>();
+		}
+		itemMap.put(item.getIdItem(), item);
+		boolean existe = false;
+		int index = -1;
+		int posicion = -1;
+		for (SelectItemVO selectItemVO : listaSelectItemVOs) {
+			posicion++;
+			if (selectItemVO.getId() == null) {
+				continue;
+			}
+			Long key = Long.valueOf(selectItemVO.getId().toString());
+			if (item.getIdItem().equals(key)) {
+				selectItemVO.setNombre(item.getNombre());
+				selectItemVO.setDescripcion(item.getCodigo() + "");
+				index = posicion;
+				existe = true;
+				break;
+			}
+		}
+		if (!existe && !AccionType.ELIMINAR.equals(accionType)) {
+			listaAgregado.add(new SelectItemVO(item.getIdItem(), item.getNombre(), item.getCodigo() + ""));
+		}
+		if (AccionType.ELIMINAR.equals(accionType) && index >= 0) {
+			listaSelectItemVOs.remove(index);
+		}
+		listaSelectItemVOs.addAll(listaAgregado);
+		CollectionUtil.ordenador(false, listaSelectItemVOs, "nombre");
+		listaItemSelectItemVOMap.put(item.getListaItems().getIdListaItems(), listaSelectItemVOs);
+		//listaItemCboSelectOneItemMap.put(item.getListaItems().getIdListaItems(), Utilidades.obtenerSelectItemVO(item.getListaItems().getIdListaItems(), listaItemSelectItemVOMap));
+		if (ListaItemType.LENGUAJE.getKey().equals(item.getListaItems().getIdListaItems())) {
+			generarListaLenguajeSelect();
+		}
+	}
+	
+	/**
+	 * Actualizar procedencia.
+	 *
+	 * @param procedencia el procedencia
+	 * @param accionType el accion type
+	 */
+	public void actualizarProcedencia(ProcedenciaDTO procedencia,AccionType accionType) {
+		List<SelectItemVO> listaAgregado = new ArrayList<SelectItemVO>();
+		boolean existe = false;
+		List<SelectItemVO> listaProcedencia = this.listaSelectItemVOMap.get("procedencia");
+		if (listaProcedencia == null || listaProcedencia.size() == 0) {
+			listaProcedencia = new ArrayList<SelectItemVO>();
+			//listaProcedencia.add(Utilidades.darSelectItemVOVacio());
+		}
+//		String SelectItemVOSelect = listaProcedencia.get(0).getnombre();
+//	    listaProcedencia.get(0).setNombre("");
+	    int index = -1;
+		int posicion = -1;
+		for (SelectItemVO selectItemVO : listaProcedencia) {
+			posicion++;
+			if (selectItemVO.getId() == null) {
+				continue;
+			}
+			String key = selectItemVO.getId().toString();
+			if (procedencia.getIdProcedencia().equals(key)) {
+				selectItemVO.setNombre(procedencia.getDescripcion());
+				selectItemVO.setDescripcion(procedencia.getDescripcion());
+				index = posicion;
+				existe = true;
+				break;
+			}
+		}
+		if (!existe && !AccionType.ELIMINAR.equals(accionType)) {
+			listaAgregado.add(new SelectItemVO(procedencia.getIdProcedencia(), procedencia.getDescripcion(), procedencia.getDescripcion()));
+		}
+		if (AccionType.ELIMINAR.equals(accionType) && index >= 0) {
+			listaProcedencia.remove(index);
+		}
+		listaProcedencia.addAll(listaAgregado);
+		CollectionUtil.ordenador(false, listaProcedencia, "nombre");
+//		listaProcedencia.get(0).setNombre(SelectItemVOSelect);
+	}
+	
+	/**
+	 * Actualizar escuela.
+	 *
+	 * @param escuela el escuela
+	 * @param accionType el accion type
+	 */
+	public void actualizarEscuela(EscuelaDTO escuela,AccionType accionType) {
+		List<SelectItemVO> listaAgregado = new ArrayList<SelectItemVO>();
+		escuelaNroCicloMap.put(escuela.getIdEscuela(), escuela.getNroCiclo());
+		listaEscuelaMap.put(escuela.getIdEscuela(), escuela);
+		List<SelectItemVO> listaEscuela = this.listaSelectItemVOMap.get("escuela");
+		if (listaEscuela == null || listaEscuela.size() == 0) {
+			listaEscuela = new ArrayList<SelectItemVO>();
+			//listaEscuela.add(Utilidades.darSelectItemVOVacio());
+		}
+//		String SelectItemVOSelect = listaEscuela.get(0).getnombre();
+//		listaEscuela.get(0).setNombre("");
+		boolean existe = false;
+		int index = -1;
+		int posicion = -1;
+		for (SelectItemVO SelectItemVO : listaEscuela) {
+			posicion++;
+			if (SelectItemVO.getId() == null) {
+				continue;
+			}
+			String key = SelectItemVO.getId().toString();
+			if (escuela.getIdEscuela().equals(key)) {
+				SelectItemVO.setNombre(escuela.getNombre());
+				SelectItemVO.setDescripcion(escuela.getCodigo() + "");
+				index = posicion;
+				existe = true;
+				break;
+			}
+		}
+		if (!existe && !AccionType.ELIMINAR.equals(accionType)) {
+			listaAgregado.add(new SelectItemVO(escuela.getIdEscuela(), escuela.getNombre(), escuela.getCodigo() + ""));
+		}
+		if (AccionType.ELIMINAR.equals(accionType) && index >= 0) {
+			listaEscuela.remove(index);		
+			listaEscuelaMap.remove(escuela.getIdEscuela());
+		}
+		listaEscuela.addAll(listaAgregado);
+		CollectionUtil.ordenador(false, listaEscuela, "nombre");
+//		listaEscuela.get(0).setNombre(SelectItemVOSelect);
+	}
+	
+	/**
+	 * Obtener item.
+	 *
+	 * @param id el id
+	 * @return the item
+	 */
+	public ItemDTO obtenerItem(Long id) {
+		return itemMap.get(id);
+	}
+	
+	public ItemDTO obtenerItemByCodigo(String codigo) {
+		return itemByCodigoMap.get(codigo);
+	}
+	
+	/**
+	 * Obtener ubigeo by id.
+	 *
+	 * @param id el id
+	 * @return the ubigeo
+	 */
+	public UbigeoDTO obtenerUbigeoById(String id) {
+		return ubigeoAllMap.get(id);
+	}
+	/**
+	 * Obtener selec cbo item.
+	 *
+	 * @param itemType el item type
+	 * @return the list
+	 */
+	public List<SelectItemVO> obtenerSelecCboItem(ListaItemType itemType) {
+		return listaItemSelectItemVOMap.get(itemType.getKey());
+	}
+	
+	public List<SelectItemVO> obtenerSelecCboItem(Long idListaItem) {
+		return listaItemSelectItemVOMap.get(idListaItem);
+	}
+	
+	public List<SelectItemVO> obtenerSeleItemVOByKey(String keySelectItemVO) {
+		return listaSelectItemVOMap.get(keySelectItemVO);
+	}
+	
+	/**
+	 * Obtener selec cbo item.
+	 *
+	 * @param itemType el item type
+	 * @param id el id
+	 * @return the list
+	 */
+	public List<SelectItemVO> obtenerSelecCboItem(ListaItemType itemType, Object id) {
+		if (ListaItemType.CICLO.equals(itemType)) {
+			List<SelectItemVO> resultado = new ArrayList<SelectItemVO>();
+			//resultado.add(Utilidades.darSelectItemVOVacio());
+			List<SelectItemVO> resultadoTemp = listaItemSelectItemVOMap.get(itemType.getKey());
+			Integer nroCiclo = escuelaNroCicloMap.get(id.toString());
+			for (SelectItemVO selectItemVO : resultadoTemp) {
+				if (StringUtils.isNotNullOrBlank(selectItemVO.getDescripcion())) {
+					Integer codigo = Integer.parseInt(selectItemVO.getDescripcion());
+					if (codigo <= nroCiclo ) {
+						resultado.add(selectItemVO);
+					}
+					
+				}
+			}
+			return resultado;
+		}
+		return listaItemSelectItemVOMap.get(itemType.getKey());
+	}
+	
+	/**
+	 * Obtener selec rb item.
+	 *
+	 * @param itemType el item type
+	 * @return the list
+	 */
+	public List<SelectItemVO> obtenerSelecRbItem(ListaItemType itemType) {
+		return listaItemSelectItemVOMap.get(itemType.getKey());
+	}  
+	
+	/**
+	 * Obtener selec ubigeo dependencia.
+	 *
+	 * @param id el id
+	 * @return the list
+	 */
+	public List<SelectItemVO> obtenerSelecUbigeoDependencia(String id) {
+		return ubigeoMap.get(id);
+	}  
+
+
+	public Map<String, EscuelaDTO> getListaEscuelaMap() {
+		return listaEscuelaMap;
+	}
+	
+	/**
+	 * Comprueba si es flag cargo listado.
+	 *
+	 * @return true, si es flag cargo listado
+	 */
+	public boolean isFlagCargoListado() {
+		return flagCargoListado;
+	}
+
+	/**
+	 * Establece el flag cargo listado.
+	 *
+	 * @param flagCargoListado el new flag cargo listado
+	 */
+	public void setFlagCargoListado(boolean flagCargoListado) {
+		this.flagCargoListado = flagCargoListado;
+	}
+
+	public List<ItemDTO> converItemDTO(List<SelectItemVO> listaSelectItemVO) {
+		List<ItemDTO> resultado = new ArrayList<ItemDTO>();
+		for (SelectItemVO selectItemVO : listaSelectItemVO) {
+			Long id = Long.valueOf(selectItemVO.getId() + "");
+			resultado.add(obtenerItem(id));			
+		}
+		return resultado;
+	}
+}

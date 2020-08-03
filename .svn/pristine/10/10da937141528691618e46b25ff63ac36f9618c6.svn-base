@@ -1,0 +1,104 @@
+package pe.com.edu.siaa.core.ejb.dao.admision.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.persistence.Query;
+
+import pe.com.edu.siaa.core.ejb.dao.admision.local.TipoSectorDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericAcademicoDAOImpl;
+import pe.com.edu.siaa.core.model.dto.admision.TipoSectorDTO;
+import pe.com.edu.siaa.core.model.jpa.admision.TipoSector;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+
+/**
+ * La Class TipoSectorDaoImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 19:53:37 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+public class TipoSectorDaoImpl extends  GenericAcademicoDAOImpl<String, TipoSector> implements TipoSectorDaoLocal  {
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.TipoSectorDaoLocal#listarTipoSector(pe.com.edu.siaa.core.model.jpa.seguridad.TipoSector)
+     */  
+    @Override	 
+    public List<TipoSector> listarTipoSector(TipoSectorDTO tipoSector) {
+        Query query = generarQueryListaTipoSector(tipoSector, false);
+        query.setFirstResult(tipoSector.getStartRow());
+        query.setMaxResults(tipoSector.getOffset());
+        return query.getResultList();
+    }   
+   
+    /**
+     * Generar query lista TipoSector.
+     *
+     * @param TipoSectorDTO el tipoSector
+     * @param esContador el es contador
+     * @return the query
+     */
+    private Query generarQueryListaTipoSector(TipoSectorDTO tipoSector, boolean esContador) {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        if (esContador) {
+            jpaql.append(" select count(o.idTipoSector) from TipoSector o where 1=1 ");
+        } else {
+            jpaql.append(" select o from TipoSector o where 1=1 ");           
+        }
+		if (!StringUtils.isNullOrEmpty(tipoSector.getSearch())) {
+	          jpaql.append(" and upper(o.idTipoSector) like :search ");
+	          parametros.put("search", "%" + tipoSector.getSearch().toUpperCase() + "%");
+	    } else {
+			if (!StringUtils.isNullOrEmpty(tipoSector.getDescripcion())) {
+				jpaql.append(" and upper(o.descripcion) like :descripcion ");
+				parametros.put("descripcion", "%" + tipoSector.getDescripcion().toUpperCase() + "%");
+			}
+		}
+        if (!esContador) {
+            //jpaql.append(" ORDER BY 1 ");
+        }
+        Query query = createQuery(jpaql.toString(), parametros);
+        return query;
+    }
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.TipoSectorDaoLocal#contarListar{entity.getClassName()}(pe.com.edu.siaa.core.model.jpa.seguridad.TipoSectorDTO)
+     */
+	@Override
+    public int contarListarTipoSector(TipoSectorDTO tipoSector) {
+        int resultado = 0;
+        try {
+            //StringBuilder jpaql = new StringBuilder();
+            Query query = generarQueryListaTipoSector(tipoSector, true);
+            resultado = ((Long) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            resultado = 0;
+        }
+        return resultado;
+    }
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.TipoSectorDaoLocal#generarIdTipoSector()
+     */
+	 @Override
+    public String generarIdTipoSector() {
+        String resultado = "1";
+        Query query = createQuery("select max(o.idTipoSector) from TipoSector o", null);
+        List<Object> listLong =  query.getResultList();
+        if (listLong != null && listLong.size() > 0 && listLong.get(0) != null)  {
+            Long ultimoIdGenerado = Long.valueOf(listLong.get(0).toString());
+            if (!StringUtils.isNullOrEmpty(ultimoIdGenerado)) {
+                resultado = resultado + ultimoIdGenerado;
+            }
+        }
+        return resultado;
+    }
+   
+}

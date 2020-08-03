@@ -1,0 +1,167 @@
+package pe.com.builderp.core.escalafon.ejb.service.local;
+
+import java.util.List;
+
+import javax.ejb.Local;
+
+import pe.com.builderp.core.escalafon.model.dto.ContratoAcademicoDTO;
+import pe.com.builderp.core.escalafon.model.dto.FormacionProfesionalDTO;
+import pe.com.builderp.core.escalafon.model.dto.ProyectoInvestigacionDTO;
+import pe.com.builderp.core.escalafon.model.dto.ProyectoInvestigacionDifusionDTO;
+import pe.com.builderp.core.escalafon.model.dto.ProyectoInvestigacionEquipoDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+
+/**
+ * La Class EscalafonServiceLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Sun Dec 31 00:35:58 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface EscalafonServiceLocal{
+	/**
+	 * Controlador accion contrato academico.
+	 *
+	 * @param contratoAcademico el contrato academico
+	 * @param accionType el accion type
+	 * @return the contrato academico
+	 * @throws Exception the exception
+	 */
+	ContratoAcademicoDTO controladorAccionContratoAcademico(ContratoAcademicoDTO contratoAcademico,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar contrato academico.
+	 *
+	 * @param contratoAcademico el contrato academico
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<ContratoAcademicoDTO> listarContratoAcademico(ContratoAcademicoDTO contratoAcademico) throws Exception;
+	
+	/**
+	 * contar lista contrato academico.
+	 *
+	 * @param contratoAcademico el contrato academico
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarContratoAcademico(ContratoAcademicoDTO contratoAcademico);
+	
+	/**
+	 * Controlador accion formacion profesional.
+	 *
+	 * @param formacionProfesional el formacion profesional
+	 * @param accionType el accion type
+	 * @return the formacion profesional
+	 * @throws Exception the exception
+	 */
+	FormacionProfesionalDTO controladorAccionFormacionProfesional(FormacionProfesionalDTO formacionProfesional,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar formacion profesional.
+	 *
+	 * @param formacionProfesional el formacion profesional
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<FormacionProfesionalDTO> listarFormacionProfesional(FormacionProfesionalDTO formacionProfesional) throws Exception;
+	
+	/**
+	 * contar lista formacion profesional.
+	 *
+	 * @param formacionProfesional el formacion profesional
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarFormacionProfesional(FormacionProfesionalDTO formacionProfesional);
+	
+	/**
+	 * Controlador accion proyecto investigacion.
+	 *
+	 * @param proyectoInvestigacion el proyecto investigacion
+	 * @param accionType el accion type
+	 * @return the proyecto investigacion
+	 * @throws Exception the exception
+	 */
+	ProyectoInvestigacionDTO controladorAccionProyectoInvestigacion(ProyectoInvestigacionDTO proyectoInvestigacion,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar proyecto investigacion.
+	 *
+	 * @param proyectoInvestigacion el proyecto investigacion
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<ProyectoInvestigacionDTO> listarProyectoInvestigacion(ProyectoInvestigacionDTO proyectoInvestigacion) throws Exception;
+	
+	/**
+	 * contar lista proyecto investigacion.
+	 *
+	 * @param proyectoInvestigacion el proyecto investigacion
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarProyectoInvestigacion(ProyectoInvestigacionDTO proyectoInvestigacion);
+	
+	/**
+	 * Controlador accion proyecto investigacion difusion.
+	 *
+	 * @param proyectoInvestigacionDifusion el proyecto investigacion difusion
+	 * @param accionType el accion type
+	 * @return the proyecto investigacion difusion
+	 * @throws Exception the exception
+	 */
+	ProyectoInvestigacionDifusionDTO controladorAccionProyectoInvestigacionDifusion(ProyectoInvestigacionDifusionDTO proyectoInvestigacionDifusion,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar proyecto investigacion difusion.
+	 *
+	 * @param proyectoInvestigacionDifusion el proyecto investigacion difusion
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<ProyectoInvestigacionDifusionDTO> listarProyectoInvestigacionDifusion(ProyectoInvestigacionDifusionDTO proyectoInvestigacionDifusion) throws Exception;
+	
+	/**
+	 * contar lista proyecto investigacion difusion.
+	 *
+	 * @param proyectoInvestigacionDifusion el proyecto investigacion difusion
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarProyectoInvestigacionDifusion(ProyectoInvestigacionDifusionDTO proyectoInvestigacionDifusion);
+	
+	/**
+	 * Controlador accion proyecto investigacion equipo.
+	 *
+	 * @param proyectoInvestigacionEquipo el proyecto investigacion equipo
+	 * @param accionType el accion type
+	 * @return the proyecto investigacion equipo
+	 * @throws Exception the exception
+	 */
+	ProyectoInvestigacionEquipoDTO controladorAccionProyectoInvestigacionEquipo(ProyectoInvestigacionEquipoDTO proyectoInvestigacionEquipo,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar proyecto investigacion equipo.
+	 *
+	 * @param proyectoInvestigacionEquipo el proyecto investigacion equipo
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<ProyectoInvestigacionEquipoDTO> listarProyectoInvestigacionEquipo(ProyectoInvestigacionEquipoDTO proyectoInvestigacionEquipo) throws Exception;
+	
+	/**
+	 * contar lista proyecto investigacion equipo.
+	 *
+	 * @param proyectoInvestigacionEquipo el proyecto investigacion equipo
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarProyectoInvestigacionEquipo(ProyectoInvestigacionEquipoDTO proyectoInvestigacionEquipo);
+	
+}

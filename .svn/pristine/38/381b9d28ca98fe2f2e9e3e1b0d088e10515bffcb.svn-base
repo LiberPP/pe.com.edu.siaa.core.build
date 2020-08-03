@@ -1,0 +1,117 @@
+package pe.com.edu.siaa.core.ejb.service.rest.matricula.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.matricula.local.MatriculaServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.matricula.AsignaPlanEstudioDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class AsignaPlanEstudioRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:38 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/asignaPlanEstudioRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class AsignaPlanEstudioRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient MatriculaServiceLocal matriculaServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<AsignaPlanEstudioDTO> crear(AsignaPlanEstudioDTO asignaPlanEstudio) throws Exception {
+		return controladorAccion(asignaPlanEstudio,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<AsignaPlanEstudioDTO> modificar(AsignaPlanEstudioDTO asignaPlanEstudio) throws Exception {
+		return controladorAccion(asignaPlanEstudio,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<AsignaPlanEstudioDTO> eliminar(@PathParam("id") String idAsignaPlanestudio) throws Exception {
+		AsignaPlanEstudioDTO asignaPlanEstudio = new AsignaPlanEstudioDTO();
+		asignaPlanEstudio.setIdAsignaPlanestudio(idAsignaPlanestudio);		
+		return controladorAccion(asignaPlanEstudio,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<AsignaPlanEstudioDTO> controladorAccion(AsignaPlanEstudioDTO asignaPlanEstudio, AccionType accionType){
+		ResultadoRestVO<AsignaPlanEstudioDTO> resultado = new ResultadoRestVO<AsignaPlanEstudioDTO>();
+		 try {
+    		resultado.setObjetoResultado(matriculaServiceLocal.controladorAccionAsignaPlanEstudio(asignaPlanEstudio,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<AsignaPlanEstudioDTO> finById(@PathParam("id") String idAsignaPlanestudio) throws Exception {
+		AsignaPlanEstudioDTO asignaPlanEstudio = new AsignaPlanEstudioDTO();
+		asignaPlanEstudio.setIdAsignaPlanestudio(idAsignaPlanestudio);
+		return controladorAccion(asignaPlanEstudio,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<AsignaPlanEstudioDTO> listarAsignaPlanEstudio(@Context UriInfo info){
+		ResultadoRestVO<AsignaPlanEstudioDTO> resultado = new ResultadoRestVO<AsignaPlanEstudioDTO>();
+		AsignaPlanEstudioDTO asignaPlanEstudio = transferUriInfo(info);
+		 try {
+    		resultado.setListaResultado(matriculaServiceLocal.listarAsignaPlanEstudio(asignaPlanEstudio));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<Integer> contarListarAsignaPlanEstudio(@Context UriInfo info){
+		ResultadoRestVO<Integer> resultado = new ResultadoRestVO<Integer>();
+		AsignaPlanEstudioDTO asignaPlanEstudio = transferUriInfo(info);
+		 try {
+    		resultado.setObjetoResultado(matriculaServiceLocal.contarListarAsignaPlanEstudio(asignaPlanEstudio));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<AsignaPlanEstudioDTO> inicializarAsignaPlanEstudio(@Context UriInfo info) throws Exception {
+	     AsignaPlanEstudioDTO asignaPlanEstudio = transferUriInfo(info);
+		 ResultadoRestVO<AsignaPlanEstudioDTO> resultado = new ResultadoRestVO<AsignaPlanEstudioDTO>();
+		 try {
+    		resultado.setObjetoResultado(asignaPlanEstudio);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private AsignaPlanEstudioDTO transferUriInfo(@Context UriInfo info) {
+		AsignaPlanEstudioDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,AsignaPlanEstudioDTO.class);
+		return resultado;
+	}
+}

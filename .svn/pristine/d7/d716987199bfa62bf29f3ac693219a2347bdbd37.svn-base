@@ -1,0 +1,120 @@
+package pe.com.edu.siaa.core.ejb.service.rest.encuesta.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.encuesta.local.EncuestaServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.encuesta.EncuestaCampoDetDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class EncuestaCampoDetRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Fri Sep 08 16:33:13 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/encuestaCampoDetRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class EncuestaCampoDetRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient EncuestaServiceLocal encuestaServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<EncuestaCampoDetDTO> crear(EncuestaCampoDetDTO encuestaCampoDet) throws Exception {
+		return controladorAccion(encuestaCampoDet,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<EncuestaCampoDetDTO> modificar(EncuestaCampoDetDTO encuestaCampoDet) throws Exception {
+		return controladorAccion(encuestaCampoDet,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<EncuestaCampoDetDTO> eliminar(@PathParam("id") String idEncuestaCampoDet) throws Exception {
+		EncuestaCampoDetDTO encuestaCampoDet = new EncuestaCampoDetDTO();
+		encuestaCampoDet.setIdEncuestaCampoDet(idEncuestaCampoDet);		
+		return controladorAccion(encuestaCampoDet,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<EncuestaCampoDetDTO> controladorAccion(EncuestaCampoDetDTO encuestaCampoDet, AccionType accionType){
+		ResultadoRestVO<EncuestaCampoDetDTO> resultado = new ResultadoRestVO<EncuestaCampoDetDTO>();
+		 try {
+    		resultado.setObjetoResultado(encuestaServiceLocal.controladorAccionEncuestaCampoDet(encuestaCampoDet,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<EncuestaCampoDetDTO> finById(@PathParam("id") String idEncuestaCampoDet) throws Exception {
+		EncuestaCampoDetDTO encuestaCampoDet = new EncuestaCampoDetDTO();
+		encuestaCampoDet.setIdEncuestaCampoDet(idEncuestaCampoDet);
+		return controladorAccion(encuestaCampoDet,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<EncuestaCampoDetDTO> listarEncuestaCampoDet(@Context UriInfo info){
+		ResultadoRestVO<EncuestaCampoDetDTO> resultado = new ResultadoRestVO<EncuestaCampoDetDTO>();
+		EncuestaCampoDetDTO encuestaCampoDet = transferUriInfo(info);
+		 try {
+			resultado.setListaResultado(encuestaServiceLocal.listarEncuestaCampoDet(encuestaCampoDet));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<EncuestaCampoDetDTO> contarEncuestaCampoDet(@Context UriInfo info){
+		ResultadoRestVO<EncuestaCampoDetDTO> resultado = new ResultadoRestVO<EncuestaCampoDetDTO>();
+		EncuestaCampoDetDTO encuestaCampoDet = transferUriInfo(info);
+		 try {
+			 resultado.setContador(encuestaServiceLocal.contarListarEncuestaCampoDet(encuestaCampoDet));
+			 if (resultado.isData()) {
+				resultado.setListaResultado(encuestaServiceLocal.listarEncuestaCampoDet(encuestaCampoDet));
+			 }
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<EncuestaCampoDetDTO> inicializarEncuestaCampoDet(@Context UriInfo info) throws Exception {
+	     EncuestaCampoDetDTO encuestaCampoDet = transferUriInfo(info);
+		 ResultadoRestVO<EncuestaCampoDetDTO> resultado = new ResultadoRestVO<EncuestaCampoDetDTO>();
+		 try {
+    		resultado.setObjetoResultado(encuestaCampoDet);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private EncuestaCampoDetDTO transferUriInfo(@Context UriInfo info) {
+		EncuestaCampoDetDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,EncuestaCampoDetDTO.class);
+		return resultado;
+	}
+}

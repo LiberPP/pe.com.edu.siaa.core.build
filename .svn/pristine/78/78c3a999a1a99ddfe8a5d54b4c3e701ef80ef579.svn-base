@@ -1,0 +1,120 @@
+package pe.com.edu.siaa.core.ejb.service.rest.matricula.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.matricula.local.MatriculaServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.matricula.ConsejeroDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class ConsejeroRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Wed Dec 27 12:00:42 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/consejeroRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class ConsejeroRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient MatriculaServiceLocal matriculaServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<ConsejeroDTO> crear(ConsejeroDTO consejero) throws Exception {
+		return controladorAccion(consejero,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<ConsejeroDTO> modificar(ConsejeroDTO consejero) throws Exception {
+		return controladorAccion(consejero,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<ConsejeroDTO> eliminar(@PathParam("id") String idConsejero) throws Exception {
+		ConsejeroDTO consejero = new ConsejeroDTO();
+		consejero.setIdConsejero(idConsejero);		
+		return controladorAccion(consejero,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<ConsejeroDTO> controladorAccion(ConsejeroDTO consejero, AccionType accionType){
+		ResultadoRestVO<ConsejeroDTO> resultado = new ResultadoRestVO<ConsejeroDTO>();
+		 try {
+    		resultado.setObjetoResultado(matriculaServiceLocal.controladorAccionConsejero(consejero,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<ConsejeroDTO> finById(@PathParam("id") String idConsejero) throws Exception {
+		ConsejeroDTO consejero = new ConsejeroDTO();
+		consejero.setIdConsejero(idConsejero);
+		return controladorAccion(consejero,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<ConsejeroDTO> listarConsejero(@Context UriInfo info){
+		ResultadoRestVO<ConsejeroDTO> resultado = new ResultadoRestVO<ConsejeroDTO>();
+		ConsejeroDTO consejero = transferUriInfo(info);
+		 try {
+			resultado.setListaResultado(matriculaServiceLocal.listarConsejero(consejero));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<ConsejeroDTO> contarConsejero(@Context UriInfo info){
+		ResultadoRestVO<ConsejeroDTO> resultado = new ResultadoRestVO<ConsejeroDTO>();
+		ConsejeroDTO consejero = transferUriInfo(info);
+		 try {
+			 resultado.setContador(matriculaServiceLocal.contarListarConsejero(consejero));
+			 if (resultado.isData()) {
+				resultado.setListaResultado(matriculaServiceLocal.listarConsejero(consejero));
+			 }
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<ConsejeroDTO> inicializarConsejero(@Context UriInfo info) throws Exception {
+	     ConsejeroDTO consejero = transferUriInfo(info);
+		 ResultadoRestVO<ConsejeroDTO> resultado = new ResultadoRestVO<ConsejeroDTO>();
+		 try {
+    		resultado.setObjetoResultado(consejero);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private ConsejeroDTO transferUriInfo(@Context UriInfo info) {
+		ConsejeroDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,ConsejeroDTO.class);
+		return resultado;
+	}
+}

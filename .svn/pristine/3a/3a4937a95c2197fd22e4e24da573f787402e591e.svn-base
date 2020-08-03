@@ -1,0 +1,128 @@
+package pe.com.edu.siaa.core.ejb.dao.encuesta.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.persistence.Query;
+
+import pe.com.edu.siaa.core.ejb.dao.encuesta.local.EncuestaDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericAcademicoDAOImpl;
+import pe.com.edu.siaa.core.ejb.factory.CollectionUtil;
+import pe.com.edu.siaa.core.ejb.util.jms.UUIDUtil;
+import pe.com.edu.siaa.core.model.dto.encuesta.EncuestaDTO;
+import pe.com.edu.siaa.core.model.jpa.encuesta.Encuesta;
+import pe.com.edu.siaa.core.model.util.ObjectUtil;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+
+/**
+ * La Class EncuestaDaoImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Fri Sep 08 19:44:51 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+public class EncuestaDaoImpl extends  GenericAcademicoDAOImpl<String, Encuesta> implements EncuestaDaoLocal  {
+
+	/* (non-Javadoc)
+     * @see pe.com.conta.core.ejb.dao.encuesta.local.EncuestaDaoLocal#listarEncuesta(pe.com.conta.core.model.jpa.encuesta.Encuesta)
+     */
+    @Override
+    public List<Encuesta> listarEncuesta(EncuestaDTO encuesta) throws Exception {
+        Query query = generarQueryListaEncuesta(encuesta, false);
+        query.setFirstResult(encuesta.getStartRow());
+        query.setMaxResults(encuesta.getOffset());
+        return query.getResultList();
+    }  
+    
+    @Override
+    public Encuesta obtenerEncuesta(String idEncuesta) throws Exception {
+    	 Map<String, Object> parametros = new HashMap<String, Object>();
+         StringBuilder jpaql = new StringBuilder();         
+         jpaql.append(" select o from Encuesta o left join fetch o.tema where 1=1 ");                             
+         jpaql.append(" and o.idEncuesta = :idEncuesta ");
+         parametros.put("idEncuesta",idEncuesta);
+         Query query = createQuery(jpaql.toString(), parametros);
+         List<Encuesta> resultTemp = query.getResultList();
+         if (!CollectionUtil.isEmpty(resultTemp)) {
+        	 return resultTemp.get(0);
+         }
+         return null;
+    }   
+   
+   
+    /**
+     * Generar query lista Encuesta.
+     *
+     * @param EncuestaDTO el encuesta
+     * @param esContador el es contador
+     * @return the query
+     */
+    private Query generarQueryListaEncuesta(EncuestaDTO encuesta, boolean esContador) throws Exception {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        if (esContador) {
+            jpaql.append(" select count(o.idEncuesta) from Encuesta o where 1=1 ");
+        } else {
+            jpaql.append(" select o from Encuesta o where 1=1 ");           
+        }
+        jpaql.append(" and o.tema.idTema = :idTema ");
+        parametros.put("idTema",ObjectUtil.objectToLong(encuesta.getId()));
+		if (!StringUtils.isNullOrEmpty(encuesta.getSearch())) {
+	          jpaql.append(" and upper(o.idEncuesta) like :search ");
+	          parametros.put("search", "%" + encuesta.getSearch().toUpperCase() + "%");
+	    } else {
+			if (!StringUtils.isNullOrEmpty(encuesta.getFechaInicio())) {
+				jpaql.append(" and o.fechaInicio = :fechaInicio ");
+				parametros.put("fechaInicio", encuesta.getFechaInicio());
+			}
+			if (!StringUtils.isNullOrEmpty(encuesta.getFechaTermino())) {
+				jpaql.append(" and o.fechaTermino = :fechaTermino ");
+				parametros.put("fechaTermino", encuesta.getFechaTermino());
+			}
+			if (!StringUtils.isNullOrEmpty(encuesta.getEstado())) {
+				jpaql.append(" and upper(o.estado) like :estado ");
+				parametros.put("estado", "%" + encuesta.getEstado().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmptyNumeric(encuesta.getRango())) {
+				jpaql.append(" and o.rango = :rango ");
+				parametros.put("rango", encuesta.getRango());
+			}
+		}
+        if (!esContador) {
+            //jpaql.append(" ORDER BY 1 ");
+        }
+        Query query = createQuery(jpaql.toString(), parametros);
+        return query;
+    }
+
+    /* (non-Javadoc)
+     * @see pe.com.conta.core.ejb.dao.encuesta.local.EncuestaDaoLocal#contarListar{entity.getClassName()}(pe.com.conta.core.model.jpa.encuesta.EncuestaDTO)
+     */
+    @Override
+    public int contarListarEncuesta(EncuestaDTO encuesta) {
+        int resultado = 0;
+        try {
+            //StringBuilder jpaql = new StringBuilder();
+            Query query = generarQueryListaEncuesta(encuesta, true);
+            resultado = ((Long) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            resultado = 0;
+        }
+        return resultado;
+    }
+    /* (non-Javadoc)
+     * @see pe.com.conta.core.ejb.dao.encuesta.local.EncuestaDaoLocal#generarIdEncuesta()
+     */
+    @Override
+    public String generarIdEncuesta() throws Exception {
+        return UUIDUtil.generarElementUUID();
+    }
+   
+}

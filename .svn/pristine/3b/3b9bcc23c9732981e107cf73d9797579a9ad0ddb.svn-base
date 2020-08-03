@@ -1,0 +1,191 @@
+package pe.com.edu.siaa.core.model.dto.encuesta;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import pe.com.edu.siaa.core.model.dto.BasePaginator;
+
+ 
+
+/**
+ * La Class AlternativaDTO.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 1.0, Fri Sep 08 19:59:05 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+public class AlternativaDTO extends BasePaginator implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id alternativa. */
+    private String idAlternativa;
+   
+    /** El cuestionario. */
+    private CuestionarioDTO cuestionario;
+   
+    /** El opcion alternativa. */
+    private OpcionAlternativaDTO opcionAlternativa;
+   
+    /** El estado. */
+    private String estado;
+   
+    /** El alternativa encuesta campo det list. */
+    private List<EncuestaCampoDetDTO> alternativaEncuestaCampoDetList = new ArrayList<EncuestaCampoDetDTO>();
+   
+    /**
+     * Instancia un nuevo alternativaDTO.
+     */
+    public AlternativaDTO() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo alternativaDTO.
+     *
+     * @param idAlternativa el id alternativa
+     * @param cuestionario el cuestionario
+     * @param opcionAlternativa el opcion alternativa
+     * @param estado el estado
+     */
+    public AlternativaDTO(String idAlternativa, CuestionarioDTO cuestionario,OpcionAlternativaDTO opcionAlternativa,String estado ) {
+        super();
+        this.idAlternativa = idAlternativa;
+        this.cuestionario = cuestionario;
+        this.opcionAlternativa = opcionAlternativa;
+        this.estado = estado;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id alternativa.
+     *
+     * @return id alternativa
+     */
+     public String getIdAlternativa() {
+        return this.idAlternativa;
+    }
+    /**
+     * Establece el id alternativa.
+     *
+     * @param idAlternativa el new id alternativa
+     */
+    public void setIdAlternativa(String idAlternativa) {
+        this.idAlternativa = idAlternativa;
+    }
+    /**
+     * Obtiene cuestionario.
+     *
+     * @return cuestionario
+     */
+     public CuestionarioDTO getCuestionario() {
+        return this.cuestionario;
+    }
+    /**
+     * Establece el cuestionario.
+     *
+     * @param cuestionario el new cuestionario
+     */
+    public void setCuestionario(CuestionarioDTO cuestionario) {
+        this.cuestionario = cuestionario;
+    }
+    /**
+     * Obtiene opcion alternativa.
+     *
+     * @return opcion alternativa
+     */
+     public OpcionAlternativaDTO getOpcionAlternativa() {
+        return this.opcionAlternativa;
+    }
+    /**
+     * Establece el opcion alternativa.
+     *
+     * @param opcionAlternativa el new opcion alternativa
+     */
+    public void setOpcionAlternativa(OpcionAlternativaDTO opcionAlternativa) {
+        this.opcionAlternativa = opcionAlternativa;
+    }
+    /**
+     * Obtiene estado.
+     *
+     * @return estado
+     */
+     public String getEstado() {
+        return this.estado;
+    }
+    /**
+     * Establece el estado.
+     *
+     * @param estado el new estado
+     */
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+    /**
+     * Establece el alternativa encuesta campo det list.
+     *
+     * @param alternativaEncuestaCampoDetList el new alternativa encuesta campo det list
+     */
+    public List<EncuestaCampoDetDTO> getAlternativaEncuestaCampoDetList(){
+        return this.alternativaEncuestaCampoDetList;
+    }
+    /**
+     * Establece el alternativa list.
+     *
+     * @param alternativaList el new alternativa list
+     */
+    public void setAlternativaEncuestaCampoDetList(List<EncuestaCampoDetDTO> alternativaEncuestaCampoDetList) {
+        this.alternativaEncuestaCampoDetList = alternativaEncuestaCampoDetList;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idAlternativa == null) ? 0 : idAlternativa.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        AlternativaDTO other = (AlternativaDTO) obj;
+        if (idAlternativa == null) {
+            if (other.idAlternativa != null) {
+                return false;
+            }
+        } else if (!idAlternativa.equals(other.idAlternativa)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "AlternativaDTO [idAlternativa=" + idAlternativa + "]";
+    }
+   
+}

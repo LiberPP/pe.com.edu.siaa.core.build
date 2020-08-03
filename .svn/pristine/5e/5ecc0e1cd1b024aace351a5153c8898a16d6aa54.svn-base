@@ -1,0 +1,276 @@
+package pe.com.edu.siaa.core.model.jpa.encuesta;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import pe.com.edu.siaa.core.model.util.ConfiguracionEntityManagerUtil;
+
+/**
+ * La Class Encuesta.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Fri Sep 08 19:33:18 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Entity
+@Table(name = "Encuesta", schema = ConfiguracionEntityManagerUtil.ESQUEMA_ENCUESTA)
+public class Encuesta implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id encuesta. */
+    @Id
+    @Column(name = "idEncuesta" , length = 32)
+    private String idEncuesta;
+   
+    /** El tema. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idTema", referencedColumnName = "idTema")
+    private Tema tema;
+   
+    /** El fecha inicio. */
+    @Temporal( TemporalType.TIMESTAMP)
+    @Column(name = "fechaInicio")
+    private Date fechaInicio;
+   
+    /** El fecha termino. */
+    @Temporal( TemporalType.TIMESTAMP)
+    @Column(name = "fechaTermino")
+    private Date fechaTermino;
+   
+    /** El estado. */
+    @Column(name = "estado" , length = 1)
+    private String estado;
+   
+    /** El rango. */
+    @Column(name = "rango" , length = 18)
+    private Long rango;
+   
+    /** El encuesta cuestionario list. */
+    @OneToMany(mappedBy = "encuesta", fetch = FetchType.LAZY)
+    private List<Cuestionario> encuestaCuestionarioList = new ArrayList<Cuestionario>();
+    
+    /** El encuesta encuesta campo list. */
+    @OneToMany(mappedBy = "encuesta", fetch = FetchType.LAZY)
+    private List<EncuestaCampo> encuestaEncuestaCampoList = new ArrayList<EncuestaCampo>();
+    
+    /**
+     * Instancia un nuevo encuesta.
+     */
+    public Encuesta() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo encuesta.
+     *
+     * @param idEncuesta el id encuesta
+     * @param tema el tema
+     * @param fechaInicio el fecha inicio
+     * @param fechaTermino el fecha termino
+     * @param estado el estado
+     * @param rango el rango
+     */
+    public Encuesta(String idEncuesta, Tema tema,Date fechaInicio, Date fechaTermino, String estado, Long rango ) {
+        super();
+        this.idEncuesta = idEncuesta;
+        this.tema = tema;
+        this.fechaInicio = fechaInicio;
+        this.fechaTermino = fechaTermino;
+        this.estado = estado;
+        this.rango = rango;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id encuesta.
+     *
+     * @return id encuesta
+     */
+     public String getIdEncuesta() {
+        return this.idEncuesta;
+    }
+    /**
+     * Establece el id encuesta.
+     *
+     * @param idEncuesta el new id encuesta
+     */
+    public void setIdEncuesta(String idEncuesta) {
+        this.idEncuesta = idEncuesta;
+    }
+    /**
+     * Obtiene tema.
+     *
+     * @return tema
+     */
+     public Tema getTema() {
+        return this.tema;
+    }
+    /**
+     * Establece el tema.
+     *
+     * @param tema el new tema
+     */
+    public void setTema(Tema tema) {
+        this.tema = tema;
+    }
+    /**
+     * Obtiene fecha inicio.
+     *
+     * @return fecha inicio
+     */
+     public Date getFechaInicio() {
+        return this.fechaInicio;
+    }
+    /**
+     * Establece el fecha inicio.
+     *
+     * @param fechaInicio el new fecha inicio
+     */
+    public void setFechaInicio(Date fechaInicio) {
+        this.fechaInicio = fechaInicio;
+    }
+    /**
+     * Obtiene fecha termino.
+     *
+     * @return fecha termino
+     */
+     public Date getFechaTermino() {
+        return this.fechaTermino;
+    }
+    /**
+     * Establece el fecha termino.
+     *
+     * @param fechaTermino el new fecha termino
+     */
+    public void setFechaTermino(Date fechaTermino) {
+        this.fechaTermino = fechaTermino;
+    }
+    /**
+     * Obtiene estado.
+     *
+     * @return estado
+     */
+     public String getEstado() {
+        return this.estado;
+    }
+    /**
+     * Establece el estado.
+     *
+     * @param estado el new estado
+     */
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+    /**
+     * Obtiene rango.
+     *
+     * @return rango
+     */
+     public Long getRango() {
+        return this.rango;
+    }
+    /**
+     * Establece el rango.
+     *
+     * @param rango el new rango
+     */
+    public void setRango(Long rango) {
+        this.rango = rango;
+    }
+    /**
+     * Establece el encuesta cuestionario list.
+     *
+     * @param encuestaCuestionarioList el new encuesta cuestionario list
+     */
+    public List<Cuestionario> getEncuestaCuestionarioList(){
+        return this.encuestaCuestionarioList;
+    }
+    /**
+     * Establece el encuesta list.
+     *
+     * @param encuestaList el new encuesta list
+     */
+    public void setEncuestaCuestionarioList(List<Cuestionario> encuestaCuestionarioList) {
+        this.encuestaCuestionarioList = encuestaCuestionarioList;
+    }   
+    /**
+     * Establece el encuesta encuesta campo list.
+     *
+     * @param encuestaEncuestaCampoList el new encuesta encuesta campo list
+     */
+    public List<EncuestaCampo> getEncuestaEncuestaCampoList(){
+        return this.encuestaEncuestaCampoList;
+    }
+    /**
+     * Establece el encuesta list.
+     *
+     * @param encuestaList el new encuesta list
+     */
+    public void setEncuestaEncuestaCampoList(List<EncuestaCampo> encuestaEncuestaCampoList) {
+        this.encuestaEncuestaCampoList = encuestaEncuestaCampoList;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idEncuesta == null) ? 0 : idEncuesta.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Encuesta other = (Encuesta) obj;
+        if (idEncuesta == null) {
+            if (other.idEncuesta != null) {
+                return false;
+            }
+        } else if (!idEncuesta.equals(other.idEncuesta)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Encuesta [idEncuesta=" + idEncuesta + "]";
+    }
+   
+}

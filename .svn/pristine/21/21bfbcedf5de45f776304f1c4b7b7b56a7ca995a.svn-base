@@ -1,0 +1,120 @@
+package pe.com.edu.siaa.core.ejb.service.rest.matricula.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.matricula.local.MatriculaServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.matricula.CargaLectivaDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class CargaLectivaRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Wed Dec 27 12:00:40 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/cargaLectivaRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class CargaLectivaRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient MatriculaServiceLocal matriculaServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<CargaLectivaDTO> crear(CargaLectivaDTO cargaLectiva) throws Exception {
+		return controladorAccion(cargaLectiva,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<CargaLectivaDTO> modificar(CargaLectivaDTO cargaLectiva) throws Exception {
+		return controladorAccion(cargaLectiva,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<CargaLectivaDTO> eliminar(@PathParam("id") String idCargaLectiva) throws Exception {
+		CargaLectivaDTO cargaLectiva = new CargaLectivaDTO();
+		cargaLectiva.setIdCargaLectiva(idCargaLectiva);		
+		return controladorAccion(cargaLectiva,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<CargaLectivaDTO> controladorAccion(CargaLectivaDTO cargaLectiva, AccionType accionType){
+		ResultadoRestVO<CargaLectivaDTO> resultado = new ResultadoRestVO<CargaLectivaDTO>();
+		 try {
+    		resultado.setObjetoResultado(matriculaServiceLocal.controladorAccionCargaLectiva(cargaLectiva,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<CargaLectivaDTO> finById(@PathParam("id") String idCargaLectiva) throws Exception {
+		CargaLectivaDTO cargaLectiva = new CargaLectivaDTO();
+		cargaLectiva.setIdCargaLectiva(idCargaLectiva);
+		return controladorAccion(cargaLectiva,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<CargaLectivaDTO> listarCargaLectiva(@Context UriInfo info){
+		ResultadoRestVO<CargaLectivaDTO> resultado = new ResultadoRestVO<CargaLectivaDTO>();
+		CargaLectivaDTO cargaLectiva = transferUriInfo(info);
+		 try {
+			resultado.setListaResultado(matriculaServiceLocal.listarCargaLectiva(cargaLectiva));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<CargaLectivaDTO> contarCargaLectiva(@Context UriInfo info){
+		ResultadoRestVO<CargaLectivaDTO> resultado = new ResultadoRestVO<CargaLectivaDTO>();
+		CargaLectivaDTO cargaLectiva = transferUriInfo(info);
+		 try {
+			 resultado.setContador(matriculaServiceLocal.contarListarCargaLectiva(cargaLectiva));
+			 if (resultado.isData()) {
+				resultado.setListaResultado(matriculaServiceLocal.listarCargaLectiva(cargaLectiva));
+			 }
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<CargaLectivaDTO> inicializarCargaLectiva(@Context UriInfo info) throws Exception {
+	     CargaLectivaDTO cargaLectiva = transferUriInfo(info);
+		 ResultadoRestVO<CargaLectivaDTO> resultado = new ResultadoRestVO<CargaLectivaDTO>();
+		 try {
+    		resultado.setObjetoResultado(cargaLectiva);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private CargaLectivaDTO transferUriInfo(@Context UriInfo info) {
+		CargaLectivaDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,CargaLectivaDTO.class);
+		return resultado;
+	}
+}

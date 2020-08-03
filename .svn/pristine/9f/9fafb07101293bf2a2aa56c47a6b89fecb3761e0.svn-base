@@ -1,0 +1,339 @@
+package pe.com.edu.siaa.core.ejb.service.pago.local;
+
+import java.util.List;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.model.dto.matricula.AlumnoConvenioDTO;
+import pe.com.edu.siaa.core.model.dto.pago.CatalogoCuentaDTO;
+import pe.com.edu.siaa.core.model.dto.pago.ClasificacionDTO;
+import pe.com.edu.siaa.core.model.dto.pago.ConceptoAlumnoConvenioDTO;
+import pe.com.edu.siaa.core.model.dto.pago.ControlPagoDTO;
+import pe.com.edu.siaa.core.model.dto.pago.ConvenioDTO;
+import pe.com.edu.siaa.core.model.dto.pago.CuotaConceptoDTO;
+import pe.com.edu.siaa.core.model.dto.pago.DetControlPagoDTO;
+import pe.com.edu.siaa.core.model.dto.pago.DetPlanPagosDTO;
+import pe.com.edu.siaa.core.model.dto.pago.PlanPagosDTO;
+import pe.com.edu.siaa.core.model.dto.pago.TipoDocSunatEntidadDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+
+/**
+ * La Class PagoServiceLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:23 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface PagoServiceLocal {
+	
+	/**
+	 * Listar concepto pago semestre.
+	 *
+	 * @param cuotaConcepto el cuota concepto
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<CuotaConceptoDTO> listarConceptoPagoSemestre(String idSemestre,String idEscuela,String search) throws Exception;
+	
+	/**
+	 * Ver detalle pagos realizados.
+	 *
+	 * @param detControlPago el det control pago
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<DetControlPagoDTO> verDetallePagosRealizados(String idControlPago) throws Exception;
+	
+	String generarReportePago(String idControlPago,String idAlumno,String usuario) throws Exception;
+	
+	/**
+	 * Registrar pago.
+	 *
+	 * @param controlPago el control pago
+	 * @param listaConceptoPagoDTO el lista concepto pago dto
+	 * @throws Exception the exception
+	 */
+	ControlPagoDTO registrarPago(ControlPagoDTO controlPago) throws Exception;
+	
+	
+	List<DetPlanPagosDTO> listarConceptoPagoAlumnoSemestre(String idAlumno,String idAnhoSemestre,boolean flagFaltaMontoResta) throws Exception;
+	
+	/**
+	 * Controlador accion cuota concepto.
+	 *
+	 * @param cuotaConcepto el cuota concepto
+	 * @param accionType el accion type
+	 * @return the cuota concepto
+	 * @throws Exception the exception
+	 */
+	CuotaConceptoDTO controladorAccionCuotaConcepto(CuotaConceptoDTO cuotaConcepto,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar cuota concepto.
+	 *
+	 * @param cuotaConcepto el cuota concepto
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<CuotaConceptoDTO> listarCuotaConcepto(CuotaConceptoDTO cuotaConcepto) throws Exception;
+	
+	/**
+	 * contar lista cuota concepto.
+	 *
+	 * @param cuotaConcepto el cuota concepto
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarCuotaConcepto(CuotaConceptoDTO cuotaConcepto);
+	
+	/**
+	 * Listar det plan pagos.
+	 *
+	 * @param detPlanPagos el det plan pagos
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<DetPlanPagosDTO> listarDetPlanPagos(DetPlanPagosDTO detPlanPagos) throws Exception;
+	
+	DetPlanPagosDTO eliminarDetPlanPagos(DetPlanPagosDTO detPlanPagos);
+	/**
+	 * contar lista det plan pagos.
+	 *
+	 * @param detPlanPagos el det plan pagos
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarDetPlanPagos(DetPlanPagosDTO detPlanPagos);
+	
+	/**
+	 * Controlador accion concepto alumno convenio.
+	 *
+	 * @param conceptoAlumnoConvenio el concepto alumno convenio
+	 * @param accionType el accion type
+	 * @return the concepto alumno convenio
+	 * @throws Exception the exception
+	 */
+	ConceptoAlumnoConvenioDTO controladorAccionConceptoAlumnoConvenio(ConceptoAlumnoConvenioDTO conceptoAlumnoConvenio,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar concepto alumno convenio.
+	 *
+	 * @param conceptoAlumnoConvenio el concepto alumno convenio
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<ConceptoAlumnoConvenioDTO> listarConceptoAlumnoConvenio(ConceptoAlumnoConvenioDTO conceptoAlumnoConvenio) throws Exception;
+	
+	/**
+	 * contar lista concepto alumno convenio.
+	 *
+	 * @param conceptoAlumnoConvenio el concepto alumno convenio
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarConceptoAlumnoConvenio(ConceptoAlumnoConvenioDTO conceptoAlumnoConvenio);
+	
+	/**
+	 * Controlador accion alumno convenio.
+	 *
+	 * @param alumnoConvenio el alumno convenio
+	 * @param accionType el accion type
+	 * @return the alumno convenio
+	 * @throws Exception the exception
+	 */
+	AlumnoConvenioDTO controladorAccionAlumnoConvenio(AlumnoConvenioDTO alumnoConvenio,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar alumno convenio.
+	 *
+	 * @param alumnoConvenio el alumno convenio
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<AlumnoConvenioDTO> listarAlumnoConvenio(AlumnoConvenioDTO alumnoConvenio) throws Exception;
+	
+	/**
+	 * contar lista alumno convenio.
+	 *
+	 * @param alumnoConvenio el alumno convenio
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarAlumnoConvenio(AlumnoConvenioDTO alumnoConvenio);
+
+	/**
+	 * Controlador accion catalogo cuenta.
+	 *
+	 * @param catalogoCuenta el catalogo cuenta
+	 * @param accionType el accion type
+	 * @return the catalogo cuenta
+	 * @throws Exception the exception
+	 */
+	CatalogoCuentaDTO controladorAccionCatalogoCuenta(CatalogoCuentaDTO catalogoCuenta,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar catalogo cuenta.
+	 *
+	 * @param catalogoCuenta el catalogo cuenta
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<CatalogoCuentaDTO> listarCatalogoCuenta(CatalogoCuentaDTO catalogoCuenta) throws Exception;
+	
+	/**
+	 * contar lista catalogo cuenta.
+	 *
+	 * @param catalogoCuenta el catalogo cuenta
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarCatalogoCuenta(CatalogoCuentaDTO catalogoCuenta);
+	
+
+	/**
+	 * Controlador accion plan pagos.
+	 *
+	 * @param planPagos el plan pagos
+	 * @param accionType el accion type
+	 * @return the plan pagos
+	 * @throws Exception the exception
+	 */
+	PlanPagosDTO registrarPlanPagos(PlanPagosDTO planPagos) throws Exception; 
+	
+	/**
+	 * Listar plan pagos.
+	 *
+	 * @param planPagos el plan pagos
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<PlanPagosDTO> listarPlanPagos(PlanPagosDTO planPagos) throws Exception;
+	
+	/**
+	 * contar lista plan pagos.
+	 *
+	 * @param planPagos el plan pagos
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarPlanPagos(PlanPagosDTO planPagos);
+
+	/**
+	 * Controlador accion control pago.
+	 *
+	 * @param controlPago el control pago
+	 * @param accionType el accion type
+	 * @return the control pago
+	 * @throws Exception the exception
+	 */
+	ControlPagoDTO controladorAccionControlPago(ControlPagoDTO controlPago,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar control pago.
+	 *
+	 * @param controlPago el control pago
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<ControlPagoDTO> listarControlPago(ControlPagoDTO controlPago) throws Exception;
+	
+	/**
+	 * contar lista control pago.
+	 *
+	 * @param controlPago el control pago
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarControlPago(ControlPagoDTO controlPago);
+	
+	/**
+	 * Controlador accion det control pago.
+	 *
+	 * @param detControlPago el det control pago
+	 * @param accionType el accion type
+	 * @return the det control pago
+	 * @throws Exception the exception
+	 */
+	DetControlPagoDTO controladorAccionDetControlPago(DetControlPagoDTO detControlPago,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar det control pago.
+	 *
+	 * @param detControlPago el det control pago
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<DetControlPagoDTO> listarDetControlPago(DetControlPagoDTO detControlPago) throws Exception;
+	
+	/**
+	 * contar lista det control pago.
+	 *
+	 * @param detControlPago el det control pago
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarDetControlPago(DetControlPagoDTO detControlPago);
+	
+	
+	/**
+	 * Controlador accion clasificacion.
+	 *
+	 * @param clasificacion el clasificacion
+	 * @param accionType el accion type
+	 * @return the clasificacion
+	 * @throws Exception the exception
+	 */
+	ClasificacionDTO controladorAccionClasificacion(ClasificacionDTO clasificacion,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar clasificacion.
+	 *
+	 * @param clasificacion el clasificacion
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<ClasificacionDTO> listarClasificacion(ClasificacionDTO clasificacion) throws Exception;
+	
+	/**
+	 * contar lista clasificacion.
+	 *
+	 * @param clasificacion el clasificacion
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarClasificacion(ClasificacionDTO clasificacion);
+	
+	/**
+	 * Controlador accion convenio.
+	 *
+	 * @param convenio el convenio
+	 * @param accionType el accion type
+	 * @return the convenio
+	 * @throws Exception the exception
+	 */
+	ConvenioDTO controladorAccionConvenio(ConvenioDTO convenio,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar convenio.
+	 *
+	 * @param convenio el convenio
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<ConvenioDTO> listarConvenio(ConvenioDTO convenio) throws Exception;
+	
+	/**
+	 * contar lista convenio.
+	 *
+	 * @param convenio el convenio
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarConvenio(ConvenioDTO convenio);
+
+}

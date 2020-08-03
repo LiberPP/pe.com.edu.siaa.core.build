@@ -1,0 +1,48 @@
+package pe.com.edu.siaa.core.ejb.dao.pago.local;
+
+import java.util.List;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.dto.pago.CatalogoCuentaDTO;
+import pe.com.edu.siaa.core.model.jpa.pago.CatalogoCuenta;
+
+/**
+ * La Class CatalogoCuentaDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 11:25:05 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface CatalogoCuentaDaoLocal  extends GenericDAOLocal<Long,CatalogoCuenta> {
+	/**
+	 * Listar catalogo cuenta.
+	 *
+	 * @param catalogoCuenta el catalogo cuentaDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<CatalogoCuenta> listarCatalogoCuenta(CatalogoCuentaDTO catalogoCuenta) throws Exception;
+	
+	/**
+	 * contar lista catalogo cuenta.
+	 *
+	 * @param catalogoCuenta el catalogo cuenta
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarCatalogoCuenta(CatalogoCuentaDTO catalogoCuenta);
+	/**
+	 * Generar id catalogoCuenta.
+	 *
+	 * @return the Long
+	 * @throws Exception the exception
+	 */
+	Long generarIdCatalogoCuenta() throws Exception;
+}

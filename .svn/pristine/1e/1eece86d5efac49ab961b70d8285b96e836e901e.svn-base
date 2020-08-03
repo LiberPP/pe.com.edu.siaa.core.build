@@ -1,0 +1,519 @@
+package pe.com.edu.siaa.core.model.jpa.admision;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import pe.com.edu.siaa.core.model.util.ConfiguracionEntityManagerUtil;
+
+/**
+ * La Class Universidad.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 09:56:52 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Entity
+@Table(name = "Universidad", schema = ConfiguracionEntityManagerUtil.ESQUEMA_ACADEMICO)
+public class Universidad implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id universidad. */
+    @Id
+    @Column(name = "idUniversidad" , precision = 18 , scale = 0)
+    private Long idUniversidad;
+   
+    /** El codigo universidad. */
+    @Column(name = "codigoUniversidad" , length = 3)
+    private String codigoUniversidad;
+   
+    /** El descripcion. */
+    @Column(name = "descripcion" , length = 200)
+    private String descripcion;
+   
+    /** El abreviatura. */
+    @Column(name = "abreviatura" , length = 50)
+    private String abreviatura;
+   
+    /** El nro examen admision al ahno. */
+    @Column(name = "nroExamenAdmisionAlAhno" , length = 16)
+    private String nroExamenAdmisionAlAhno;
+   
+    /** El flag pei. */
+    @Column(name = "flagPei" , length = 1)
+    private String flagPei;
+   
+    /** El doc aprueba pei. */
+    @Column(name = "docApruebaPei" , length = 128)
+    private String docApruebaPei;
+   
+    /** El fecha aprueba pei. */
+    @Temporal( TemporalType.TIMESTAMP)
+    @Column(name = "fechaApruebaPei")
+    private Date fechaApruebaPei;
+   
+    /** El flag rof. */
+    @Column(name = "flagRof" , length = 1)
+    private String flagRof;
+   
+    /** El documento aprueba rof. */
+    @Column(name = "documentoApruebaRof" , length = 128)
+    private String documentoApruebaRof;
+   
+    /** El fecha aprueba rof. */
+    @Temporal( TemporalType.TIMESTAMP)
+    @Column(name = "fechaApruebaRof")
+    private Date fechaApruebaRof;
+   
+    /** El flag mof. */
+    @Column(name = "flagMof" , length = 1)
+    private String flagMof;
+   
+    /** El documento aprueba mof. */
+    @Column(name = "documentoApruebaMof" , length = 128)
+    private String documentoApruebaMof;
+   
+    /** El fecha aprueba mof. */
+    @Temporal( TemporalType.TIMESTAMP)
+    @Column(name = "fechaApruebaMof")
+    private Date fechaApruebaMof;
+   
+    /** El flag mapro. */
+    @Column(name = "flagMapro" , length = 1)
+    private String flagMapro;
+   
+    /** El documento aprueba mapro. */
+    @Column(name = "documentoApruebaMapro" , length = 128)
+    private String documentoApruebaMapro;
+   
+    /** El fecha aprueba mapro. */
+    @Temporal( TemporalType.TIMESTAMP)
+    @Column(name = "fechaApruebaMapro")
+    private Date fechaApruebaMapro;
+   
+    /** El pagina web. */
+    @Column(name = "paginaWeb" , length = 256)
+    private String paginaWeb;
+   
+    /** El universidad establecimiento list. */
+    @OneToMany(mappedBy = "universidad", fetch = FetchType.LAZY)
+    private List<Establecimiento> universidadEstablecimientoList = new ArrayList<Establecimiento>();
+    
+    /**
+     * Instancia un nuevo universidad.
+     */
+    public Universidad() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo universidad.
+     *
+     * @param idUniversidad el id universidad
+     * @param codigoUniversidad el codigo universidad
+     * @param descripcion el descripcion
+     * @param abreviatura el abreviatura
+     * @param nroExamenAdmisionAlAhno el nro examen admision al ahno
+     * @param flagPei el flag pei
+     * @param docApruebaPei el doc aprueba pei
+     * @param fechaApruebaPei el fecha aprueba pei
+     * @param flagRof el flag rof
+     * @param documentoApruebaRof el documento aprueba rof
+     * @param fechaApruebaRof el fecha aprueba rof
+     * @param flagMof el flag mof
+     * @param documentoApruebaMof el documento aprueba mof
+     * @param fechaApruebaMof el fecha aprueba mof
+     * @param flagMapro el flag mapro
+     * @param documentoApruebaMapro el documento aprueba mapro
+     * @param fechaApruebaMapro el fecha aprueba mapro
+     * @param paginaWeb el pagina web
+     */
+    public Universidad(Long idUniversidad, String codigoUniversidad, String descripcion, String abreviatura, String nroExamenAdmisionAlAhno, String flagPei, String docApruebaPei, Date fechaApruebaPei, String flagRof, String documentoApruebaRof, Date fechaApruebaRof, String flagMof, String documentoApruebaMof, Date fechaApruebaMof, String flagMapro, String documentoApruebaMapro, Date fechaApruebaMapro, String paginaWeb ) {
+        super();
+        this.idUniversidad = idUniversidad;
+        this.codigoUniversidad = codigoUniversidad;
+        this.descripcion = descripcion;
+        this.abreviatura = abreviatura;
+        this.nroExamenAdmisionAlAhno = nroExamenAdmisionAlAhno;
+        this.flagPei = flagPei;
+        this.docApruebaPei = docApruebaPei;
+        this.fechaApruebaPei = fechaApruebaPei;
+        this.flagRof = flagRof;
+        this.documentoApruebaRof = documentoApruebaRof;
+        this.fechaApruebaRof = fechaApruebaRof;
+        this.flagMof = flagMof;
+        this.documentoApruebaMof = documentoApruebaMof;
+        this.fechaApruebaMof = fechaApruebaMof;
+        this.flagMapro = flagMapro;
+        this.documentoApruebaMapro = documentoApruebaMapro;
+        this.fechaApruebaMapro = fechaApruebaMapro;
+        this.paginaWeb = paginaWeb;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id universidad.
+     *
+     * @return id universidad
+     */
+     public Long getIdUniversidad() {
+        return this.idUniversidad;
+    }
+    /**
+     * Establece el id universidad.
+     *
+     * @param idUniversidad el new id universidad
+     */
+    public void setIdUniversidad(Long idUniversidad) {
+        this.idUniversidad = idUniversidad;
+    }
+    /**
+     * Obtiene codigo universidad.
+     *
+     * @return codigo universidad
+     */
+     public String getCodigoUniversidad() {
+        return this.codigoUniversidad;
+    }
+    /**
+     * Establece el codigo universidad.
+     *
+     * @param codigoUniversidad el new codigo universidad
+     */
+    public void setCodigoUniversidad(String codigoUniversidad) {
+        this.codigoUniversidad = codigoUniversidad;
+    }
+    /**
+     * Obtiene descripcion.
+     *
+     * @return descripcion
+     */
+     public String getDescripcion() {
+        return this.descripcion;
+    }
+    /**
+     * Establece el descripcion.
+     *
+     * @param descripcion el new descripcion
+     */
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+    /**
+     * Obtiene abreviatura.
+     *
+     * @return abreviatura
+     */
+     public String getAbreviatura() {
+        return this.abreviatura;
+    }
+    /**
+     * Establece el abreviatura.
+     *
+     * @param abreviatura el new abreviatura
+     */
+    public void setAbreviatura(String abreviatura) {
+        this.abreviatura = abreviatura;
+    }
+    /**
+     * Obtiene nro examen admision al ahno.
+     *
+     * @return nro examen admision al ahno
+     */
+     public String getNroExamenAdmisionAlAhno() {
+        return this.nroExamenAdmisionAlAhno;
+    }
+    /**
+     * Establece el nro examen admision al ahno.
+     *
+     * @param nroExamenAdmisionAlAhno el new nro examen admision al ahno
+     */
+    public void setNroExamenAdmisionAlAhno(String nroExamenAdmisionAlAhno) {
+        this.nroExamenAdmisionAlAhno = nroExamenAdmisionAlAhno;
+    }
+    /**
+     * Obtiene flag pei.
+     *
+     * @return flag pei
+     */
+     public String getFlagPei() {
+        return this.flagPei;
+    }
+    /**
+     * Establece el flag pei.
+     *
+     * @param flagPei el new flag pei
+     */
+    public void setFlagPei(String flagPei) {
+        this.flagPei = flagPei;
+    }
+    /**
+     * Obtiene doc aprueba pei.
+     *
+     * @return doc aprueba pei
+     */
+     public String getDocApruebaPei() {
+        return this.docApruebaPei;
+    }
+    /**
+     * Establece el doc aprueba pei.
+     *
+     * @param docApruebaPei el new doc aprueba pei
+     */
+    public void setDocApruebaPei(String docApruebaPei) {
+        this.docApruebaPei = docApruebaPei;
+    }
+    /**
+     * Obtiene fecha aprueba pei.
+     *
+     * @return fecha aprueba pei
+     */
+     public Date getFechaApruebaPei() {
+        return this.fechaApruebaPei;
+    }
+    /**
+     * Establece el fecha aprueba pei.
+     *
+     * @param fechaApruebaPei el new fecha aprueba pei
+     */
+    public void setFechaApruebaPei(Date fechaApruebaPei) {
+        this.fechaApruebaPei = fechaApruebaPei;
+    }
+    /**
+     * Obtiene flag rof.
+     *
+     * @return flag rof
+     */
+     public String getFlagRof() {
+        return this.flagRof;
+    }
+    /**
+     * Establece el flag rof.
+     *
+     * @param flagRof el new flag rof
+     */
+    public void setFlagRof(String flagRof) {
+        this.flagRof = flagRof;
+    }
+    /**
+     * Obtiene documento aprueba rof.
+     *
+     * @return documento aprueba rof
+     */
+     public String getDocumentoApruebaRof() {
+        return this.documentoApruebaRof;
+    }
+    /**
+     * Establece el documento aprueba rof.
+     *
+     * @param documentoApruebaRof el new documento aprueba rof
+     */
+    public void setDocumentoApruebaRof(String documentoApruebaRof) {
+        this.documentoApruebaRof = documentoApruebaRof;
+    }
+    /**
+     * Obtiene fecha aprueba rof.
+     *
+     * @return fecha aprueba rof
+     */
+     public Date getFechaApruebaRof() {
+        return this.fechaApruebaRof;
+    }
+    /**
+     * Establece el fecha aprueba rof.
+     *
+     * @param fechaApruebaRof el new fecha aprueba rof
+     */
+    public void setFechaApruebaRof(Date fechaApruebaRof) {
+        this.fechaApruebaRof = fechaApruebaRof;
+    }
+    /**
+     * Obtiene flag mof.
+     *
+     * @return flag mof
+     */
+     public String getFlagMof() {
+        return this.flagMof;
+    }
+    /**
+     * Establece el flag mof.
+     *
+     * @param flagMof el new flag mof
+     */
+    public void setFlagMof(String flagMof) {
+        this.flagMof = flagMof;
+    }
+    /**
+     * Obtiene documento aprueba mof.
+     *
+     * @return documento aprueba mof
+     */
+     public String getDocumentoApruebaMof() {
+        return this.documentoApruebaMof;
+    }
+    /**
+     * Establece el documento aprueba mof.
+     *
+     * @param documentoApruebaMof el new documento aprueba mof
+     */
+    public void setDocumentoApruebaMof(String documentoApruebaMof) {
+        this.documentoApruebaMof = documentoApruebaMof;
+    }
+    /**
+     * Obtiene fecha aprueba mof.
+     *
+     * @return fecha aprueba mof
+     */
+     public Date getFechaApruebaMof() {
+        return this.fechaApruebaMof;
+    }
+    /**
+     * Establece el fecha aprueba mof.
+     *
+     * @param fechaApruebaMof el new fecha aprueba mof
+     */
+    public void setFechaApruebaMof(Date fechaApruebaMof) {
+        this.fechaApruebaMof = fechaApruebaMof;
+    }
+    /**
+     * Obtiene flag mapro.
+     *
+     * @return flag mapro
+     */
+     public String getFlagMapro() {
+        return this.flagMapro;
+    }
+    /**
+     * Establece el flag mapro.
+     *
+     * @param flagMapro el new flag mapro
+     */
+    public void setFlagMapro(String flagMapro) {
+        this.flagMapro = flagMapro;
+    }
+    /**
+     * Obtiene documento aprueba mapro.
+     *
+     * @return documento aprueba mapro
+     */
+     public String getDocumentoApruebaMapro() {
+        return this.documentoApruebaMapro;
+    }
+    /**
+     * Establece el documento aprueba mapro.
+     *
+     * @param documentoApruebaMapro el new documento aprueba mapro
+     */
+    public void setDocumentoApruebaMapro(String documentoApruebaMapro) {
+        this.documentoApruebaMapro = documentoApruebaMapro;
+    }
+    /**
+     * Obtiene fecha aprueba mapro.
+     *
+     * @return fecha aprueba mapro
+     */
+     public Date getFechaApruebaMapro() {
+        return this.fechaApruebaMapro;
+    }
+    /**
+     * Establece el fecha aprueba mapro.
+     *
+     * @param fechaApruebaMapro el new fecha aprueba mapro
+     */
+    public void setFechaApruebaMapro(Date fechaApruebaMapro) {
+        this.fechaApruebaMapro = fechaApruebaMapro;
+    }
+    /**
+     * Obtiene pagina web.
+     *
+     * @return pagina web
+     */
+     public String getPaginaWeb() {
+        return this.paginaWeb;
+    }
+    /**
+     * Establece el pagina web.
+     *
+     * @param paginaWeb el new pagina web
+     */
+    public void setPaginaWeb(String paginaWeb) {
+        this.paginaWeb = paginaWeb;
+    }
+    /**
+     * Establece el universidad establecimiento list.
+     *
+     * @param universidadEstablecimientoList el new universidad establecimiento list
+     */
+    public List<Establecimiento> getUniversidadEstablecimientoList(){
+        return this.universidadEstablecimientoList;
+    }
+    /**
+     * Establece el universidad list.
+     *
+     * @param universidadList el new universidad list
+     */
+    public void setUniversidadEstablecimientoList(List<Establecimiento> universidadEstablecimientoList) {
+        this.universidadEstablecimientoList = universidadEstablecimientoList;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idUniversidad == null) ? 0 : idUniversidad.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Universidad other = (Universidad) obj;
+        if (idUniversidad == null) {
+            if (other.idUniversidad != null) {
+                return false;
+            }
+        } else if (!idUniversidad.equals(other.idUniversidad)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Universidad [idUniversidad=" + idUniversidad + "]";
+    }
+   
+}

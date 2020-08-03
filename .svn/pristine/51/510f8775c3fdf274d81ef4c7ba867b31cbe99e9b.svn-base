@@ -1,0 +1,356 @@
+package pe.com.edu.siaa.core.model.dto.nota;
+
+import java.io.Serializable;
+import java.util.Date;
+
+import pe.com.edu.siaa.core.model.dto.BasePaginator;
+import pe.com.edu.siaa.core.model.dto.common.ItemDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.AlumnoDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.DetCargaLectivaDTO;
+
+/**
+ * La Class AsistenciaDTO.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 1.0, Tue Apr 18 09:56:47 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+public class AsistenciaDTO extends BasePaginator implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id asistencia. */
+    private String idAsistencia;
+   
+    /** El alumno. */
+    private AlumnoDTO alumno;
+   
+    /** El det carga lectiva. */
+    private DetCargaLectivaDTO detCargaLectiva;
+   
+    /** El item by dia. */
+    private ItemDTO itemByDia;
+   
+    /** El estado. */
+    private String estado;
+   
+    /** El justificacion. */
+    private String justificacion;
+   
+    /** El fecha horario. */
+    private Date fechaHorario;
+   
+    /** El fecha creacion. */
+    private Date fechaCreacion;
+   
+    /** El usuario creacion. */
+    private String usuarioCreacion;
+   
+    /** El fecha modificacion. */
+    private Date fechaModificacion;
+   
+    /** El usuario modificacion. */
+    private String usuarioModificacion;
+    
+    //trasient
+    private String estadoDescripcion;
+    private String porcentajeAsistencia;
+    private String porcentajeInAsistencia;
+   
+    /**
+     * Instancia un nuevo asistenciaDTO.
+     */
+    public AsistenciaDTO() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo asistenciaDTO.
+     *
+     * @param idAsistencia el id asistencia
+     * @param alumno el alumno
+     * @param detCargaLectiva el det carga lectiva
+     * @param itemByDia el item by dia
+     * @param estado el estado
+     * @param justificacion el justificacion
+     * @param fechaHorario el fecha horario
+     * @param fechaCreacion el fecha creacion
+     * @param usuarioCreacion el usuario creacion
+     * @param fechaModificacion el fecha modificacion
+     * @param usuarioModificacion el usuario modificacion
+     */
+    public AsistenciaDTO(String idAsistencia, AlumnoDTO alumno,DetCargaLectivaDTO detCargaLectiva,ItemDTO itemByDia,String estado, String justificacion, Date fechaHorario, Date fechaCreacion, String usuarioCreacion, Date fechaModificacion, String usuarioModificacion ) {
+        super();
+        this.idAsistencia = idAsistencia;
+        this.alumno = alumno;
+        this.detCargaLectiva = detCargaLectiva;
+        this.itemByDia = itemByDia;
+        this.estado = estado;
+        this.justificacion = justificacion;
+        this.fechaHorario = fechaHorario;
+        this.fechaCreacion = fechaCreacion;
+        this.usuarioCreacion = usuarioCreacion;
+        this.fechaModificacion = fechaModificacion;
+        this.usuarioModificacion = usuarioModificacion;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id asistencia.
+     *
+     * @return id asistencia
+     */
+     public String getIdAsistencia() {
+        return this.idAsistencia;
+    }
+    /**
+     * Establece el id asistencia.
+     *
+     * @param idAsistencia el new id asistencia
+     */
+    public void setIdAsistencia(String idAsistencia) {
+        this.idAsistencia = idAsistencia;
+    }
+    /**
+     * Obtiene alumno.
+     *
+     * @return alumno
+     */
+     public AlumnoDTO getAlumno() {
+        return this.alumno;
+    }
+    /**
+     * Establece el alumno.
+     *
+     * @param alumno el new alumno
+     */
+    public void setAlumno(AlumnoDTO alumno) {
+        this.alumno = alumno;
+    }
+    /**
+     * Obtiene det carga lectiva.
+     *
+     * @return det carga lectiva
+     */
+     public DetCargaLectivaDTO getDetCargaLectiva() {
+        return this.detCargaLectiva;
+    }
+    /**
+     * Establece el det carga lectiva.
+     *
+     * @param detCargaLectiva el new det carga lectiva
+     */
+    public void setDetCargaLectiva(DetCargaLectivaDTO detCargaLectiva) {
+        this.detCargaLectiva = detCargaLectiva;
+    }
+    /**
+     * Obtiene item by dia.
+     *
+     * @return item by dia
+     */
+     public ItemDTO getItemByDia() {
+        return this.itemByDia;
+    }
+    /**
+     * Establece el item by dia.
+     *
+     * @param itemByDia el new item by dia
+     */
+    public void setItemByDia(ItemDTO itemByDia) {
+        this.itemByDia = itemByDia;
+    }
+    /**
+     * Obtiene estado.
+     *
+     * @return estado
+     */
+     public String getEstado() {
+        return this.estado;
+    }
+    /**
+     * Establece el estado.
+     *
+     * @param estado el new estado
+     */
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+    /**
+     * Obtiene justificacion.
+     *
+     * @return justificacion
+     */
+     public String getJustificacion() {
+        return this.justificacion;
+    }
+    /**
+     * Establece el justificacion.
+     *
+     * @param justificacion el new justificacion
+     */
+    public void setJustificacion(String justificacion) {
+        this.justificacion = justificacion;
+    }
+    /**
+     * Obtiene fecha horario.
+     *
+     * @return fecha horario
+     */
+     public Date getFechaHorario() {
+        return this.fechaHorario;
+    }
+    /**
+     * Establece el fecha horario.
+     *
+     * @param fechaHorario el new fecha horario
+     */
+    public void setFechaHorario(Date fechaHorario) {
+        this.fechaHorario = fechaHorario;
+    }
+    /**
+     * Obtiene fecha creacion.
+     *
+     * @return fecha creacion
+     */
+     public Date getFechaCreacion() {
+        return this.fechaCreacion;
+    }
+    /**
+     * Establece el fecha creacion.
+     *
+     * @param fechaCreacion el new fecha creacion
+     */
+    public void setFechaCreacion(Date fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
+    }
+    /**
+     * Obtiene usuario creacion.
+     *
+     * @return usuario creacion
+     */
+     public String getUsuarioCreacion() {
+        return this.usuarioCreacion;
+    }
+    /**
+     * Establece el usuario creacion.
+     *
+     * @param usuarioCreacion el new usuario creacion
+     */
+    public void setUsuarioCreacion(String usuarioCreacion) {
+        this.usuarioCreacion = usuarioCreacion;
+    }
+    /**
+     * Obtiene fecha modificacion.
+     *
+     * @return fecha modificacion
+     */
+     public Date getFechaModificacion() {
+        return this.fechaModificacion;
+    }
+    /**
+     * Establece el fecha modificacion.
+     *
+     * @param fechaModificacion el new fecha modificacion
+     */
+    public void setFechaModificacion(Date fechaModificacion) {
+        this.fechaModificacion = fechaModificacion;
+    }
+    /**
+     * Obtiene usuario modificacion.
+     *
+     * @return usuario modificacion
+     */
+     public String getUsuarioModificacion() {
+        return this.usuarioModificacion;
+    }
+    /**
+     * Establece el usuario modificacion.
+     *
+     * @param usuarioModificacion el new usuario modificacion
+     */
+    public void setUsuarioModificacion(String usuarioModificacion) {
+        this.usuarioModificacion = usuarioModificacion;
+    }
+    
+    
+    public String getEstadoDescripcion() {
+		return estadoDescripcion;
+	}
+
+
+	public void setEstadoDescripcion(String estadoDescripcion) {
+		this.estadoDescripcion = estadoDescripcion;
+	}
+
+
+	public String getPorcentajeAsistencia() {
+		return porcentajeAsistencia;
+	}
+
+
+	public void setPorcentajeAsistencia(String porcentajeAsistencia) {
+		this.porcentajeAsistencia = porcentajeAsistencia;
+	}
+
+
+	public String getPorcentajeInAsistencia() {
+		return porcentajeInAsistencia;
+	}
+
+
+	public void setPorcentajeInAsistencia(String porcentajeInAsistencia) {
+		this.porcentajeInAsistencia = porcentajeInAsistencia;
+	}
+
+
+	/* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idAsistencia == null) ? 0 : idAsistencia.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        AsistenciaDTO other = (AsistenciaDTO) obj;
+        if (idAsistencia == null) {
+            if (other.idAsistencia != null) {
+                return false;
+            }
+        } else if (!idAsistencia.equals(other.idAsistencia)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "AsistenciaDTO [idAsistencia=" + idAsistencia + "]";
+    }
+   
+}

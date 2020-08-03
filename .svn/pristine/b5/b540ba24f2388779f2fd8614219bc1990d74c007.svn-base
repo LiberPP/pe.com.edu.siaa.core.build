@@ -1,0 +1,120 @@
+package pe.com.edu.siaa.core.ejb.service.rest.pago.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.pago.local.PagoServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.pago.CatalogoCuentaDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class CatalogoCuentaRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:27 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/catalogoCuentaRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class CatalogoCuentaRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient PagoServiceLocal pagoServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<CatalogoCuentaDTO> crear(CatalogoCuentaDTO catalogoCuenta) throws Exception {
+		return controladorAccion(catalogoCuenta,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<CatalogoCuentaDTO> modificar(CatalogoCuentaDTO catalogoCuenta) throws Exception {
+		return controladorAccion(catalogoCuenta,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<CatalogoCuentaDTO> eliminar(@PathParam("id") Long idCatalogoCuenta) throws Exception {
+		CatalogoCuentaDTO catalogoCuenta = new CatalogoCuentaDTO();
+		catalogoCuenta.setIdCatalogoCuenta(idCatalogoCuenta);		
+		return controladorAccion(catalogoCuenta,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<CatalogoCuentaDTO> controladorAccion(CatalogoCuentaDTO catalogoCuenta, AccionType accionType){
+		ResultadoRestVO<CatalogoCuentaDTO> resultado = new ResultadoRestVO<CatalogoCuentaDTO>();
+		 try {
+    		resultado.setObjetoResultado(pagoServiceLocal.controladorAccionCatalogoCuenta(catalogoCuenta,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<CatalogoCuentaDTO> finById(@PathParam("id") Long idCatalogoCuenta) throws Exception {
+		CatalogoCuentaDTO catalogoCuenta = new CatalogoCuentaDTO();
+		catalogoCuenta.setIdCatalogoCuenta(idCatalogoCuenta);
+		return controladorAccion(catalogoCuenta,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<CatalogoCuentaDTO> listarCatalogoCuenta(@Context UriInfo info){
+		ResultadoRestVO<CatalogoCuentaDTO> resultado = new ResultadoRestVO<CatalogoCuentaDTO>();
+		CatalogoCuentaDTO catalogoCuenta = transferUriInfo(info);
+		 try {
+    		resultado.setListaResultado(pagoServiceLocal.listarCatalogoCuenta(catalogoCuenta));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<CatalogoCuentaDTO> contarListarCatalogoCuenta(@Context UriInfo info){
+		ResultadoRestVO<CatalogoCuentaDTO> resultado = new ResultadoRestVO<CatalogoCuentaDTO>();
+		CatalogoCuentaDTO catalogoCuenta = transferUriInfo(info);
+		 try {
+    		resultado.setContador(pagoServiceLocal.contarListarCatalogoCuenta(catalogoCuenta));
+    		if (resultado.isData()) {
+    			resultado.setListaResultado(pagoServiceLocal.listarCatalogoCuenta(catalogoCuenta));
+    		}
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<CatalogoCuentaDTO> inicializarCatalogoCuenta(@Context UriInfo info) throws Exception {
+	     CatalogoCuentaDTO catalogoCuenta = transferUriInfo(info);
+		 ResultadoRestVO<CatalogoCuentaDTO> resultado = new ResultadoRestVO<CatalogoCuentaDTO>();
+		 try {
+    		resultado.setObjetoResultado(catalogoCuenta);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private CatalogoCuentaDTO transferUriInfo(@Context UriInfo info) {
+		CatalogoCuentaDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,CatalogoCuentaDTO.class);
+		return resultado;
+	}
+}

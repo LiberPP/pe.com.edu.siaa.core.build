@@ -1,0 +1,117 @@
+package pe.com.edu.siaa.core.ejb.service.rest.nota.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.nota.local.NotaServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.nota.DefinirCriterioEvaluacionDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class DefinirCriterioEvaluacionRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:41 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/definirCriterioEvaluacionRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class DefinirCriterioEvaluacionRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient NotaServiceLocal notaServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<DefinirCriterioEvaluacionDTO> crear(DefinirCriterioEvaluacionDTO definirCriterioEvaluacion) throws Exception {
+		return controladorAccion(definirCriterioEvaluacion,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<DefinirCriterioEvaluacionDTO> modificar(DefinirCriterioEvaluacionDTO definirCriterioEvaluacion) throws Exception {
+		return controladorAccion(definirCriterioEvaluacion,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<DefinirCriterioEvaluacionDTO> eliminar(@PathParam("id") String idDefinirCriterioEvaluacion) throws Exception {
+		DefinirCriterioEvaluacionDTO definirCriterioEvaluacion = new DefinirCriterioEvaluacionDTO();
+		definirCriterioEvaluacion.setIdDefinirCriterioEvaluacion(idDefinirCriterioEvaluacion);		
+		return controladorAccion(definirCriterioEvaluacion,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<DefinirCriterioEvaluacionDTO> controladorAccion(DefinirCriterioEvaluacionDTO definirCriterioEvaluacion, AccionType accionType){
+		ResultadoRestVO<DefinirCriterioEvaluacionDTO> resultado = new ResultadoRestVO<DefinirCriterioEvaluacionDTO>();
+		 try {
+    		resultado.setObjetoResultado(notaServiceLocal.controladorAccionDefinirCriterioEvaluacion(definirCriterioEvaluacion,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<DefinirCriterioEvaluacionDTO> finById(@PathParam("id") String idDefinirCriterioEvaluacion) throws Exception {
+		DefinirCriterioEvaluacionDTO definirCriterioEvaluacion = new DefinirCriterioEvaluacionDTO();
+		definirCriterioEvaluacion.setIdDefinirCriterioEvaluacion(idDefinirCriterioEvaluacion);
+		return controladorAccion(definirCriterioEvaluacion,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<DefinirCriterioEvaluacionDTO> listarDefinirCriterioEvaluacion(@Context UriInfo info){
+		ResultadoRestVO<DefinirCriterioEvaluacionDTO> resultado = new ResultadoRestVO<DefinirCriterioEvaluacionDTO>();
+		DefinirCriterioEvaluacionDTO definirCriterioEvaluacion = transferUriInfo(info);
+		 try {
+    		resultado.setListaResultado(notaServiceLocal.listarDefinirCriterioEvaluacion(definirCriterioEvaluacion));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<Integer> contarListarDefinirCriterioEvaluacion(@Context UriInfo info){
+		ResultadoRestVO<Integer> resultado = new ResultadoRestVO<Integer>();
+		DefinirCriterioEvaluacionDTO definirCriterioEvaluacion = transferUriInfo(info);
+		 try {
+    		resultado.setObjetoResultado(notaServiceLocal.contarListarDefinirCriterioEvaluacion(definirCriterioEvaluacion));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<DefinirCriterioEvaluacionDTO> inicializarDefinirCriterioEvaluacion(@Context UriInfo info) throws Exception {
+	     DefinirCriterioEvaluacionDTO definirCriterioEvaluacion = transferUriInfo(info);
+		 ResultadoRestVO<DefinirCriterioEvaluacionDTO> resultado = new ResultadoRestVO<DefinirCriterioEvaluacionDTO>();
+		 try {
+    		resultado.setObjetoResultado(definirCriterioEvaluacion);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private DefinirCriterioEvaluacionDTO transferUriInfo(@Context UriInfo info) {
+		DefinirCriterioEvaluacionDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,DefinirCriterioEvaluacionDTO.class);
+		return resultado;
+	}
+}

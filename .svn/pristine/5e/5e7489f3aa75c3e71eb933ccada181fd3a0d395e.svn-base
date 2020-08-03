@@ -1,0 +1,36 @@
+package pe.com.edu.siaa.core.ejb.factory;
+
+
+
+
+
+/**
+ * La Class ConstanteQueryTron2000Util.
+ * <ul>
+ * <li>Copyright 2014 SIAA-
+ * siaa. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 1.0, Tue Apr 29 17:13:19 COT 2017
+ * @since Rep v1.0
+ */
+public final class ConstanteQueryNameUtil {
+
+	
+	/** La Constante MENSAJE_BUSQUEDA. */
+	public static final String AVANCE_CORREDEODR_OBTENER_DETALLE_AVANCE_CORREDOR = "obtenerDetalleAvanceCorredor";
+	
+	/** La Constante CONTROL_DIARIO_EMISION_MASIVA_POLIZA_EMITIDA. */
+	public static final String CONTROL_DIARIO_EMISION_MASIVA_POLIZA_EMITIDA = "obtenerPolizaEmitida";
+	
+	
+	
+	/**
+	 * Instancia un nuevo constante query tron2000 util.
+	 */
+	private ConstanteQueryNameUtil() {
+		
+	}
+	
+}

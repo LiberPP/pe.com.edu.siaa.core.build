@@ -1,0 +1,106 @@
+package pe.com.edu.siaa.core.ejb.dao.admision.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.persistence.Query;
+
+import pe.com.edu.siaa.core.ejb.dao.admision.local.FacultadDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericAcademicoDAOImpl;
+import pe.com.edu.siaa.core.model.dto.admision.FacultadDTO;
+import pe.com.edu.siaa.core.model.jpa.admision.Facultad;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+
+/**
+ * La Class FacultadDaoImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 19:53:42 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+public class FacultadDaoImpl extends  GenericAcademicoDAOImpl<String, Facultad> implements FacultadDaoLocal  {
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.FacultadDaoLocal#listarFacultad(pe.com.edu.siaa.core.model.jpa.seguridad.Facultad)
+     */  
+    @Override	 
+    public List<Facultad> listarFacultad(FacultadDTO facultad) {
+        Query query = generarQueryListaFacultad(facultad, false);
+        query.setFirstResult(facultad.getStartRow());
+        query.setMaxResults(facultad.getOffset());
+        return query.getResultList();
+    }   
+   
+    /**
+     * Generar query lista Facultad.
+     *
+     * @param FacultadDTO el facultad
+     * @param esContador el es contador
+     * @return the query
+     */
+    private Query generarQueryListaFacultad(FacultadDTO facultad, boolean esContador) {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        if (esContador) {
+            jpaql.append(" select count(o.idFacultad) from Facultad o where 1=1 ");
+        } else {
+            jpaql.append(" select o from Facultad o where 1=1 ");           
+        }
+		if (!StringUtils.isNullOrEmpty(facultad.getSearch())) {
+	          jpaql.append(" and upper(o.descripcion) like :search ");
+	          parametros.put("search", "%" + facultad.getSearch().toUpperCase() + "%");
+	    } else {
+			if (!StringUtils.isNullOrEmpty(facultad.getDescripcion())) {
+				jpaql.append(" and upper(o.descripcion) like :descripcion ");
+				parametros.put("descripcion", "%" + facultad.getDescripcion().toUpperCase() + "%");
+			}
+		}
+        if (!esContador) {
+            //jpaql.append(" ORDER BY 1 ");
+        }
+        Query query = createQuery(jpaql.toString(), parametros);
+        return query;
+    }
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.FacultadDaoLocal#contarListar{entity.getClassName()}(pe.com.edu.siaa.core.model.jpa.seguridad.FacultadDTO)
+     */
+	@Override
+    public int contarListarFacultad(FacultadDTO facultad) {
+        int resultado = 0;
+        try {
+            //StringBuilder jpaql = new StringBuilder();
+            Query query = generarQueryListaFacultad(facultad, true);
+            resultado = ((Long) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            resultado = 0;
+        }
+        return resultado;
+    }
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.FacultadDaoLocal#generarIdFacultad()
+     */
+	 @Override
+    public String generarIdFacultad() {
+        String resultado = "1";
+        Query query = createQuery("select max(o.idFacultad) from Facultad o", null);
+        List<Object> listLong =  query.getResultList();
+        if (listLong != null && listLong.size() > 0 && listLong.get(0) != null)  {
+            Long ultimoIdGenerado = Long.valueOf(listLong.get(0).toString());
+            if (!StringUtils.isNullOrEmpty(ultimoIdGenerado)) {
+            	ultimoIdGenerado++;
+				resultado = "" + ultimoIdGenerado;
+				resultado = StringUtils.completeLeft(resultado, '0', 3);
+            }
+        }
+        return resultado;
+    }
+   
+}

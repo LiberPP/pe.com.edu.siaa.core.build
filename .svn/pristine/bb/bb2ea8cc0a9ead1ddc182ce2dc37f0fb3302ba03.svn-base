@@ -1,0 +1,252 @@
+package pe.com.edu.siaa.core.model.dto.nota;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import pe.com.edu.siaa.core.model.dto.BasePaginator;
+import pe.com.edu.siaa.core.model.dto.common.ItemDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.DetCargaLectivaDTO;
+
+/**
+ * La Class ConceptoNotaDTO.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 1.0, Tue Apr 18 09:56:52 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+public class ConceptoNotaDTO extends BasePaginator implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id concepto nota. */
+    private String idConceptoNota;
+   
+    /** El det carga lectiva. */
+    private DetCargaLectivaDTO detCargaLectiva;
+   
+    /** El descripcion. */
+    private String descripcion;
+   
+    /** El flag obligatorio. */
+    private String flagObligatorio;
+   
+    /** El item by tipo nota. */
+    private ItemDTO itemByTipoNota;
+   
+    /** El estado. */
+    private String estado;
+   
+    /** El concepto nota curso nota list. */
+    private List<CursoNotaDTO> conceptoNotaCursoNotaList = new ArrayList<CursoNotaDTO>();
+   
+    /** El concepto nota definir criterio evaluacion list. */
+    private List<DefinirCriterioEvaluacionDTO> conceptoNotaDefinirCriterioEvaluacionList = new ArrayList<DefinirCriterioEvaluacionDTO>();
+   
+    /**
+     * Instancia un nuevo concepto notaDTO.
+     */
+    public ConceptoNotaDTO() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo concepto notaDTO.
+     *
+     * @param idConceptoNota el id concepto nota
+     * @param detCargaLectiva el det carga lectiva
+     * @param descripcion el descripcion
+     * @param flagObligatorio el flag obligatorio
+     * @param itemByTipoNota el item by tipo nota
+     * @param estado el estado
+     */
+    public ConceptoNotaDTO(String idConceptoNota, DetCargaLectivaDTO detCargaLectiva,String descripcion, String flagObligatorio, ItemDTO itemByTipoNota,String estado ) {
+        super();
+        this.idConceptoNota = idConceptoNota;
+        this.detCargaLectiva = detCargaLectiva;
+        this.descripcion = descripcion;
+        this.flagObligatorio = flagObligatorio;
+        this.itemByTipoNota = itemByTipoNota;
+        this.estado = estado;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id concepto nota.
+     *
+     * @return id concepto nota
+     */
+     public String getIdConceptoNota() {
+        return this.idConceptoNota;
+    }
+    /**
+     * Establece el id concepto nota.
+     *
+     * @param idConceptoNota el new id concepto nota
+     */
+    public void setIdConceptoNota(String idConceptoNota) {
+        this.idConceptoNota = idConceptoNota;
+    }
+    /**
+     * Obtiene det carga lectiva.
+     *
+     * @return det carga lectiva
+     */
+     public DetCargaLectivaDTO getDetCargaLectiva() {
+        return this.detCargaLectiva;
+    }
+    /**
+     * Establece el det carga lectiva.
+     *
+     * @param detCargaLectiva el new det carga lectiva
+     */
+    public void setDetCargaLectiva(DetCargaLectivaDTO detCargaLectiva) {
+        this.detCargaLectiva = detCargaLectiva;
+    }
+    /**
+     * Obtiene descripcion.
+     *
+     * @return descripcion
+     */
+     public String getDescripcion() {
+        return this.descripcion;
+    }
+    /**
+     * Establece el descripcion.
+     *
+     * @param descripcion el new descripcion
+     */
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+    /**
+     * Obtiene flag obligatorio.
+     *
+     * @return flag obligatorio
+     */
+     public String getFlagObligatorio() {
+        return this.flagObligatorio;
+    }
+    /**
+     * Establece el flag obligatorio.
+     *
+     * @param flagObligatorio el new flag obligatorio
+     */
+    public void setFlagObligatorio(String flagObligatorio) {
+        this.flagObligatorio = flagObligatorio;
+    }
+    /**
+     * Obtiene item by tipo nota.
+     *
+     * @return item by tipo nota
+     */
+     public ItemDTO getItemByTipoNota() {
+        return this.itemByTipoNota;
+    }
+    /**
+     * Establece el item by tipo nota.
+     *
+     * @param itemByTipoNota el new item by tipo nota
+     */
+    public void setItemByTipoNota(ItemDTO itemByTipoNota) {
+        this.itemByTipoNota = itemByTipoNota;
+    }
+    /**
+     * Obtiene estado.
+     *
+     * @return estado
+     */
+     public String getEstado() {
+        return this.estado;
+    }
+    /**
+     * Establece el estado.
+     *
+     * @param estado el new estado
+     */
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+    /**
+     * Establece el concepto nota curso nota list.
+     *
+     * @param conceptoNotaCursoNotaList el new concepto nota curso nota list
+     */
+    public List<CursoNotaDTO> getConceptoNotaCursoNotaList(){
+        return this.conceptoNotaCursoNotaList;
+    }
+    /**
+     * Establece el concepto nota list.
+     *
+     * @param conceptoNotaList el new concepto nota list
+     */
+    public void setConceptoNotaCursoNotaList(List<CursoNotaDTO> conceptoNotaCursoNotaList) {
+        this.conceptoNotaCursoNotaList = conceptoNotaCursoNotaList;
+    }   
+    /**
+     * Establece el concepto nota definir criterio evaluacion list.
+     *
+     * @param conceptoNotaDefinirCriterioEvaluacionList el new concepto nota definir criterio evaluacion list
+     */
+    public List<DefinirCriterioEvaluacionDTO> getConceptoNotaDefinirCriterioEvaluacionList(){
+        return this.conceptoNotaDefinirCriterioEvaluacionList;
+    }
+    /**
+     * Establece el concepto nota list.
+     *
+     * @param conceptoNotaList el new concepto nota list
+     */
+    public void setConceptoNotaDefinirCriterioEvaluacionList(List<DefinirCriterioEvaluacionDTO> conceptoNotaDefinirCriterioEvaluacionList) {
+        this.conceptoNotaDefinirCriterioEvaluacionList = conceptoNotaDefinirCriterioEvaluacionList;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idConceptoNota == null) ? 0 : idConceptoNota.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        ConceptoNotaDTO other = (ConceptoNotaDTO) obj;
+        if (idConceptoNota == null) {
+            if (other.idConceptoNota != null) {
+                return false;
+            }
+        } else if (!idConceptoNota.equals(other.idConceptoNota)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "ConceptoNotaDTO [idConceptoNota=" + idConceptoNota + "]";
+    }
+   
+}

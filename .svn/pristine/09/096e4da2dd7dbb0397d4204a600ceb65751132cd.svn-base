@@ -1,0 +1,136 @@
+package pe.com.edu.siaa.core.model.jpa.admision;
+
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import pe.com.edu.siaa.core.model.util.ConfiguracionEntityManagerUtil;
+
+/**
+ * La Class TipoSector.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 09:56:51 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Entity
+@Table(name = "TipoSector", schema = ConfiguracionEntityManagerUtil.ESQUEMA_ACADEMICO)
+public class TipoSector implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id tipo sector. */
+    @Id
+    @Column(name = "idTipoSector" , length = 2)
+    private String idTipoSector;
+   
+    /** El descripcion. */
+    @Column(name = "descripcion" , length = 50)
+    private String descripcion;
+   
+    /**
+     * Instancia un nuevo tipo sector.
+     */
+    public TipoSector() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo tipo sector.
+     *
+     * @param idTipoSector el id tipo sector
+     * @param descripcion el descripcion
+     */
+    public TipoSector(String idTipoSector, String descripcion ) {
+        super();
+        this.idTipoSector = idTipoSector;
+        this.descripcion = descripcion;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id tipo sector.
+     *
+     * @return id tipo sector
+     */
+     public String getIdTipoSector() {
+        return this.idTipoSector;
+    }
+    /**
+     * Establece el id tipo sector.
+     *
+     * @param idTipoSector el new id tipo sector
+     */
+    public void setIdTipoSector(String idTipoSector) {
+        this.idTipoSector = idTipoSector;
+    }
+    /**
+     * Obtiene descripcion.
+     *
+     * @return descripcion
+     */
+     public String getDescripcion() {
+        return this.descripcion;
+    }
+    /**
+     * Establece el descripcion.
+     *
+     * @param descripcion el new descripcion
+     */
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idTipoSector == null) ? 0 : idTipoSector.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        TipoSector other = (TipoSector) obj;
+        if (idTipoSector == null) {
+            if (other.idTipoSector != null) {
+                return false;
+            }
+        } else if (!idTipoSector.equals(other.idTipoSector)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "TipoSector [idTipoSector=" + idTipoSector + "]";
+    }
+   
+}

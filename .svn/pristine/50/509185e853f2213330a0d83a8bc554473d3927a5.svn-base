@@ -1,0 +1,169 @@
+package pe.com.edu.siaa.core.model.dto.nota;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+
+import pe.com.edu.siaa.core.model.dto.BasePaginator;
+
+/**
+ * La Class CursoNotaDTO.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 1.0, Tue Apr 18 09:56:55 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+public class CursoNotaDTO extends BasePaginator implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id curso nota. */
+    private String idCursoNota;
+   
+    /** El det registro nota. */
+    private DetRegistroNotaDTO detRegistroNota;
+   
+    /** El concepto nota. */
+    private ConceptoNotaDTO conceptoNota;
+   
+    /** El nota. */
+    private BigDecimal nota;
+   
+    /**
+     * Instancia un nuevo curso notaDTO.
+     */
+    public CursoNotaDTO() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo curso notaDTO.
+     *
+     * @param idCursoNota el id curso nota
+     * @param detRegistroNota el det registro nota
+     * @param conceptoNota el concepto nota
+     * @param nota el nota
+     */
+    public CursoNotaDTO(String idCursoNota, DetRegistroNotaDTO detRegistroNota,ConceptoNotaDTO conceptoNota,BigDecimal nota ) {
+        super();
+        this.idCursoNota = idCursoNota;
+        this.detRegistroNota = detRegistroNota;
+        this.conceptoNota = conceptoNota;
+        this.nota = nota;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id curso nota.
+     *
+     * @return id curso nota
+     */
+     public String getIdCursoNota() {
+        return this.idCursoNota;
+    }
+    /**
+     * Establece el id curso nota.
+     *
+     * @param idCursoNota el new id curso nota
+     */
+    public void setIdCursoNota(String idCursoNota) {
+        this.idCursoNota = idCursoNota;
+    }
+    /**
+     * Obtiene det registro nota.
+     *
+     * @return det registro nota
+     */
+     public DetRegistroNotaDTO getDetRegistroNota() {
+        return this.detRegistroNota;
+    }
+    /**
+     * Establece el det registro nota.
+     *
+     * @param detRegistroNota el new det registro nota
+     */
+    public void setDetRegistroNota(DetRegistroNotaDTO detRegistroNota) {
+        this.detRegistroNota = detRegistroNota;
+    }
+    /**
+     * Obtiene concepto nota.
+     *
+     * @return concepto nota
+     */
+     public ConceptoNotaDTO getConceptoNota() {
+        return this.conceptoNota;
+    }
+    /**
+     * Establece el concepto nota.
+     *
+     * @param conceptoNota el new concepto nota
+     */
+    public void setConceptoNota(ConceptoNotaDTO conceptoNota) {
+        this.conceptoNota = conceptoNota;
+    }
+    /**
+     * Obtiene nota.
+     *
+     * @return nota
+     */
+     public BigDecimal getNota() {
+        return this.nota;
+    }
+    /**
+     * Establece el nota.
+     *
+     * @param nota el new nota
+     */
+    public void setNota(BigDecimal nota) {
+        this.nota = nota;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idCursoNota == null) ? 0 : idCursoNota.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        CursoNotaDTO other = (CursoNotaDTO) obj;
+        if (idCursoNota == null) {
+            if (other.idCursoNota != null) {
+                return false;
+            }
+        } else if (!idCursoNota.equals(other.idCursoNota)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "CursoNotaDTO [idCursoNota=" + idCursoNota + "]";
+    }
+   
+}

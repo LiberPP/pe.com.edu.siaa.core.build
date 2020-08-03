@@ -1,0 +1,171 @@
+package pe.com.builderp.core.escalafon.model.dto;
+
+import java.io.Serializable;
+
+import pe.com.edu.siaa.core.model.dto.BasePaginator;
+import pe.com.edu.siaa.core.model.dto.common.ItemDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.PersonalDTO;
+ 
+
+/**
+ * La Class ProyectoInvestigacionEquipoDTO.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 1.0, Sun Dec 31 00:36:00 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+public class ProyectoInvestigacionEquipoDTO extends BasePaginator implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id proyecto investigacion difusion. */
+    private String idProyectoInvestigacionDifusion;
+   
+    /** El proyecto investigacion. */
+    private ProyectoInvestigacionDTO proyectoInvestigacion;
+   
+    /** El personal. */
+    private PersonalDTO personal;
+   
+    /** El item by rol. */
+    private ItemDTO itemByRol;
+   
+    /**
+     * Instancia un nuevo proyecto investigacion equipoDTO.
+     */
+    public ProyectoInvestigacionEquipoDTO() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo proyecto investigacion equipoDTO.
+     *
+     * @param idProyectoInvestigacionDifusion el id proyecto investigacion difusion
+     * @param proyectoInvestigacion el proyecto investigacion
+     * @param personal el personal
+     * @param itemByRol el item by rol
+     */
+    public ProyectoInvestigacionEquipoDTO(String idProyectoInvestigacionDifusion, ProyectoInvestigacionDTO proyectoInvestigacion,PersonalDTO personal,ItemDTO itemByRol) {
+        super();
+        this.idProyectoInvestigacionDifusion = idProyectoInvestigacionDifusion;
+        this.proyectoInvestigacion = proyectoInvestigacion;
+        this.personal = personal;
+        this.itemByRol = itemByRol;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id proyecto investigacion difusion.
+     *
+     * @return id proyecto investigacion difusion
+     */
+     public String getIdProyectoInvestigacionDifusion() {
+        return this.idProyectoInvestigacionDifusion;
+    }
+    /**
+     * Establece el id proyecto investigacion difusion.
+     *
+     * @param idProyectoInvestigacionDifusion el new id proyecto investigacion difusion
+     */
+    public void setIdProyectoInvestigacionDifusion(String idProyectoInvestigacionDifusion) {
+        this.idProyectoInvestigacionDifusion = idProyectoInvestigacionDifusion;
+    }
+    /**
+     * Obtiene proyecto investigacion.
+     *
+     * @return proyecto investigacion
+     */
+     public ProyectoInvestigacionDTO getProyectoInvestigacion() {
+        return this.proyectoInvestigacion;
+    }
+    /**
+     * Establece el proyecto investigacion.
+     *
+     * @param proyectoInvestigacion el new proyecto investigacion
+     */
+    public void setProyectoInvestigacion(ProyectoInvestigacionDTO proyectoInvestigacion) {
+        this.proyectoInvestigacion = proyectoInvestigacion;
+    }
+    /**
+     * Obtiene personal.
+     *
+     * @return personal
+     */
+     public PersonalDTO getPersonal() {
+        return this.personal;
+    }
+    /**
+     * Establece el personal.
+     *
+     * @param personal el new personal
+     */
+    public void setPersonal(PersonalDTO personal) {
+        this.personal = personal;
+    }
+    /**
+     * Obtiene item by rol.
+     *
+     * @return item by rol
+     */
+     public ItemDTO getItemByRol() {
+        return this.itemByRol;
+    }
+    /**
+     * Establece el item by rol.
+     *
+     * @param itemByRol el new item by rol
+     */
+    public void setItemByRol(ItemDTO itemByRol) {
+        this.itemByRol = itemByRol;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idProyectoInvestigacionDifusion == null) ? 0 : idProyectoInvestigacionDifusion.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        ProyectoInvestigacionEquipoDTO other = (ProyectoInvestigacionEquipoDTO) obj;
+        if (idProyectoInvestigacionDifusion == null) {
+            if (other.idProyectoInvestigacionDifusion != null) {
+                return false;
+            }
+        } else if (!idProyectoInvestigacionDifusion.equals(other.idProyectoInvestigacionDifusion)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "ProyectoInvestigacionEquipoDTO [idProyectoInvestigacionDifusion=" + idProyectoInvestigacionDifusion + "]";
+    }
+   
+}

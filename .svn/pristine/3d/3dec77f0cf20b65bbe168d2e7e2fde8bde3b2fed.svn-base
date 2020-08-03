@@ -1,0 +1,215 @@
+package pe.com.edu.siaa.core.model.dto.nota;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
+import pe.com.edu.siaa.core.model.dto.BasePaginator;
+import pe.com.edu.siaa.core.model.dto.matricula.DetTrasladoDTO;
+
+/**
+ * La Class NotaLetraDTO.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 1.0, Tue Apr 18 09:56:49 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+public class NotaLetraDTO extends BasePaginator implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id notaletra. */
+    private BigDecimal idNotaLetra;
+   
+    /** El abreviatura. */
+    private String abreviatura;
+   
+    /** El descripcion. */
+    private String descripcion;
+   
+    /** El nota letra det registro nota list. */
+    private List<DetRegistroNotaDTO> notaLetraDetRegistroNotaList = new ArrayList<DetRegistroNotaDTO>();
+   
+    /** El nota letra by nota aplazado det registro nota list. */
+    private List<DetRegistroNotaDTO> notaLetraByNotaAplazadoDetRegistroNotaList = new ArrayList<DetRegistroNotaDTO>();
+   
+    /** El nota letra det traslado list. */
+    private List<DetTrasladoDTO> notaLetraDetTrasladoList = new ArrayList<DetTrasladoDTO>();
+   
+    /**
+     * Instancia un nuevo nota letraDTO.
+     */
+    public NotaLetraDTO() {
+    }
+   
+	/**
+	 * Instancia un nuevo nota letra.
+	 *
+	 * @param idNotaLetra el id nota letra
+	 */
+	public NotaLetraDTO(BigDecimal idNotaLetra) {
+		this.idNotaLetra = idNotaLetra;
+	} 
+    /**
+     * Instancia un nuevo nota letraDTO.
+     *
+     * @param idNotaLetra el id notaletra
+     * @param abreviatura el abreviatura
+     * @param descripcion el descripcion
+     */
+    public NotaLetraDTO(BigDecimal idNotaLetra, String abreviatura, String descripcion ) {
+        super();
+        this.idNotaLetra = idNotaLetra;
+        this.abreviatura = abreviatura;
+        this.descripcion = descripcion;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id notaletra.
+     *
+     * @return id notaletra
+     */
+     public BigDecimal getIdNotaLetra() {
+        return this.idNotaLetra;
+    }
+    /**
+     * Establece el id notaletra.
+     *
+     * @param idNotaLetra el new id notaletra
+     */
+    public void setIdNotaLetra(BigDecimal idNotaLetra) {
+        this.idNotaLetra = idNotaLetra;
+    }
+    /**
+     * Obtiene abreviatura.
+     *
+     * @return abreviatura
+     */
+     public String getAbreviatura() {
+        return this.abreviatura;
+    }
+    /**
+     * Establece el abreviatura.
+     *
+     * @param abreviatura el new abreviatura
+     */
+    public void setAbreviatura(String abreviatura) {
+        this.abreviatura = abreviatura;
+    }
+    /**
+     * Obtiene descripcion.
+     *
+     * @return descripcion
+     */
+     public String getDescripcion() {
+        return this.descripcion;
+    }
+    /**
+     * Establece el descripcion.
+     *
+     * @param descripcion el new descripcion
+     */
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+    /**
+     * Establece el nota letra det registro nota list.
+     *
+     * @param notaLetraDetRegistroNotaList el new nota letra det registro nota list
+     */
+    public List<DetRegistroNotaDTO> getNotaLetraDetRegistroNotaList(){
+        return this.notaLetraDetRegistroNotaList;
+    }
+    /**
+     * Establece el nota letra list.
+     *
+     * @param notaLetraList el new nota letra list
+     */
+    public void setNotaLetraDetRegistroNotaList(List<DetRegistroNotaDTO> notaLetraDetRegistroNotaList) {
+        this.notaLetraDetRegistroNotaList = notaLetraDetRegistroNotaList;
+    }   
+    /**
+     * Establece el nota letra by nota aplazado det registro nota list.
+     *
+     * @param notaLetraByNotaAplazadoDetRegistroNotaList el new nota letra by nota aplazado det registro nota list
+     */
+    public List<DetRegistroNotaDTO> getNotaLetraByNotaAplazadoDetRegistroNotaList(){
+        return this.notaLetraByNotaAplazadoDetRegistroNotaList;
+    }
+    /**
+     * Establece el nota letra by nota aplazado list.
+     *
+     * @param notaLetraByNotaAplazadoList el new nota letra by nota aplazado list
+     */
+    public void setNotaLetraByNotaAplazadoDetRegistroNotaList(List<DetRegistroNotaDTO> notaLetraByNotaAplazadoDetRegistroNotaList) {
+        this.notaLetraByNotaAplazadoDetRegistroNotaList = notaLetraByNotaAplazadoDetRegistroNotaList;
+    }   
+    /**
+     * Establece el nota letra det traslado list.
+     *
+     * @param notaLetraDetTrasladoList el new nota letra det traslado list
+     */
+    public List<DetTrasladoDTO> getNotaLetraDetTrasladoList(){
+        return this.notaLetraDetTrasladoList;
+    }
+    /**
+     * Establece el nota letra list.
+     *
+     * @param notaLetraList el new nota letra list
+     */
+    public void setNotaLetraDetTrasladoList(List<DetTrasladoDTO> notaLetraDetTrasladoList) {
+        this.notaLetraDetTrasladoList = notaLetraDetTrasladoList;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idNotaLetra == null) ? 0 : idNotaLetra.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        NotaLetraDTO other = (NotaLetraDTO) obj;
+        if (idNotaLetra == null) {
+            if (other.idNotaLetra != null) {
+                return false;
+            }
+        } else if (!idNotaLetra.equals(other.idNotaLetra)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "NotaLetraDTO [idNotaletra=" + idNotaLetra + "]";
+    }
+   
+}

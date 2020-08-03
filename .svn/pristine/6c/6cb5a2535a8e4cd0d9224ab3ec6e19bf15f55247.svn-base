@@ -1,0 +1,640 @@
+package pe.com.edu.siaa.core.model.vo;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import pe.com.edu.siaa.core.model.dto.BasePaginator;
+import pe.com.edu.siaa.core.model.dto.admision.AnhoSemestreDTO;
+import pe.com.edu.siaa.core.model.dto.admision.EscuelaDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.AlumnoDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.PersonalDTO;
+
+
+/**
+ * <ul>
+ * <li>Copyright 2012 BUILD SOFT S.A.C - BS. Todos los derechos reservados.</li>
+ * </ul>
+ * 
+ * La Class RegistroNotaDTO.
+ *
+ * @author ndavilal.
+ * @version 1.0 , 06/10/2012
+ * @since SIAA 2.0
+ */
+public class RegistroNotaVO extends BasePaginator  implements Serializable {
+
+	/** La Constante serialVersionUID. */
+	private static final long serialVersionUID = -5568277544450873979L;
+
+	/** El id. */
+	private String id;
+	
+	/** El curso. */
+	private String curso;
+	
+	/** El turno. */
+	private String turno;
+	
+	/** El id ciclo. */
+	private Long idCiclo;
+	
+	/** El ciclo. */
+	private String ciclo;
+	
+	/** El credito. */
+	private Integer credito;
+	
+	/** El ponderado curso. */
+	private BigDecimal ponderadoCurso;
+	
+	/** El ponderado curso. */
+	private BigDecimal notaAplazado;
+	
+	/** El ponderado semestre. */
+	private BigDecimal ponderadoSemestre;
+	
+	/** La sumatoria credito aprobado. */
+	private Integer sumatoriaCreditoAprobado;
+	
+	/** La nota abreviada. */
+	private String notaAbreviada;
+	
+	/** La nota letra. */
+	private String notaLetra;
+	
+	/** La observacion. */
+	private String observacion;
+	
+	/** El objeto anho semestre. */
+	private AnhoSemestreDTO anhoSemestre = new AnhoSemestreDTO();
+    
+    /** La codigo asignatura. */
+    private String codigoAsignatura;
+    
+    /** La header table group. */
+    private String headerTableGroup;
+    
+	/** La usuario modificacion. */
+	private String usuarioModificacion;
+	
+	/** El usuario creacion. */
+	private String usuarioCreacion;
+	
+	/** La fecha creacion. */
+	private Date fechaCreacion;
+	
+	/** La fecha modificacion. */
+	private Date fechaModificacion;
+    
+    /** La lista curso nota. */
+    private List<RegistroNotaVO> listaCursoNota = new ArrayList<RegistroNotaVO>();
+    
+    /** La escuela. */
+    private EscuelaDTO escuela = new EscuelaDTO();
+    
+    /** La alumno. */
+    private AlumnoDTO alumno = new AlumnoDTO();
+    
+    /** La docente. */
+    private PersonalDTO docente = new PersonalDTO();
+	
+    
+    /** La dia. */
+    private String dia;
+    
+    /** La mes. */
+    private String mes;
+    
+    /** La anho. */
+    private String anho;
+    
+    private boolean esAplazado = false;
+	/**
+	 * Instancia un nuevo concepto pago dto.
+	 */
+	public RegistroNotaVO() {
+		super();
+	}
+
+
+	/**
+	 * Obtiene id.
+	 *
+	 * @return id
+	 */
+	public String getId() {
+		return id;
+	}
+
+
+	/**
+	 * Establece el id.
+	 *
+	 * @param id el new id
+	 */
+	public void setId(String id) {
+		this.id = id;
+	}
+
+
+	/**
+	 * Obtiene curso.
+	 *
+	 * @return curso
+	 */
+	public String getCurso() {
+		return curso;
+	}
+
+
+	/**
+	 * Establece el curso.
+	 *
+	 * @param curso el new curso
+	 */
+	public void setCurso(String curso) {
+		this.curso = curso;
+	}
+
+
+	/**
+	 * Obtiene turno.
+	 *
+	 * @return turno
+	 */
+	public String getTurno() {
+		return turno;
+	}
+
+
+	/**
+	 * Establece el turno.
+	 *
+	 * @param turno el new turno
+	 */
+	public void setTurno(String turno) {
+		this.turno = turno;
+	}
+
+
+	/**
+	 * Obtiene ciclo.
+	 *
+	 * @return ciclo
+	 */
+	public String getCiclo() {
+		return ciclo;
+	}
+
+
+	/**
+	 * Establece el ciclo.
+	 *
+	 * @param ciclo el new ciclo
+	 */
+	public void setCiclo(String ciclo) {
+		this.ciclo = ciclo;
+	}
+
+
+	/**
+	 * Obtiene credito.
+	 *
+	 * @return credito
+	 */
+	public Integer getCredito() {
+		return credito;
+	}
+
+
+	/**
+	 * Establece el credito.
+	 *
+	 * @param credito el new credito
+	 */
+	public void setCredito(Integer credito) {
+		this.credito = credito;
+	}
+
+
+	/**
+	 * Obtiene ponderado curso.
+	 *
+	 * @return ponderado curso
+	 */
+	public BigDecimal getPonderadoCurso() {
+		return ponderadoCurso;
+	}
+
+
+	/**
+	 * Establece el ponderado curso.
+	 *
+	 * @param ponderadoCurso el new ponderado curso
+	 */
+	public void setPonderadoCurso(BigDecimal ponderadoCurso) {
+		this.ponderadoCurso = ponderadoCurso;
+	}
+
+
+	/**
+	 * Obtiene ponderado semestre.
+	 *
+	 * @return ponderado semestre
+	 */
+	public BigDecimal getPonderadoSemestre() {
+		return ponderadoSemestre;
+	}
+
+
+	/**
+	 * Establece el ponderado semestre.
+	 *
+	 * @param ponderadoSemestre el new ponderado semestre
+	 */
+	public void setPonderadoSemestre(BigDecimal ponderadoSemestre) {
+		this.ponderadoSemestre = ponderadoSemestre;
+	}
+
+
+	/**
+	 * Obtiene nota abreviada.
+	 *
+	 * @return nota abreviada
+	 */
+	public String getNotaAbreviada() {
+		return notaAbreviada;
+	}
+
+
+	/**
+	 * Establece el nota abreviada.
+	 *
+	 * @param notaAbreviada el new nota abreviada
+	 */
+	public void setNotaAbreviada(String notaAbreviada) {
+		this.notaAbreviada = notaAbreviada;
+	}
+
+
+	/**
+	 * Obtiene nota letra.
+	 *
+	 * @return nota letra
+	 */
+	public String getNotaLetra() {
+		return notaLetra;
+	}
+
+
+	/**
+	 * Establece el nota letra.
+	 *
+	 * @param notaLetra el new nota letra
+	 */
+	public void setNotaLetra(String notaLetra) {
+		this.notaLetra = notaLetra;
+	}
+
+
+	/**
+	 * Obtiene observacion.
+	 *
+	 * @return observacion
+	 */
+	public String getObservacion() {
+		return observacion;
+	}
+
+
+	/**
+	 * Establece el observacion.
+	 *
+	 * @param observacion el new observacion
+	 */
+	public void setObservacion(String observacion) {
+		this.observacion = observacion;
+	}
+
+
+	/**
+	 * Obtiene anho semestre.
+	 *
+	 * @return anho semestre
+	 */
+	public AnhoSemestreDTO getAnhoSemestre() {
+		return anhoSemestre;
+	}
+
+
+	/**
+	 * Establece el anho semestre.
+	 *
+	 * @param anhoSemestre el new anho semestre
+	 */
+	public void setAnhoSemestre(AnhoSemestreDTO anhoSemestre) {
+		this.anhoSemestre = anhoSemestre;
+	}
+
+
+	/**
+	 * Obtiene codigo asignatura.
+	 *
+	 * @return codigo asignatura
+	 */
+	public String getCodigoAsignatura() {
+		return codigoAsignatura;
+	}
+
+	/**
+	 * Establece el codigo asignatura.
+	 *
+	 * @param codigoAsignatura el new codigo asignatura
+	 */
+	public void setCodigoAsignatura(String codigoAsignatura) {
+		this.codigoAsignatura = codigoAsignatura;
+	}
+
+	/**
+	 * Obtiene lista curso nota.
+	 *
+	 * @return lista curso nota
+	 */
+	public List<RegistroNotaVO> getListaCursoNota() {
+		return listaCursoNota;
+	}
+
+	/**
+	 * Establece el lista curso nota.
+	 *
+	 * @param listaCursoNota el new lista curso nota
+	 */
+	public void setListaCursoNota(List<RegistroNotaVO> listaCursoNota) {
+		this.listaCursoNota = listaCursoNota;
+	}
+
+
+	/**
+	 * Obtiene sumatoria credito aprobado.
+	 *
+	 * @return sumatoria credito aprobado
+	 */
+	public Integer getSumatoriaCreditoAprobado() {
+		return sumatoriaCreditoAprobado;
+	}
+
+
+	/**
+	 * Establece el sumatoria credito aprobado.
+	 *
+	 * @param sumatoriaCreditoAprobado el new sumatoria credito aprobado
+	 */
+	public void setSumatoriaCreditoAprobado(Integer sumatoriaCreditoAprobado) {
+		this.sumatoriaCreditoAprobado = sumatoriaCreditoAprobado;
+	}
+
+
+	/**
+	 * Obtiene id ciclo.
+	 *
+	 * @return id ciclo
+	 */
+	public Long getIdCiclo() {
+		return idCiclo;
+	}
+
+
+	/**
+	 * Establece el id ciclo.
+	 *
+	 * @param idCiclo el new id ciclo
+	 */
+	public void setIdCiclo(Long idCiclo) {
+		this.idCiclo = idCiclo;
+	}
+
+
+	/**
+	 * Obtiene header table group.
+	 *
+	 * @return header table group
+	 */
+	public String getHeaderTableGroup() {
+		return headerTableGroup;
+	}
+
+
+	/**
+	 * Establece el header table group.
+	 *
+	 * @param headerTableGroup el new header table group
+	 */
+	public void setHeaderTableGroup(String headerTableGroup) {
+		this.headerTableGroup = headerTableGroup;
+	}
+
+
+	/**
+	 * Obtiene usuario modificacion.
+	 *
+	 * @return usuario modificacion
+	 */
+	public String getUsuarioModificacion() {
+		return usuarioModificacion;
+	}
+
+
+	/**
+	 * Establece el usuario modificacion.
+	 *
+	 * @param usuarioModificacion el new usuario modificacion
+	 */
+	public void setUsuarioModificacion(String usuarioModificacion) {
+		this.usuarioModificacion = usuarioModificacion;
+	}
+
+
+	/**
+	 * Obtiene usuario creacion.
+	 *
+	 * @return usuario creacion
+	 */
+	public String getUsuarioCreacion() {
+		return usuarioCreacion;
+	}
+
+
+	/**
+	 * Establece el usuario creacion.
+	 *
+	 * @param usuarioCreacion el new usuario creacion
+	 */
+	public void setUsuarioCreacion(String usuarioCreacion) {
+		this.usuarioCreacion = usuarioCreacion;
+	}
+
+
+	/**
+	 * Obtiene fecha creacion.
+	 *
+	 * @return fecha creacion
+	 */
+	public Date getFechaCreacion() {
+		return fechaCreacion;
+	}
+
+
+	/**
+	 * Establece el fecha creacion.
+	 *
+	 * @param fechaCreacion el new fecha creacion
+	 */
+	public void setFechaCreacion(Date fechaCreacion) {
+		this.fechaCreacion = fechaCreacion;
+	}
+
+
+	/**
+	 * Obtiene fecha modificacion.
+	 *
+	 * @return fecha modificacion
+	 */
+	public Date getFechaModificacion() {
+		return fechaModificacion;
+	}
+
+
+	/**
+	 * Establece el fecha modificacion.
+	 *
+	 * @param fechaModificacion el new fecha modificacion
+	 */
+	public void setFechaModificacion(Date fechaModificacion) {
+		this.fechaModificacion = fechaModificacion;
+	}
+
+
+	/**
+	 * Obtiene nota aplazado.
+	 *
+	 * @return nota aplazado
+	 */
+	public BigDecimal getNotaAplazado() {
+		return notaAplazado;
+	}
+
+
+	/**
+	 * Establece el nota aplazado.
+	 *
+	 * @param notaAplazado el new nota aplazado
+	 */
+	public void setNotaAplazado(BigDecimal notaAplazado) {
+		this.notaAplazado = notaAplazado;
+	}
+
+
+	/**
+	 * Obtiene escuela.
+	 *
+	 * @return escuela
+	 */
+	public EscuelaDTO getEscuela() {
+		return escuela;
+	}
+
+
+	/**
+	 * Establece el escuela.
+	 *
+	 * @param escuela el new escuela
+	 */
+	public void setEscuela(EscuelaDTO escuela) {
+		this.escuela = escuela;
+	}
+
+
+	/**
+	 * Obtiene alumno.
+	 *
+	 * @return alumno
+	 */
+	public AlumnoDTO getAlumno() {
+		return alumno;
+	}
+
+
+	/**
+	 * Establece el alumno.
+	 *
+	 * @param alumno el new alumno
+	 */
+	public void setAlumno(AlumnoDTO alumno) {
+		this.alumno = alumno;
+	}
+
+
+	/**
+	 * Obtiene docente.
+	 *
+	 * @return docente
+	 */
+	public PersonalDTO getDocente() {
+		return docente;
+	}
+
+
+	/**
+	 * Establece el docente.
+	 *
+	 * @param docente el new docente
+	 */
+	public void setDocente(PersonalDTO docente) {
+		this.docente = docente;
+	}
+
+
+	public String getDia() {
+		return dia;
+	}
+
+
+	public void setDia(String dia) {
+		this.dia = dia;
+	}
+
+
+	public String getMes() {
+		return mes;
+	}
+
+
+	public void setMes(String mes) {
+		this.mes = mes;
+	}
+
+
+	public String getAnho() {
+		return anho;
+	}
+
+
+	public void setAnho(String anho) {
+		this.anho = anho;
+	}
+
+
+	public boolean isEsAplazado() {
+		return esAplazado;
+	}
+
+
+	public void setEsAplazado(boolean esAplazado) {
+		this.esAplazado = esAplazado;
+	}
+
+
+}

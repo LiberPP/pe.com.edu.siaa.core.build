@@ -1,0 +1,67 @@
+package pe.com.edu.siaa.core.ejb.dao.nota.local;
+
+import java.util.List;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.dto.nota.RegistroNotaDTO;
+import pe.com.edu.siaa.core.model.jpa.nota.RegistroNota;
+
+/**
+ * La Class RegistroNotaDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 11:25:15 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface RegistroNotaDaoLocal  extends GenericDAOLocal<String,RegistroNota> {
+	
+	/**
+	 * Listar registroNota.
+	 *
+	 * @param registroNota el registroNota
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<RegistroNota> listarRegistroNota(String idSemestre, String idAlumno) throws Exception;
+	
+	/**
+	 * Obtener registro nota by matricula.
+	 *
+	 * @param matricula el matricula
+	 * @return the registro nota
+	 * @throws Exception the exception
+	 */
+	RegistroNota obtenerRegistroNotaByMatricula(String idMatricula) throws Exception;
+		
+	/**
+	 * Listar registro nota.
+	 *
+	 * @param registroNota el registro notaDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<RegistroNota> listarRegistroNota(RegistroNotaDTO registroNota) throws Exception;
+	
+	/**
+	 * contar lista registro nota.
+	 *
+	 * @param registroNota el registro nota
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarRegistroNota(RegistroNotaDTO registroNota);
+	/**
+	 * Generar id registroNota.
+	 *
+	 * @return the String
+	 * @throws Exception the exception
+	 */
+	String generarIdRegistroNota() throws Exception;
+}

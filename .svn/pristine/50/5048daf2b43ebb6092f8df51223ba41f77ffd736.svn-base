@@ -1,0 +1,147 @@
+package pe.com.edu.siaa.core.model.dto.matricula;
+
+import java.io.Serializable;
+
+import pe.com.edu.siaa.core.model.dto.BasePaginator;
+
+/**
+ * La Class PreRequisitoDTO.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 1.0, Tue Apr 18 09:56:48 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+public class PreRequisitoDTO extends BasePaginator implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id pre requisito. */
+    private String idPreRequisito;
+   
+    /** El det plan estudio. */
+    private DetPlanEstudioDTO detPlanEstudio;
+   
+    /** El det plan estudio requisito. */
+    private DetPlanEstudioDTO detPlanEstudioRequisito;
+   
+    /**
+     * Instancia un nuevo pre requisitoDTO.
+     */
+    public PreRequisitoDTO() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo pre requisitoDTO.
+     *
+     * @param idPreRequisito el id pre requisito
+     * @param detPlanEstudio el det plan estudio
+     * @param detPlanEstudioRequisito el det plan estudio requisito
+     */
+    public PreRequisitoDTO(String idPreRequisito, DetPlanEstudioDTO detPlanEstudio,DetPlanEstudioDTO detPlanEstudioRequisito) {
+        super();
+        this.idPreRequisito = idPreRequisito;
+        this.detPlanEstudio = detPlanEstudio;
+        this.detPlanEstudioRequisito = detPlanEstudioRequisito;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id pre requisito.
+     *
+     * @return id pre requisito
+     */
+     public String getIdPreRequisito() {
+        return this.idPreRequisito;
+    }
+    /**
+     * Establece el id pre requisito.
+     *
+     * @param idPreRequisito el new id pre requisito
+     */
+    public void setIdPreRequisito(String idPreRequisito) {
+        this.idPreRequisito = idPreRequisito;
+    }
+    /**
+     * Obtiene det plan estudio.
+     *
+     * @return det plan estudio
+     */
+     public DetPlanEstudioDTO getDetPlanEstudio() {
+        return this.detPlanEstudio;
+    }
+    /**
+     * Establece el det plan estudio.
+     *
+     * @param detPlanEstudio el new det plan estudio
+     */
+    public void setDetPlanEstudio(DetPlanEstudioDTO detPlanEstudio) {
+        this.detPlanEstudio = detPlanEstudio;
+    }
+    /**
+     * Obtiene det plan estudio requisito.
+     *
+     * @return det plan estudio requisito
+     */
+     public DetPlanEstudioDTO getDetPlanEstudioRequisito() {
+        return this.detPlanEstudioRequisito;
+    }
+    /**
+     * Establece el det plan estudio requisito.
+     *
+     * @param detPlanEstudioRequisito el new det plan estudio requisito
+     */
+    public void setDetPlanEstudioRequisito(DetPlanEstudioDTO detPlanEstudioRequisito) {
+        this.detPlanEstudioRequisito = detPlanEstudioRequisito;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idPreRequisito == null) ? 0 : idPreRequisito.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        PreRequisitoDTO other = (PreRequisitoDTO) obj;
+        if (idPreRequisito == null) {
+            if (other.idPreRequisito != null) {
+                return false;
+            }
+        } else if (!idPreRequisito.equals(other.idPreRequisito)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "PreRequisitoDTO [idPreRequisito=" + idPreRequisito + "]";
+    }
+   
+}

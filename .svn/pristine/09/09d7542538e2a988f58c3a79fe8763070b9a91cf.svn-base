@@ -1,0 +1,120 @@
+package pe.com.edu.siaa.core.ejb.service.rest.encuesta.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.encuesta.local.EncuestaServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.encuesta.AlternativaDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class AlternativaRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Fri Sep 08 16:33:14 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/alternativaRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class AlternativaRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient EncuestaServiceLocal encuestaServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<AlternativaDTO> crear(AlternativaDTO alternativa) throws Exception {
+		return controladorAccion(alternativa,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<AlternativaDTO> modificar(AlternativaDTO alternativa) throws Exception {
+		return controladorAccion(alternativa,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<AlternativaDTO> eliminar(@PathParam("id") String idAlternativa) throws Exception {
+		AlternativaDTO alternativa = new AlternativaDTO();
+		alternativa.setIdAlternativa(idAlternativa);		
+		return controladorAccion(alternativa,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<AlternativaDTO> controladorAccion(AlternativaDTO alternativa, AccionType accionType){
+		ResultadoRestVO<AlternativaDTO> resultado = new ResultadoRestVO<AlternativaDTO>();
+		 try {
+    		//resultado.setObjetoResultado(encuestaServiceLocal.controladorAccionAlternativa(alternativa,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<AlternativaDTO> finById(@PathParam("id") String idAlternativa) throws Exception {
+		AlternativaDTO alternativa = new AlternativaDTO();
+		alternativa.setIdAlternativa(idAlternativa);
+		return controladorAccion(alternativa,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<AlternativaDTO> listarAlternativa(@Context UriInfo info){
+		ResultadoRestVO<AlternativaDTO> resultado = new ResultadoRestVO<AlternativaDTO>();
+		AlternativaDTO alternativa = transferUriInfo(info);
+		 try {
+			//resultado.setListaResultado(encuestaServiceLocal.listarAlternativa(alternativa));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<AlternativaDTO> contarAlternativa(@Context UriInfo info){
+		ResultadoRestVO<AlternativaDTO> resultado = new ResultadoRestVO<AlternativaDTO>();
+		AlternativaDTO alternativa = transferUriInfo(info);
+		 try {
+			/* resultado.setContador(encuestaServiceLocal.contarListarAlternativa(alternativa));
+			 if (resultado.isData()) {
+				resultado.setListaResultado(encuestaServiceLocal.listarAlternativa(alternativa));
+			 }*/
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<AlternativaDTO> inicializarAlternativa(@Context UriInfo info) throws Exception {
+	     AlternativaDTO alternativa = transferUriInfo(info);
+		 ResultadoRestVO<AlternativaDTO> resultado = new ResultadoRestVO<AlternativaDTO>();
+		 try {
+    		resultado.setObjetoResultado(alternativa);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private AlternativaDTO transferUriInfo(@Context UriInfo info) {
+		AlternativaDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,AlternativaDTO.class);
+		return resultado;
+	}
+}

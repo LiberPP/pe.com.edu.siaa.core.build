@@ -1,0 +1,210 @@
+package pe.com.edu.siaa.core.model.jpa.admision;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import pe.com.edu.siaa.core.model.jpa.common.Item;
+import pe.com.edu.siaa.core.model.jpa.common.Ubigeo;
+import pe.com.edu.siaa.core.model.util.ConfiguracionEntityManagerUtil;
+
+/**
+ * La Class Procedencia.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 09:56:53 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Entity
+@Table(name = "Procedencia", schema = ConfiguracionEntityManagerUtil.ESQUEMA_ACADEMICO)
+public class Procedencia implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id procedencia. */
+    @Id
+    @Column(name = "idProcedencia" , length = 4)
+    private String idProcedencia;
+   
+    /** El descripcion. */
+    @Column(name = "descripcion" , length = 50)
+    private String descripcion;
+   
+    /** El item by tipo colegio. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idTipoColegio", referencedColumnName = "idItem")
+    private Item itemByTipoColegio;
+   
+    /** El ubigeo. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idUbigeo", referencedColumnName = "idUbigeo")
+    private Ubigeo ubigeo;
+   
+    /** El procedencia persona list. */
+    @OneToMany(mappedBy = "procedencia", fetch = FetchType.LAZY)
+    private List<Persona> procedenciaPersonaList = new ArrayList<Persona>();
+    
+    /**
+     * Instancia un nuevo procedencia.
+     */
+    public Procedencia() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo procedencia.
+     *
+     * @param idProcedencia el id procedencia
+     * @param descripcion el descripcion
+     * @param itemByTipoColegio el item by tipo colegio
+     * @param ubigeo el ubigeo
+     */
+    public Procedencia(String idProcedencia, String descripcion, Item itemByTipoColegio,Ubigeo ubigeo) {
+        super();
+        this.idProcedencia = idProcedencia;
+        this.descripcion = descripcion;
+        this.itemByTipoColegio = itemByTipoColegio;
+        this.ubigeo = ubigeo;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id procedencia.
+     *
+     * @return id procedencia
+     */
+     public String getIdProcedencia() {
+        return this.idProcedencia;
+    }
+    /**
+     * Establece el id procedencia.
+     *
+     * @param idProcedencia el new id procedencia
+     */
+    public void setIdProcedencia(String idProcedencia) {
+        this.idProcedencia = idProcedencia;
+    }
+    /**
+     * Obtiene descripcion.
+     *
+     * @return descripcion
+     */
+     public String getDescripcion() {
+        return this.descripcion;
+    }
+    /**
+     * Establece el descripcion.
+     *
+     * @param descripcion el new descripcion
+     */
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+    /**
+     * Obtiene item by tipo colegio.
+     *
+     * @return item by tipo colegio
+     */
+     public Item getItemByTipoColegio() {
+        return this.itemByTipoColegio;
+    }
+    /**
+     * Establece el item by tipo colegio.
+     *
+     * @param itemByTipoColegio el new item by tipo colegio
+     */
+    public void setItemByTipoColegio(Item itemByTipoColegio) {
+        this.itemByTipoColegio = itemByTipoColegio;
+    }
+    /**
+     * Obtiene ubigeo.
+     *
+     * @return ubigeo
+     */
+     public Ubigeo getUbigeo() {
+        return this.ubigeo;
+    }
+    /**
+     * Establece el ubigeo.
+     *
+     * @param ubigeo el new ubigeo
+     */
+    public void setUbigeo(Ubigeo ubigeo) {
+        this.ubigeo = ubigeo;
+    }
+    /**
+     * Establece el procedencia persona list.
+     *
+     * @param procedenciaPersonaList el new procedencia persona list
+     */
+    public List<Persona> getProcedenciaPersonaList(){
+        return this.procedenciaPersonaList;
+    }
+    /**
+     * Establece el procedencia list.
+     *
+     * @param procedenciaList el new procedencia list
+     */
+    public void setProcedenciaPersonaList(List<Persona> procedenciaPersonaList) {
+        this.procedenciaPersonaList = procedenciaPersonaList;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idProcedencia == null) ? 0 : idProcedencia.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Procedencia other = (Procedencia) obj;
+        if (idProcedencia == null) {
+            if (other.idProcedencia != null) {
+                return false;
+            }
+        } else if (!idProcedencia.equals(other.idProcedencia)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Procedencia [idProcedencia=" + idProcedencia + "]";
+    }
+   
+}

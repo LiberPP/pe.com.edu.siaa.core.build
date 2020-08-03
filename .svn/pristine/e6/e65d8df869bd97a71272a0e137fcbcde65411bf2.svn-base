@@ -1,0 +1,307 @@
+package pe.com.edu.siaa.core.ejb.service.rest.nota.impl;
+
+import java.util.List;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.seguridad.jwt.rsa.util.AppHTTPHeaderNames;
+import pe.com.edu.siaa.core.ejb.service.nota.local.NotaServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.ejb.util.cache.AppAuthenticator;
+import pe.com.edu.siaa.core.model.dto.nota.DetRegistroNotaDTO;
+import pe.com.edu.siaa.core.model.dto.nota.RegistroNotaDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.model.vo.RegistroNotaVO;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class RegistroNotaRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:37 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/registroNotaRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class RegistroNotaRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient NotaServiceLocal notaServiceLocal;
+	
+	
+	
+	@POST
+	public ResultadoRestVO<RegistroNotaDTO> registrarNota(@Context HttpHeaders httpHeaders,List<DetRegistroNotaDTO> listaDetRegistroNota) throws Exception {
+		ResultadoRestVO<RegistroNotaDTO> resultado = new ResultadoRestVO<RegistroNotaDTO>();
+		String serviceKey = httpHeaders.getHeaderString( AppHTTPHeaderNames.SERVICE_KEY );
+		String authToken = httpHeaders.getHeaderString( AppHTTPHeaderNames.AUTH_TOKEN );
+		String userName = AppAuthenticator.getInstance().getUserName(authToken);
+		notaServiceLocal.registrarNota(listaDetRegistroNota, userName);
+		return resultado;
+	}
+	@PUT
+	public ResultadoRestVO<RegistroNotaDTO> modificar(RegistroNotaDTO registroNota) throws Exception {
+		return controladorAccion(registroNota,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<RegistroNotaDTO> eliminar(@PathParam("id") String idRegistroNota) throws Exception {
+		RegistroNotaDTO registroNota = new RegistroNotaDTO();
+		registroNota.setIdRegistroNota(idRegistroNota);		
+		return controladorAccion(registroNota,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<RegistroNotaDTO> controladorAccion(RegistroNotaDTO registroNota, AccionType accionType){
+		ResultadoRestVO<RegistroNotaDTO> resultado = new ResultadoRestVO<RegistroNotaDTO>();
+		 try {
+    		resultado.setObjetoResultado(notaServiceLocal.controladorAccionRegistroNota(registroNota,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<RegistroNotaDTO> finById(@PathParam("id") String idRegistroNota) throws Exception {
+		RegistroNotaDTO registroNota = new RegistroNotaDTO();
+		registroNota.setIdRegistroNota(idRegistroNota);
+		return controladorAccion(registroNota,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<RegistroNotaDTO> listarRegistroNota(@Context UriInfo info){
+		ResultadoRestVO<RegistroNotaDTO> resultado = new ResultadoRestVO<RegistroNotaDTO>();
+		RegistroNotaDTO registroNota = transferUriInfo(info);
+		 try {
+    		resultado.setListaResultado(notaServiceLocal.listarRegistroNota(registroNota));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<Integer> contarListarRegistroNota(@Context UriInfo info){
+		ResultadoRestVO<Integer> resultado = new ResultadoRestVO<Integer>();
+		RegistroNotaDTO registroNota = transferUriInfo(info);
+		 try {
+    		resultado.setObjetoResultado(notaServiceLocal.contarListarRegistroNota(registroNota));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/obtenerNotaAlumnoMariculadoBySemestre/{idSemestre}/{idAlumno}")
+	public ResultadoRestVO<RegistroNotaVO> obtenerNotaAlumnoMariculadoBySemestre(@PathParam("idSemestre") String idSemestre,@PathParam("idAlumno") String idAlumno){
+		ResultadoRestVO<RegistroNotaVO> resultado = new ResultadoRestVO<RegistroNotaVO>();
+		 try {
+    		resultado.setListaResultado(notaServiceLocal.obtenerNotaAlumnoMariculadoBySemestre(idSemestre, idAlumno));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/obtenerNotaAlumnoMariculadoOrdenadoBySemestre/{idAlumno}")
+	public ResultadoRestVO<RegistroNotaVO> obtenerNotaAlumnoMariculadoOrdenadoBySemestre(@PathParam("idAlumno") String idAlumno){
+		ResultadoRestVO<RegistroNotaVO> resultado = new ResultadoRestVO<RegistroNotaVO>();
+		 try {
+    		resultado.setListaResultado(notaServiceLocal.obtenerNotaAlumnoMariculadoOrdenadoBySemestre(idAlumno,null ));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	
+	@GET
+    @Path("/obtenerNotaAlumnoMariculadoOrdenadoByCiclo/{idAlumno}")
+	public ResultadoRestVO<RegistroNotaVO> obtenerNotaAlumnoMariculadoOrdenadoByCiclo(@Context HttpHeaders httpHeaders,@PathParam("idAlumno") String idAlumno){
+		ResultadoRestVO<RegistroNotaVO> resultado = new ResultadoRestVO<RegistroNotaVO>();
+		String serviceKey = httpHeaders.getHeaderString( AppHTTPHeaderNames.SERVICE_KEY );
+		String authToken = httpHeaders.getHeaderString( AppHTTPHeaderNames.AUTH_TOKEN );
+		 try {
+    		resultado.setListaResultado(notaServiceLocal.obtenerNotaAlumnoMariculadoOrdenadoByCiclo(idAlumno));
+    		this.notaServiceLocal.completarListaNotaDTO(resultado.getListaResultado(),serviceKey,authToken);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/obtenerNotaCertificadoEstudioOrdenadoByCiclo/{idAlumno}/{idCicloInicio}/{idCicloFin}")
+	public ResultadoRestVO<RegistroNotaVO> obtenerNotaCertificadoEstudioOrdenadoByCiclo(@Context HttpHeaders httpHeaders,@PathParam("idAlumno") String idAlumno,@PathParam("idCicloInicio") Long idCicloInicio, @PathParam("idCicloFin") Long idCicloFin){
+		ResultadoRestVO<RegistroNotaVO> resultado = new ResultadoRestVO<RegistroNotaVO>();
+		String serviceKey = httpHeaders.getHeaderString( AppHTTPHeaderNames.SERVICE_KEY );
+		String authToken = httpHeaders.getHeaderString( AppHTTPHeaderNames.AUTH_TOKEN );
+		 try {
+    		resultado.setListaResultado(notaServiceLocal.obtenerNotaCertificadoEstudioOrdenadoByCiclo(idAlumno,idCicloInicio,idCicloFin));
+    		this.notaServiceLocal.completarListaNotaDTO(resultado.getListaResultado(),serviceKey,authToken);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/generarReporteRecordNotaBySemestre/{idSemestre}/{idAlumno}")
+	public ResultadoRestVO<String> generarReporteRecordNotaBySemestre(@Context HttpHeaders httpHeaders,@PathParam("idSemestre") String idSemestre,@PathParam("idAlumno") String idAlumno){
+		ResultadoRestVO<String> resultado = new ResultadoRestVO<String>();
+		String serviceKey = httpHeaders.getHeaderString( AppHTTPHeaderNames.SERVICE_KEY );
+		String authToken = httpHeaders.getHeaderString( AppHTTPHeaderNames.AUTH_TOKEN );
+		 try {
+			String userName = AppAuthenticator.getInstance().getUserName(authToken);
+    		resultado.setObjetoResultado(notaServiceLocal.generarReporteRecordNotaBySemestre(idSemestre, idAlumno, userName));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	
+	@GET
+    @Path("/generarReporteNotaOrdenadoBySemestre/{idAlumno}")
+	public ResultadoRestVO<String> generarReporteNotaOrdenadoBySemestre(@Context HttpHeaders httpHeaders,@PathParam("idAlumno") String idAlumno){
+		ResultadoRestVO<String> resultado = new ResultadoRestVO<String>();
+		String serviceKey = httpHeaders.getHeaderString( AppHTTPHeaderNames.SERVICE_KEY );
+		String authToken = httpHeaders.getHeaderString( AppHTTPHeaderNames.AUTH_TOKEN );
+		 try {
+			String userName = AppAuthenticator.getInstance().getUserName(authToken);
+    		resultado.setObjetoResultado(notaServiceLocal.generarReporteNotaOrdenadoBySemestre(idAlumno, userName));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	
+	@GET
+    @Path("/generarReporteNotaOrdenadoByCiclo/{idAlumno}")
+	public ResultadoRestVO<String> generarReporteNotaOrdenadoByCiclo(@Context HttpHeaders httpHeaders,@PathParam("idAlumno") String idAlumno){
+		ResultadoRestVO<String> resultado = new ResultadoRestVO<String>();
+		String serviceKey = httpHeaders.getHeaderString( AppHTTPHeaderNames.SERVICE_KEY );
+		String authToken = httpHeaders.getHeaderString( AppHTTPHeaderNames.AUTH_TOKEN );
+		 try {
+    		resultado.setObjetoResultado(notaServiceLocal.generarReporteNotaOrdenadoByCiclo(idAlumno,serviceKey,authToken));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	
+	@GET
+    @Path("/generarReporteCertificadoEstudioByRangoCiclo/{idAlumno}/{idCicloInicio}/{idCicloFin}/{checkCreditoAprobado}")
+	public ResultadoRestVO<String> generarReporteCertificadoEstudioByRangoCiclo(@Context HttpHeaders httpHeaders,@PathParam("idAlumno") String idAlumno, @PathParam("idCicloInicio") Long idCicloInicio, @PathParam("idCicloFin") Long idCicloFin, @PathParam("checkCreditoAprobado") Boolean checkCreditoAprobado){
+		ResultadoRestVO<String> resultado = new ResultadoRestVO<String>();
+		String serviceKey = httpHeaders.getHeaderString( AppHTTPHeaderNames.SERVICE_KEY );
+		String authToken = httpHeaders.getHeaderString( AppHTTPHeaderNames.AUTH_TOKEN );
+		 try {
+    		resultado.setObjetoResultado(notaServiceLocal.generarReporteCertificadoEstudioByRangoCiclo(idAlumno, idCicloInicio, idCicloFin, checkCreditoAprobado, serviceKey, authToken));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	
+	@GET
+    @Path("/generarReporteActaEvaluacionFinal/{idAnhoSemestre}/{idDetCargaLectiva}/{idEscuela}/{esActaEvaluacionFinalAplazado}")
+	public ResultadoRestVO<String> generarReporteActaEvaluacionFinal(@Context HttpHeaders httpHeaders,@PathParam("idAnhoSemestre") String idAnhoSemestre,@PathParam("idDetCargaLectiva") String idDetCargaLectiva, @PathParam("idEscuela") String idEscuela, @PathParam("esActaEvaluacionFinalAplazado") Boolean esActaEvaluacionFinalAplazado){
+		ResultadoRestVO<String> resultado = new ResultadoRestVO<String>();
+		String serviceKey = httpHeaders.getHeaderString( AppHTTPHeaderNames.SERVICE_KEY );
+		String authToken = httpHeaders.getHeaderString( AppHTTPHeaderNames.AUTH_TOKEN );
+		 try {
+    		resultado.setObjetoResultado(notaServiceLocal.generarReporteActaEvaluacionFinal(idAnhoSemestre,idDetCargaLectiva, idEscuela, esActaEvaluacionFinalAplazado, serviceKey, authToken));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	
+	@GET
+    @Path("/generarReporteMultiple/{tipoReporte}/{idEscuela}/{idAnhoSemestre}")
+	public ResultadoRestVO<String> generarReporteMultiple(@Context HttpHeaders httpHeaders,@PathParam("tipoReporte") String tipoReporte, @PathParam("idEscuela") String idEscuela, @PathParam("idAnhoSemestre") String idAnhoSemestre){
+		ResultadoRestVO<String> resultado = new ResultadoRestVO<String>();
+		String serviceKey = httpHeaders.getHeaderString( AppHTTPHeaderNames.SERVICE_KEY );
+		String authToken = httpHeaders.getHeaderString( AppHTTPHeaderNames.AUTH_TOKEN );
+		 try {
+    		resultado.setObjetoResultado(notaServiceLocal.generarReporteMultiple(tipoReporte, idEscuela, idAnhoSemestre, serviceKey, authToken));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	
+	@GET
+    @Path("/obtenerCreditosAcomulado/{idAlumno}/{idEscuela}")
+	public ResultadoRestVO<Integer> obtenerCreditosAcomulado(@Context HttpHeaders httpHeaders,@PathParam("idAlumno") String idAlumno,@PathParam("idEscuela") String idEscuela){
+		ResultadoRestVO<Integer> resultado = new ResultadoRestVO<Integer>();
+		String serviceKey = httpHeaders.getHeaderString( AppHTTPHeaderNames.SERVICE_KEY );
+		String authToken = httpHeaders.getHeaderString( AppHTTPHeaderNames.AUTH_TOKEN );
+		 try {
+    		resultado.setObjetoResultado(notaServiceLocal.obtenerCreditosAcomulado(idAlumno,idEscuela));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	
+	@GET
+    @Path("/generarReporteRegistroNotaUnidadByCurso/{idAnhoSemestre}/{idCursoCarga}/{idEntidad}")
+	public ResultadoRestVO<String> generarReporteRegistroNotaUnidadByCurso(@PathParam("idAnhoSemestre") String idAnhoSemestre,@PathParam("idCursoCarga") String idCursoCarga,@PathParam("idEntidad") String idEntidad) throws Exception {
+		 ResultadoRestVO<String> resultado = new ResultadoRestVO<String>();
+		 try {
+    		resultado.setObjetoResultado(notaServiceLocal.generarReporteRegistroNotaUnidadByCurso(idAnhoSemestre,idCursoCarga,idEntidad));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}	
+	
+	
+	@GET
+    @Path("/generarReporteRegistroNotaByCurso/{idAnhoSemestre}/{idCursoCarga}/{idEntidad}")
+	public ResultadoRestVO<String> generarReporteRegistroNota(@PathParam("idAnhoSemestre") String idAnhoSemestre,@PathParam("idCursoCarga") String idCursoCarga,@PathParam("idEntidad") String idEntidad) throws Exception {
+		 ResultadoRestVO<String> resultado = new ResultadoRestVO<String>();
+		 try {
+    		resultado.setObjetoResultado(notaServiceLocal.generarReporteRegistroNotaByCurso(idAnhoSemestre,idCursoCarga,idEntidad));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}	
+	
+	@GET
+    @Path("/")
+	public ResultadoRestVO<RegistroNotaDTO> inicializarRegistroNota(@Context UriInfo info) throws Exception {
+	     RegistroNotaDTO registroNota = transferUriInfo(info);
+		 ResultadoRestVO<RegistroNotaDTO> resultado = new ResultadoRestVO<RegistroNotaDTO>();
+		 try {
+    		resultado.setObjetoResultado(registroNota);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private RegistroNotaDTO transferUriInfo(@Context UriInfo info) {
+		RegistroNotaDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,RegistroNotaDTO.class);
+		return resultado;
+	}
+}

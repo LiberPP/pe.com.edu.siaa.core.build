@@ -1,0 +1,471 @@
+package pe.com.edu.siaa.core.ejb.service.encuesta.impl;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+
+import pe.com.edu.siaa.core.ejb.dao.encuesta.local.AlternativaDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.encuesta.local.CuestionarioDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.encuesta.local.EncuestaCampoDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.encuesta.local.EncuestaCampoDetDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.encuesta.local.EncuestaDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.encuesta.local.OpcionAlternativaDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.encuesta.local.TemaDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.HibernateUtil;
+import pe.com.edu.siaa.core.ejb.factory.CollectionUtil;
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.encuesta.local.EncuestaServiceLocal;
+import pe.com.edu.siaa.core.model.dto.encuesta.AlternativaDTO;
+import pe.com.edu.siaa.core.model.dto.encuesta.CuestionarioDTO;
+import pe.com.edu.siaa.core.model.dto.encuesta.EncuestaCampoDTO;
+import pe.com.edu.siaa.core.model.dto.encuesta.EncuestaCampoDetDTO;
+import pe.com.edu.siaa.core.model.dto.encuesta.EncuestaDTO;
+import pe.com.edu.siaa.core.model.dto.encuesta.OpcionAlternativaDTO;
+import pe.com.edu.siaa.core.model.dto.encuesta.TemaDTO;
+import pe.com.edu.siaa.core.model.jpa.encuesta.Alternativa;
+import pe.com.edu.siaa.core.model.jpa.encuesta.Cuestionario;
+import pe.com.edu.siaa.core.model.jpa.encuesta.Encuesta;
+import pe.com.edu.siaa.core.model.jpa.encuesta.EncuestaCampo;
+import pe.com.edu.siaa.core.model.jpa.encuesta.EncuestaCampoDet;
+import pe.com.edu.siaa.core.model.jpa.encuesta.OpcionAlternativa;
+import pe.com.edu.siaa.core.model.jpa.encuesta.Tema;
+import pe.com.edu.siaa.core.model.type.AccionType;
+
+
+/**
+ * La Class EncuestaServiceImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Fri Sep 08 19:44:49 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+ @Stateless
+public class EncuestaServiceImpl implements EncuestaServiceLocal{
+	/** El servicio encuesta campo det dao impl. */
+	@EJB
+	private EncuestaCampoDetDaoLocal encuestaCampoDetDaoImpl; 
+	
+	/** El servicio encuesta campo dao impl. */
+	@EJB
+	private EncuestaCampoDaoLocal encuestaCampoDaoImpl; 
+	
+	/** El servicio alternativa dao impl. */
+	@EJB
+	private AlternativaDaoLocal alternativaDaoImpl; 
+	
+	/** El servicio encuesta dao impl. */
+	@EJB
+	private EncuestaDaoLocal encuestaDaoImpl; 
+	
+	/** El servicio cuestionario dao impl. */
+	@EJB
+	private CuestionarioDaoLocal cuestionarioDaoImpl; 
+	
+	/** El servicio tema dao impl. */
+	@EJB
+	private TemaDaoLocal temaDaoImpl; 
+	
+	/** El servicio opcion alternativa dao impl. */
+	@EJB
+	private OpcionAlternativaDaoLocal opcionAlternativaDaoImpl; 
+	
+	@Override
+	public EncuestaDTO obtenerEncuesta(String idEncuesta, long rangoGenerado) throws Exception {
+        EncuestaDTO resultado = new EncuestaDTO();
+        resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.encuestaDaoImpl.obtenerEncuesta(idEncuesta),EncuestaDTO.class,"tema");
+        CuestionarioDTO cuestionarioFiltro = new CuestionarioDTO();
+        cuestionarioFiltro.setId(idEncuesta);
+        List <CuestionarioDTO> listaCuestionario = listarCuestionario(cuestionarioFiltro);
+        resultado.setEncuestaCuestionarioList(listaCuestionario);
+        return resultado;
+		
+	}
+	
+	@Override
+	public void updateCuestionario(List<CuestionarioDTO> listaCuestionario) throws Exception {
+		if (CollectionUtil.isEmpty(listaCuestionario)){
+			return;
+		}
+		for (CuestionarioDTO cuestionarioDTO : listaCuestionario) {
+			Cuestionario  resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(cuestionarioDTO, Cuestionario.class,"encuesta@PK@");
+			this.cuestionarioDaoImpl.update(resultadoEntity);
+		}
+	}
+	
+	@Override
+	public EncuestaCampoDetDTO controladorAccionEncuestaCampoDet(EncuestaCampoDetDTO encuestaCampoDet, AccionType accionType) throws Exception {
+		EncuestaCampoDetDTO resultado = null;
+		EncuestaCampoDet resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				encuestaCampoDet.setIdEncuestaCampoDet(this.encuestaCampoDetDaoImpl.generarIdEncuestaCampoDet());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(encuestaCampoDet, EncuestaCampoDet.class,"encuestaCampo@PK@","alternativa@PK@");
+				this.encuestaCampoDetDaoImpl.save(resultadoEntity);	
+				resultado = encuestaCampoDet;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(encuestaCampoDet, EncuestaCampoDet.class,"encuestaCampo@PK@","alternativa@PK@");
+				this.encuestaCampoDetDaoImpl.update(resultadoEntity);
+				resultado = encuestaCampoDet;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.encuestaCampoDetDaoImpl.find(EncuestaCampoDet.class, encuestaCampoDet.getIdEncuestaCampoDet());
+				this.encuestaCampoDetDaoImpl.delete(resultadoEntity);
+				resultado = encuestaCampoDet;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.encuestaCampoDetDaoImpl.find(EncuestaCampoDet.class, encuestaCampoDet.getIdEncuestaCampoDet());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,EncuestaCampoDetDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.encuestaCampoDetDaoImpl.findByNombre(encuestaCampoDet),EncuestaCampoDetDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<EncuestaCampoDetDTO> listarEncuestaCampoDet(EncuestaCampoDetDTO encuestaCampoDet) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.encuestaCampoDetDaoImpl.listarEncuestaCampoDet(encuestaCampoDet),EncuestaCampoDetDTO.class);
+	}
+	@Override
+	public int contarListarEncuestaCampoDet(EncuestaCampoDetDTO encuestaCampoDet){
+		return  this.encuestaCampoDetDaoImpl.contarListarEncuestaCampoDet(encuestaCampoDet);
+	}
+	@Override
+	public EncuestaCampoDTO controladorAccionEncuestaCampo(EncuestaCampoDTO encuestaCampo, AccionType accionType) throws Exception {
+		EncuestaCampoDTO resultado = null;
+		EncuestaCampo resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				encuestaCampo.setIdEncuestaCampo(this.encuestaCampoDaoImpl.generarIdEncuestaCampo());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(encuestaCampo, EncuestaCampo.class,"encuesta@PK@");
+				this.encuestaCampoDaoImpl.save(resultadoEntity);	
+				resultado = encuestaCampo;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(encuestaCampo, EncuestaCampo.class,"encuesta@PK@");
+				this.encuestaCampoDaoImpl.update(resultadoEntity);
+				resultado = encuestaCampo;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.encuestaCampoDaoImpl.find(EncuestaCampo.class, encuestaCampo.getIdEncuestaCampo());
+				this.encuestaCampoDaoImpl.delete(resultadoEntity);
+				resultado = encuestaCampo;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.encuestaCampoDaoImpl.find(EncuestaCampo.class, encuestaCampo.getIdEncuestaCampo());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,EncuestaCampoDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.encuestaCampoDaoImpl.findByNombre(encuestaCampo),EncuestaCampoDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<EncuestaCampoDTO> listarEncuestaCampo(EncuestaCampoDTO encuestaCampo) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.encuestaCampoDaoImpl.listarEncuestaCampo(encuestaCampo),EncuestaCampoDTO.class);
+	}
+	@Override
+	public int contarListarEncuestaCampo(EncuestaCampoDTO encuestaCampo){
+		return  this.encuestaCampoDaoImpl.contarListarEncuestaCampo(encuestaCampo);
+	}
+	private AlternativaDTO controladorAccionAlternativa(AlternativaDTO alternativa, Cuestionario cuestionario, AccionType accionType) throws Exception {
+		AlternativaDTO resultado = null;
+		Alternativa resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				alternativa.setIdAlternativa(this.alternativaDaoImpl.generarIdAlternativa());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(alternativa, Alternativa.class,"opcionAlternativa@PK@");
+				resultadoEntity.setCuestionario(cuestionario);
+				this.alternativaDaoImpl.save(resultadoEntity);	
+				resultado = alternativa;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(alternativa, Alternativa.class,"opcionAlternativa@PK@");
+				resultadoEntity.setCuestionario(cuestionario);
+				this.alternativaDaoImpl.update(resultadoEntity);
+				resultado = alternativa;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.alternativaDaoImpl.find(Alternativa.class, alternativa.getIdAlternativa());
+				this.alternativaDaoImpl.delete(resultadoEntity);
+				resultado = alternativa;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.alternativaDaoImpl.find(Alternativa.class, alternativa.getIdAlternativa());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,AlternativaDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.alternativaDaoImpl.findByNombre(alternativa),AlternativaDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	
+	private Map<String,List<AlternativaDTO>> listarAlternativaMap(List<String> listaIdCuestionario) throws Exception {
+		Map<String,List<AlternativaDTO>> resultado = new HashMap<String,List<AlternativaDTO>>();
+		List<AlternativaDTO> listaTemp = TransferDataObjectUtil.transferObjetoEntityDTOList(this.alternativaDaoImpl.listarAlternativa(listaIdCuestionario),AlternativaDTO.class,"cuestionario@PK@","opcionAlternativa");
+		if (!CollectionUtil.isEmpty(listaTemp)) {
+			for (AlternativaDTO alternativaDTO : listaTemp) {
+				String key =  alternativaDTO.getCuestionario().getIdCuestionario();
+				if (!resultado.containsKey(key)) {
+					List<AlternativaDTO> value = new ArrayList<AlternativaDTO>();
+					value.add(alternativaDTO);
+					resultado.put(key, value );
+				} else {
+					List<AlternativaDTO> value = resultado.get(key);
+					value.add(alternativaDTO);
+					resultado.put(key, value );
+				}
+			}
+		}
+		return resultado;
+	}
+	
+	@Override
+	public EncuestaDTO controladorAccionEncuesta(EncuestaDTO encuesta, AccionType accionType) throws Exception {
+		EncuestaDTO resultado = null;
+		Encuesta resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				encuesta.setIdEncuesta(this.encuestaDaoImpl.generarIdEncuesta());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(encuesta, Encuesta.class,"tema@PK@");
+				this.encuestaDaoImpl.save(resultadoEntity);	
+				resultado = encuesta;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(encuesta, Encuesta.class,"tema@PK@");
+				this.encuestaDaoImpl.update(resultadoEntity);
+				resultado = encuesta;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.encuestaDaoImpl.find(Encuesta.class, encuesta.getIdEncuesta());
+				this.encuestaDaoImpl.delete(resultadoEntity);
+				resultado = encuesta;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.encuestaDaoImpl.find(Encuesta.class, encuesta.getIdEncuesta());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,EncuestaDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.encuestaDaoImpl.findByNombre(encuesta),EncuestaDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<EncuestaDTO> listarEncuesta(EncuestaDTO encuesta) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.encuestaDaoImpl.listarEncuesta(encuesta),EncuestaDTO.class);
+	}
+	@Override
+	public int contarListarEncuesta(EncuestaDTO encuesta){
+		return  this.encuestaDaoImpl.contarListarEncuesta(encuesta);
+	}
+	@Override
+	public CuestionarioDTO controladorAccionCuestionario(CuestionarioDTO cuestionario, AccionType accionType) throws Exception {
+		CuestionarioDTO resultado = null;
+		Cuestionario resultadoEntity = null;
+		boolean crearAlternativa = false;
+		switch (accionType) {
+			case CREAR:
+				cuestionario.setIdCuestionario(this.cuestionarioDaoImpl.generarIdCuestionario());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(cuestionario, Cuestionario.class,"encuesta@PK@");
+				this.cuestionarioDaoImpl.save(resultadoEntity);	
+				resultado = cuestionario;
+				crearAlternativa = true;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(cuestionario, Cuestionario.class,"encuesta@PK@");
+				this.cuestionarioDaoImpl.update(resultadoEntity);
+				resultado = cuestionario;
+				crearAlternativa = true;
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.cuestionarioDaoImpl.find(Cuestionario.class, cuestionario.getIdCuestionario());
+				this.cuestionarioDaoImpl.delete(resultadoEntity);
+				resultado = cuestionario;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.cuestionarioDaoImpl.find(Cuestionario.class, cuestionario.getIdCuestionario());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,CuestionarioDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.cuestionarioDaoImpl.findByNombre(cuestionario),CuestionarioDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		if (crearAlternativa) {
+			if (cuestionario.getCuestionarioAlternativaList() != null) {
+				for (AlternativaDTO alternativa : cuestionario.getCuestionarioAlternativaList()) {
+					if (!alternativa.isEsEliminado()) {
+					 	controladorAccionAlternativa(alternativa,resultadoEntity,AccionType.CREAR);
+					} else {
+						controladorAccionAlternativa(alternativa,resultadoEntity, AccionType.ELIMINAR);
+					}
+				}
+			}
+			HibernateUtil.setListaNull(cuestionario);
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<CuestionarioDTO> listarCuestionario(CuestionarioDTO cuestionario) throws Exception {
+		List<CuestionarioDTO> resultado = new ArrayList<CuestionarioDTO>();
+		List<String> listaIdCuestionario = new ArrayList<String>();
+		resultado  = TransferDataObjectUtil.transferObjetoEntityDTOList(this.cuestionarioDaoImpl.listarCuestionario(cuestionario),CuestionarioDTO.class);
+		if (!CollectionUtil.isEmpty(resultado)) {
+			for (CuestionarioDTO cuestionarioDTO : resultado) {
+				listaIdCuestionario.add(cuestionarioDTO.getIdCuestionario());
+			}	
+			Map<String,List<AlternativaDTO>> listaAlternativaMap = this.listarAlternativaMap(listaIdCuestionario);
+			if (listaAlternativaMap.size() > 0) {
+				for (CuestionarioDTO cuestionarioDTO : resultado) {
+					if (listaAlternativaMap.containsKey(cuestionarioDTO.getIdCuestionario())) {
+						cuestionarioDTO.setCuestionarioAlternativaList(listaAlternativaMap.get(cuestionarioDTO.getIdCuestionario()));
+					}
+				}	
+			}
+		}		
+		return resultado;
+	}
+	@Override
+	public int contarListarCuestionario(CuestionarioDTO cuestionario){
+		return  this.cuestionarioDaoImpl.contarListarCuestionario(cuestionario);
+	}
+	@Override
+	public TemaDTO controladorAccionTema(TemaDTO tema, AccionType accionType) throws Exception {
+		TemaDTO resultado = null;
+		Tema resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				tema.setIdTema(this.temaDaoImpl.generarIdTema());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(tema, Tema.class);
+				this.temaDaoImpl.save(resultadoEntity);	
+				resultado = tema;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(tema, Tema.class);
+				this.temaDaoImpl.update(resultadoEntity);
+				resultado = tema;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.temaDaoImpl.find(Tema.class, tema.getIdTema());
+				this.temaDaoImpl.delete(resultadoEntity);
+				resultado = tema;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.temaDaoImpl.find(Tema.class, tema.getIdTema());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,TemaDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.temaDaoImpl.findByNombre(tema),TemaDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<TemaDTO> listarTema(TemaDTO tema) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.temaDaoImpl.listarTema(tema),TemaDTO.class);
+	}
+	@Override
+	public int contarListarTema(TemaDTO tema){
+		return  this.temaDaoImpl.contarListarTema(tema);
+	}
+	@Override
+	public OpcionAlternativaDTO controladorAccionOpcionAlternativa(OpcionAlternativaDTO opcionAlternativa, AccionType accionType) throws Exception {
+		OpcionAlternativaDTO resultado = null;
+		OpcionAlternativa resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				opcionAlternativa.setIdOpcionAlternativa(this.opcionAlternativaDaoImpl.generarIdOpcionAlternativa());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(opcionAlternativa, OpcionAlternativa.class);
+				this.opcionAlternativaDaoImpl.save(resultadoEntity);	
+				resultado = opcionAlternativa;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(opcionAlternativa, OpcionAlternativa.class);
+				this.opcionAlternativaDaoImpl.update(resultadoEntity);
+				resultado = opcionAlternativa;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.opcionAlternativaDaoImpl.find(OpcionAlternativa.class, opcionAlternativa.getIdOpcionAlternativa());
+				this.opcionAlternativaDaoImpl.delete(resultadoEntity);
+				resultado = opcionAlternativa;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.opcionAlternativaDaoImpl.find(OpcionAlternativa.class, opcionAlternativa.getIdOpcionAlternativa());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,OpcionAlternativaDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.opcionAlternativaDaoImpl.findByNombre(opcionAlternativa),OpcionAlternativaDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<OpcionAlternativaDTO> listarOpcionAlternativa(OpcionAlternativaDTO opcionAlternativa) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.opcionAlternativaDaoImpl.listarOpcionAlternativa(opcionAlternativa),OpcionAlternativaDTO.class);
+	}
+	@Override
+	public int contarListarOpcionAlternativa(OpcionAlternativaDTO opcionAlternativa){
+		return  this.opcionAlternativaDaoImpl.contarListarOpcionAlternativa(opcionAlternativa);
+	}
+}

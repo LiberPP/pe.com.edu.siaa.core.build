@@ -1,0 +1,231 @@
+package pe.com.edu.siaa.core.model.jpa.matricula;
+
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+import pe.com.edu.siaa.core.model.jpa.common.Item;
+import pe.com.edu.siaa.core.model.util.ConfiguracionEntityManagerUtil;
+
+/**
+ * La Class Horario.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 09:56:55 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Entity
+@Table(name = "Horario", schema = ConfiguracionEntityManagerUtil.ESQUEMA_ACADEMICO)
+public class Horario implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id horario. */
+    @Id
+    @Column(name = "idHorario" , length = 17)
+    private String idHorario;
+   
+    /** El det carga lectiva. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idDetCargaLectiva", referencedColumnName = "idDetCargaLectiva")
+    private DetCargaLectiva detCargaLectiva;
+   
+    /** El personal by docente. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idDocente", referencedColumnName = "idPersonal")
+    private Personal personalByDocente;
+   
+    /** El item by dia. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idDia", referencedColumnName = "idItem")
+    private Item itemByDia;
+   
+    /** El hora inicio. */
+    @Column(name = "horaInicio" , length = 5)
+    private String horaInicio;
+   
+    /** El hora fin. */
+    @Column(name = "horaFin" , length = 5)
+    private String horaFin;
+   
+    /**
+     * Instancia un nuevo horario.
+     */
+    public Horario() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo horario.
+     *
+     * @param idHorario el id horario
+     * @param detCargaLectiva el det carga lectiva
+     * @param personalByDocente el personal by docente
+     * @param itemByDia el item by dia
+     * @param horaInicio el hora inicio
+     * @param horaFin el hora fin
+     */
+    public Horario(String idHorario, DetCargaLectiva detCargaLectiva,Personal personalByDocente,Item itemByDia,String horaInicio, String horaFin ) {
+        super();
+        this.idHorario = idHorario;
+        this.detCargaLectiva = detCargaLectiva;
+        this.personalByDocente = personalByDocente;
+        this.itemByDia = itemByDia;
+        this.horaInicio = horaInicio;
+        this.horaFin = horaFin;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id horario.
+     *
+     * @return id horario
+     */
+     public String getIdHorario() {
+        return this.idHorario;
+    }
+    /**
+     * Establece el id horario.
+     *
+     * @param idHorario el new id horario
+     */
+    public void setIdHorario(String idHorario) {
+        this.idHorario = idHorario;
+    }
+    /**
+     * Obtiene det carga lectiva.
+     *
+     * @return det carga lectiva
+     */
+     public DetCargaLectiva getDetCargaLectiva() {
+        return this.detCargaLectiva;
+    }
+    /**
+     * Establece el det carga lectiva.
+     *
+     * @param detCargaLectiva el new det carga lectiva
+     */
+    public void setDetCargaLectiva(DetCargaLectiva detCargaLectiva) {
+        this.detCargaLectiva = detCargaLectiva;
+    }
+    /**
+     * Obtiene personal by docente.
+     *
+     * @return personal by docente
+     */
+     public Personal getPersonalByDocente() {
+        return this.personalByDocente;
+    }
+    /**
+     * Establece el personal by docente.
+     *
+     * @param personalByDocente el new personal by docente
+     */
+    public void setPersonalByDocente(Personal personalByDocente) {
+        this.personalByDocente = personalByDocente;
+    }
+    /**
+     * Obtiene item by dia.
+     *
+     * @return item by dia
+     */
+     public Item getItemByDia() {
+        return this.itemByDia;
+    }
+    /**
+     * Establece el item by dia.
+     *
+     * @param itemByDia el new item by dia
+     */
+    public void setItemByDia(Item itemByDia) {
+        this.itemByDia = itemByDia;
+    }
+    /**
+     * Obtiene hora inicio.
+     *
+     * @return hora inicio
+     */
+     public String getHoraInicio() {
+        return this.horaInicio;
+    }
+    /**
+     * Establece el hora inicio.
+     *
+     * @param horaInicio el new hora inicio
+     */
+    public void setHoraInicio(String horaInicio) {
+        this.horaInicio = horaInicio;
+    }
+    /**
+     * Obtiene hora fin.
+     *
+     * @return hora fin
+     */
+     public String getHoraFin() {
+        return this.horaFin;
+    }
+    /**
+     * Establece el hora fin.
+     *
+     * @param horaFin el new hora fin
+     */
+    public void setHoraFin(String horaFin) {
+        this.horaFin = horaFin;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idHorario == null) ? 0 : idHorario.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Horario other = (Horario) obj;
+        if (idHorario == null) {
+            if (other.idHorario != null) {
+                return false;
+            }
+        } else if (!idHorario.equals(other.idHorario)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Horario [idHorario=" + idHorario + "]";
+    }
+   
+}

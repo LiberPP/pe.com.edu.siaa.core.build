@@ -1,0 +1,120 @@
+package pe.com.edu.siaa.core.ejb.service.rest.encuesta.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.encuesta.local.EncuestaServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.encuesta.OpcionAlternativaDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class OpcionAlternativaRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Fri Sep 08 16:33:15 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/opcionAlternativaRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class OpcionAlternativaRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient EncuestaServiceLocal encuestaServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<OpcionAlternativaDTO> crear(OpcionAlternativaDTO opcionAlternativa) throws Exception {
+		return controladorAccion(opcionAlternativa,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<OpcionAlternativaDTO> modificar(OpcionAlternativaDTO opcionAlternativa) throws Exception {
+		return controladorAccion(opcionAlternativa,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<OpcionAlternativaDTO> eliminar(@PathParam("id") Long idOpcionAlternativa) throws Exception {
+		OpcionAlternativaDTO opcionAlternativa = new OpcionAlternativaDTO();
+		opcionAlternativa.setIdOpcionAlternativa(idOpcionAlternativa);		
+		return controladorAccion(opcionAlternativa,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<OpcionAlternativaDTO> controladorAccion(OpcionAlternativaDTO opcionAlternativa, AccionType accionType){
+		ResultadoRestVO<OpcionAlternativaDTO> resultado = new ResultadoRestVO<OpcionAlternativaDTO>();
+		 try {
+    		resultado.setObjetoResultado(encuestaServiceLocal.controladorAccionOpcionAlternativa(opcionAlternativa,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<OpcionAlternativaDTO> finById(@PathParam("id") Long idOpcionAlternativa) throws Exception {
+		OpcionAlternativaDTO opcionAlternativa = new OpcionAlternativaDTO();
+		opcionAlternativa.setIdOpcionAlternativa(idOpcionAlternativa);
+		return controladorAccion(opcionAlternativa,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<OpcionAlternativaDTO> listarOpcionAlternativa(@Context UriInfo info){
+		ResultadoRestVO<OpcionAlternativaDTO> resultado = new ResultadoRestVO<OpcionAlternativaDTO>();
+		OpcionAlternativaDTO opcionAlternativa = transferUriInfo(info);
+		 try {
+			resultado.setListaResultado(encuestaServiceLocal.listarOpcionAlternativa(opcionAlternativa));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<OpcionAlternativaDTO> contarOpcionAlternativa(@Context UriInfo info){
+		ResultadoRestVO<OpcionAlternativaDTO> resultado = new ResultadoRestVO<OpcionAlternativaDTO>();
+		OpcionAlternativaDTO opcionAlternativa = transferUriInfo(info);
+		 try {
+			 resultado.setContador(encuestaServiceLocal.contarListarOpcionAlternativa(opcionAlternativa));
+			 if (resultado.isData()) {
+				resultado.setListaResultado(encuestaServiceLocal.listarOpcionAlternativa(opcionAlternativa));
+			 }
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<OpcionAlternativaDTO> inicializarOpcionAlternativa(@Context UriInfo info) throws Exception {
+	     OpcionAlternativaDTO opcionAlternativa = transferUriInfo(info);
+		 ResultadoRestVO<OpcionAlternativaDTO> resultado = new ResultadoRestVO<OpcionAlternativaDTO>();
+		 try {
+    		resultado.setObjetoResultado(opcionAlternativa);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private OpcionAlternativaDTO transferUriInfo(@Context UriInfo info) {
+		OpcionAlternativaDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,OpcionAlternativaDTO.class);
+		return resultado;
+	}
+}

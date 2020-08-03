@@ -1,0 +1,274 @@
+package pe.com.edu.siaa.core.model.jpa.nota;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import pe.com.edu.siaa.core.model.jpa.common.Item;
+import pe.com.edu.siaa.core.model.jpa.matricula.DetCargaLectiva;
+import pe.com.edu.siaa.core.model.util.ConfiguracionEntityManagerUtil;
+
+/**
+ * La Class ConceptoNota.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 09:56:52 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Entity
+@Table(name = "ConceptoNota", schema = ConfiguracionEntityManagerUtil.ESQUEMA_ACADEMICO)
+public class ConceptoNota implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id concepto nota. */
+    @Id
+    @Column(name = "idConceptoNota" , length = 10)
+    private String idConceptoNota;
+   
+    /** El det carga lectiva. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idDetCargaLectiva", referencedColumnName = "idDetCargaLectiva")
+    private DetCargaLectiva detCargaLectiva;
+   
+    /** El descripcion. */
+    @Column(name = "descripcion" , length = 150)
+    private String descripcion;
+   
+    /** El flag obligatorio. */
+    @Column(name = "flagObligatorio" , length = 1)
+    private String flagObligatorio;
+   
+    /** El item by tipo nota. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idTipoNota", referencedColumnName = "idItem")
+    private Item itemByTipoNota;
+   
+    /** El estado. */
+    @Column(name = "estado" , length = 1)
+    private String estado;
+   
+    /** El concepto nota curso nota list. */
+    @OneToMany(mappedBy = "conceptoNota", fetch = FetchType.LAZY)
+    private List<CursoNota> conceptoNotaCursoNotaList = new ArrayList<CursoNota>();
+    
+    /** El concepto nota definir criterio evaluacion list. */
+    @OneToMany(mappedBy = "conceptoNota", fetch = FetchType.LAZY)
+    private List<DefinirCriterioEvaluacion> conceptoNotaDefinirCriterioEvaluacionList = new ArrayList<DefinirCriterioEvaluacion>();
+    
+    /**
+     * Instancia un nuevo concepto nota.
+     */
+    public ConceptoNota() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo concepto nota.
+     *
+     * @param idConceptoNota el id concepto nota
+     * @param detCargaLectiva el det carga lectiva
+     * @param descripcion el descripcion
+     * @param flagObligatorio el flag obligatorio
+     * @param itemByTipoNota el item by tipo nota
+     * @param estado el estado
+     */
+    public ConceptoNota(String idConceptoNota, DetCargaLectiva detCargaLectiva,String descripcion, String flagObligatorio, Item itemByTipoNota,String estado ) {
+        super();
+        this.idConceptoNota = idConceptoNota;
+        this.detCargaLectiva = detCargaLectiva;
+        this.descripcion = descripcion;
+        this.flagObligatorio = flagObligatorio;
+        this.itemByTipoNota = itemByTipoNota;
+        this.estado = estado;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id concepto nota.
+     *
+     * @return id concepto nota
+     */
+     public String getIdConceptoNota() {
+        return this.idConceptoNota;
+    }
+    /**
+     * Establece el id concepto nota.
+     *
+     * @param idConceptoNota el new id concepto nota
+     */
+    public void setIdConceptoNota(String idConceptoNota) {
+        this.idConceptoNota = idConceptoNota;
+    }
+    /**
+     * Obtiene det carga lectiva.
+     *
+     * @return det carga lectiva
+     */
+     public DetCargaLectiva getDetCargaLectiva() {
+        return this.detCargaLectiva;
+    }
+    /**
+     * Establece el det carga lectiva.
+     *
+     * @param detCargaLectiva el new det carga lectiva
+     */
+    public void setDetCargaLectiva(DetCargaLectiva detCargaLectiva) {
+        this.detCargaLectiva = detCargaLectiva;
+    }
+    /**
+     * Obtiene descripcion.
+     *
+     * @return descripcion
+     */
+     public String getDescripcion() {
+        return this.descripcion;
+    }
+    /**
+     * Establece el descripcion.
+     *
+     * @param descripcion el new descripcion
+     */
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+    /**
+     * Obtiene flag obligatorio.
+     *
+     * @return flag obligatorio
+     */
+     public String getFlagObligatorio() {
+        return this.flagObligatorio;
+    }
+    /**
+     * Establece el flag obligatorio.
+     *
+     * @param flagObligatorio el new flag obligatorio
+     */
+    public void setFlagObligatorio(String flagObligatorio) {
+        this.flagObligatorio = flagObligatorio;
+    }
+    /**
+     * Obtiene item by tipo nota.
+     *
+     * @return item by tipo nota
+     */
+     public Item getItemByTipoNota() {
+        return this.itemByTipoNota;
+    }
+    /**
+     * Establece el item by tipo nota.
+     *
+     * @param itemByTipoNota el new item by tipo nota
+     */
+    public void setItemByTipoNota(Item itemByTipoNota) {
+        this.itemByTipoNota = itemByTipoNota;
+    }
+    /**
+     * Obtiene estado.
+     *
+     * @return estado
+     */
+     public String getEstado() {
+        return this.estado;
+    }
+    /**
+     * Establece el estado.
+     *
+     * @param estado el new estado
+     */
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+    /**
+     * Establece el concepto nota curso nota list.
+     *
+     * @param conceptoNotaCursoNotaList el new concepto nota curso nota list
+     */
+    public List<CursoNota> getConceptoNotaCursoNotaList(){
+        return this.conceptoNotaCursoNotaList;
+    }
+    /**
+     * Establece el concepto nota list.
+     *
+     * @param conceptoNotaList el new concepto nota list
+     */
+    public void setConceptoNotaCursoNotaList(List<CursoNota> conceptoNotaCursoNotaList) {
+        this.conceptoNotaCursoNotaList = conceptoNotaCursoNotaList;
+    }   
+    /**
+     * Establece el concepto nota definir criterio evaluacion list.
+     *
+     * @param conceptoNotaDefinirCriterioEvaluacionList el new concepto nota definir criterio evaluacion list
+     */
+    public List<DefinirCriterioEvaluacion> getConceptoNotaDefinirCriterioEvaluacionList(){
+        return this.conceptoNotaDefinirCriterioEvaluacionList;
+    }
+    /**
+     * Establece el concepto nota list.
+     *
+     * @param conceptoNotaList el new concepto nota list
+     */
+    public void setConceptoNotaDefinirCriterioEvaluacionList(List<DefinirCriterioEvaluacion> conceptoNotaDefinirCriterioEvaluacionList) {
+        this.conceptoNotaDefinirCriterioEvaluacionList = conceptoNotaDefinirCriterioEvaluacionList;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idConceptoNota == null) ? 0 : idConceptoNota.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        ConceptoNota other = (ConceptoNota) obj;
+        if (idConceptoNota == null) {
+            if (other.idConceptoNota != null) {
+                return false;
+            }
+        } else if (!idConceptoNota.equals(other.idConceptoNota)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "ConceptoNota [idConceptoNota=" + idConceptoNota + "]";
+    }
+   
+}

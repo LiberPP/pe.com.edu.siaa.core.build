@@ -1,0 +1,97 @@
+package pe.com.edu.siaa.core.ejb.util.proceso;
+
+import java.io.Serializable;
+import java.util.Date;
+
+import pe.com.edu.siaa.core.model.dto.admision.AnhoSemestreDTO;
+import pe.com.edu.siaa.core.model.dto.admision.CronogramaDTO;
+
+/**
+ * <ul>
+ * <li>Copyright 2012 BUILD SOFT S.A.C - BS. Todos los derechos reservados.</li>
+ * </ul>
+ * 
+ * La Class Utilidades.
+ *
+ * @author ndavilal.
+ * @version 1.0 , 18/03/2012
+ * @since SIAA 2.0
+ */
+public class AdmisionUtil implements Serializable {
+
+	/** La Constante serialVersionUID. */
+	private static final long serialVersionUID = -6238487357106068268L;
+
+	/**
+	 * Es fecha valida.
+	 *
+	 * @param fechaCompara el fecha compara
+	 * @param objCro el obj cro
+	 * @return true, en caso de exito
+	 */
+	public static boolean  esFechaValida(Date fechaCompara, CronogramaDTO objCro) {
+		boolean resultado = false;
+		//TODO:validar solo con formato fecha
+		Date fechaHoy = fechaCompara;		
+	
+		if (fechaHoy.compareTo(objCro.getFechaInicio()) >= 0 && fechaHoy.compareTo(objCro.getFechaFin()) <= 0) {
+			resultado = true; 
+		}
+			
+		return resultado;
+	}
+	
+	/**
+	 * Es fecha valida mayor igual fecha fin.
+	 *
+	 * @param fechaCompara el fecha compara
+	 * @param objCro el obj cro
+	 * @return true, en caso de exito
+	 * @throws Exception the exception
+	 */
+	public static boolean esFechaValidaMayorIgualFechaFin(Date fechaCompara, CronogramaDTO objCro) throws Exception {
+		boolean resultado = false;
+		try {
+			Date fechaHoy = fechaCompara;	
+			Date fechaFin = objCro.getFechaFin();
+		
+			if (fechaHoy.compareTo(fechaFin) >= 0) {
+				resultado = true;
+			}			
+		} catch (Exception e) {
+			throw e;
+		}		
+		return resultado;
+	}
+	
+	/**
+	 * Es fecha valida.
+	 *
+	 * @param objCro el obj cro
+	 * @return true, en caso de exito
+	 */
+	public static boolean  esFechaValida(CronogramaDTO objCro) {
+		boolean resultado = false;
+		if (objCro.getFechaFin().compareTo(objCro.getFechaInicio()) > 0) {
+			resultado = true; 
+		}
+			
+		return resultado;
+	}
+	
+	/**
+	 * Es fecha valida.
+	 *
+	 * @param objCro el obj cro
+	 * @param anhoSemestre el anho semestre
+	 * @return true, en caso de exito
+	 */
+	public static boolean  esFechaValida(CronogramaDTO objCro,AnhoSemestreDTO anhoSemestre) {
+		boolean resultado = false;
+		if (anhoSemestre.getFechaInicio().compareTo(objCro.getFechaInicio()) >= 0 && anhoSemestre.getFechaCierre().compareTo(objCro.getFechaFin()) >= 0 ) {
+			resultado = true; 
+		}
+			
+		return resultado;
+	}
+}

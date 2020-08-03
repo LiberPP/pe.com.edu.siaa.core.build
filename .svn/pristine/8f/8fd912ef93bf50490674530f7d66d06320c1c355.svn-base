@@ -1,0 +1,1839 @@
+package pe.com.edu.siaa.core.ejb.service.nota.impl;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
+
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.DetMatriculaDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.MatriculaDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.nota.local.AsistenciaDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.nota.local.ConceptoNotaDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.nota.local.CursoNotaDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.nota.local.DefinirCriterioEvaluacionDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.nota.local.DetRegistroNotaDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.nota.local.NotaLetraDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.nota.local.RegistroNotaDaoLocal;
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.admision.local.AdmisionServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.local.GenerarReporteServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.matricula.local.MatriculaServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.nota.local.NotaServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.seguridad.local.SeguridadServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.util.FechaUtil;
+import pe.com.edu.siaa.core.ejb.util.cache.AppAuthenticator;
+import pe.com.edu.siaa.core.ejb.util.cache.SeguridadCacheUtil;
+import pe.com.edu.siaa.core.ejb.util.cache.SelectItemServiceCacheUtil;
+import pe.com.edu.siaa.core.ejb.util.excel.DataExportExcelPersonalizadoUtil;
+import pe.com.edu.siaa.core.ejb.util.jasper.ArchivoUtilidades;
+import pe.com.edu.siaa.core.ejb.util.jms.UUIDUtil;
+import pe.com.edu.siaa.core.ejb.util.log.Logger;
+import pe.com.edu.siaa.core.model.constante.util.ConstantesNota;
+import pe.com.edu.siaa.core.model.dto.admision.AnhoSemestreDTO;
+import pe.com.edu.siaa.core.model.dto.admision.CronogramaDTO;
+import pe.com.edu.siaa.core.model.dto.admision.EscuelaDTO;
+import pe.com.edu.siaa.core.model.dto.admision.PostulanteDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.AlumnoDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.CargaLectivaDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.DetCargaLectivaDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.HorarioDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.PersonalDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.ResultadoNotaDTO;
+import pe.com.edu.siaa.core.model.dto.nota.AsistenciaDTO;
+import pe.com.edu.siaa.core.model.dto.nota.ConceptoNotaDTO;
+import pe.com.edu.siaa.core.model.dto.nota.CursoNotaDTO;
+import pe.com.edu.siaa.core.model.dto.nota.DefinirCriterioEvaluacionDTO;
+import pe.com.edu.siaa.core.model.dto.nota.DetRegistroNotaDTO;
+import pe.com.edu.siaa.core.model.dto.nota.NotaLetraDTO;
+import pe.com.edu.siaa.core.model.dto.nota.RegistroNotaDTO;
+import pe.com.edu.siaa.core.model.dto.seguridad.EntidadDTO;
+import pe.com.edu.siaa.core.model.dto.seguridad.UsuarioDTO;
+import pe.com.edu.siaa.core.model.estate.EstadoGeneralState;
+import pe.com.edu.siaa.core.model.jpa.admision.AnhoSemestre;
+import pe.com.edu.siaa.core.model.jpa.common.Item;
+import pe.com.edu.siaa.core.model.jpa.matricula.DetCargaLectiva;
+import pe.com.edu.siaa.core.model.jpa.matricula.DetMatricula;
+import pe.com.edu.siaa.core.model.jpa.nota.Asistencia;
+import pe.com.edu.siaa.core.model.jpa.nota.ConceptoNota;
+import pe.com.edu.siaa.core.model.jpa.nota.CursoNota;
+import pe.com.edu.siaa.core.model.jpa.nota.DefinirCriterioEvaluacion;
+import pe.com.edu.siaa.core.model.jpa.nota.DetRegistroNota;
+import pe.com.edu.siaa.core.model.jpa.nota.NotaLetra;
+import pe.com.edu.siaa.core.model.jpa.nota.RegistroNota;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.model.type.CronogramaType;
+import pe.com.edu.siaa.core.model.type.EstadoAsistenciaType;
+import pe.com.edu.siaa.core.model.type.NombreReporteType;
+import pe.com.edu.siaa.core.model.type.SemestreType;
+import pe.com.edu.siaa.core.model.type.TipoNotaType;
+import pe.com.edu.siaa.core.model.type.TipoReporteGenerarType;
+import pe.com.edu.siaa.core.model.type.TipoReporteNotaType;
+import pe.com.edu.siaa.core.model.util.NumerosUtil;
+import pe.com.edu.siaa.core.model.util.ObjectUtil;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+import pe.com.edu.siaa.core.model.vo.ExcelHederDataVO;
+import pe.com.edu.siaa.core.model.vo.ExcelHederTitleVO;
+import pe.com.edu.siaa.core.model.vo.ParametroReporteVO;
+import pe.com.edu.siaa.core.model.vo.RegistroNotaVO;
+import pe.com.edu.siaa.core.model.vo.ReporteActaEvaluacionFinalVO;
+
+
+/**
+ * La Class NotaServiceImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:23 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+ @Stateless
+ @EJB(name = "java:app/NotaService", beanInterface = NotaServiceLocal.class)
+ @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+public class NotaServiceImpl implements NotaServiceLocal{
+	
+	 private static final String NOTA_NSP = "-3";
+
+	private static final int CANTIDAD_PROMEDIO_UNIDAD = 4;
+
+	private Logger log = Logger.getLogger(NotaServiceImpl.class);
+	 
+	/** El servicio asistencia dao impl. */
+	@EJB
+	private AsistenciaDaoLocal asistenciaDaoImpl; 
+	
+	/** El servicio nota letra dao impl. */
+	@EJB
+	private NotaLetraDaoLocal notaLetraDaoImpl; 
+	
+	/** El servicio concepto nota dao impl. */
+	@EJB
+	private ConceptoNotaDaoLocal conceptoNotaDaoImpl; 
+	
+	/** El servicio curso nota dao impl. */
+	@EJB
+	private CursoNotaDaoLocal cursoNotaDaoImpl; 
+	
+	/** El servicio registro nota dao impl. */
+	@EJB
+	private RegistroNotaDaoLocal registroNotaDaoImpl; 
+	
+	/** El servicio definir criterio evaluacion dao impl. */
+	@EJB
+	private DefinirCriterioEvaluacionDaoLocal definirCriterioEvaluacionDaoImpl; 
+	
+	/** El servicio det registro nota dao impl. */
+	@EJB
+	private DetRegistroNotaDaoLocal detRegistroNotaDaoImpl; 
+	
+	/** El servicio matricula dao impl. */
+	@EJB
+	private MatriculaDaoLocal matriculaDaoImpl; 
+	
+	/** El servicio matricula service impl. */
+	@EJB
+	private MatriculaServiceLocal matriculaServiceImpl; 
+	
+	@EJB
+	private transient AdmisionServiceLocal admisionServiceImpl;
+	
+	@EJB
+	private GenerarReporteServiceLocal	 generarReporteServiceImpl;
+	
+	/** El servicio det matricula dao impl. */
+	@EJB
+	private DetMatriculaDaoLocal detMatriculaDaoImpl; 
+	
+	@EJB
+	private SeguridadServiceLocal seguridadServiceLocal; 
+	
+	@Override
+	public String generarReporteRegistroAsistenciaByCurso(String idAnhoSemestre, String idDetCargaLectiva,String idEntidad,String idAlumno,Date fechaHorario,String userName) throws Exception {
+		if (fechaHorario == null) {
+			fechaHorario = FechaUtil.obtenerFechaActual();
+		}
+		String fileName = UUIDUtil.generarElementUUID();
+		List<AsistenciaDTO> listaAsistencia = this.obtenerAsistencia(true,idDetCargaLectiva, idAlumno, fechaHorario, userName);
+		List<AsistenciaDTO> listaAsistenciaHistorial = this.obtenerAsistencia(true,idDetCargaLectiva, idAlumno, null, userName);
+		
+		List<String> listaIdDetCargaLectiva = new ArrayList<String>();
+		listaIdDetCargaLectiva.add(idDetCargaLectiva);
+		List<HorarioDTO> listaHorario = matriculaServiceImpl.transferListHorario(listaIdDetCargaLectiva );
+		Integer cantidadDictaCursoSemena = 0;
+		Integer cantidadSemana = 4;
+		Integer cantidadMesesCiclo = 4;
+		Map<String,String> cursoDictaMap = new HashMap<String,String>();
+		for (HorarioDTO horarioDTO : listaHorario) {
+			String key = horarioDTO.getItemByDia().getIdItem() + "";
+			if (!cursoDictaMap.containsKey(key)) {
+				cursoDictaMap.put(key, key);
+				cantidadDictaCursoSemena++;
+			}
+		}
+		Double totalDiasClases = (double)(cantidadDictaCursoSemena  * cantidadSemana * cantidadMesesCiclo);
+		Double totalDiasClasesInasistencia =  (totalDiasClases * 0.30);
+		
+		int cantidadAsistenciaAlumno = 0;
+		int cantidadAsistenciaFalto = 0;
+		Date fechaHoy = FechaUtil.obtenerFechaActual();
+		Map<String,String> cantidadAsistenciaDia = new HashMap<String,String>();
+		Map<String,Integer> cantidadAsistenciaAlumnoMap = new HashMap<String,Integer>();
+		Map<String,Integer> cantidadAsistenciaFaltoMap = new HashMap<String,Integer>();
+		
+		for (AsistenciaDTO asistenciaDTO : listaAsistenciaHistorial) {
+			cantidadAsistenciaAlumno = 0;
+			cantidadAsistenciaFalto = 0;
+			String key = asistenciaDTO.getAlumno().getIdAlumno() + "" +  FechaUtil.obtenerFechaFormatoPersonalizado(asistenciaDTO.getFechaHorario(),"dd");
+			if (!cantidadAsistenciaDia.containsKey(key)) {
+				if (!EstadoAsistenciaType.DESIDIR.getKey().equals(asistenciaDTO.getEstado()) && !EstadoAsistenciaType.FALTO.getKey().equals(asistenciaDTO.getEstado()) ) {
+					cantidadAsistenciaAlumno++;
+				}
+				if (EstadoAsistenciaType.DESIDIR.getKey().equals(asistenciaDTO.getEstado()) || EstadoAsistenciaType.FALTO.getKey().equals(asistenciaDTO.getEstado()) ) {
+					if (EstadoAsistenciaType.DESIDIR.getKey().equals(asistenciaDTO.getEstado()) && fechaHoy.compareTo(asistenciaDTO.getFechaHorario()) > 0) {
+						cantidadAsistenciaFalto++;
+					}
+					if (EstadoAsistenciaType.FALTO.getKey().equals(asistenciaDTO.getEstado())) {
+						cantidadAsistenciaFalto++;
+				   }
+				}
+				String keyAlumno = asistenciaDTO.getAlumno().getIdAlumno();
+				if (cantidadAsistenciaFaltoMap.containsKey(keyAlumno)) {
+					cantidadAsistenciaFalto = cantidadAsistenciaFalto + cantidadAsistenciaFaltoMap.get(keyAlumno);
+				}
+				if (cantidadAsistenciaAlumnoMap.containsKey(keyAlumno)) {
+					cantidadAsistenciaAlumno = cantidadAsistenciaAlumno + cantidadAsistenciaAlumnoMap.get(keyAlumno);
+				}
+				cantidadAsistenciaAlumnoMap.put(keyAlumno, cantidadAsistenciaAlumno);
+				cantidadAsistenciaFaltoMap.put(keyAlumno, cantidadAsistenciaFalto);
+				cantidadAsistenciaDia.put(key, key);
+			} 
+			
+		}
+		String archivoName = fileName;
+		
+		DetCargaLectivaDTO detCargaLectiva = new DetCargaLectivaDTO();
+		detCargaLectiva.setCargaLectiva(new CargaLectivaDTO());
+		//detCargaLectiva.getCargaLectiva().setEntidadUniversitaria(usuarioSession.getEntidadUniversitaria());
+		detCargaLectiva.setIdDetCargaLectiva(idDetCargaLectiva);
+		detCargaLectiva = this.matriculaServiceImpl.obtenerDetCargaLectiva(detCargaLectiva).get(0);
+		
+		EntidadDTO entidadFiltro = new EntidadDTO();
+		entidadFiltro.setIdEntidad(idEntidad);
+		EntidadDTO entidad = seguridadServiceLocal.controladorAccionEntidad(entidadFiltro, AccionType.FIND_BY_ID);
+		
+		AnhoSemestreDTO anhoSemestreFiltro = new AnhoSemestreDTO();
+		anhoSemestreFiltro.setIdAnhoSemestre(idAnhoSemestre);
+		AnhoSemestreDTO anhoSemestreInicio = this.admisionServiceImpl.controladorAccionAnhoSemestre(anhoSemestreFiltro , AccionType.FIND_BY_ID);
+		
+		if (listaAsistencia != null) {
+			for (AsistenciaDTO obj : listaAsistencia) {
+				obj.setJustificacion("cantidadDictaCursoSemena = " + cantidadDictaCursoSemena +"; totalDiasClases = "  + totalDiasClases +";totalDiasClasesInasistencia=" + totalDiasClasesInasistencia + ";\n cantidadAsistenciaFalto=" + cantidadAsistenciaFaltoMap.get(obj.getAlumno().getIdAlumno()) + "; cantidadAsistenciaAlumno = " + cantidadAsistenciaAlumnoMap.get(obj.getAlumno().getIdAlumno()) + "");
+				obj.setPorcentajeAsistencia("0%");
+				obj.setPorcentajeInAsistencia("0%");
+				String nombre =  obj.getAlumno().getPostulante().getPersona().getApellidoPaterno() + " " + obj.getAlumno().getPostulante().getPersona().getApellidoMaterno() + " " + obj.getAlumno().getPostulante().getPersona().getNombre() ;
+				obj.setDescripcionView(nombre);
+				obj.setCodigoGeneradoReporte(obj.getAlumno().getCodigoCarnet());
+				obj.setEstadoDescripcion(EstadoAsistenciaType.get(obj.getEstado()).getValue());
+				cantidadAsistenciaAlumno = 0;
+				if (cantidadAsistenciaAlumnoMap.containsKey(obj.getAlumno().getIdAlumno())) {
+					cantidadAsistenciaAlumno = cantidadAsistenciaAlumnoMap.get(obj.getAlumno().getIdAlumno());
+				}
+				cantidadAsistenciaFalto = 0;
+				if (cantidadAsistenciaFaltoMap.containsKey(obj.getAlumno().getIdAlumno())) {
+					cantidadAsistenciaFalto = cantidadAsistenciaFaltoMap.get(obj.getAlumno().getIdAlumno());
+				}
+				Double porcentajeAsistencia = NumerosUtil.redondear(new BigDecimal("" + ((cantidadAsistenciaAlumno * 100) / totalDiasClases) ), 2, RoundingMode.HALF_UP).doubleValue() ;
+				Double porcentajeInAsistencia = NumerosUtil.redondear(new BigDecimal("" + ((cantidadAsistenciaFalto * 100) / totalDiasClasesInasistencia) ), 2, RoundingMode.HALF_UP).doubleValue() ;
+				obj.setPorcentajeAsistencia(porcentajeAsistencia + "%");
+				obj.setPorcentajeInAsistencia(porcentajeInAsistencia + "%");
+				
+			}
+			Map<String, Object> propiedadesMap = new HashMap<String, Object>();
+			propiedadesMap.put("calcularWitchDemanda", "true");
+			propiedadesMap.put("exluirCabecera", "true");
+			propiedadesMap.put("nombreArchivo", "formato_registro_nota.xlsx");
+			propiedadesMap.put("anexarHojaPosition",1);
+			propiedadesMap.put("printTitleView", "printTitleView");
+			propiedadesMap.put("isFormula", "isFormula");
+			propiedadesMap.put("isBloqueo", "isBloqueo");
+			String titulo = detCargaLectiva.getDetPlanEstudio().getDescripcionCurso() +  " - " + anhoSemestreInicio.getNombreAnhoSemestre() ;
+			List<ExcelHederDataVO> listaHeaderData = new ArrayList<ExcelHederDataVO>();
+			//String nameHeader, String nameAtribute
+			listaHeaderData.add(new ExcelHederDataVO("NORD","rowInfo.index"));//A
+			listaHeaderData.add(new ExcelHederDataVO("CODIGO","codigoGeneradoReporte"));//B
+			listaHeaderData.add(new ExcelHederDataVO("APELLIDOS Y NOMBRES","descripcionView",5));//C
+			
+			listaHeaderData.add(new ExcelHederDataVO("S-801",""));//D
+			listaHeaderData.add(new ExcelHederDataVO("TURNO:",""));//E
+			listaHeaderData.add(new ExcelHederDataVO("NOCHExxx",""));//F
+			listaHeaderData.add(new ExcelHederDataVO("Gxx",""));//G
+			
+			listaHeaderData.add(new ExcelHederDataVO("PORCENTAJE DE ASISTENCIA","porcentajeAsistencia"));//H
+			listaHeaderData.add(new ExcelHederDataVO("PORCENTAJE DE INASISTENCIA","porcentajeInAsistencia"));//I
+			listaHeaderData.add(new ExcelHederDataVO("CRITERIO ASISTENCIA","estadoDescripcion"));//J
+			listaHeaderData.add(new ExcelHederDataVO("JUSTIFICACION INASISTENCIA","justificacion") );//K
+			
+			
+			EscuelaDTO escuela = detCargaLectiva.getCargaLectiva().getEscuela();
+			List<ExcelHederTitleVO> listaExcelHederTitle = new ArrayList<ExcelHederTitleVO>();
+			listaExcelHederTitle.add(new ExcelHederTitleVO(entidad.getNombre(),HorizontalAlignment.CENTER.getCode(), VerticalAlignment.CENTER.getCode(), 1, 1, 12,0,(short)14,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("VICERRECTORADO ACADÉMICO",HorizontalAlignment.CENTER.getCode(), VerticalAlignment.CENTER.getCode(), 1, 2, 12,0,(short)14,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("DIRECCIÓN GENERAL DE REGISTROS ACADÉMICOS",HorizontalAlignment.CENTER.getCode(), VerticalAlignment.CENTER.getCode(), 1, 3, 12,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("REPORTE DE ASISTENCIA POR CURSO " + anhoSemestreInicio.getNombreAnhoSemestre() + "",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(), 1, 4, 12,0,(short)14,false));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("CRETERIO BUSQUEDA FECHA HORARIO " + FechaUtil.obtenerFechaFormatoSimple(fechaHorario)+ "",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(), 1,5, 12,0,true));
+			
+			listaExcelHederTitle.add(new ExcelHederTitleVO("FACULTAD",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(), 1,6,7,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO(escuela.getFacultad().getDescripcion(),HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(), 1,7,7,0,true));
+			
+			listaExcelHederTitle.add(new ExcelHederTitleVO("ESCUELA:",HorizontalAlignment.LEFT.getCode(),VerticalAlignment.CENTER.getCode(), 1,8,2,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO(escuela.getNombre(),HorizontalAlignment.LEFT.getCode(),VerticalAlignment.CENTER.getCode(), 3,8,5,0,true));
+			
+			listaExcelHederTitle.add(new ExcelHederTitleVO("ASIGNATURA:",HorizontalAlignment.LEFT.getCode(),VerticalAlignment.CENTER.getCode(), 1,9,2  ,0,0,25,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO(detCargaLectiva.getDetPlanEstudio().getDescripcionCurso().trim(),HorizontalAlignment.LEFT.getCode(),VerticalAlignment.CENTER.getCode(), 3,9,5,0,true));						
+
+			listaExcelHederTitle.add(new ExcelHederTitleVO("DOCENTE:",HorizontalAlignment.LEFT.getCode(),VerticalAlignment.CENTER.getCode(), 1,10,2,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO(obtenerNombreDococente(detCargaLectiva),HorizontalAlignment.LEFT.getCode(),VerticalAlignment.CENTER.getCode(), 3,10,5,0,true));						
+
+			listaExcelHederTitle.add(new ExcelHederTitleVO("CODIGO:",HorizontalAlignment.LEFT.getCode(),VerticalAlignment.CENTER.getCode(),1,11,2,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO(detCargaLectiva.getDetPlanEstudio().getCodigoAsignatura(),HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),3,11,2,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("GRUPO",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),5,11,0,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO(detCargaLectiva.getAula().getDescripcion(),HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),6,11,2,0,true));
+									
+									
+			listaExcelHederTitle.add(new ExcelHederTitleVO("PLAN ESTUDIO:",HorizontalAlignment.LEFT.getCode(),VerticalAlignment.CENTER.getCode(),1,12,2,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO(detCargaLectiva.getDetPlanEstudio().getPlanEstudio().getAnho(),HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(), 3,12,2,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("AULA",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),5,12,0,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO(detCargaLectiva.getAula().getDescripcion(),HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),6,12,2,0,true));
+
+			listaExcelHederTitle.add(new ExcelHederTitleVO("CICLO:",HorizontalAlignment.LEFT.getCode(),VerticalAlignment.CENTER.getCode(),1,13,2,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO(detCargaLectiva.getDetPlanEstudio().getItemByCiclo().getNombre(),HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),3,13,3,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("CREDITOS:", HorizontalAlignment.JUSTIFY.getCode(),VerticalAlignment.JUSTIFY.getCode(),6,13,0,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO(detCargaLectiva.getDetPlanEstudio().getCredito() + "", HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),7,13,0,0,true));
+			
+			listaExcelHederTitle.add(new ExcelHederTitleVO("SEMESTRE:", HorizontalAlignment.LEFT.getCode(),VerticalAlignment.CENTER.getCode(),1,14,2,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO(anhoSemestreInicio.getNombreAnhoSemestre(), HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),3,14,2,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("TURNO:", HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(), 5,14,0,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO(detCargaLectiva.getItemByTurno().getNombre(), HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),  6,14,2,0,true));
+						
+			listaExcelHederTitle.add(new ExcelHederTitleVO("N° ORD", HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),1,15,0,0,0,6,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("CODIGO", HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),2,15,0,0,1,7,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("APELLIDOS Y NOMBRES", HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),3,15,5,0,2,6,true));
+							
+			listaExcelHederTitle.add(new ExcelHederTitleVO("",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(), 8,6,5,0,true));
+			
+			listaExcelHederTitle.add(new ExcelHederTitleVO("PORCENTAJE DE ASISTENCIA",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(), 8,7,0,9,7,8,true,90,(short)11));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("PORCENTAJE DE INASISTENCIA",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(), 9,7,0,9,7,8,true,90,(short)11));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("CRITERIO ASISTENCIA",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(), 10,7,0,9,8,8,true,90,(short)11));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("JUSTIFICACION INASISTENCIA",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(), 11,7,0,9,9,8,true,90,(short)11));
+				 		
+			int catidad = 15 + listaAsistencia.size()  + 3;
+
+			listaExcelHederTitle.add(new ExcelHederTitleVO("____________________________", HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),2,catidad,2,0,1,12,true,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("FIRMA DEL DIRECTOR DE ESCUELA", HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),2,catidad + 1,2,0,1,12,true,true));
+			
+			listaExcelHederTitle.add(new ExcelHederTitleVO("____________________________", HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),5,catidad,8,0,1,12,true,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("FIRMA DEL DOCENTE", HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),5,catidad + 1,8,0,1,12,true,true));
+            
+			//listaExcelHederTitle.add(new ExcelHederTitleVO("Fecha de entrega de registro____________________", HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),19,catidad + 1,6,0,1,12,true,true));
+
+			propiedadesMap.put("listaTituloFinal", listaExcelHederTitle);//para crear con esta lista
+			
+			DataExportExcelPersonalizadoUtil.generarExcelXLSX(listaHeaderData, listaAsistencia, archivoName, titulo, propiedadesMap);
+			
+		}
+		DataExportExcelPersonalizadoUtil.generarExcelXLSXViewMap(archivoName);
+		return fileName;
+	}
+	
+	@Override
+	public String generarReporteRegistroNotaUnidadByCurso(String idAnhoSemestre, String idDetCargaLectiva,String idEntidad) throws Exception {
+		String fileName = UUIDUtil.generarElementUUID();
+		List<DetRegistroNotaDTO> listaDetRegistroNota = this.obtenerNotaAlumnoMariculadoByCurso(idDetCargaLectiva,null, false);
+		String archivoName = fileName;
+		
+		DetCargaLectivaDTO detCargaLectiva = new DetCargaLectivaDTO();
+		detCargaLectiva.setCargaLectiva(new CargaLectivaDTO());
+		//detCargaLectiva.getCargaLectiva().setEntidadUniversitaria(usuarioSession.getEntidadUniversitaria());
+		detCargaLectiva.setIdDetCargaLectiva(idDetCargaLectiva);
+		detCargaLectiva = this.matriculaServiceImpl.obtenerDetCargaLectiva(detCargaLectiva).get(0);
+		
+		EntidadDTO entidadFiltro = new EntidadDTO();
+		entidadFiltro.setIdEntidad(idEntidad);
+		EntidadDTO entidad = seguridadServiceLocal.controladorAccionEntidad(entidadFiltro, AccionType.FIND_BY_ID);
+		
+		
+		AnhoSemestreDTO anhoSemestreFiltro = new AnhoSemestreDTO();
+		anhoSemestreFiltro.setIdAnhoSemestre(idAnhoSemestre);
+		AnhoSemestreDTO anhoSemestreInicio = this.admisionServiceImpl.controladorAccionAnhoSemestre(anhoSemestreFiltro , AccionType.FIND_BY_ID);
+		
+		if (listaDetRegistroNota != null) {
+			for (DetRegistroNotaDTO obj : listaDetRegistroNota) {
+				String nombre =  obj.getDetMatricula().getMatricula().getAlumno().getPostulante().getPersona().getApellidoPaterno() + " " + obj.getDetMatricula().getMatricula().getAlumno().getPostulante().getPersona().getApellidoMaterno() + " " + obj.getDetMatricula().getMatricula().getAlumno().getPostulante().getPersona().getNombre() ;
+				obj.setDescripcionView(nombre);
+				obj.setCodigoGeneradoReporte(obj.getDetMatricula().getMatricula().getAlumno().getCodigoCarnet());
+				if (obj.getNotaLetraByNotaAplazado() != null && !StringUtils.isNullOrEmptyNumeric(obj.getNotaLetraByNotaAplazado().getIdNotaLetra())) {
+					obj.setPromedioFinal(obj.getNotaLetraByNotaAplazado().getIdNotaLetra());
+				} else {
+					if (obj.getNotaLetra() != null && !StringUtils.isNullOrEmptyNumeric(obj.getNotaLetra().getIdNotaLetra())) {
+						obj.setPromedioFinal(obj.getNotaLetra().getIdNotaLetra());
+					}
+				}
+				for (CursoNotaDTO cursoNota : obj.getDetRegistroNotaCursoNotaList()) {
+					if (TipoNotaType.PRIMERA_UNIDAD.getKey().equals(cursoNota.getConceptoNota().getItemByTipoNota().getCodigo())) {
+						obj.setPromedioPrimeraUnidad(cursoNota.getNota());
+					} else if (TipoNotaType.SEGUNDA_UNIDAD.getKey().equals(cursoNota.getConceptoNota().getItemByTipoNota().getCodigo())) {
+						obj.setPromedioSegundaUnidad(cursoNota.getNota());
+					} else if (TipoNotaType.TERCERA_UNIDAD.getKey().equals(cursoNota.getConceptoNota().getItemByTipoNota().getCodigo())) {
+						obj.setPromedioTerceraUnidad(cursoNota.getNota());
+					}  else if (TipoNotaType.CUARTA_UNIDAD.getKey().equals(cursoNota.getConceptoNota().getItemByTipoNota().getCodigo())) {
+						obj.setPromedioCuartaUnidad(cursoNota.getNota());
+					}
+				}
+			}
+			Map<String, Object> propiedadesMap = new HashMap<String, Object>();
+			propiedadesMap.put("calcularWitchDemanda", "true");
+			propiedadesMap.put("exluirCabecera", "true");
+			propiedadesMap.put("nombreArchivo", "formato_registro_nota.xlsx");
+			propiedadesMap.put("anexarHojaPosition",1);
+			propiedadesMap.put("printTitleView", "printTitleView");
+			propiedadesMap.put("isFormula", "isFormula");
+			propiedadesMap.put("isBloqueo", "isBloqueo");
+			String titulo = detCargaLectiva.getDetPlanEstudio().getDescripcionCurso() +  " - " + anhoSemestreInicio.getNombreAnhoSemestre() ;
+			List<ExcelHederDataVO> listaHeaderData = new ArrayList<ExcelHederDataVO>();
+			//String nameHeader, String nameAtribute
+			listaHeaderData.add(new ExcelHederDataVO("NORD","rowInfo.index"));//A
+			listaHeaderData.add(new ExcelHederDataVO("CODIGO","codigoGeneradoReporte"));//B
+			listaHeaderData.add(new ExcelHederDataVO("APELLIDOS Y NOMBRES","descripcionView",5));//C
+			
+			listaHeaderData.add(new ExcelHederDataVO("S-801",""));//D
+			listaHeaderData.add(new ExcelHederDataVO("TURNO:",""));//E
+			listaHeaderData.add(new ExcelHederDataVO("NOCHExxx",""));//F
+			listaHeaderData.add(new ExcelHederDataVO("Gxx",""));//G
+			
+			listaHeaderData.add(new ExcelHederDataVO("PROMEDIO 1º UNIDAD","promedioPrimeraUnidad"));//H
+			listaHeaderData.add(new ExcelHederDataVO("PROMEDIO 2º UNIDAD","promedioSegundaUnidad"));//I			
+			listaHeaderData.add(new ExcelHederDataVO("PROMEDIO 3º UNIDAD","promedioTerceraUnidad") );//J
+			listaHeaderData.add(new ExcelHederDataVO("PROMEDIO 4º UNIDAD","promedioCuartaUnidad"));//K
+			listaHeaderData.add(new ExcelHederDataVO("PROMEDIO FINAL","promedioFinal"));//L	
+			
+			
+			EscuelaDTO escuela = detCargaLectiva.getCargaLectiva().getEscuela();
+			List<ExcelHederTitleVO> listaExcelHederTitle = new ArrayList<ExcelHederTitleVO>();
+			listaExcelHederTitle.add(new ExcelHederTitleVO(entidad.getNombre(),HorizontalAlignment.CENTER.getCode(), VerticalAlignment.CENTER.getCode(), 1, 1, 12,0,(short)14,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("VICERRECTORADO ACADÉMICO",HorizontalAlignment.CENTER.getCode(), VerticalAlignment.CENTER.getCode(), 1, 2, 12,0,(short)14,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("DIRECCIÓN GENERAL DE REGISTROS ACADÉMICOS",HorizontalAlignment.CENTER.getCode(), VerticalAlignment.CENTER.getCode(), 1, 3, 12,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("REPORTE DE NOTAS PROMEDIO POR UNIDAD " + anhoSemestreInicio.getNombreAnhoSemestre() + "",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(), 1, 4, 12,0,(short)14,false));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("(Sistema de Evaluación)",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(), 1,5, 12,0,true));
+			
+			listaExcelHederTitle.add(new ExcelHederTitleVO("FACULTAD",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(), 1,6,7,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO(escuela.getFacultad().getDescripcion(),HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(), 1,7,7,0,true));
+			
+			listaExcelHederTitle.add(new ExcelHederTitleVO("ESCUELA:",HorizontalAlignment.LEFT.getCode(),VerticalAlignment.CENTER.getCode(), 1,8,2,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO(escuela.getNombre(),HorizontalAlignment.LEFT.getCode(),VerticalAlignment.CENTER.getCode(), 3,8,5,0,true));
+			
+			listaExcelHederTitle.add(new ExcelHederTitleVO("ASIGNATURA:",HorizontalAlignment.LEFT.getCode(),VerticalAlignment.CENTER.getCode(), 1,9,2  ,0,0,25,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO(detCargaLectiva.getDetPlanEstudio().getDescripcionCurso().trim(),HorizontalAlignment.LEFT.getCode(),VerticalAlignment.CENTER.getCode(), 3,9,5,0,true));						
+
+			listaExcelHederTitle.add(new ExcelHederTitleVO("DOCENTE:",HorizontalAlignment.LEFT.getCode(),VerticalAlignment.CENTER.getCode(), 1,10,2,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO(obtenerNombreDococente(detCargaLectiva),HorizontalAlignment.LEFT.getCode(),VerticalAlignment.CENTER.getCode(), 3,10,5,0,true));						
+
+			listaExcelHederTitle.add(new ExcelHederTitleVO("CODIGO:",HorizontalAlignment.LEFT.getCode(),VerticalAlignment.CENTER.getCode(),1,11,2,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO(detCargaLectiva.getDetPlanEstudio().getCodigoAsignatura(),HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),3,11,2,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("GRUPO",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),5,11,0,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO(detCargaLectiva.getAula().getDescripcion(),HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),6,11,2,0,true));
+									
+									
+			listaExcelHederTitle.add(new ExcelHederTitleVO("PLAN ESTUDIO:",HorizontalAlignment.LEFT.getCode(),VerticalAlignment.CENTER.getCode(),1,12,2,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO(detCargaLectiva.getDetPlanEstudio().getPlanEstudio().getAnho(),HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(), 3,12,2,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("AULA",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),5,12,0,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO(detCargaLectiva.getAula().getDescripcion(),HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),6,12,2,0,true));
+
+			listaExcelHederTitle.add(new ExcelHederTitleVO("CICLO:",HorizontalAlignment.LEFT.getCode(),VerticalAlignment.CENTER.getCode(),1,13,2,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO(detCargaLectiva.getDetPlanEstudio().getItemByCiclo().getNombre(),HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),3,13,3,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("CREDITOS:", HorizontalAlignment.JUSTIFY.getCode(),VerticalAlignment.JUSTIFY.getCode(),6,13,0,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO(detCargaLectiva.getDetPlanEstudio().getCredito() + "", HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),7,13,0,0,true));
+			
+			listaExcelHederTitle.add(new ExcelHederTitleVO("SEMESTRE:", HorizontalAlignment.LEFT.getCode(),VerticalAlignment.CENTER.getCode(),1,14,2,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO(anhoSemestreInicio.getNombreAnhoSemestre(), HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),3,14,2,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("TURNO:", HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(), 5,14,0,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO(detCargaLectiva.getItemByTurno().getNombre(), HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),  6,14,2,0,true));
+						
+			listaExcelHederTitle.add(new ExcelHederTitleVO("N° ORD", HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),1,15,0,0,0,6,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("CODIGO", HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),2,15,0,0,1,7,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("APELLIDOS Y NOMBRES", HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),3,15,5,0,2,6,true));
+							
+			listaExcelHederTitle.add(new ExcelHederTitleVO("PROMEDIO",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(), 8,6,5,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("PROMEDIO 1º UNIDAD",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(), 8,7,0,9,7,5,true,90,(short)11));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("PROMEDIO 2º UNIDAD",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(), 9,7,0,9,8,5,true,90,(short)11));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("PROMEDIO 3º UNIDAD",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(), 10,7,0,9,9,5,true,90,(short)11));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("PROMEDIO  4º UNIDAD",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),11,7,0,9,10,5,true,90,(short)11));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("PROMEDIO FINAL",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),12,7,0,9,11,5,true,90,(short)11));
+				 		
+			int catidad = 15 + listaDetRegistroNota.size()  + 3;
+
+			listaExcelHederTitle.add(new ExcelHederTitleVO("____________________________", HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),2,catidad,2,0,1,12,true,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("FIRMA DEL DIRECTOR DE ESCUELA", HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),2,catidad + 1,2,0,1,12,true,true));
+			
+			listaExcelHederTitle.add(new ExcelHederTitleVO("____________________________", HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),5,catidad,8,0,1,12,true,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("FIRMA DEL DOCENTE", HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),5,catidad + 1,8,0,1,12,true,true));
+            
+			//listaExcelHederTitle.add(new ExcelHederTitleVO("Fecha de entrega de registro____________________", HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),19,catidad + 1,6,0,1,12,true,true));
+
+			propiedadesMap.put("listaTituloFinal", listaExcelHederTitle);//para crear con esta lista
+			
+			DataExportExcelPersonalizadoUtil.generarExcelXLSX(listaHeaderData, listaDetRegistroNota, archivoName, titulo, propiedadesMap);
+			
+		}
+		DataExportExcelPersonalizadoUtil.generarExcelXLSXViewMap(archivoName);
+		return fileName;
+	}
+	@Override
+	public String generarReporteRegistroNotaByCurso(String idAnhoSemestre, String idDetCargaLectiva,String idEntidad) throws Exception {
+		String fileName = UUIDUtil.generarElementUUID();
+		List<DetRegistroNotaDTO> listaDetRegistroNota = this.obtenerNotaAlumnoMariculadoByCurso(idDetCargaLectiva,null, false);
+		String archivoName = fileName;
+		
+		DetCargaLectivaDTO detCargaLectiva = new DetCargaLectivaDTO();
+		detCargaLectiva.setCargaLectiva(new CargaLectivaDTO());
+		//detCargaLectiva.getCargaLectiva().setEntidadUniversitaria(usuarioSession.getEntidadUniversitaria());
+		detCargaLectiva.setIdDetCargaLectiva(idDetCargaLectiva);
+		detCargaLectiva = this.matriculaServiceImpl.obtenerDetCargaLectiva(detCargaLectiva).get(0);
+		
+		EntidadDTO entidadFiltro = new EntidadDTO();
+		entidadFiltro.setIdEntidad(idEntidad);
+		EntidadDTO entidad = seguridadServiceLocal.controladorAccionEntidad(entidadFiltro, AccionType.FIND_BY_ID);
+		
+		
+		AnhoSemestreDTO anhoSemestreFiltro = new AnhoSemestreDTO();
+		anhoSemestreFiltro.setIdAnhoSemestre(idAnhoSemestre);
+		AnhoSemestreDTO anhoSemestreInicio = this.admisionServiceImpl.controladorAccionAnhoSemestre(anhoSemestreFiltro , AccionType.FIND_BY_ID);
+		
+		if (listaDetRegistroNota != null) {
+			for (DetRegistroNotaDTO obj : listaDetRegistroNota) {
+				String nombre =  obj.getDetMatricula().getMatricula().getAlumno().getPostulante().getPersona().getApellidoPaterno() + " " + obj.getDetMatricula().getMatricula().getAlumno().getPostulante().getPersona().getApellidoMaterno() + " " + obj.getDetMatricula().getMatricula().getAlumno().getPostulante().getPersona().getNombre() ;
+				obj.setDescripcionView(nombre);
+				obj.setCodigoGeneradoReporte(obj.getDetMatricula().getMatricula().getAlumno().getCodigoCarnet());
+			}
+			Map<String, Object> propiedadesMap = new HashMap<String, Object>();
+			propiedadesMap.put("calcularWitchDemanda", "true");
+			propiedadesMap.put("exluirCabecera", "true");
+			propiedadesMap.put("nombreArchivo", "formato_registro_nota.xlsx");
+			propiedadesMap.put("anexarHojaPosition",1);
+			propiedadesMap.put("printTitleView", "true");
+			propiedadesMap.put("isFormula", "true");
+			//propiedadesMap.put("isBloqueo", "true");
+			String titulo = detCargaLectiva.getDetPlanEstudio().getDescripcionCurso() +  " - " + anhoSemestreInicio.getNombreAnhoSemestre() ;
+			List<ExcelHederDataVO> listaHeaderData = new ArrayList<ExcelHederDataVO>();
+			//String nameHeader, String nameAtribute
+			listaHeaderData.add(new ExcelHederDataVO("NORD","rowInfo.index"));//A
+			listaHeaderData.add(new ExcelHederDataVO("CODIGO","codigoGeneradoReporte"));//B
+			listaHeaderData.add(new ExcelHederDataVO("APELLIDOS Y NOMBRES","descripcionView",5));//C
+			
+			listaHeaderData.add(new ExcelHederDataVO("S-801",""));//D
+			listaHeaderData.add(new ExcelHederDataVO("TURNO:",""));//E
+			listaHeaderData.add(new ExcelHederDataVO("NOCHExxx",""));//F
+			listaHeaderData.add(new ExcelHederDataVO("Gxx",""));//G
+			
+			listaHeaderData.add(new ExcelHederDataVO("PROMEDIO DE CONTENIDO","valorCero"));//H
+			listaHeaderData.add(new ExcelHederDataVO("1ra.EVALUACION PARCIAL","valorCero"));//I			
+			listaHeaderData.add(new ExcelHederDataVO("P1","${FORMULA}=>ROUND(AVERAGE(H${N}:I${N}),0)") );//J
+			
+			listaHeaderData.add(new ExcelHederDataVO("PROMEDIO DE CONTENIDO","valorCero"));//K
+			listaHeaderData.add(new ExcelHederDataVO("2da.EVALUACION PARCIAL","valorCero"));//L			
+			listaHeaderData.add(new ExcelHederDataVO("P2","${FORMULA}=>ROUND(AVERAGE(K${N}:L${N}),0)"));//M
+			
+			listaHeaderData.add(new ExcelHederDataVO("PROMEDIO DE CONTENIDO","valorCero"));//N
+			listaHeaderData.add(new ExcelHederDataVO("3ra.EVALUACION PARCIAL","valorCero"));//O
+			listaHeaderData.add(new ExcelHederDataVO("P3","${FORMULA}=>ROUND(AVERAGE(N${N}:O${N}),0)"));//P
+			
+			listaHeaderData.add(new ExcelHederDataVO("PROMEDIO DE CONTENIDO","valorCero"));//Q
+			listaHeaderData.add(new ExcelHederDataVO("4ta.EVALUACION PARCIAL","valorCero"));//R
+			listaHeaderData.add(new ExcelHederDataVO("P4","${FORMULA}=>ROUND(AVERAGE(Q${N}:R${N}),0)"));//S
+			
+			listaHeaderData.add(new ExcelHederDataVO("PF","${FORMULA}=>ROUND(AVERAGE(J${N},M${N},P${N},S${N}),0)"));//T
+			
+			listaHeaderData.add(new ExcelHederDataVO("PF","${FORMULA}=>A${N}"));//U
+			listaHeaderData.add(new ExcelHederDataVO("PF",""));//V
+			listaHeaderData.add(new ExcelHederDataVO("PF","${FORMULA}=>T${N}"));//W
+			listaHeaderData.add(new ExcelHederDataVO("PF",""));//X
+			
+			EscuelaDTO escuela = detCargaLectiva.getCargaLectiva().getEscuela();
+			List<ExcelHederTitleVO> listaExcelHederTitle = new ArrayList<ExcelHederTitleVO>();
+			listaExcelHederTitle.add(new ExcelHederTitleVO(entidad.getNombre(),HorizontalAlignment.CENTER.getCode(), VerticalAlignment.CENTER.getCode(), 1, 1, 24,0,(short)14,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("VICERRECTORADO ACADÉMICO",HorizontalAlignment.CENTER.getCode(), VerticalAlignment.CENTER.getCode(), 1, 2, 24,0,(short)14,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("DIRECCIÓN GENERAL DE REGISTROS ACADÉMICOS",HorizontalAlignment.CENTER.getCode(), VerticalAlignment.CENTER.getCode(), 1, 3, 24,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("REGISTRO DE EVALUACIÓN ACADÉMICA " + anhoSemestreInicio.getNombreAnhoSemestre() + "",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(), 1, 4, 24,0,(short)14,false));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("(Sistema de Evaluación)",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(), 1,5, 24,0,true));
+			
+			listaExcelHederTitle.add(new ExcelHederTitleVO("FACULTAD",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(), 1,6,7,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO(escuela.getFacultad().getDescripcion(),HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(), 1,7,7,0,true));
+			
+			listaExcelHederTitle.add(new ExcelHederTitleVO("ESCUELA:",HorizontalAlignment.LEFT.getCode(),VerticalAlignment.CENTER.getCode(), 1,8,2,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO(escuela.getNombre(),HorizontalAlignment.LEFT.getCode(),VerticalAlignment.CENTER.getCode(), 3,8,5,0,true));
+			
+			listaExcelHederTitle.add(new ExcelHederTitleVO("ASIGNATURA:",HorizontalAlignment.LEFT.getCode(),VerticalAlignment.CENTER.getCode(), 1,9,2  ,0,0,25,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO(detCargaLectiva.getDetPlanEstudio().getDescripcionCurso().trim(),HorizontalAlignment.LEFT.getCode(),VerticalAlignment.CENTER.getCode(), 3,9,5,0,true));						
+
+			listaExcelHederTitle.add(new ExcelHederTitleVO("DOCENTE:",HorizontalAlignment.LEFT.getCode(),VerticalAlignment.CENTER.getCode(), 1,10,2,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO(obtenerNombreDococente(detCargaLectiva),HorizontalAlignment.LEFT.getCode(),VerticalAlignment.CENTER.getCode(), 3,10,5,0,true));						
+
+			listaExcelHederTitle.add(new ExcelHederTitleVO("CODIGO:",HorizontalAlignment.LEFT.getCode(),VerticalAlignment.CENTER.getCode(),1,11,2,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO(detCargaLectiva.getDetPlanEstudio().getCodigoAsignatura(),HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),3,11,2,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("GRUPO",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),5,11,0,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO(detCargaLectiva.getAula().getDescripcion(),HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),6,11,2,0,true));
+									
+									
+			listaExcelHederTitle.add(new ExcelHederTitleVO("PLAN ESTUDIO:",HorizontalAlignment.LEFT.getCode(),VerticalAlignment.CENTER.getCode(),1,12,2,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO(detCargaLectiva.getDetPlanEstudio().getPlanEstudio().getAnho(),HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(), 3,12,2,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("AULA",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),5,12,0,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO(detCargaLectiva.getAula().getDescripcion(),HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),6,12,2,0,true));
+
+			listaExcelHederTitle.add(new ExcelHederTitleVO("CICLO:",HorizontalAlignment.LEFT.getCode(),VerticalAlignment.CENTER.getCode(),1,13,2,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO(detCargaLectiva.getDetPlanEstudio().getItemByCiclo().getNombre(),HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),3,13,3,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("CREDITOS:", HorizontalAlignment.JUSTIFY.getCode(),VerticalAlignment.JUSTIFY.getCode(),6,13,0,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO(detCargaLectiva.getDetPlanEstudio().getCredito() + "", HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),7,13,0,0,true));
+			
+			listaExcelHederTitle.add(new ExcelHederTitleVO("SEMESTRE:", HorizontalAlignment.LEFT.getCode(),VerticalAlignment.CENTER.getCode(),1,14,2,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO(anhoSemestreInicio.getNombreAnhoSemestre(), HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),3,14,2,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("TURNO:", HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(), 5,14,0,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO(detCargaLectiva.getItemByTurno().getNombre(), HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),  6,14,2,0,true));
+						
+			listaExcelHederTitle.add(new ExcelHederTitleVO("N° ORD", HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),1,15,0,0,0,6,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("CODIGO", HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),2,15,0,0,1,7,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("APELLIDOS Y NOMBRES", HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),3,15,5,0,2,6,true));
+							
+			listaExcelHederTitle.add(new ExcelHederTitleVO("PROMEDIO",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(), 8,6,13,0,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("PROMEDIO DE CONTENIDO",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(), 8,7,0,9,7,5,true,90,(short)9));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("1ra.EVALUACION PARCIAL",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(), 9,7,0,9,8,5,true,90,(short)9));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("P1",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(), 10,7,0,9,9,5,true,90,(short)14));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("PROMEDIO DE CONTENIDO",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),11,7,0,9,10,5,true,90,(short)9));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("2da.EVALUACION PARCIAL",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),12,7,0,9,11,5,true,90,(short)9));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("P2",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),13,7,0,9,12,5,true,90,(short)14));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("PROMEDIO DE CONTENIDO",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),14,7,0,9,13,5,true,90,(short)9));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("3ra.EVALUACION PARCIAL",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),15,7,0,9,14,5,true,90,(short)9));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("P3",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),16,7,0,9,15,5,true,90,(short)14));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("PROMEDIO DE CONTENIDO",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),17,7,0,9,16,5,true,90,(short)9));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("4ta.EVALUACION PARCIAL",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),18,7,0,9,17,5,true,90,(short)9));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("P4",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),19,7,0,9,18,5,true,90,(short)14));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("PF",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),20,7,0,9,19,5,true,90,(short)14));
+			
+			listaExcelHederTitle.add(new ExcelHederTitleVO("RESUMEN PROMEDIO FINAL",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(), 21,6, 4,9,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("N° ORDEN",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(), 21,15,0,0,20,8,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("EN LETRAS",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(), 22,15,0,0,21,8,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("EN NUMEROS",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(), 23,15,0,0,22,9,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("APLAZADOS",HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(), 24,15,0,0,23,11,true));
+				 		
+			int catidad = 15 + listaDetRegistroNota.size()  + 3;
+
+			listaExcelHederTitle.add(new ExcelHederTitleVO("____________________________", HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),2,catidad,2,0,1,12,true,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("FIRMA DEL DIRECTOR DE ESCUELA", HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),2,catidad + 1,2,0,1,12,true,true));
+			
+			listaExcelHederTitle.add(new ExcelHederTitleVO("____________________________", HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),7,catidad,8,0,1,12,true,true));
+			listaExcelHederTitle.add(new ExcelHederTitleVO("FIRMA DEL DOCENTE", HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),7,catidad + 1,8,0,1,12,true,true));
+            
+			listaExcelHederTitle.add(new ExcelHederTitleVO("Fecha de entrega de registro____________________", HorizontalAlignment.CENTER.getCode(),VerticalAlignment.CENTER.getCode(),19,catidad + 1,6,0,1,12,true,true));
+
+			propiedadesMap.put("listaTituloFinal", listaExcelHederTitle);//para crear con esta lista
+			
+			DataExportExcelPersonalizadoUtil.generarExcelXLSX(listaHeaderData, listaDetRegistroNota, archivoName, titulo, propiedadesMap);
+			
+		}
+		DataExportExcelPersonalizadoUtil.generarExcelXLSXViewMap(archivoName);
+		return fileName;
+	}
+	private String obtenerNombreDococente(DetCargaLectivaDTO detCargaLectivaDTO) {
+		StringBuilder resultado = new StringBuilder();
+		resultado.append(detCargaLectivaDTO.getPersonalByDocente().getPersona().getNombre());
+		resultado.append(" " + detCargaLectivaDTO.getPersonalByDocente().getPersona().getApellidoPaterno());
+		resultado.append(" " + detCargaLectivaDTO.getPersonalByDocente().getPersona().getApellidoMaterno());
+		return resultado.toString();
+	}
+	
+	@Override
+	public void registrarAsistencia(List<AsistenciaDTO> listaAsistencia,String userName) throws Exception {
+		for (AsistenciaDTO objData : listaAsistencia) {
+			Asistencia objAsistencia = TransferDataObjectUtil.transferObjetoEntity(objData, Asistencia.class, "alumno@PK@","detCargaLectiva@PK@","itemByDia@PK@");
+			//objAsistencia.setFechaHorario(FechaUtil.obtenerFecha());
+			if (!StringUtils.isNotNullOrBlank(objAsistencia.getIdAsistencia())) {
+				objAsistencia.setIdAsistencia(asistenciaDaoImpl.generarCodigoAsistencia(objAsistencia));
+				objAsistencia.setUsuarioCreacion(userName);
+				objAsistencia.setFechaCreacion(FechaUtil.obtenerFecha());
+				asistenciaDaoImpl.save(objAsistencia);
+			} else {
+				objAsistencia.setUsuarioModificacion(userName);
+				objAsistencia.setFechaModificacion(FechaUtil.obtenerFecha());
+				asistenciaDaoImpl.update(objAsistencia);
+			}
+		}
+	}
+	
+	@Override
+	public List<AsistenciaDTO> obtenerAsistencia(boolean isConsulta,String idDetCargaLectiva,String idAlumno,Date fechaHorario,String userName) throws Exception {
+		List<AsistenciaDTO> resultado = new ArrayList<AsistenciaDTO>();
+		List<Asistencia> resultadoTemp = asistenciaDaoImpl.listarAsistencia(isConsulta,idDetCargaLectiva,idAlumno,null,fechaHorario);
+		Map<String,String> asistenciaRegistroMap = 	new HashMap<String,String>();
+		if (resultadoTemp != null) {
+			for (Asistencia asistencia : resultadoTemp) {
+				asistenciaRegistroMap.put(asistencia.getAlumno().getIdAlumno(), "");
+			}
+		} else {
+			resultadoTemp = new ArrayList<Asistencia>();
+		}
+		if (!isConsulta) {
+			List<DetMatricula> listaTemp = detMatriculaDaoImpl.obtenerDetalleMatricula(idDetCargaLectiva,idAlumno);
+			if (listaTemp != null ) {
+				for (DetMatricula objDet : listaTemp) {
+					if (!asistenciaRegistroMap.containsKey(objDet.getMatricula().getAlumno().getIdAlumno())) {
+						Asistencia asistenciaPersist = new Asistencia();
+						asistenciaPersist.setAlumno(objDet.getMatricula().getAlumno());
+						asistenciaPersist.setDetCargaLectiva( new DetCargaLectiva() );
+						asistenciaPersist.getDetCargaLectiva().setIdDetCargaLectiva(idDetCargaLectiva);
+						asistenciaPersist.setItemByDia(new Item(1L));
+						asistenciaPersist.setEstado(EstadoAsistenciaType.DESIDIR.getKey());
+						asistenciaPersist.setJustificacion("");
+						asistenciaPersist.setFechaHorario(fechaHorario);
+						if (!StringUtils.isNotNullOrBlank(fechaHorario)) {
+							asistenciaPersist.setFechaHorario(FechaUtil.obtenerFecha());
+					    } 
+						asistenciaPersist.setUsuarioCreacion(userName);
+						resultadoTemp.add((Asistencia)BeanUtils.cloneBean(asistenciaPersist));
+					}
+				}
+		   }
+		}
+		
+		for (Asistencia objData : resultadoTemp) {
+			AsistenciaDTO asistencia = TransferDataObjectUtil.transferObjetoEntityDTO(objData, AsistenciaDTO.class,"alumno","detCargaLectiva","itemByDia");
+			PostulanteDTO postulante = TransferDataObjectUtil.transferObjetoEntityDTO(objData.getAlumno().getPostulante(), PostulanteDTO.class,"persona");
+			asistencia.getAlumno().setPostulante(postulante);
+			resultado.add(asistencia);
+		}
+	  return resultado;
+	}
+
+	
+	@Override
+	public String generarReporteMultiple(String tipoReporte, String idEscuela, String idAnhoSemestre,String serviceKey,String authToken) throws Exception {
+		String fileName = UUIDUtil.generarElementUUID();
+		String userName = AppAuthenticator.getInstance().getUserName(authToken);
+		String codigoGeneradoReporte = "";
+		Map<String, Object> parametros = new HashMap<String, Object>();
+		String[] subreportes = new String[0];
+		
+		NombreReporteType reporte = null;
+		if (tipoReporte != null) {
+			switch (TipoReporteNotaType.get(tipoReporte)) {
+				case RECORD_NOTA_MASIVA:
+					reporte = NombreReporteType.JR_REP_RECORD_NOTA_MASIVO;
+					subreportes = new String[0];	
+					parametros.put("Id_AhnoSemestre", idAnhoSemestre);
+					parametros.put("ruta", "");
+					parametros.put("Id_Escuela", idEscuela);
+					parametros.put("ruta_logo", "");
+					parametros = obtenerParametroRecordNota(parametros);
+					break;	
+				case REPORTE_RESUMEN_NOTA_POR_SEMESTRE:
+					reporte = NombreReporteType.JR_REP_RESUMEN_NOTA_BY_SEMESTRE;
+					subreportes = new String[0];	
+					parametros.put("Id_AhnoSemestre", idAnhoSemestre);
+					parametros.put("ruta_logo", "");
+					parametros = obtenerParametroRecordNota(parametros);
+					break;
+				default:
+					break;
+			}
+			ParametroReporteVO parametroReporteVO = new ParametroReporteVO(parametros, null, reporte, subreportes, null, false, "", "");
+			//parametroReporteVO.setEsCopiaCorreo(true);
+			parametroReporteVO.setFormato(TipoReporteGenerarType.PDF.getKey());
+			parametroReporteVO.setUserName(userName);
+			parametroReporteVO.setFileName(fileName);
+			codigoGeneradoReporte = generarReporteServiceImpl.obtenerParametroReporteBigMemory(parametroReporteVO);
+		}
+		
+		return codigoGeneradoReporte;
+	}
+	
+	@Override
+	public String generarReporteActaEvaluacionFinal(String idSemestre,String idCursoCarga, String idEscuela,Boolean esActaEvaluacionFinalAplazado,String serviceKey,String authToken) throws Exception {
+		String fileName = UUIDUtil.generarElementUUID();
+		String userName = AppAuthenticator.getInstance().getUserName(authToken);
+		UsuarioDTO usuarioSession = AppAuthenticator.getInstance().getUsuario(serviceKey, authToken);
+		String codigoGeneradoReporte = "";
+		Map<String, Object> parametros = new HashMap<String, Object>();
+		String[] subreportes;
+		List<DetRegistroNotaDTO> listaDetRegistroNota =  new ArrayList<DetRegistroNotaDTO>();
+		
+		listaDetRegistroNota = obtenerNotaAlumnoMariculadoByCurso(idCursoCarga, null,esActaEvaluacionFinalAplazado);
+		
+		PersonalDTO docenteJefeAsuntoAcademico = new  PersonalDTO();//TODO:IR A CACHE
+		PersonalDTO personalFiltro = new PersonalDTO();
+		personalFiltro.setEstado(EstadoGeneralState.ACTIVO.getKey());
+		personalFiltro.setOrganoTipoPersona(5);
+		docenteJefeAsuntoAcademico = matriculaServiceImpl.obtenerPersonalDirectivo(personalFiltro);
+		
+		PersonalDTO vicePresidente = new  PersonalDTO();//TODO:IR A CACHE
+		personalFiltro = new PersonalDTO();
+		personalFiltro.setEstado(EstadoGeneralState.ACTIVO.getKey());
+		personalFiltro.setOrganoTipoPersona(7);
+		vicePresidente = matriculaServiceImpl.obtenerPersonalDirectivo(personalFiltro);
+		
+		subreportes = new String[0];	
+		parametros.put("Id_DetCargaLectiva", idCursoCarga);
+		parametros.put("ruta", "");
+		//TODO:FALTA PARAMETROS DIA_MES_ANHO DE FechaCierre
+		subreportes = new String[0];	
+		parametros.put("ruta", "");
+		parametros.put("ruta_logo", ArchivoUtilidades.RUTA_RECURSOS);
+		parametros.put("labelActaAplazado", "");
+		parametros.put("titulo", "ACTA EVALUACIÓN FINAL");
+		if (esActaEvaluacionFinalAplazado) {
+			//parametros.put("labelActaAplazado", "APLAZADO");
+		}
+		if (esActaEvaluacionFinalAplazado) {
+			parametros.put("titulo", "ACTA EVALUACIÓN APLAZADO");
+		}		
+		AnhoSemestreDTO anhoSemestreFiltro = new AnhoSemestreDTO();
+		anhoSemestreFiltro.setIdAnhoSemestre(idSemestre);
+		AnhoSemestreDTO anhoSemestreInicio = this.admisionServiceImpl.controladorAccionAnhoSemestre(anhoSemestreFiltro , AccionType.FIND_BY_ID);
+		AnhoSemestreDTO anhoSemestreInicioClon = anhoSemestreInicio;
+		boolean isAplazado = false;
+		List<String> listaIdAnhoSemestre = new ArrayList<String>();
+		listaIdAnhoSemestre.add(anhoSemestreInicioClon.getIdAnhoSemestre());
+		for (DetRegistroNotaDTO detRegistroNota : listaDetRegistroNota) {
+				if (esActaEvaluacionFinalAplazado) {
+					detRegistroNota.setNotaLetra(detRegistroNota.getNotaLetraByNotaAplazado());
+				}
+				//if (detRegistroNota.getObservacion() != null && detRegistroNota.getObservacion().contains(ConstantesNota.APLAZADO)) {
+			    if (detRegistroNota.isEsAplazado()) {
+					isAplazado = true;
+					//break;
+				}			
+		}
+		if (isAplazado) {
+			Map<String,CronogramaDTO>  cronogramaMap = admisionServiceImpl.listarCronogramaMap(listaIdAnhoSemestre, CronogramaType.FECHA_APLAZADO, ObjectUtil.objectToLong(usuarioSession.getEntidad().getCodigo()));
+				if (cronogramaMap.containsKey(anhoSemestreInicio.getIdAnhoSemestre())) {
+					CronogramaDTO cronograma = cronogramaMap.get(anhoSemestreInicio.getIdAnhoSemestre());
+					anhoSemestreInicioClon.setFechaCierre(cronograma.getFechaFin());
+				}
+		}
+		
+		//parametros.put("listaEstadoCuenta", listaEstadoCuenta);
+		//parametros.put("listaResumenDeuda", listaResumenDebe);
+		List<ReporteActaEvaluacionFinalVO> dumList = new ArrayList<ReporteActaEvaluacionFinalVO>();
+		ReporteActaEvaluacionFinalVO reporteActaEvaluacionFinalVO = new ReporteActaEvaluacionFinalVO();
+		reporteActaEvaluacionFinalVO.setAnhoSemestre(anhoSemestreInicioClon);
+		EscuelaDTO escuela = SelectItemServiceCacheUtil.getInstance().getListaEscuelaMap().get(idEscuela);
+		reporteActaEvaluacionFinalVO.setEscuela(escuela);
+		reporteActaEvaluacionFinalVO.setFechaActa(anhoSemestreInicioClon.getFechaCierre());
+		DetCargaLectivaDTO detCargaLectiva = new DetCargaLectivaDTO();
+		detCargaLectiva.setCargaLectiva(new CargaLectivaDTO());
+		//detCargaLectiva.getCargaLectiva().setEntidadUniversitaria(usuarioSession.getEntidadUniversitaria());
+		detCargaLectiva.setIdDetCargaLectiva(idCursoCarga);
+		detCargaLectiva = this.matriculaServiceImpl.obtenerDetCargaLectiva(detCargaLectiva).get(0);
+		reporteActaEvaluacionFinalVO.setDetCargaLectiva(detCargaLectiva);
+		reporteActaEvaluacionFinalVO.setListaAlumnoNota(listaDetRegistroNota);
+		reporteActaEvaluacionFinalVO.setJefeAsuntosAcademicos(docenteJefeAsuntoAcademico);
+		reporteActaEvaluacionFinalVO.setVicePresidente(vicePresidente);
+		reporteActaEvaluacionFinalVO.setDia(FechaUtil.dateToString(anhoSemestreInicioClon.getFechaCierre(),"dd"));
+		reporteActaEvaluacionFinalVO.setMes(FechaUtil.dateToString(anhoSemestreInicioClon.getFechaCierre(),"MMMM"));
+		reporteActaEvaluacionFinalVO.setAnho(FechaUtil.dateToString(anhoSemestreInicioClon.getFechaCierre(),"yy"));
+		dumList.add(reporteActaEvaluacionFinalVO);
+		
+		NombreReporteType reporte = NombreReporteType.JR_REP_REPORTE_ACTA_EVALUACION_FINAL;
+		ParametroReporteVO parametroReporteVO = new ParametroReporteVO(parametros, dumList, reporte, subreportes, null, true, "", "");
+		//parametroReporteVO.setEsCopiaCorreo(true);
+		parametroReporteVO.setFormato(TipoReporteGenerarType.PDF.getKey());
+		parametroReporteVO.setUserName(userName);
+		parametroReporteVO.setFileName(fileName);
+		codigoGeneradoReporte = generarReporteServiceImpl.obtenerParametroReporteBigMemory(parametroReporteVO);
+		return codigoGeneradoReporte;
+	}
+	
+	@Override
+	public String generarReporteNotaOrdenadoByCiclo(String idAlumno, String serviceKey,String authToken) throws Exception {
+		String fileName = UUIDUtil.generarElementUUID();
+		String usuario = AppAuthenticator.getInstance().getUserName(authToken);
+		String codigoGeneradoReporte = "";
+		Map<String, Object> parametros = new HashMap<String, Object>();
+		String[] subreportes;
+		List<RegistroNotaVO> listaNotaDTO =  new ArrayList<RegistroNotaVO>();
+		AlumnoDTO alumno = new AlumnoDTO();
+		alumno.setIdAlumno(idAlumno);		
+		alumno = this.matriculaServiceImpl.controladorAccionAlumno(alumno, AccionType.FIND_BY_ID);
+		
+		listaNotaDTO = this.obtenerNotaAlumnoMariculadoOrdenadoByCiclo(idAlumno);
+		this.completarListaNotaDTO(listaNotaDTO,serviceKey,authToken);
+		
+		subreportes = new String[0];	
+		parametros.put("Id_AhnoSemestre", "");
+		parametros.put("ruta", "");
+		parametros.put("CodCarnet", idAlumno);
+		parametros.put("ruta_logo", "");
+		parametros = obtenerParametroRecordNota(parametros);
+		
+		for (RegistroNotaVO registroNotaDTO : listaNotaDTO) {
+			registroNotaDTO.setAlumno(alumno);
+			EscuelaDTO escuelaTem = alumno.getEscuela();
+			registroNotaDTO.setEscuela(escuelaTem);
+			registroNotaDTO.setDocente(new PersonalDTO());
+		}
+		NombreReporteType reporte = NombreReporteType.JR_REP_REPORTE_NOTA_ORDENADO_BY_CICLO;
+		ParametroReporteVO parametroReporteVO = new ParametroReporteVO(parametros, listaNotaDTO, reporte, subreportes, null, true, "", "");
+		//parametroReporteVO.setEsCopiaCorreo(true);
+		parametroReporteVO.setFormato(TipoReporteGenerarType.PDF.getKey());
+		parametroReporteVO.setUserName(usuario);
+		parametroReporteVO.setFileName(fileName);
+		codigoGeneradoReporte = generarReporteServiceImpl.obtenerParametroReporteBigMemory(parametroReporteVO);
+		return codigoGeneradoReporte;
+	}
+	
+	@Override
+	public String generarReporteNotaOrdenadoBySemestre(String idAlumno, String usuario) throws Exception {
+		String fileName = UUIDUtil.generarElementUUID();
+		String codigoGeneradoReporte = "";
+		Map<String, Object> parametros = new HashMap<String, Object>();
+		String[] subreportes;
+		List<RegistroNotaVO> listaNotaDTO =  new ArrayList<RegistroNotaVO>();
+		AlumnoDTO alumno = new AlumnoDTO();
+		alumno.setIdAlumno(idAlumno);		
+		alumno = this.matriculaServiceImpl.controladorAccionAlumno(alumno, AccionType.FIND_BY_ID);
+		
+		listaNotaDTO = this.obtenerNotaAlumnoMariculadoOrdenadoBySemestre(idAlumno,null);
+	
+		subreportes = new String[0];	
+		parametros.put("Id_AhnoSemestre", "");
+		parametros.put("ruta", "");
+		parametros.put("CodCarnet", idAlumno);
+		parametros.put("ruta_logo", "");
+		parametros = obtenerParametroRecordNota(parametros);
+		
+		for (RegistroNotaVO registroNotaDTO : listaNotaDTO) {
+			registroNotaDTO.setAlumno(alumno);
+			EscuelaDTO escuelaTem = alumno.getEscuela();
+			registroNotaDTO.setEscuela(escuelaTem);
+			registroNotaDTO.setDocente(new PersonalDTO());
+		}
+		NombreReporteType reporte = NombreReporteType.JR_REP_REPORTE_NOTA_ORDENADO_BY_SEMESTRE;
+		ParametroReporteVO parametroReporteVO = new ParametroReporteVO(parametros, listaNotaDTO, reporte, subreportes, null, true, "", "");
+		//parametroReporteVO.setEsCopiaCorreo(true);
+		parametroReporteVO.setFormato(TipoReporteGenerarType.PDF.getKey());
+		parametroReporteVO.setUserName(usuario);
+		parametroReporteVO.setFileName(fileName);
+		codigoGeneradoReporte = generarReporteServiceImpl.obtenerParametroReporteBigMemory(parametroReporteVO);
+		return codigoGeneradoReporte;
+	}
+	/**
+	 * Generar reporte.
+	 *
+	 * @param event el event
+	 * @throws Exception the exception
+	 */
+	@Override
+	public String generarReporteRecordNotaBySemestre(String idSemestre,String idAlumno,String usuario) throws Exception {
+		String fileName = UUIDUtil.generarElementUUID();
+		String codigoGeneradoReporte = "";
+		Map<String, Object> parametros = new HashMap<String, Object>();
+		String[] subreportes;
+		List<RegistroNotaVO> listaNotaDTO =  new ArrayList<RegistroNotaVO>();
+		AlumnoDTO alumno = new AlumnoDTO();
+		alumno.setIdAlumno(idAlumno);		
+		alumno = this.matriculaServiceImpl.controladorAccionAlumno(alumno, AccionType.FIND_BY_ID);
+		PersonalDTO docenteJefeAsuntoAcademico = new  PersonalDTO();//TODO:IR A CACHE
+		PersonalDTO personalFiltro = new PersonalDTO();
+		personalFiltro.setEstado(EstadoGeneralState.ACTIVO.getKey());
+		personalFiltro.setOrganoTipoPersona(5);
+		docenteJefeAsuntoAcademico = matriculaServiceImpl.obtenerPersonalDirectivo(personalFiltro);
+		
+		listaNotaDTO = this.obtenerNotaAlumnoMariculadoBySemestre(idSemestre, idAlumno);
+	
+		subreportes = new String[0];	
+		parametros.put("Id_AhnoSemestre", idSemestre);
+		parametros.put("ruta", "");
+		parametros.put("CodCarnet", idAlumno);
+		parametros.put("ruta_logo", "");
+		parametros = obtenerParametroRecordNota(parametros);
+		
+		for (RegistroNotaVO registroNotaDTO : listaNotaDTO) {
+			registroNotaDTO.setAlumno(alumno);
+			EscuelaDTO escuelaTem = alumno.getEscuela();
+			registroNotaDTO.setEscuela(escuelaTem);
+			registroNotaDTO.setDocente(docenteJefeAsuntoAcademico);
+		}
+		NombreReporteType reporte = NombreReporteType.JR_REP_RECORD_NOTA_INDIVIDUAL;
+		ParametroReporteVO parametroReporteVO = new ParametroReporteVO(parametros, listaNotaDTO, reporte, subreportes, null, true, "", "");
+		//parametroReporteVO.setEsCopiaCorreo(true);
+		parametroReporteVO.setFormato(TipoReporteGenerarType.PDF.getKey());
+		parametroReporteVO.setUserName(usuario);
+		parametroReporteVO.setFileName(fileName);
+		codigoGeneradoReporte = generarReporteServiceImpl.obtenerParametroReporteBigMemory(parametroReporteVO);
+		return codigoGeneradoReporte;
+	}
+	
+	@Override
+	public String generarReporteCertificadoEstudioByRangoCiclo(String idAlumno, Long idCicloInicio, Long idCicloFin,Boolean checkCreditoAprobado,String serviceKey,String authToken) throws Exception {
+		String fileName = UUIDUtil.generarElementUUID();
+		String usuario = AppAuthenticator.getInstance().getUserName(authToken);
+		String codigoGeneradoReporte = "";
+		Map<String, Object> parametros = new HashMap<String, Object>();
+		String[] subreportes;
+		List<RegistroNotaVO> listaNotaDTO =  new ArrayList<RegistroNotaVO>();
+		AlumnoDTO alumno = new AlumnoDTO();
+		alumno.setIdAlumno(idAlumno);		
+		alumno = this.matriculaServiceImpl.controladorAccionAlumno(alumno, AccionType.FIND_BY_ID);
+		
+		PersonalDTO docenteJefeAsuntoAcademico = new  PersonalDTO();//TODO:IR A CACHE
+		PersonalDTO personalFiltro = new PersonalDTO();
+		personalFiltro.setEstado(EstadoGeneralState.ACTIVO.getKey());
+		personalFiltro.setOrganoTipoPersona(5);
+		docenteJefeAsuntoAcademico = matriculaServiceImpl.obtenerPersonalDirectivo(personalFiltro);
+		Integer creditoAcomulado = this.obtenerCreditosAcomulado(alumno.getIdAlumno(),alumno.getEscuela().getIdEscuela());
+		listaNotaDTO = this.obtenerNotaCertificadoEstudioOrdenadoByCiclo(idAlumno, idCicloInicio, idCicloFin);
+		this.completarListaNotaDTO(listaNotaDTO,serviceKey,authToken);
+		
+		subreportes = new String[0];	
+		parametros.put("Id_AhnoSemestre", "");
+		parametros.put("ruta", "");
+		parametros.put("CodCarnet", idAlumno);
+		parametros.put("ruta_logo", "");
+	
+		parametros.put("creditoAcomulado", creditoAcomulado);
+		parametros.put("checkCreditoAprobado", checkCreditoAprobado);
+		List<RegistroNotaVO> dataList = new ArrayList<RegistroNotaVO>();
+		for (RegistroNotaVO objDet : listaNotaDTO) {
+			objDet.setAlumno(alumno);
+			EscuelaDTO escuelaTem = alumno.getEscuela();
+			objDet.setEscuela(escuelaTem);
+			objDet.setDocente(new PersonalDTO());
+			
+			for (RegistroNotaVO registroNotaDTO : objDet.getListaCursoNota()) {
+				registroNotaDTO.setIdCiclo(registroNotaDTO.getIdCiclo());
+				registroNotaDTO.setCiclo(objDet.getCiclo());
+				dataList.add(registroNotaDTO);
+			}
+		}
+		RegistroNotaVO registroNotaDTO = new RegistroNotaVO();
+		registroNotaDTO.setDia(FechaUtil.obtenerFechaFormato("dd"));
+		registroNotaDTO.setMes(FechaUtil.obtenerFechaFormato("MMMM"));
+		registroNotaDTO.setAnho(FechaUtil.obtenerFechaFormato("yy"));
+		registroNotaDTO.setAlumno(alumno);
+		registroNotaDTO.setDocente(docenteJefeAsuntoAcademico);
+		registroNotaDTO.setListaCursoNota(dataList);
+		
+		List<RegistroNotaVO> dataListFinal = new ArrayList<RegistroNotaVO>();
+		dataListFinal.add(registroNotaDTO); 
+		
+		
+		NombreReporteType reporte = NombreReporteType.JR_REP_REPORTE_CETIFICADO_ESTUDIO_BY_RANGO_CICLO;
+		ParametroReporteVO parametroReporteVO = new ParametroReporteVO(parametros, dataListFinal, reporte, subreportes, null, true, "", "");
+		//parametroReporteVO.setEsCopiaCorreo(true);
+		parametroReporteVO.setFormato(TipoReporteGenerarType.PDF.getKey());
+		parametroReporteVO.setUserName(usuario);
+		parametroReporteVO.setFileName(fileName);
+		codigoGeneradoReporte = generarReporteServiceImpl.obtenerParametroReporteBigMemory(parametroReporteVO);
+		return codigoGeneradoReporte;
+	}
+
+	/**
+	 * Obtener parametro record nota.
+	 *
+	 * @param parametros el parametros
+	 * @return the map
+	 */
+	private Map<String, Object> obtenerParametroRecordNota(Map<String, Object> parametros) {
+		parametros.put("reporteNota.recordNota.pnl.title", getPropertiesLabelMap("reporteNota.reporte.recordNota.pnl.title"));
+		parametros.put("reporteNota.recordNota.logo", getPropertiesLabelMap("reporteNota.reporte.recordNota.label.logo"));
+		parametros.put("reporteNota.recordNota.label.codigoAlumno", getPropertiesLabelMap("reporteNota.reporte.recordNota.label.codigoAlumno"));
+		parametros.put("reporteNota.recordNota.label.alumno", getPropertiesLabelMap("reporteNota.reporte.recordNota.label.alumno"));
+		parametros.put("reporteNota.recordNota.label.escuela", getPropertiesLabelMap("reporteNota.reporte.recordNota.label.escuela"));
+		//parametros.put("reporteNota.recordNota.label.fecha", getPropertiesLabelMap("reporteNota.reporte.recordNota.label.fecha"));
+		parametros.put("reporteNota.recordNota.label.fecha", FechaUtil.obtenerFecha());
+		
+		parametros.put("reporteNota.recordNota.grilla.matricula.grilla.curso.item", getPropertiesGrillaMap("reporteNota.reporte.recordNota.grilla.matricula.grilla.curso.item"));
+		parametros.put("reporteNota.recordNota.grilla.matricula.grilla.curso.asignatura", getPropertiesGrillaMap("reporteNota.reporte.recordNota.grilla.matricula.grilla.curso.asignatura"));
+		parametros.put("reporteNota.recordNota.grilla.matricula.grilla.curso.turno", getPropertiesGrillaMap("reporteNota.reporte.recordNota.grilla.matricula.grilla.curso.turno"));
+		parametros.put("reporteNota.recordNota.grilla.matricula.grilla.curso.ciclo", getPropertiesGrillaMap("reporteNota.reporte.recordNota.grilla.matricula.grilla.curso.ciclo"));
+		parametros.put("reporteNota.recordNota.grilla.matricula.grilla.curso.creditos", getPropertiesGrillaMap("reporteNota.reporte.recordNota.grilla.matricula.grilla.curso.creditos"));
+		parametros.put("reporteNota.recordNota.grilla.matricula.grilla.curso.nota", getPropertiesGrillaMap("reporteNota.reporte.recordNota.grilla.matricula.grilla.curso.nota"));
+		parametros.put("reporteNota.recordNota.grilla.matricula.grilla.curso.observacion", getPropertiesGrillaMap("reporteNota.reporte.recordNota.grilla.matricula.grilla.curso.observacion"));
+		parametros.put("reporteNota.recordNota.grilla.matricula.grilla.curso.observacion", getPropertiesGrillaMap("reporteNota.reporte.recordNota.grilla.matricula.grilla.curso.observacion"));
+		parametros.put("reporteNota.recordNota.grilla.matricula.creditosAprobados", getPropertiesGrillaMap("reporteNota.reporte.recordNota.grilla.matricula.creditosAprobados"));
+		
+		return parametros;
+	}
+	
+
+	
+	private String getProperties(String key) {
+		return SeguridadCacheUtil.getProperties(key);
+	}
+	private String getPropertiesGrillaMap(String key) {
+		return SeguridadCacheUtil.getProperties(key);
+	}
+	
+    private String getPropertiesLabelMap(String key) {
+			return SeguridadCacheUtil.getProperties(key);
+	}
+	
+    /**
+	 * Completar lista nota dto.
+	 *
+	 * @throws Exception the exception
+	 */
+    @Override
+	public List<RegistroNotaVO>  completarListaNotaDTO(List<RegistroNotaVO> listaNotaDTO,String serviceKey,String authToken)  throws Exception  {
+    	UsuarioDTO usuario = AppAuthenticator.getInstance().getUsuario(serviceKey, authToken);
+		boolean isAplazado = false;
+		List<String> listaIdAnhoSemestre = new ArrayList<String>();
+		for (RegistroNotaVO registroNotaDTO : listaNotaDTO) {
+			for (RegistroNotaVO objRegistroNotaDTO : registroNotaDTO.getListaCursoNota()) {
+				//if (objRegistroNotaDTO.getObservacion() != null && objRegistroNotaDTO.getObservacion().contains(ConstantesNota.APLAZADO)) {
+				if (objRegistroNotaDTO.isEsAplazado()) {
+					isAplazado = true;
+					if (!listaIdAnhoSemestre.contains(objRegistroNotaDTO.getAnhoSemestre().getIdAnhoSemestre())) {
+						listaIdAnhoSemestre.add(objRegistroNotaDTO.getAnhoSemestre().getIdAnhoSemestre());
+					}
+				}
+			}
+			
+			
+		}
+		if (isAplazado) {
+			Map<String,CronogramaDTO>  cronogramaMap = admisionServiceImpl.listarCronogramaMap(listaIdAnhoSemestre, CronogramaType.FECHA_APLAZADO, ObjectUtil.objectToLong(usuario.getEntidad().getCodigo()));
+			for (RegistroNotaVO registroNotaDTO : listaNotaDTO) {
+				for (RegistroNotaVO objRegistroNotaDTO : registroNotaDTO.getListaCursoNota()) {
+					//if (objRegistroNotaDTO.getObservacion().contains(ConstantesNota.APLAZADO)) {
+					if (objRegistroNotaDTO.isEsAplazado()) {
+						if (cronogramaMap.containsKey(objRegistroNotaDTO.getAnhoSemestre().getIdAnhoSemestre())) {
+							CronogramaDTO cronograma = cronogramaMap.get(objRegistroNotaDTO.getAnhoSemestre().getIdAnhoSemestre());
+							objRegistroNotaDTO.getAnhoSemestre().setFechaCierre(cronograma.getFechaFin());
+						}
+					}
+				}
+			}
+		}
+		return listaNotaDTO;
+	}
+	
+	
+	
+	@Override
+	public int obtenerCreditosAcomulado(String idAlumno,String idEscuela) throws Exception {
+		return detRegistroNotaDaoImpl.obtenerCreditosAcomulado(idAlumno,idEscuela);
+	}
+	
+	@Override
+	public List<RegistroNotaVO> obtenerNotaAlumnoMariculadoOrdenadoBySemestre(String idAlumno,String idSemestre) throws Exception {
+		List<RegistroNotaVO> resultado = new ArrayList<RegistroNotaVO>();
+		
+		List<String> listaIdSemestre = new ArrayList<String>();
+		List<RegistroNota> listaRegistroNota = registroNotaDaoImpl.listarRegistroNota(idSemestre,idAlumno);
+		for (RegistroNota registroNota : listaRegistroNota) {
+			listaIdSemestre.add(registroNota.getMatricula().getAnhoSemestre().getIdAnhoSemestre());
+		}
+		Map<String,List<RegistroNotaVO> > notaSemestreMap = detRegistroNotaDaoImpl.obtenerNotaAlumnoMariculadoBySemestreMap(listaIdSemestre, idAlumno);
+		for (RegistroNota registroNota : listaRegistroNota) {
+			RegistroNotaVO registroNotaDTO = new RegistroNotaVO();
+			registroNotaDTO.setAnhoSemestre(TransferDataObjectUtil.transferObjetoEntityDTO(registroNota.getMatricula().getAnhoSemestre(),AnhoSemestreDTO.class));
+			registroNotaDTO.setPonderadoSemestre(registroNota.getNotaFinal().setScale(2, RoundingMode.HALF_UP));
+			registroNotaDTO.setHeaderTableGroup(obtenerDescripcionAnhoSemestre(registroNota.getMatricula().getAnhoSemestre()));
+			List<RegistroNotaVO> listaCursoNota = notaSemestreMap.get(registroNotaDTO.getAnhoSemestre().getIdAnhoSemestre());
+			int sumatoriaCreditoAprobado = 0;
+			if (listaCursoNota != null) {
+				registroNotaDTO.setListaCursoNota(listaCursoNota);
+				for (RegistroNotaVO cursoNota : listaCursoNota) {
+					if (cursoNota.getPonderadoCurso() != null) {
+						if (cursoNota.getPonderadoCurso().doubleValue() >= ConstantesNota.NOTA_MININA) {
+							sumatoriaCreditoAprobado = sumatoriaCreditoAprobado + cursoNota.getCredito();
+						}						
+					}
+				}
+			}
+			registroNotaDTO.setSumatoriaCreditoAprobado(sumatoriaCreditoAprobado);
+			resultado.add(registroNotaDTO);
+		}
+		return resultado;
+	}
+	//TODO:REFACTORIZAR ESTO
+	private String obtenerDescripcionAnhoSemestre(AnhoSemestre anhoSemestre ) {
+		   String resultado  = "";
+		   if (anhoSemestre.getSemestre() != null && anhoSemestre.getAnho() != null) {
+					resultado = anhoSemestre.getAnho() + " - " + SemestreType.get(anhoSemestre.getSemestre()).getValue();
+				}
+		    return resultado;
+	}
+	/* (non-Javadoc)
+	 * @see pe.edu.upp.siaa.nota.service.NotaServiceLocal#obtenerNotaAlumnoMariculadoBySemestre(java.lang.String, pe.edu.upp.siaa.entity.Alumno)
+	 */
+	@Override
+	public List<RegistroNotaVO> obtenerNotaAlumnoMariculadoBySemestre(String idSemestre, String idAlumno) throws Exception {
+		//return detRegistroNotaDaoImpl.obtenerNotaAlumnoMariculadoBySemestre(idSemestre, alumno);
+		return obtenerNotaAlumnoMariculadoOrdenadoBySemestre(idAlumno,idSemestre);
+	}
+	
+	/* (non-Javadoc)
+	 * @see pe.edu.upp.siaa.nota.service.NotaServiceLocal#obtenerNotaAlumnoMariculadoOrdenadoByCiclo(pe.edu.upp.siaa.entity.Alumno)
+	 */
+	@Override
+	public List<RegistroNotaVO> obtenerNotaAlumnoMariculadoOrdenadoByCiclo(String idAlumno) throws Exception {
+		List<RegistroNotaVO> resultado = new ArrayList<RegistroNotaVO>();
+		List<Item> listaCiclo = matriculaDaoImpl.obtenerCicloMatriculadoByAlumno(idAlumno);
+		List<Long> listaIdCiclo = new ArrayList<Long>();
+		for (Item item : listaCiclo) {
+			listaIdCiclo.add(item.getIdItem());
+		}
+		Map<Long,List<RegistroNotaVO>> notaCicloMap = detRegistroNotaDaoImpl.obtenerNotaAlumnoMariculadoByCicloMap(listaIdCiclo, idAlumno);
+		for (Item item : listaCiclo) {
+			RegistroNotaVO registroNotaDTO = new RegistroNotaVO();
+			registroNotaDTO.setIdCiclo(item.getIdItem());
+			registroNotaDTO.setCiclo(item.getNombre());
+			registroNotaDTO.setListaCursoNota(notaCicloMap.get(registroNotaDTO.getIdCiclo()));
+			registroNotaDTO.setHeaderTableGroup(item.getNombre());
+			resultado.add(registroNotaDTO);
+		}
+		return resultado;
+	}
+	
+	
+	/* (non-Javadoc)
+	 * @see pe.edu.upp.siaa.nota.service.NotaServiceLocal#obtenerNotaCertificadoEstudioOrdenadoByCiclo(pe.edu.upp.siaa.entity.Alumno, java.lang.Long, java.lang.Long)
+	 */
+	@Override
+	public List<RegistroNotaVO> obtenerNotaCertificadoEstudioOrdenadoByCiclo(String idAlumno,Long idCicloInicio,Long idCicloFin) throws Exception {
+		List<RegistroNotaVO> resultado = new ArrayList<RegistroNotaVO>();
+		if (idCicloInicio != null && idCicloFin != null) {
+			List<Item> listaCiclo = matriculaDaoImpl.obtenerCicloMatriculadoByAlumno(idAlumno, idCicloInicio, idCicloFin);
+			List<Long> listaIdCiclo = new ArrayList<Long>();
+			for (Item item : listaCiclo) {
+				listaIdCiclo.add(item.getIdItem());
+			}
+			Map<Long,List<RegistroNotaVO>> notaCicloMap = detRegistroNotaDaoImpl.obtenerNotaAlumnoCertificadoEstudioByCicloMap(listaIdCiclo, idAlumno);
+			
+			for (Item item : listaCiclo) {
+				RegistroNotaVO registroNotaDTO = new RegistroNotaVO();
+				registroNotaDTO.setIdCiclo(item.getIdItem());
+				registroNotaDTO.setCiclo(item.getNombre());
+				registroNotaDTO.setListaCursoNota(notaCicloMap.get(registroNotaDTO.getIdCiclo()));
+				registroNotaDTO.setHeaderTableGroup(item.getNombre());
+				resultado.add(registroNotaDTO);
+			}
+		}
+		return resultado;
+	}
+	
+	
+	@Override
+	public ResultadoNotaDTO obtenerCursoNotaMap(String idAlumno) throws Exception {
+		return detRegistroNotaDaoImpl.obtenerCursoNotaMap(idAlumno);
+	}
+	
+	@Override
+	public List<DetRegistroNotaDTO> obtenerNotaAlumnoMariculadoByCurso(String idDetCargaLectiva, String idAlumno, Boolean esActaEvaluacionFinalAplazado) throws Exception {
+		List<DetRegistroNotaDTO> resultado = new ArrayList<DetRegistroNotaDTO>();
+		Map<String,List<CursoNotaDTO>> cursoNotaMap = new HashMap<String, List<CursoNotaDTO>>();
+		List<String> listaIdDetRegistroNota = new ArrayList<String>();
+		resultado = detRegistroNotaDaoImpl.obtenerNotaAlumnoMariculadoByCurso(idDetCargaLectiva, idAlumno,esActaEvaluacionFinalAplazado); 
+		for (DetRegistroNotaDTO detRegistroNota : resultado) {
+			if (!listaIdDetRegistroNota.contains(detRegistroNota.getIdDetRegistroNota())) {
+				listaIdDetRegistroNota.add(detRegistroNota.getIdDetRegistroNota());
+			}
+		}
+		//para hacer una sola carga a bd
+		cursoNotaMap = cursoNotaDaoImpl.obtenerCursoNotaMap(listaIdDetRegistroNota);
+		for (DetRegistroNotaDTO detRegistroNota : resultado) {
+			detRegistroNota.setDetRegistroNotaCursoNotaList(cursoNotaMap.get(detRegistroNota.getIdDetRegistroNota()));
+			if (detRegistroNota.getDetRegistroNotaCursoNotaList() == null) {
+				detRegistroNota.setDetRegistroNotaCursoNotaList(new ArrayList<CursoNotaDTO>());
+			}
+			if (detRegistroNota.getNotaLetraByNotaAplazado() != null) {
+				CursoNotaDTO cursoNotaAplazadoArtificio = new CursoNotaDTO();
+				cursoNotaAplazadoArtificio.setConceptoNota(new ConceptoNotaDTO());
+				cursoNotaAplazadoArtificio.getConceptoNota().setIdConceptoNota("2005100005");
+				cursoNotaAplazadoArtificio.getConceptoNota().setItemByTipoNota(SelectItemServiceCacheUtil.getInstance().obtenerItem(521L));
+				cursoNotaAplazadoArtificio.setNota(detRegistroNota.getNotaLetraByNotaAplazado().getIdNotaLetra());
+				detRegistroNota.getDetRegistroNotaCursoNotaList().add(cursoNotaAplazadoArtificio);
+			}
+		}
+		return resultado;
+	}
+	@Override
+	public AsistenciaDTO controladorAccionAsistencia(AsistenciaDTO asistencia, AccionType accionType) throws Exception {
+		AsistenciaDTO resultado = null;
+		Asistencia resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				asistencia.setIdAsistencia(this.asistenciaDaoImpl.generarIdAsistencia());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(asistencia, Asistencia.class,"alumno@PK@","detCargaLectiva@PK@","itemByDia@PK@");
+				this.asistenciaDaoImpl.save(resultadoEntity);	
+				resultado = asistencia;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(asistencia, Asistencia.class,"alumno@PK@","detCargaLectiva@PK@","itemByDia@PK@");
+				this.asistenciaDaoImpl.update(resultadoEntity);
+				resultado = asistencia;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.asistenciaDaoImpl.find(Asistencia.class, asistencia.getIdAsistencia());
+				this.asistenciaDaoImpl.delete(resultadoEntity);
+				resultado = asistencia;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.asistenciaDaoImpl.find(Asistencia.class, asistencia.getIdAsistencia());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,AsistenciaDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.asistenciaDaoImpl.findByNombre(asistencia),AsistenciaDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<AsistenciaDTO> listarAsistencia(AsistenciaDTO asistencia) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.asistenciaDaoImpl.listarAsistencia(asistencia),AsistenciaDTO.class);
+	}
+	@Override
+	public int contarListarAsistencia(AsistenciaDTO asistencia){
+		return  this.asistenciaDaoImpl.contarListarAsistencia(asistencia);
+	}
+	
+	@Override
+	public NotaLetraDTO controladorAccionNotaLetra(NotaLetraDTO notaLetra, AccionType accionType) throws Exception {
+		NotaLetraDTO resultado = null;
+		NotaLetra resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				notaLetra.setIdNotaLetra(this.notaLetraDaoImpl.generarIdNotaLetra());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(notaLetra, NotaLetra.class);
+				this.notaLetraDaoImpl.save(resultadoEntity);	
+				resultado = notaLetra;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(notaLetra, NotaLetra.class);
+				this.notaLetraDaoImpl.update(resultadoEntity);
+				resultado = notaLetra;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.notaLetraDaoImpl.find(NotaLetra.class, notaLetra.getIdNotaLetra());
+				this.notaLetraDaoImpl.delete(resultadoEntity);
+				resultado = notaLetra;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.notaLetraDaoImpl.find(NotaLetra.class, notaLetra.getIdNotaLetra());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,NotaLetraDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.notaLetraDaoImpl.findByNombre(notaLetra),NotaLetraDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<NotaLetraDTO> listarNotaLetra(NotaLetraDTO notaLetra) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.notaLetraDaoImpl.listarNotaLetra(notaLetra),NotaLetraDTO.class);
+	}
+	
+	@Override
+	public int contarListarNotaLetra(NotaLetraDTO notaLetra){
+		return  this.notaLetraDaoImpl.contarListarNotaLetra(notaLetra);
+	}
+	
+	@Override
+	public ConceptoNotaDTO controladorAccionConceptoNota(ConceptoNotaDTO conceptoNota, AccionType accionType) throws Exception {
+		ConceptoNotaDTO resultado = null;
+		ConceptoNota resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				conceptoNota.setIdConceptoNota(this.conceptoNotaDaoImpl.generarIdConceptoNota());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(conceptoNota, ConceptoNota.class,"detCargaLectiva@PK@","itemByTipoNota@PK@");
+				this.conceptoNotaDaoImpl.save(resultadoEntity);	
+				resultado = conceptoNota;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(conceptoNota, ConceptoNota.class,"detCargaLectiva@PK@","itemByTipoNota@PK@");
+				this.conceptoNotaDaoImpl.update(resultadoEntity);
+				resultado = conceptoNota;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.conceptoNotaDaoImpl.find(ConceptoNota.class, conceptoNota.getIdConceptoNota());
+				this.conceptoNotaDaoImpl.delete(resultadoEntity);
+				resultado = conceptoNota;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.conceptoNotaDaoImpl.find(ConceptoNota.class, conceptoNota.getIdConceptoNota());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,ConceptoNotaDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.conceptoNotaDaoImpl.findByNombre(conceptoNota),ConceptoNotaDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<ConceptoNotaDTO> listarConceptoNota(ConceptoNotaDTO conceptoNota) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.conceptoNotaDaoImpl.listarConceptoNota(conceptoNota),ConceptoNotaDTO.class,"itemByTipoNota");
+	}
+	
+	@Override
+	public List<ConceptoNotaDTO> listarConceptoNota(String flagObligatorio,String estado,String idDetCargaLectiva) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.conceptoNotaDaoImpl.listarConceptoNota(flagObligatorio,estado,idDetCargaLectiva),ConceptoNotaDTO.class,"itemByTipoNota");
+	}
+	
+	@Override
+	public int contarListarConceptoNota(ConceptoNotaDTO conceptoNota){
+		return  this.conceptoNotaDaoImpl.contarListarConceptoNota(conceptoNota);
+	}
+	
+	@Override
+	public CursoNotaDTO controladorAccionCursoNota(CursoNotaDTO cursoNota, AccionType accionType) throws Exception {
+		CursoNotaDTO resultado = null;
+		CursoNota resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				cursoNota.setIdCursoNota(this.cursoNotaDaoImpl.generarIdCursoNota());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(cursoNota, CursoNota.class,"detRegistroNota@PK@","conceptoNota@PK@");
+				this.cursoNotaDaoImpl.save(resultadoEntity);	
+				resultado = cursoNota;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(cursoNota, CursoNota.class,"detRegistroNota@PK@","conceptoNota@PK@");
+				this.cursoNotaDaoImpl.update(resultadoEntity);
+				resultado = cursoNota;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.cursoNotaDaoImpl.find(CursoNota.class, cursoNota.getIdCursoNota());
+				this.cursoNotaDaoImpl.delete(resultadoEntity);
+				resultado = cursoNota;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.cursoNotaDaoImpl.find(CursoNota.class, cursoNota.getIdCursoNota());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,CursoNotaDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.cursoNotaDaoImpl.findByNombre(cursoNota),CursoNotaDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<CursoNotaDTO> listarCursoNota(CursoNotaDTO cursoNota) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.cursoNotaDaoImpl.listarCursoNota(cursoNota),CursoNotaDTO.class);
+	}
+	@Override
+	public int contarListarCursoNota(CursoNotaDTO cursoNota){
+		return  this.cursoNotaDaoImpl.contarListarCursoNota(cursoNota);
+	}
+	
+	@Override
+	public void registrarNota(List<DetRegistroNotaDTO> listaDetRegistroNota,String userName)  throws Exception {
+		List<String> listaIdMatricula = new ArrayList<String>();
+		Map<String,DetRegistroNotaDTO> listaDetRegistroNotaMap = new HashMap<String, DetRegistroNotaDTO>();
+		if (listaDetRegistroNota != null && listaDetRegistroNota.size() > 0) {
+			for (DetRegistroNotaDTO detRegistroNota : listaDetRegistroNota) {
+				DetRegistroNotaDTO detRegistroNotaClon = (DetRegistroNotaDTO)BeanUtils.cloneBean(detRegistroNota);
+				detRegistroNotaClon.setNotaLetra((NotaLetraDTO)BeanUtils.cloneBean(detRegistroNota.getNotaLetra()));
+				if (detRegistroNota.getNotaLetraByNotaAplazado() != null) {
+					detRegistroNotaClon.setNotaLetraByNotaAplazado((NotaLetraDTO)BeanUtils.cloneBean(detRegistroNota.getNotaLetraByNotaAplazado()));
+				} else {
+					detRegistroNota.setNotaLetraByNotaAplazado(new NotaLetraDTO());
+					detRegistroNotaClon.setNotaLetraByNotaAplazado(new NotaLetraDTO());
+				}
+				listaDetRegistroNotaMap.put(detRegistroNota.getIdDetRegistroNota(),detRegistroNotaClon );
+			}
+		}
+		Map<String,Boolean> listaDetRegistroNotaMoficiadoMap = new HashMap<String, Boolean>(); 
+		for (DetRegistroNotaDTO detRegistroNota : listaDetRegistroNota) {
+			listaIdMatricula.add(detRegistroNota.getDetMatricula().getMatricula().getIdMatricula());
+			BigDecimal ponderadoCurso = new BigDecimal("0");
+			BigDecimal sumaNotaUnidad = new BigDecimal("0");
+			BigDecimal notaAplazado = null;
+			if (detRegistroNota.getNotaLetraByNotaAplazado() != null) {
+				notaAplazado = detRegistroNota.getNotaLetraByNotaAplazado().getIdNotaLetra();
+			}
+			Map<String,CursoNotaDTO> listaNotaObligatorioMap = new HashMap<String, CursoNotaDTO>();
+			for (CursoNotaDTO cursoNota : detRegistroNota.getCursoNotaEvaluar()) {
+				cursoNota.setDetRegistroNota(detRegistroNota);
+				if (TipoNotaType.PRIMERA_UNIDAD.getKey().equals(cursoNota.getConceptoNota().getItemByTipoNota().getCodigo())) {
+					listaNotaObligatorioMap.put(cursoNota.getConceptoNota().getIdConceptoNota(), cursoNota);
+				}
+				if (TipoNotaType.SEGUNDA_UNIDAD.getKey().equals(cursoNota.getConceptoNota().getItemByTipoNota().getCodigo())) {
+					listaNotaObligatorioMap.put(cursoNota.getConceptoNota().getIdConceptoNota(), cursoNota);
+				}
+				if (TipoNotaType.TERCERA_UNIDAD.getKey().equals(cursoNota.getConceptoNota().getItemByTipoNota().getCodigo())) {
+					listaNotaObligatorioMap.put(cursoNota.getConceptoNota().getIdConceptoNota(), cursoNota);
+				}
+				if (TipoNotaType.CUARTA_UNIDAD.getKey().equals(cursoNota.getConceptoNota().getItemByTipoNota().getCodigo())) {
+					listaNotaObligatorioMap.put(cursoNota.getConceptoNota().getIdConceptoNota(), cursoNota);
+				}
+				if (TipoNotaType.EXAMEN_APLAZADO.getKey().equals(cursoNota.getConceptoNota().getItemByTipoNota().getCodigo())) {
+					notaAplazado = cursoNota.getNota();
+				}
+			
+			}
+			//Llenando las notas obligatorias y calculados
+			List<CursoNotaDTO> listaCursoNotas = new ArrayList<CursoNotaDTO>();
+			listaCursoNotas.addAll(listaNotaObligatorioMap.values());
+			boolean isNSPTotal = false;
+			int cantidadNSP = 0;
+			for (CursoNotaDTO cursoNota : listaCursoNotas) {
+				if (cursoNota.getNota() != null) {
+					if (cursoNota.getNota().compareTo(new BigDecimal(NOTA_NSP)) == 0) {
+						cantidadNSP++;
+					} else {
+						sumaNotaUnidad = sumaNotaUnidad.add(cursoNota.getNota());
+					}
+				}
+				if (StringUtils.isNotNullOrBlank(cursoNota.getIdCursoNota())) {		
+					CursoNota cursoNotaPersist =  TransferDataObjectUtil.transferObjetoEntity(cursoNota, CursoNota.class,"conceptoNota@PK@","detRegistroNota@PK@");
+					cursoNotaPersist = cursoNotaDaoImpl.update(cursoNotaPersist);
+				} else {
+					cursoNota.setIdCursoNota(cursoNotaDaoImpl.generarCodigoCursoNota(cursoNota));
+					CursoNota cursoNotaPersist =  TransferDataObjectUtil.transferObjetoEntity(cursoNota, CursoNota.class,"conceptoNota@PK@","detRegistroNota@PK@");
+					cursoNotaPersist = cursoNotaDaoImpl.save(cursoNotaPersist);
+				}					
+			}	
+			isNSPTotal =  (CANTIDAD_PROMEDIO_UNIDAD == cantidadNSP);
+			if (!isNSPTotal) {
+				ponderadoCurso = sumaNotaUnidad.divide(new BigDecimal(CANTIDAD_PROMEDIO_UNIDAD),0, RoundingMode.HALF_UP);
+			} else {
+				ponderadoCurso =  new BigDecimal(NOTA_NSP);
+			}
+			//ver redondear y aplicar formula
+			//ponderadoCurso = this.calcularPonderadoCurso(listaCursoNotas, definirCriterioEvaluacionMap);
+			detRegistroNota.setNotaLetra(new NotaLetraDTO(ponderadoCurso));
+			DetRegistroNotaDTO detRegistroNotaClon = listaDetRegistroNotaMap.get(detRegistroNota.getIdDetRegistroNota());
+			if (notaAplazado != null) {
+				detRegistroNota.setNotaLetraByNotaAplazado(new NotaLetraDTO(notaAplazado));
+			}
+			
+			boolean isModificado = false;
+			listaDetRegistroNotaMoficiadoMap.put(detRegistroNota.getIdDetRegistroNota(), isModificado);
+			if (verificarCambioDetRegistroNota(detRegistroNota, detRegistroNotaClon)) {//pasamos al angular
+				detRegistroNota.setFechaModificacion(FechaUtil.obtenerFecha());
+				detRegistroNota.setUsuarioModificacion(userName);
+				isModificado = true;
+				listaDetRegistroNotaMoficiadoMap.put(detRegistroNota.getIdDetRegistroNota(), isModificado);
+			}
+			if (notaAplazado != null) {
+				detRegistroNota.setNotaLetraByNotaAplazado(new NotaLetraDTO(notaAplazado));
+				if (isModificado) {
+					detRegistroNota.setFechaNotaAplazado(FechaUtil.obtenerFecha());
+				}
+			} else {
+				if (isModificado) {
+					detRegistroNota.setNotaLetraByNotaAplazado(null);
+				}
+			}
+
+			if (isModificado) {
+				DetRegistroNota detRegistroNotaPersist = TransferDataObjectUtil.transferObjetoEntity(detRegistroNota, DetRegistroNota.class, "registroNota@PK@","detMatricula@PK@","notaLetra@PK@","notaLetraByNotaAplazado@PK@");
+				detRegistroNotaPersist = detRegistroNotaDaoImpl.update(detRegistroNotaPersist);
+			}
+		}
+		actualizarNotaFinalByMatricula(listaIdMatricula,listaDetRegistroNotaMoficiadoMap,userName);
+	}
+	
+	/**
+	 * Verificar cambio det registro nota.
+	 *
+	 * @param detRegistroNota el det registro nota
+	 * @param detRegistroNotaClon el det registro nota clon
+	 * @return true, en caso de exito
+	 */
+	private boolean verificarCambioDetRegistroNota(DetRegistroNotaDTO detRegistroNota,DetRegistroNotaDTO detRegistroNotaClon) {
+		boolean resultado = false;
+		BigDecimal notaPonderado = detRegistroNota.getNotaLetra().getIdNotaLetra();
+		BigDecimal notaPonderadoClon = detRegistroNotaClon.getNotaLetra().getIdNotaLetra();
+		
+		BigDecimal notaAplazado = BigDecimal.ZERO;
+		if ( detRegistroNota.getNotaLetraByNotaAplazado() != null) {
+			if ( detRegistroNota.getNotaLetraByNotaAplazado().getIdNotaLetra() != null) {
+				notaAplazado = detRegistroNota.getNotaLetraByNotaAplazado().getIdNotaLetra();
+			}
+		}
+		BigDecimal notaAplazadoClon = BigDecimal.ZERO;
+		if ( detRegistroNotaClon.getNotaLetraByNotaAplazado() != null) {
+			if ( detRegistroNotaClon.getNotaLetraByNotaAplazado().getIdNotaLetra() != null) {
+				notaAplazadoClon = detRegistroNotaClon.getNotaLetraByNotaAplazado().getIdNotaLetra();
+			}
+		}
+		
+		try {
+			if (!(notaPonderado.compareTo(notaPonderadoClon) == 0)) {
+				resultado = true;
+			} else {
+				if (!(notaAplazado.compareTo(notaAplazadoClon) == 0)) {
+					resultado = true;
+				}
+			}
+		} catch (Exception e) {
+			log.error(e);
+		}
+		
+		return resultado;
+	}
+	public void actualizarNotaFinalByMatricula(List<String> listaIdMatricula,Map<String,Boolean> listaDetRegistroNotaMap,String userName) throws Exception {
+		//calculando ponderado curso final
+		Map<String,List<DetRegistroNota>> registroNotaMap = detRegistroNotaDaoImpl.obtenerNotaAlumnoMariculado(listaIdMatricula);
+		for (Map.Entry<String, List<DetRegistroNota>> notaMap: registroNotaMap.entrySet()) {
+			notaMap.getValue().get(0).getRegistroNota().getFechaCreacion();
+			boolean isModificado = false;
+			for (DetRegistroNota detRegistroNota : notaMap.getValue()) {
+				if (listaDetRegistroNotaMap.containsKey(detRegistroNota.getIdDetRegistroNota())) {
+					isModificado = listaDetRegistroNotaMap.get(detRegistroNota.getIdDetRegistroNota()).booleanValue();
+				}
+				if (isModificado) {
+					break;
+				}
+			}
+			if (isModificado) {
+				RegistroNota registroNota = calcularNotalFinal(notaMap.getValue(),userName);
+				registroNotaDaoImpl.update(registroNota);
+			}
+		}
+	}
+	
+	public RegistroNota calcularNotalFinal(List<DetRegistroNota> listaDetRegistroNota,String userName) {
+		RegistroNota registroNota = listaDetRegistroNota.get(0).getRegistroNota();
+		BigDecimal sumaCreditoMatriculado = calcularSumaCreditoTotalMatriculado(listaDetRegistroNota);
+		BigDecimal sumaCreditoPomderadoCurso = calcularSumaCreditoPonderadoCursoTotalMatriculado(listaDetRegistroNota);
+			
+		BigDecimal notaFinal = sumaCreditoPomderadoCurso.divide(sumaCreditoMatriculado,2, RoundingMode.HALF_EVEN);
+		registroNota.setFechaModificacion(FechaUtil.obtenerFecha());
+		registroNota.setUsuarioModificacion(userName);
+		registroNota.setNotaFinal(notaFinal);
+
+		return registroNota;
+	}
+	
+	/**
+	 * Calcular suma credito total matriculado.
+	 *
+	 * @param listaDetRegistroNota el lista det registro nota
+	 * @return the big decimal
+	 */
+	private BigDecimal calcularSumaCreditoTotalMatriculado(List<DetRegistroNota> listaDetRegistroNota) {
+		BigDecimal resultado = BigDecimal.ZERO;
+		for (DetRegistroNota detRegistroNota : listaDetRegistroNota) {
+			BigDecimal credito = BigDecimal.valueOf(detRegistroNota.getDetMatricula().getDetCargaLectiva().getDetPlanEstudio().getCredito());
+			resultado = resultado.add(credito);
+		}
+		return resultado;
+	}
+	
+	/**
+	 * Calcular suma credito ponderado curso total matriculado.
+	 *
+	 * @param listaDetRegistroNota el lista det registro nota
+	 * @return the big decimal
+	 */
+	private BigDecimal calcularSumaCreditoPonderadoCursoTotalMatriculado(List<DetRegistroNota> listaDetRegistroNota) {
+		BigDecimal resultado = BigDecimal.ZERO;
+		for (DetRegistroNota detRegistroNota : listaDetRegistroNota) {
+			BigDecimal credito = BigDecimal.valueOf(detRegistroNota.getDetMatricula().getDetCargaLectiva().getDetPlanEstudio().getCredito());
+			BigDecimal notaAplazado = null;
+			if (detRegistroNota.getNotaLetraByNotaAplazado() != null) {
+				if (detRegistroNota.getNotaLetraByNotaAplazado().getIdNotaLetra() != null) {
+					notaAplazado = detRegistroNota.getNotaLetraByNotaAplazado().getIdNotaLetra();
+				}
+				
+			}
+			if (notaAplazado != null) {
+				if (notaAplazado.compareTo(BigDecimal.ZERO) >= 0) {
+					BigDecimal ponderadoCursoCredito = notaAplazado.multiply(credito);
+					resultado = resultado.add(ponderadoCursoCredito);
+				}
+			} else {
+				BigDecimal ponderadoCurso = detRegistroNota.getNotaLetra().getIdNotaLetra();
+				if (ponderadoCurso.compareTo(BigDecimal.ZERO) >= 0) {
+					BigDecimal ponderadoCursoCredito = ponderadoCurso.multiply(credito);
+					resultado = resultado.add(ponderadoCursoCredito);
+				}
+			}
+			
+		}
+		return resultado;
+	}
+
+	
+	@Override
+	public RegistroNotaDTO controladorAccionRegistroNota(RegistroNotaDTO registroNota, AccionType accionType) throws Exception {
+		RegistroNotaDTO resultado = null;
+		RegistroNota resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				//registroNota.setIdRegistroNota(this.registroNotaDaoImpl.generarIdRegistroNota());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(registroNota, RegistroNota.class,"matricula@PK@");
+				this.registroNotaDaoImpl.save(resultadoEntity);	
+				resultado = registroNota;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(registroNota, RegistroNota.class,"matricula@PK@");
+				this.registroNotaDaoImpl.update(resultadoEntity);
+				resultado = registroNota;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.registroNotaDaoImpl.find(RegistroNota.class, registroNota.getIdRegistroNota());
+				this.registroNotaDaoImpl.delete(resultadoEntity);
+				resultado = registroNota;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.registroNotaDaoImpl.find(RegistroNota.class, registroNota.getIdRegistroNota());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,RegistroNotaDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.registroNotaDaoImpl.findByNombre(registroNota),RegistroNotaDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<RegistroNotaDTO> listarRegistroNota(RegistroNotaDTO registroNota) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.registroNotaDaoImpl.listarRegistroNota(registroNota),RegistroNotaDTO.class);
+	}
+	@Override
+	public int contarListarRegistroNota(RegistroNotaDTO registroNota){
+		return  this.registroNotaDaoImpl.contarListarRegistroNota(registroNota);
+	}
+	
+	@Override
+	public DefinirCriterioEvaluacionDTO controladorAccionDefinirCriterioEvaluacion(DefinirCriterioEvaluacionDTO definirCriterioEvaluacion, AccionType accionType) throws Exception {
+		DefinirCriterioEvaluacionDTO resultado = null;
+		DefinirCriterioEvaluacion resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				definirCriterioEvaluacion.setIdDefinirCriterioEvaluacion(this.definirCriterioEvaluacionDaoImpl.generarIdDefinirCriterioEvaluacion());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(definirCriterioEvaluacion, DefinirCriterioEvaluacion.class,"detCargaLectiva@PK@","conceptoNota@PK@");
+				this.definirCriterioEvaluacionDaoImpl.save(resultadoEntity);	
+				resultado = definirCriterioEvaluacion;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(definirCriterioEvaluacion, DefinirCriterioEvaluacion.class,"detCargaLectiva@PK@","conceptoNota@PK@");
+				this.definirCriterioEvaluacionDaoImpl.update(resultadoEntity);
+				resultado = definirCriterioEvaluacion;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.definirCriterioEvaluacionDaoImpl.find(DefinirCriterioEvaluacion.class, definirCriterioEvaluacion.getIdDefinirCriterioEvaluacion());
+				this.definirCriterioEvaluacionDaoImpl.delete(resultadoEntity);
+				resultado = definirCriterioEvaluacion;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.definirCriterioEvaluacionDaoImpl.find(DefinirCriterioEvaluacion.class, definirCriterioEvaluacion.getIdDefinirCriterioEvaluacion());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,DefinirCriterioEvaluacionDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.definirCriterioEvaluacionDaoImpl.findByNombre(definirCriterioEvaluacion),DefinirCriterioEvaluacionDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<DefinirCriterioEvaluacionDTO> listarDefinirCriterioEvaluacion(DefinirCriterioEvaluacionDTO definirCriterioEvaluacion) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.definirCriterioEvaluacionDaoImpl.listarDefinirCriterioEvaluacion(definirCriterioEvaluacion),DefinirCriterioEvaluacionDTO.class);
+	}
+	@Override
+	public int contarListarDefinirCriterioEvaluacion(DefinirCriterioEvaluacionDTO definirCriterioEvaluacion){
+		return  this.definirCriterioEvaluacionDaoImpl.contarListarDefinirCriterioEvaluacion(definirCriterioEvaluacion);
+	}
+	
+	@Override
+	public DetRegistroNotaDTO controladorAccionDetRegistroNota(DetRegistroNotaDTO detRegistroNota, AccionType accionType) throws Exception {
+		DetRegistroNotaDTO resultado = null;
+		DetRegistroNota resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				detRegistroNota.setIdDetRegistroNota(this.detRegistroNotaDaoImpl.generarIdDetRegistroNota());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(detRegistroNota, DetRegistroNota.class,"registroNota@PK@","detMatricula@PK@","notaLetra@PK@","notaLetraByNotaAplazado@PK@");
+				this.detRegistroNotaDaoImpl.save(resultadoEntity);	
+				resultado = detRegistroNota;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(detRegistroNota, DetRegistroNota.class,"registroNota@PK@","detMatricula@PK@","notaLetra@PK@","notaLetraByNotaAplazado@PK@");
+				this.detRegistroNotaDaoImpl.update(resultadoEntity);
+				resultado = detRegistroNota;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.detRegistroNotaDaoImpl.find(DetRegistroNota.class, detRegistroNota.getIdDetRegistroNota());
+				this.detRegistroNotaDaoImpl.delete(resultadoEntity);
+				resultado = detRegistroNota;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.detRegistroNotaDaoImpl.find(DetRegistroNota.class, detRegistroNota.getIdDetRegistroNota());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,DetRegistroNotaDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.detRegistroNotaDaoImpl.findByNombre(detRegistroNota),DetRegistroNotaDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<DetRegistroNotaDTO> listarDetRegistroNota(DetRegistroNotaDTO detRegistroNota) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.detRegistroNotaDaoImpl.listarDetRegistroNota(detRegistroNota),DetRegistroNotaDTO.class);
+	}
+	@Override
+	public int contarListarDetRegistroNota(DetRegistroNotaDTO detRegistroNota){
+		return  this.detRegistroNotaDaoImpl.contarListarDetRegistroNota(detRegistroNota);
+	}
+}

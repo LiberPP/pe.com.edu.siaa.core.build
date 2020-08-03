@@ -1,0 +1,120 @@
+package pe.com.edu.siaa.core.ejb.service.rest.encuesta.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.encuesta.local.EncuestaServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.encuesta.EncuestaDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class EncuestaRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Fri Sep 08 16:33:14 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/encuestaRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class EncuestaRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient EncuestaServiceLocal encuestaServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<EncuestaDTO> crear(EncuestaDTO encuesta) throws Exception {
+		return controladorAccion(encuesta,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<EncuestaDTO> modificar(EncuestaDTO encuesta) throws Exception {
+		return controladorAccion(encuesta,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<EncuestaDTO> eliminar(@PathParam("id") String idEncuesta) throws Exception {
+		EncuestaDTO encuesta = new EncuestaDTO();
+		encuesta.setIdEncuesta(idEncuesta);		
+		return controladorAccion(encuesta,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<EncuestaDTO> controladorAccion(EncuestaDTO encuesta, AccionType accionType){
+		ResultadoRestVO<EncuestaDTO> resultado = new ResultadoRestVO<EncuestaDTO>();
+		 try {
+    		resultado.setObjetoResultado(encuestaServiceLocal.controladorAccionEncuesta(encuesta,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<EncuestaDTO> finById(@PathParam("id") String idEncuesta) throws Exception {
+		EncuestaDTO encuesta = new EncuestaDTO();
+		encuesta.setIdEncuesta(idEncuesta);
+		return controladorAccion(encuesta,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<EncuestaDTO> listarEncuesta(@Context UriInfo info){
+		ResultadoRestVO<EncuestaDTO> resultado = new ResultadoRestVO<EncuestaDTO>();
+		EncuestaDTO encuesta = transferUriInfo(info);
+		 try {
+			resultado.setListaResultado(encuestaServiceLocal.listarEncuesta(encuesta));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<EncuestaDTO> contarEncuesta(@Context UriInfo info){
+		ResultadoRestVO<EncuestaDTO> resultado = new ResultadoRestVO<EncuestaDTO>();
+		EncuestaDTO encuesta = transferUriInfo(info);
+		 try {
+			 resultado.setContador(encuestaServiceLocal.contarListarEncuesta(encuesta));
+			 if (resultado.isData()) {
+				resultado.setListaResultado(encuestaServiceLocal.listarEncuesta(encuesta));
+			 }
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<EncuestaDTO> inicializarEncuesta(@Context UriInfo info) throws Exception {
+	     EncuestaDTO encuesta = transferUriInfo(info);
+		 ResultadoRestVO<EncuestaDTO> resultado = new ResultadoRestVO<EncuestaDTO>();
+		 try {
+    		resultado.setObjetoResultado(encuesta);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private EncuestaDTO transferUriInfo(@Context UriInfo info) {
+		EncuestaDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,EncuestaDTO.class);
+		return resultado;
+	}
+}

@@ -1,0 +1,169 @@
+package pe.com.edu.siaa.core.model.dto.admision;
+
+import java.io.Serializable;
+
+import pe.com.edu.siaa.core.model.dto.BasePaginator;
+import pe.com.edu.siaa.core.model.dto.common.ItemDTO;
+
+/**
+ * La Class DocumentoRequeridoDTO.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 1.0, Tue Apr 18 09:56:49 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+public class DocumentoRequeridoDTO extends BasePaginator implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id documento requerido. */
+    private String idDocumentoRequerido;
+   
+    /** El postulante. */
+    private PostulanteDTO postulante;
+   
+    /** El item by documento. */
+    private ItemDTO itemByDocumento;
+   
+    /** El descripcion otro. */
+    private String descripcionOtro;
+   
+    /**
+     * Instancia un nuevo documento requeridoDTO.
+     */
+    public DocumentoRequeridoDTO() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo documento requeridoDTO.
+     *
+     * @param idDocumentoRequerido el id documento requerido
+     * @param postulante el postulante
+     * @param itemByDocumento el item by documento
+     * @param descripcionOtro el descripcion otro
+     */
+    public DocumentoRequeridoDTO(String idDocumentoRequerido, PostulanteDTO postulante,ItemDTO itemByDocumento,String descripcionOtro ) {
+        super();
+        this.idDocumentoRequerido = idDocumentoRequerido;
+        this.postulante = postulante;
+        this.itemByDocumento = itemByDocumento;
+        this.descripcionOtro = descripcionOtro;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id documento requerido.
+     *
+     * @return id documento requerido
+     */
+     public String getIdDocumentoRequerido() {
+        return this.idDocumentoRequerido;
+    }
+    /**
+     * Establece el id documento requerido.
+     *
+     * @param idDocumentoRequerido el new id documento requerido
+     */
+    public void setIdDocumentoRequerido(String idDocumentoRequerido) {
+        this.idDocumentoRequerido = idDocumentoRequerido;
+    }
+    /**
+     * Obtiene postulante.
+     *
+     * @return postulante
+     */
+     public PostulanteDTO getPostulante() {
+        return this.postulante;
+    }
+    /**
+     * Establece el postulante.
+     *
+     * @param postulante el new postulante
+     */
+    public void setPostulante(PostulanteDTO postulante) {
+        this.postulante = postulante;
+    }
+    /**
+     * Obtiene item by documento.
+     *
+     * @return item by documento
+     */
+     public ItemDTO getItemByDocumento() {
+        return this.itemByDocumento;
+    }
+    /**
+     * Establece el item by documento.
+     *
+     * @param itemByDocumento el new item by documento
+     */
+    public void setItemByDocumento(ItemDTO itemByDocumento) {
+        this.itemByDocumento = itemByDocumento;
+    }
+    /**
+     * Obtiene descripcion otro.
+     *
+     * @return descripcion otro
+     */
+     public String getDescripcionOtro() {
+        return this.descripcionOtro;
+    }
+    /**
+     * Establece el descripcion otro.
+     *
+     * @param descripcionOtro el new descripcion otro
+     */
+    public void setDescripcionOtro(String descripcionOtro) {
+        this.descripcionOtro = descripcionOtro;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idDocumentoRequerido == null) ? 0 : idDocumentoRequerido.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        DocumentoRequeridoDTO other = (DocumentoRequeridoDTO) obj;
+        if (idDocumentoRequerido == null) {
+            if (other.idDocumentoRequerido != null) {
+                return false;
+            }
+        } else if (!idDocumentoRequerido.equals(other.idDocumentoRequerido)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "DocumentoRequeridoDTO [idDocumentoRequerido=" + idDocumentoRequerido + "]";
+    }
+   
+}

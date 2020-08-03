@@ -1,0 +1,191 @@
+package pe.com.edu.siaa.core.model.dto.admision;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import pe.com.edu.siaa.core.model.dto.BasePaginator;
+import pe.com.edu.siaa.core.model.dto.common.ItemDTO;
+import pe.com.edu.siaa.core.model.dto.common.UbigeoDTO;
+
+/**
+ * La Class ProcedenciaDTO.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 1.0, Tue Apr 18 09:56:53 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+public class ProcedenciaDTO extends BasePaginator implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id procedencia. */
+    private String idProcedencia;
+   
+    /** El descripcion. */
+    private String descripcion;
+   
+    /** El item by tipo colegio. */
+    private ItemDTO itemByTipoColegio;
+   
+    /** El ubigeo. */
+    private UbigeoDTO ubigeo;
+   
+    /** El procedencia persona list. */
+    private List<PersonaDTO> procedenciaPersonaList = new ArrayList<PersonaDTO>();
+   
+    /**
+     * Instancia un nuevo procedenciaDTO.
+     */
+    public ProcedenciaDTO() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo procedenciaDTO.
+     *
+     * @param idProcedencia el id procedencia
+     * @param descripcion el descripcion
+     * @param itemByTipoColegio el item by tipo colegio
+     * @param ubigeo el ubigeo
+     */
+    public ProcedenciaDTO(String idProcedencia, String descripcion, ItemDTO itemByTipoColegio,UbigeoDTO ubigeo) {
+        super();
+        this.idProcedencia = idProcedencia;
+        this.descripcion = descripcion;
+        this.itemByTipoColegio = itemByTipoColegio;
+        this.ubigeo = ubigeo;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id procedencia.
+     *
+     * @return id procedencia
+     */
+     public String getIdProcedencia() {
+        return this.idProcedencia;
+    }
+    /**
+     * Establece el id procedencia.
+     *
+     * @param idProcedencia el new id procedencia
+     */
+    public void setIdProcedencia(String idProcedencia) {
+        this.idProcedencia = idProcedencia;
+    }
+    /**
+     * Obtiene descripcion.
+     *
+     * @return descripcion
+     */
+     public String getDescripcion() {
+        return this.descripcion;
+    }
+    /**
+     * Establece el descripcion.
+     *
+     * @param descripcion el new descripcion
+     */
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+    /**
+     * Obtiene item by tipo colegio.
+     *
+     * @return item by tipo colegio
+     */
+     public ItemDTO getItemByTipoColegio() {
+        return this.itemByTipoColegio;
+    }
+    /**
+     * Establece el item by tipo colegio.
+     *
+     * @param itemByTipoColegio el new item by tipo colegio
+     */
+    public void setItemByTipoColegio(ItemDTO itemByTipoColegio) {
+        this.itemByTipoColegio = itemByTipoColegio;
+    }
+    /**
+     * Obtiene ubigeo.
+     *
+     * @return ubigeo
+     */
+     public UbigeoDTO getUbigeo() {
+        return this.ubigeo;
+    }
+    /**
+     * Establece el ubigeo.
+     *
+     * @param ubigeo el new ubigeo
+     */
+    public void setUbigeo(UbigeoDTO ubigeo) {
+        this.ubigeo = ubigeo;
+    }
+    /**
+     * Establece el procedencia persona list.
+     *
+     * @param procedenciaPersonaList el new procedencia persona list
+     */
+    public List<PersonaDTO> getProcedenciaPersonaList(){
+        return this.procedenciaPersonaList;
+    }
+    /**
+     * Establece el procedencia list.
+     *
+     * @param procedenciaList el new procedencia list
+     */
+    public void setProcedenciaPersonaList(List<PersonaDTO> procedenciaPersonaList) {
+        this.procedenciaPersonaList = procedenciaPersonaList;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idProcedencia == null) ? 0 : idProcedencia.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        ProcedenciaDTO other = (ProcedenciaDTO) obj;
+        if (idProcedencia == null) {
+            if (other.idProcedencia != null) {
+                return false;
+            }
+        } else if (!idProcedencia.equals(other.idProcedencia)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "ProcedenciaDTO [idProcedencia=" + idProcedencia + "]";
+    }
+   
+}

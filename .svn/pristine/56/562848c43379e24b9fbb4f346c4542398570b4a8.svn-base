@@ -1,0 +1,384 @@
+package pe.com.edu.siaa.core.model.jpa.matricula;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import pe.com.edu.siaa.core.model.jpa.common.Item;
+import pe.com.edu.siaa.core.model.jpa.nota.Asistencia;
+import pe.com.edu.siaa.core.model.jpa.nota.ConceptoNota;
+import pe.com.edu.siaa.core.model.jpa.nota.DefinirCriterioEvaluacion;
+import pe.com.edu.siaa.core.model.util.ConfiguracionEntityManagerUtil;
+
+/**
+ * La Class DetCargaLectiva.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 09:56:54 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Entity
+@Table(name = "DetCargaLectiva", schema = ConfiguracionEntityManagerUtil.ESQUEMA_ACADEMICO)
+public class DetCargaLectiva implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id det carga lectiva. */
+    @Id
+    @Column(name = "idDetCargaLectiva" , length = 12)
+    private String idDetCargaLectiva;
+   
+    /** El carga lectiva. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idCargaLectiva", referencedColumnName = "idCargaLectiva")
+    private CargaLectiva cargaLectiva;
+   
+    /** El personal by docente. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idDocente", referencedColumnName = "idPersonal")
+    private Personal personalByDocente;
+   
+    /** El personal by docente practica. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idDocentePractica", referencedColumnName = "idPersonal")
+    private Personal personalByDocentePractica;
+   
+    /** El det plan estudio. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idDetPlanEstudio", referencedColumnName = "idDetPlanEstudio")
+    private DetPlanEstudio detPlanEstudio;
+   
+    /** El aula. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idAula", referencedColumnName = "idAula")
+    private Aula aula;
+   
+    /** El codigo acta. */
+    @Column(name = "codigoActa" , length = 11)
+    private String codigoActa;
+   
+    /** El item by turno. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idTurno", referencedColumnName = "idItem")
+    private Item itemByTurno;
+   
+    /** El det carga lectiva asistencia list. */
+    @OneToMany(mappedBy = "detCargaLectiva", fetch = FetchType.LAZY)
+    private List<Asistencia> detCargaLectivaAsistenciaList = new ArrayList<Asistencia>();
+    
+    /** El det carga lectiva concepto nota list. */
+    @OneToMany(mappedBy = "detCargaLectiva", fetch = FetchType.LAZY)
+    private List<ConceptoNota> detCargaLectivaConceptoNotaList = new ArrayList<ConceptoNota>();
+    
+    /** El det carga lectiva definir criterio evaluacion list. */
+    @OneToMany(mappedBy = "detCargaLectiva", fetch = FetchType.LAZY)
+    private List<DefinirCriterioEvaluacion> detCargaLectivaDefinirCriterioEvaluacionList = new ArrayList<DefinirCriterioEvaluacion>();
+    
+    /** El det carga lectiva det matricula list. */
+    @OneToMany(mappedBy = "detCargaLectiva", fetch = FetchType.LAZY)
+    private List<DetMatricula> detCargaLectivaDetMatriculaList = new ArrayList<DetMatricula>();
+    
+    /** El det carga lectiva horario list. */
+    @OneToMany(mappedBy = "detCargaLectiva", fetch = FetchType.LAZY)
+    private List<Horario> detCargaLectivaHorarioList = new ArrayList<Horario>();
+    
+    /**
+     * Instancia un nuevo det carga lectiva.
+     */
+    public DetCargaLectiva() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo det carga lectiva.
+     *
+     * @param idDetCargaLectiva el id det carga lectiva
+     * @param cargaLectiva el carga lectiva
+     * @param personalByDocente el personal by docente
+     * @param personalByDocentePractica el personal by docente practica
+     * @param detPlanEstudio el det plan estudio
+     * @param aula el aula
+     * @param codigoActa el codigo acta
+     * @param itemByTurno el item by turno
+     */
+    public DetCargaLectiva(String idDetCargaLectiva, CargaLectiva cargaLectiva,Personal personalByDocente,Personal personalByDocentePractica,DetPlanEstudio detPlanEstudio,Aula aula,String codigoActa, Item itemByTurno) {
+        super();
+        this.idDetCargaLectiva = idDetCargaLectiva;
+        this.cargaLectiva = cargaLectiva;
+        this.personalByDocente = personalByDocente;
+        this.personalByDocentePractica = personalByDocentePractica;
+        this.detPlanEstudio = detPlanEstudio;
+        this.aula = aula;
+        this.codigoActa = codigoActa;
+        this.itemByTurno = itemByTurno;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id det carga lectiva.
+     *
+     * @return id det carga lectiva
+     */
+     public String getIdDetCargaLectiva() {
+        return this.idDetCargaLectiva;
+    }
+    /**
+     * Establece el id det carga lectiva.
+     *
+     * @param idDetCargaLectiva el new id det carga lectiva
+     */
+    public void setIdDetCargaLectiva(String idDetCargaLectiva) {
+        this.idDetCargaLectiva = idDetCargaLectiva;
+    }
+    /**
+     * Obtiene carga lectiva.
+     *
+     * @return carga lectiva
+     */
+     public CargaLectiva getCargaLectiva() {
+        return this.cargaLectiva;
+    }
+    /**
+     * Establece el carga lectiva.
+     *
+     * @param cargaLectiva el new carga lectiva
+     */
+    public void setCargaLectiva(CargaLectiva cargaLectiva) {
+        this.cargaLectiva = cargaLectiva;
+    }
+    /**
+     * Obtiene personal by docente.
+     *
+     * @return personal by docente
+     */
+     public Personal getPersonalByDocente() {
+        return this.personalByDocente;
+    }
+    /**
+     * Establece el personal by docente.
+     *
+     * @param personalByDocente el new personal by docente
+     */
+    public void setPersonalByDocente(Personal personalByDocente) {
+        this.personalByDocente = personalByDocente;
+    }
+    /**
+     * Obtiene personal by docente practica.
+     *
+     * @return personal by docente practica
+     */
+     public Personal getPersonalByDocentePractica() {
+        return this.personalByDocentePractica;
+    }
+    /**
+     * Establece el personal by docente practica.
+     *
+     * @param personalByDocentePractica el new personal by docente practica
+     */
+    public void setPersonalByDocentePractica(Personal personalByDocentePractica) {
+        this.personalByDocentePractica = personalByDocentePractica;
+    }
+    /**
+     * Obtiene det plan estudio.
+     *
+     * @return det plan estudio
+     */
+     public DetPlanEstudio getDetPlanEstudio() {
+        return this.detPlanEstudio;
+    }
+    /**
+     * Establece el det plan estudio.
+     *
+     * @param detPlanEstudio el new det plan estudio
+     */
+    public void setDetPlanEstudio(DetPlanEstudio detPlanEstudio) {
+        this.detPlanEstudio = detPlanEstudio;
+    }
+    /**
+     * Obtiene aula.
+     *
+     * @return aula
+     */
+     public Aula getAula() {
+        return this.aula;
+    }
+    /**
+     * Establece el aula.
+     *
+     * @param aula el new aula
+     */
+    public void setAula(Aula aula) {
+        this.aula = aula;
+    }
+    /**
+     * Obtiene codigo acta.
+     *
+     * @return codigo acta
+     */
+     public String getCodigoActa() {
+        return this.codigoActa;
+    }
+    /**
+     * Establece el codigo acta.
+     *
+     * @param codigoActa el new codigo acta
+     */
+    public void setCodigoActa(String codigoActa) {
+        this.codigoActa = codigoActa;
+    }
+    /**
+     * Obtiene item by turno.
+     *
+     * @return item by turno
+     */
+     public Item getItemByTurno() {
+        return this.itemByTurno;
+    }
+    /**
+     * Establece el item by turno.
+     *
+     * @param itemByTurno el new item by turno
+     */
+    public void setItemByTurno(Item itemByTurno) {
+        this.itemByTurno = itemByTurno;
+    }
+    /**
+     * Establece el det carga lectiva asistencia list.
+     *
+     * @param detCargaLectivaAsistenciaList el new det carga lectiva asistencia list
+     */
+    public List<Asistencia> getDetCargaLectivaAsistenciaList(){
+        return this.detCargaLectivaAsistenciaList;
+    }
+    /**
+     * Establece el det carga lectiva list.
+     *
+     * @param detCargaLectivaList el new det carga lectiva list
+     */
+    public void setDetCargaLectivaAsistenciaList(List<Asistencia> detCargaLectivaAsistenciaList) {
+        this.detCargaLectivaAsistenciaList = detCargaLectivaAsistenciaList;
+    }   
+    /**
+     * Establece el det carga lectiva concepto nota list.
+     *
+     * @param detCargaLectivaConceptoNotaList el new det carga lectiva concepto nota list
+     */
+    public List<ConceptoNota> getDetCargaLectivaConceptoNotaList(){
+        return this.detCargaLectivaConceptoNotaList;
+    }
+    /**
+     * Establece el det carga lectiva list.
+     *
+     * @param detCargaLectivaList el new det carga lectiva list
+     */
+    public void setDetCargaLectivaConceptoNotaList(List<ConceptoNota> detCargaLectivaConceptoNotaList) {
+        this.detCargaLectivaConceptoNotaList = detCargaLectivaConceptoNotaList;
+    }   
+    /**
+     * Establece el det carga lectiva definir criterio evaluacion list.
+     *
+     * @param detCargaLectivaDefinirCriterioEvaluacionList el new det carga lectiva definir criterio evaluacion list
+     */
+    public List<DefinirCriterioEvaluacion> getDetCargaLectivaDefinirCriterioEvaluacionList(){
+        return this.detCargaLectivaDefinirCriterioEvaluacionList;
+    }
+    /**
+     * Establece el det carga lectiva list.
+     *
+     * @param detCargaLectivaList el new det carga lectiva list
+     */
+    public void setDetCargaLectivaDefinirCriterioEvaluacionList(List<DefinirCriterioEvaluacion> detCargaLectivaDefinirCriterioEvaluacionList) {
+        this.detCargaLectivaDefinirCriterioEvaluacionList = detCargaLectivaDefinirCriterioEvaluacionList;
+    }   
+    /**
+     * Establece el det carga lectiva det matricula list.
+     *
+     * @param detCargaLectivaDetMatriculaList el new det carga lectiva det matricula list
+     */
+    public List<DetMatricula> getDetCargaLectivaDetMatriculaList(){
+        return this.detCargaLectivaDetMatriculaList;
+    }
+    /**
+     * Establece el det carga lectiva list.
+     *
+     * @param detCargaLectivaList el new det carga lectiva list
+     */
+    public void setDetCargaLectivaDetMatriculaList(List<DetMatricula> detCargaLectivaDetMatriculaList) {
+        this.detCargaLectivaDetMatriculaList = detCargaLectivaDetMatriculaList;
+    }   
+    /**
+     * Establece el det carga lectiva horario list.
+     *
+     * @param detCargaLectivaHorarioList el new det carga lectiva horario list
+     */
+    public List<Horario> getDetCargaLectivaHorarioList(){
+        return this.detCargaLectivaHorarioList;
+    }
+    /**
+     * Establece el det carga lectiva list.
+     *
+     * @param detCargaLectivaList el new det carga lectiva list
+     */
+    public void setDetCargaLectivaHorarioList(List<Horario> detCargaLectivaHorarioList) {
+        this.detCargaLectivaHorarioList = detCargaLectivaHorarioList;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idDetCargaLectiva == null) ? 0 : idDetCargaLectiva.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        DetCargaLectiva other = (DetCargaLectiva) obj;
+        if (idDetCargaLectiva == null) {
+            if (other.idDetCargaLectiva != null) {
+                return false;
+            }
+        } else if (!idDetCargaLectiva.equals(other.idDetCargaLectiva)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "DetCargaLectiva [idDetCargaLectiva=" + idDetCargaLectiva + "]";
+    }
+   
+}

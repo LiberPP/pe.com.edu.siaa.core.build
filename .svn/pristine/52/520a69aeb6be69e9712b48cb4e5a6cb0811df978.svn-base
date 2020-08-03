@@ -1,0 +1,48 @@
+package pe.com.edu.siaa.core.ejb.dao.pago.local;
+
+import java.util.List;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.dto.pago.ClasificacionDTO;
+import pe.com.edu.siaa.core.model.jpa.pago.Clasificacion;
+
+/**
+ * La Class ClasificacionDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 11:25:20 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface ClasificacionDaoLocal  extends GenericDAOLocal<Long,Clasificacion> {
+	/**
+	 * Listar clasificacion.
+	 *
+	 * @param clasificacion el clasificacionDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<Clasificacion> listarClasificacion(ClasificacionDTO clasificacion) throws Exception;
+	
+	/**
+	 * contar lista clasificacion.
+	 *
+	 * @param clasificacion el clasificacion
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarClasificacion(ClasificacionDTO clasificacion);
+	/**
+	 * Generar id clasificacion.
+	 *
+	 * @return the Long
+	 * @throws Exception the exception
+	 */
+	Long generarIdClasificacion() throws Exception;
+}

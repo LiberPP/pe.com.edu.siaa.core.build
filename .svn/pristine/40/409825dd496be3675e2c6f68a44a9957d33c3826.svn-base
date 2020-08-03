@@ -1,0 +1,220 @@
+package pe.com.edu.siaa.core.model.dto.encuesta;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import pe.com.edu.siaa.core.model.dto.BasePaginator;
+
+ 
+
+/**
+ * La Class CuestionarioDTO.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 1.0, Fri Sep 08 19:59:07 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+public class CuestionarioDTO extends BasePaginator implements Serializable {
+	 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id cuestionario. */
+    private String idCuestionario;
+   
+    /** El encuesta. */
+    private EncuestaDTO encuesta;
+   
+    /** El descripcion. */
+    private String descripcion;
+   
+    /** El estado. */
+    private String estado;
+    
+    /** El escheck. */
+    private String esCheck;
+    
+
+	/** El numeroorden. */
+    private Long numeroOrden;
+   
+    /** El cuestionario alternativa list. */
+    private List<AlternativaDTO> cuestionarioAlternativaList = new ArrayList<AlternativaDTO>();
+   
+    /**
+     * Instancia un nuevo cuestionarioDTO.
+     */
+    public CuestionarioDTO() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo cuestionarioDTO.
+     *
+     * @param idCuestionario el id cuestionario
+     * @param encuesta el encuesta
+     * @param descripcion el descripcion
+     * @param estado el estado
+     */
+    public CuestionarioDTO(String idCuestionario, EncuestaDTO encuesta,String descripcion, String estado, String esCheck, Long numeroOrden ) {
+        super();
+        this.idCuestionario = idCuestionario;
+        this.encuesta = encuesta;
+        this.descripcion = descripcion;
+        this.estado = estado;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id cuestionario.
+     *
+     * @return id cuestionario
+     */
+     public String getIdCuestionario() {
+        return this.idCuestionario;
+    }
+    /**
+     * Establece el id cuestionario.
+     *
+     * @param idCuestionario el new id cuestionario
+     */
+    public void setIdCuestionario(String idCuestionario) {
+        this.idCuestionario = idCuestionario;
+    }
+    /**
+     * Obtiene encuesta.
+     *
+     * @return encuesta
+     */
+     public EncuestaDTO getEncuesta() {
+        return this.encuesta;
+    }
+    /**
+     * Establece el encuesta.
+     *
+     * @param encuesta el new encuesta
+     */
+    public void setEncuesta(EncuestaDTO encuesta) {
+        this.encuesta = encuesta;
+    }
+    /**
+     * Obtiene descripcion.
+     *
+     * @return descripcion
+     */
+     public String getDescripcion() {
+        return this.descripcion;
+    }
+    /**
+     * Establece el descripcion.
+     *
+     * @param descripcion el new descripcion
+     */
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+    /**
+     * Obtiene estado.
+     *
+     * @return estado
+     */
+     public String getEstado() {
+        return this.estado;
+    }
+    /**
+     * Establece el estado.
+     *
+     * @param estado el new estado
+     */
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+    
+    public String getEsCheck() {
+		return esCheck;
+	}
+
+
+	public void setEsCheck(String escheck) {
+		this.esCheck = escheck;
+	}
+
+
+	
+    public Long getNumeroOrden() {
+		return numeroOrden;
+	}
+
+
+	public void setNumeroOrden(Long numeroOrden) {
+		this.numeroOrden = numeroOrden;
+	}
+
+
+	/**
+     * Establece el cuestionario alternativa list.
+     *
+     * @param cuestionarioAlternativaList el new cuestionario alternativa list
+     */
+    public List<AlternativaDTO> getCuestionarioAlternativaList(){
+        return this.cuestionarioAlternativaList;
+    }
+    /**
+     * Establece el cuestionario list.
+     *
+     * @param cuestionarioList el new cuestionario list
+     */
+    public void setCuestionarioAlternativaList(List<AlternativaDTO> cuestionarioAlternativaList) {
+        this.cuestionarioAlternativaList = cuestionarioAlternativaList;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idCuestionario == null) ? 0 : idCuestionario.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        CuestionarioDTO other = (CuestionarioDTO) obj;
+        if (idCuestionario == null) {
+            if (other.idCuestionario != null) {
+                return false;
+            }
+        } else if (!idCuestionario.equals(other.idCuestionario)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "CuestionarioDTO [idCuestionario=" + idCuestionario + "]";
+    }
+   
+}

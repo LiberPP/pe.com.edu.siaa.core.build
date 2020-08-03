@@ -1,0 +1,64 @@
+package pe.com.edu.siaa.core.ejb.dao.admision.local;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.dto.admision.CronogramaDTO;
+import pe.com.edu.siaa.core.model.jpa.admision.Cronograma;
+import pe.com.edu.siaa.core.model.type.CronogramaType;
+
+/**
+ * La Class CronogramaDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 11:25:02 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface CronogramaDaoLocal  extends GenericDAOLocal<String,Cronograma> {
+	
+	Map<String,CronogramaDTO> listarCronogramaMap(List<String> listaIdAnhoSemestre,CronogramaType cronogramaType,Long idEntidadUniversitaria) throws Exception;
+	/**
+	 * Obtener cronograma by semestre.
+	 *
+	 * @param cronograma el cronograma
+	 * @return the cronograma
+	 * @throws Exception the exception
+	 */
+	Cronograma obtenerCronogramaBySemestre(String idAnhoSemestre, Long tipoCronograma,Long codigoCronograma, Long idEntidadUniversitaria)throws Exception;
+	/**
+	 * Listar cronograma.
+	 *
+	 * @param cronograma el cronogramaDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<Cronograma> listarCronograma(CronogramaDTO cronograma) throws Exception;
+	
+	/**
+	 * contar lista cronograma.
+	 *
+	 * @param cronograma el cronograma
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarCronograma(CronogramaDTO cronograma);
+	/**
+	 * Generar id cronograma.
+	 *
+	 * @return the String
+	 * @throws Exception the exception
+	 */
+	String generarIdCronograma() throws Exception;
+	
+	String generarCodigoCronograma(String idAnhoSemestre) throws Exception;
+	
+	
+}

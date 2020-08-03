@@ -1,0 +1,329 @@
+package pe.com.edu.siaa.core.ejb.dao.matricula.impl;
+
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.persistence.Query;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericAcademicoDAOImpl;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.DetCargaLectivaDaoLocal;
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.model.constante.util.ConstantesNota;
+import pe.com.edu.siaa.core.model.dto.matricula.DetCargaLectivaDTO;
+import pe.com.edu.siaa.core.model.jpa.matricula.DetCargaLectiva;
+import pe.com.edu.siaa.core.model.util.ObjectUtil;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+
+/**
+ * La Class DetCargaLectivaDaoImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 19:53:41 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+public class DetCargaLectivaDaoImpl extends  GenericAcademicoDAOImpl<String, DetCargaLectiva> implements DetCargaLectivaDaoLocal  {
+
+	/** La Constante NOTA_MINIMA. */
+	private static final BigDecimal NOTA_MINIMA = new BigDecimal(ConstantesNota.NOTA_MININA);
+	
+	@Override
+	public List<DetCargaLectiva> obtenerDetCargaLectiva(DetCargaLectivaDTO detCargaLectiva) throws Exception {
+		Map<String, Object> parametros = new HashMap<String, Object>();
+		boolean ejecutarQuery = false;
+		StringBuilder jpaql = new StringBuilder();
+		jpaql.append("from DetCargaLectiva dcl  ");
+		jpaql.append(" left join fetch dcl.detPlanEstudio dpe left join fetch dpe.itemByCiclo left join fetch dpe.planEstudio pe ");
+		jpaql.append(" left join fetch dcl.itemByTurno ");
+		jpaql.append(" left join fetch dcl.personalByDocente doc ");
+		jpaql.append(" left join fetch doc.persona perdoc ");
+		jpaql.append(" left join fetch dcl.personalByDocentePractica docpra ");
+		jpaql.append(" left join fetch docpra.persona docpraper ");
+		jpaql.append(" left join fetch perdoc.entidadUniversitaria left join fetch docpraper.entidadUniversitaria ");
+		jpaql.append(" left join fetch dcl.cargaLectiva cl ");
+		jpaql.append(" left join fetch cl.entidadUniversitaria ");
+		jpaql.append(" left join fetch cl.escuela esc");
+		jpaql.append(" left join fetch esc.facultad ");
+		jpaql.append(" left join fetch dcl.aula ");
+		jpaql.append(" where 1 = 1 ");
+		if (detCargaLectiva != null) {
+			if (StringUtils.isNotNullOrBlank(detCargaLectiva.getCargaLectiva())) {
+				if (StringUtils.isNotNullOrBlank(detCargaLectiva.getCargaLectiva().getAnhoSemestre())) {
+					if (StringUtils.isNotNullOrBlank(detCargaLectiva.getCargaLectiva().getAnhoSemestre().getIdAnhoSemestre())) {
+						ejecutarQuery = true;
+						jpaql.append(" and dcl.cargaLectiva.anhoSemestre.idAnhoSemestre = :idAnhoSemestre ");
+						parametros.put("idAnhoSemestre", detCargaLectiva.getCargaLectiva().getAnhoSemestre().getIdAnhoSemestre());
+					}
+				}
+			}
+			
+			if (StringUtils.isNotNullOrBlank(detCargaLectiva.getPersonalByDocentePractica())) {
+				if (StringUtils.isNotNullOrBlank(detCargaLectiva.getPersonalByDocentePractica().getIdPersonal())) {
+					ejecutarQuery = true;
+					jpaql.append(" and dcl.personalByDocentePractica.idPersonal = :idPersonalPractica ");
+					parametros.put("idPersonalPractica", detCargaLectiva.getPersonalByDocentePractica().getIdPersonal());					
+				}
+			} else {
+				if (!StringUtils.isNotNullOrBlank(detCargaLectiva.getIdDetCargaLectiva())) {
+					jpaql.append(" and dcl.cargaLectiva.entidadUniversitaria.idEntidadUniversitaria = :idEntidadUniversitaria ");
+					parametros.put("idEntidadUniversitaria", detCargaLectiva.getCargaLectiva().getEntidadUniversitaria().getIdEntidadUniversitaria());
+				}
+			}
+			if (StringUtils.isNotNullOrBlank(detCargaLectiva.getCargaLectiva().getIdCargaLectiva())) {
+				ejecutarQuery = true;
+				jpaql.append(" and dcl.cargaLectiva.idCargaLectiva = :idCargaLectiva ");
+				parametros.put("idCargaLectiva", detCargaLectiva.getCargaLectiva().getIdCargaLectiva());
+			}
+			if (StringUtils.isNotNullOrBlank(detCargaLectiva.getCargaLectiva().getEscuela())) {
+				if (StringUtils.isNotNullOrBlank(detCargaLectiva.getCargaLectiva().getEscuela().getIdEscuela())) {
+					ejecutarQuery = true;
+					jpaql.append(" and dcl.cargaLectiva.escuela.idEscuela = :idEscuela ");
+					parametros.put("idEscuela", detCargaLectiva.getCargaLectiva().getEscuela().getIdEscuela());
+				}
+			}
+			if (StringUtils.isNotNullOrBlank(detCargaLectiva.getDetPlanEstudio())) {
+				if (StringUtils.isNotNullOrBlank(detCargaLectiva.getDetPlanEstudio().getItemByCiclo())) {
+					if (StringUtils.isNotNullOrBlank(detCargaLectiva.getDetPlanEstudio().getItemByCiclo().getIdItem())) {
+						ejecutarQuery = true;
+						jpaql.append(" and dcl.detPlanEstudio.itemByCiclo.idItem = :idCiclo ");
+						parametros.put("idCiclo", detCargaLectiva.getDetPlanEstudio().getItemByCiclo().getIdItem());
+					}
+				}
+			}
+			if (StringUtils.isNotNullOrBlank(detCargaLectiva.getItemByTurno())) {
+				if (StringUtils.isNotNullOrBlank(detCargaLectiva.getItemByTurno().getIdItem())) {
+					ejecutarQuery = true;
+					jpaql.append(" and dcl.itemByTurno.idItem = :turno ");
+					parametros.put("turno", detCargaLectiva.getItemByTurno().getIdItem());					
+				}
+			}
+			
+		}
+		if (StringUtils.isNotNullOrBlank(detCargaLectiva.getIdDetCargaLectiva())) {
+				ejecutarQuery = true;
+				jpaql.append(" and dcl.idDetCargaLectiva = :idDetCargaLectiva ");
+				parametros.put("idDetCargaLectiva", detCargaLectiva.getIdDetCargaLectiva());
+		}
+		jpaql.append(" order by dcl.detPlanEstudio.descripcionCurso");
+		if (ejecutarQuery) {		
+			Query query = createQuery(jpaql.toString(), parametros);
+			return query.getResultList();
+		} 
+		return null;
+	}
+	
+	@Override
+	public List<DetCargaLectivaDTO> listarDetCargaLectiva(Map<String,Object> parametrosMap) throws Exception {
+		String idAnhoSemestre = (String )parametrosMap.get("idAnhoSemestre".toUpperCase());
+		Long idEntidadUniversitaria = ObjectUtil.objectToLong(parametrosMap.get("idEntidadUniversitaria".toUpperCase()));
+		String idCargaLectiva  = (String) parametrosMap.get("idCargaLectiva".toUpperCase())  ;
+		String idEscuela =  (String)parametrosMap.get("idEscuela".toUpperCase()) ;
+		Long idCiclo = ObjectUtil.objectToLong(parametrosMap.get("idCiclo".toUpperCase()));
+		Long idTurno = ObjectUtil.objectToLong(parametrosMap.get("idTurno".toUpperCase()));
+		String idAlumno = (String)parametrosMap.get("idAlumno".toUpperCase()) ;
+		String idPlanEstudio =(String)parametrosMap.get("idPlanEstudio".toUpperCase());
+		
+		Map<String, Object> parametros = new HashMap<String, Object>();
+		boolean ejecutarQuery = false;
+		StringBuilder jpaql = new StringBuilder();
+		jpaql.append("from DetCargaLectiva dcl  ");
+		jpaql.append(" left join fetch dcl.detPlanEstudio dpe left join fetch dpe.itemByCiclo ");
+		jpaql.append(" left join fetch dcl.itemByTurno ");
+		jpaql.append(" left join fetch dcl.cargaLectiva cl ");
+		jpaql.append(" left join fetch cl.entidadUniversitaria ");
+		jpaql.append(" left join fetch dcl.personalByDocente doc ");//peticion
+		jpaql.append(" left join fetch doc.persona ");//peticion
+		jpaql.append(" where 1 = 1 ");
+		
+		if (StringUtils.isNotNullOrBlank(idPlanEstudio)) {
+			ejecutarQuery = true;
+			jpaql.append(" and dcl.detPlanEstudio.planEstudio.idPlanEstudio = :idPlanEstudio ");
+			parametros.put("idPlanEstudio", idPlanEstudio);
+		}
+		
+		if (StringUtils.isNotNullOrBlank(idAnhoSemestre)) {
+			ejecutarQuery = true;
+			jpaql.append(" and dcl.cargaLectiva.anhoSemestre.idAnhoSemestre = :idAnhoSemestre ");
+			parametros.put("idAnhoSemestre", idAnhoSemestre);
+		}
+		
+		if (!StringUtils.isNullOrEmptyNumeric(idEntidadUniversitaria)) {
+			ejecutarQuery = true;
+			jpaql.append(" and dcl.cargaLectiva.entidadUniversitaria.idEntidadUniversitaria = :idEntidadUniversitaria ");
+			parametros.put("idEntidadUniversitaria", idEntidadUniversitaria);
+		}
+		if (StringUtils.isNotNullOrBlank(idCargaLectiva)) {
+			ejecutarQuery = true;
+			jpaql.append(" and dcl.cargaLectiva.idCargaLectiva = :idCargaLectiva ");
+			parametros.put("idCargaLectiva", idCargaLectiva);
+		}
+		
+		if (StringUtils.isNotNullOrBlank(idEscuela)) {
+			ejecutarQuery = true;
+			jpaql.append(" and dcl.cargaLectiva.escuela.idEscuela = :idEscuela ");
+			parametros.put("idEscuela", idEscuela);
+		}
+		
+		if (!StringUtils.isNullOrEmptyNumeric(idCiclo)) {
+			ejecutarQuery = true;
+			jpaql.append(" and dcl.detPlanEstudio.itemByCiclo.idItem = :idCiclo ");
+			parametros.put("idCiclo", idCiclo);
+		}
+		if (!StringUtils.isNullOrEmptyNumeric(idTurno)) {
+			ejecutarQuery = true;
+			jpaql.append(" and dcl.itemByTurno.idItem = :turno ");
+			parametros.put("turno", idTurno);					
+		}
+		
+		if (idAlumno != null) {
+			if (StringUtils.isNotNullOrBlank(idAlumno)) {
+				jpaql.append(" and dcl.detPlanEstudio.idDetPlanEstudio not in( ");
+				jpaql.append(" select drn.detMatricula.detCargaLectiva.detPlanEstudio.idDetPlanEstudio from DetRegistroNota drn where drn.registroNota.matricula.alumno.idAlumno=:idAlumno ");
+				jpaql.append("  and  drn.notaLetra.idNotaLetra >= :notaMinima ");
+				jpaql.append(" ) ");
+				
+				jpaql.append(" and dcl.detPlanEstudio.idDetPlanEstudio not in( ");
+				jpaql.append(" select dt.detPlanEstudio.idDetPlanEstudio from DetTraslado dt where dt.traslado.alumno.idAlumno=:idAlumno ");
+				jpaql.append("  and  dt.notaLetra.idNotaLetra >= :notaMinima ");
+				jpaql.append(" ) ");
+				
+				parametros.put("notaMinima", NOTA_MINIMA);
+				parametros.put("idAlumno", idAlumno);
+			}
+		}
+		jpaql.append(" order by dcl.detPlanEstudio.descripcionCurso");
+		if (ejecutarQuery) {		
+			Query query = createQuery(jpaql.toString(), parametros);
+			List<DetCargaLectiva> listaTemp = query.getResultList();
+			return TransferDataObjectUtil.transferObjetoEntityDTOList(listaTemp, DetCargaLectivaDTO.class, "detPlanEstudio:{itemByCiclo}","itemByTurno","cargaLectiva=:{entidadUniversitaria}","personalByDocente:{persona}");
+		} 
+		return null;
+	}
+	
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.DetCargaLectivaDaoLocal#listarDetCargaLectiva(pe.com.edu.siaa.core.model.jpa.seguridad.DetCargaLectiva)
+     */  
+    @Override	 
+    public List<DetCargaLectiva> listarDetCargaLectiva(DetCargaLectivaDTO detCargaLectiva) {
+    	Query query = generarQueryListaDetCargaLectiva(detCargaLectiva, true);
+		if (query != null) {
+			return query.getResultList();
+		}
+		return null;
+    }   
+   
+    /**
+     * Generar query lista DetCargaLectiva.
+     *
+     * @param DetCargaLectivaDTO el detCargaLectiva
+     * @param esContador el es contador
+     * @return the query
+     */
+    private Query generarQueryListaDetCargaLectiva(DetCargaLectivaDTO detCargaLectiva,boolean selectAll) {
+		Map<String, Object> parametros = new HashMap<String, Object>();
+		boolean ejecutarQuery = false;
+		StringBuilder jpaql = new StringBuilder();
+		if (selectAll) {
+			jpaql.append("from DetCargaLectiva dcl left join fetch dcl.cargaLectiva cl left join fetch cl.escuela es left join fetch dcl.detPlanEstudio dpe left join fetch dpe.itemByCiclo  left join fetch dcl.itemByTurno where 1 = 1 ");
+		} else {
+			jpaql.append("select dcl.idDetCargaLectiva, dcl.detPlanEstudio.descripcionCurso from DetCargaLectiva dcl where 1 = 1 ");
+		}		
+		if (detCargaLectiva != null) {
+			if (StringUtils.isNotNullOrBlank(detCargaLectiva.getCargaLectiva())) {
+				if (StringUtils.isNotNullOrBlank(detCargaLectiva.getCargaLectiva().getAnhoSemestre())) {
+					if (StringUtils.isNotNullOrBlank(detCargaLectiva.getCargaLectiva().getAnhoSemestre().getIdAnhoSemestre())) {
+						ejecutarQuery = true;
+						jpaql.append(" and dcl.cargaLectiva.anhoSemestre.idAnhoSemestre = :idAnhoSemestre ");
+						parametros.put("idAnhoSemestre", detCargaLectiva.getCargaLectiva().getAnhoSemestre().getIdAnhoSemestre());
+					}
+				}
+			}
+			if (StringUtils.isNotNullOrBlank(detCargaLectiva.getPersonalByDocentePractica())) {
+				if (StringUtils.isNotNullOrBlank(detCargaLectiva.getPersonalByDocentePractica().getIdPersonal())) {
+					ejecutarQuery = true;
+					jpaql.append(" and dcl.personalByDocentePractica.idPersonal = :idPersonalPractica ");
+					parametros.put("idPersonalPractica", detCargaLectiva.getPersonalByDocentePractica().getIdPersonal());					
+				}
+			}
+			if (StringUtils.isNotNullOrBlank(detCargaLectiva.getCargaLectiva().getEscuela())) {
+				if (StringUtils.isNotNullOrBlank(detCargaLectiva.getCargaLectiva().getEscuela().getIdEscuela())) {
+					ejecutarQuery = true;
+					jpaql.append(" and dcl.cargaLectiva.escuela.idEscuela = :idEscuela ");
+					parametros.put("idEscuela", detCargaLectiva.getCargaLectiva().getEscuela().getIdEscuela());
+				}
+			}
+			if (StringUtils.isNotNullOrBlank(detCargaLectiva.getDetPlanEstudio())) {
+				if (StringUtils.isNotNullOrBlank(detCargaLectiva.getDetPlanEstudio().getItemByCiclo())) {
+					if (StringUtils.isNotNullOrBlank(detCargaLectiva.getDetPlanEstudio().getItemByCiclo().getIdItem())) {
+						ejecutarQuery = true;
+						jpaql.append(" and dcl.detPlanEstudio.itemByCiclo.idItem = :idCiclo ");
+						parametros.put("idCiclo", detCargaLectiva.getDetPlanEstudio().getItemByCiclo().getIdItem());
+					}
+				}
+			}
+			if (StringUtils.isNotNullOrBlank(detCargaLectiva.getItemByTurno())) {
+				if (StringUtils.isNotNullOrBlank(detCargaLectiva.getItemByTurno().getIdItem())) {
+					ejecutarQuery = true;
+					jpaql.append(" and dcl.itemByTurno.idItem = :turno ");
+					parametros.put("turno", detCargaLectiva.getItemByTurno().getIdItem());					
+				}
+			}
+			if (detCargaLectiva.getCargaLectiva() != null) {
+				if (detCargaLectiva.getCargaLectiva().getEntidadUniversitaria() != null) {
+					if (StringUtils.isNotNullOrBlank(detCargaLectiva.getCargaLectiva().getEntidadUniversitaria().getIdEntidadUniversitaria())) {
+						ejecutarQuery = true;
+						jpaql.append(" and dcl.cargaLectiva.entidadUniversitaria.idEntidadUniversitaria = :idEntidadUniversitaria ");
+						parametros.put("idEntidadUniversitaria", detCargaLectiva.getCargaLectiva().getEntidadUniversitaria().getIdEntidadUniversitaria());
+					}
+				}
+			}
+			
+		}
+		jpaql.append(" order by es.idEscuela,dpe.itemByCiclo.idItem,dcl.itemByTurno.idItem, dpe.descripcionCurso");
+		if (ejecutarQuery) {		
+			Query query = createQuery(jpaql.toString(), parametros);
+			return  query;
+		} 
+		return null;
+    }
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.DetCargaLectivaDaoLocal#contarListar{entity.getClassName()}(pe.com.edu.siaa.core.model.jpa.seguridad.DetCargaLectivaDTO)
+     */
+	@Override
+    public int contarListarDetCargaLectiva(DetCargaLectivaDTO detCargaLectiva) {
+        int resultado = 0;
+        try {
+            //StringBuilder jpaql = new StringBuilder();
+           // Query query = generarQueryListaDetCargaLectiva(detCargaLectiva, true);
+            //resultado = ((Long) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            resultado = 0;
+        }
+        return resultado;
+    }
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.DetCargaLectivaDaoLocal#generarIdDetCargaLectiva()
+     */
+	 @Override
+    public String generarIdDetCargaLectiva() {
+        String resultado = "1";
+        Query query = createQuery("select max(o.idDetCargaLectiva) from DetCargaLectiva o", null);
+        List<Object> listLong =  query.getResultList();
+        if (listLong != null && listLong.size() > 0 && listLong.get(0) != null)  {
+            Long ultimoIdGenerado = Long.valueOf(listLong.get(0).toString());
+            if (!StringUtils.isNullOrEmpty(ultimoIdGenerado)) {
+                resultado = resultado + ultimoIdGenerado;
+            }
+        }
+        return resultado;
+    }
+   
+}

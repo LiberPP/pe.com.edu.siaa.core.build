@@ -1,0 +1,48 @@
+package pe.com.edu.siaa.core.ejb.dao.matricula.local;
+
+import java.util.List;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.dto.matricula.PabellonDTO;
+import pe.com.edu.siaa.core.model.jpa.matricula.Pabellon;
+
+/**
+ * La Class PabellonDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 11:25:16 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface PabellonDaoLocal  extends GenericDAOLocal<Long,Pabellon> {
+	/**
+	 * Listar pabellon.
+	 *
+	 * @param pabellon el pabellonDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<Pabellon> listarPabellon(PabellonDTO pabellon) throws Exception;
+	
+	/**
+	 * contar lista pabellon.
+	 *
+	 * @param pabellon el pabellon
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarPabellon(PabellonDTO pabellon);
+	/**
+	 * Generar id pabellon.
+	 *
+	 * @return the Long
+	 * @throws Exception the exception
+	 */
+	Long generarIdPabellon() throws Exception;
+}

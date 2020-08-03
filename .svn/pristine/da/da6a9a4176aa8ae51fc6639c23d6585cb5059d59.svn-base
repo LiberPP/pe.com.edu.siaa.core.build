@@ -1,0 +1,140 @@
+package pe.com.edu.siaa.core.ejb.service.rest.matricula.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.admision.local.AdmisionServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.matricula.local.MatriculaServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.admision.AnhoSemestreDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.PersonalDTO;
+import pe.com.edu.siaa.core.model.estate.EstadoAnhoSemestreState;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class PersonalRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:28 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/personalRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class PersonalRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient MatriculaServiceLocal matriculaServiceLocal;
+	
+	@EJB
+	private transient AdmisionServiceLocal admisionServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<PersonalDTO> crear(PersonalDTO personal) throws Exception {
+		AnhoSemestreDTO anhoSemestreActivo = admisionServiceLocal.obtenerAnhoSemestreByEstado(EstadoAnhoSemestreState.ACTIVO);
+		personal.setAnhoSemestre(anhoSemestreActivo);
+		return controladorAccion(personal,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<PersonalDTO> modificar(PersonalDTO personal) throws Exception {
+		return controladorAccion(personal,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<PersonalDTO> eliminar(@PathParam("id") String idPersonal) throws Exception {
+		PersonalDTO personal = new PersonalDTO();
+		personal.setIdPersonal(idPersonal);		
+		return controladorAccion(personal,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<PersonalDTO> controladorAccion(PersonalDTO personal, AccionType accionType){
+		ResultadoRestVO<PersonalDTO> resultado = new ResultadoRestVO<PersonalDTO>();
+		 try {
+    		resultado.setObjetoResultado(matriculaServiceLocal.controladorAccionPersonal(personal,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<PersonalDTO> finById(@PathParam("id") String idPersonal) throws Exception {
+		PersonalDTO personal = new PersonalDTO();
+		personal.setIdPersonal(idPersonal);
+		return controladorAccion(personal,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<PersonalDTO> listarPersonal(@Context UriInfo info){
+		ResultadoRestVO<PersonalDTO> resultado = new ResultadoRestVO<PersonalDTO>();
+		PersonalDTO personal = transferUriInfo(info);
+		 try {
+    		resultado.setListaResultado(matriculaServiceLocal.listarPersonal(personal));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<PersonalDTO> contarListarPersonal(@Context UriInfo info){
+		ResultadoRestVO<PersonalDTO> resultado = new ResultadoRestVO<PersonalDTO>();
+		PersonalDTO personal = transferUriInfo(info);
+		 try {
+    		resultado.setContador(matriculaServiceLocal.contarListarPersonal(personal));
+    		if (resultado.isData()) {
+				resultado.setListaResultado(matriculaServiceLocal.listarPersonal(personal));
+			}
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<PersonalDTO> inicializarPersonal(@Context UriInfo info) throws Exception {
+	     PersonalDTO personal = transferUriInfo(info);
+		 ResultadoRestVO<PersonalDTO> resultado = new ResultadoRestVO<PersonalDTO>();
+		 try {
+    		resultado.setObjetoResultado(personal);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	
+	@GET
+    @Path("/findPersonalByPersona/{idPersona}")
+	public ResultadoRestVO<PersonalDTO> findPersonalByPersona(@PathParam("idPersona") String idPersona) throws Exception {
+		 ResultadoRestVO<PersonalDTO> resultado = new ResultadoRestVO<PersonalDTO>();
+		 try {
+    		resultado.setObjetoResultado(matriculaServiceLocal.findPersonalByPersona(idPersona));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private PersonalDTO transferUriInfo(@Context UriInfo info) {
+		PersonalDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,PersonalDTO.class);
+		return resultado;
+	}
+}

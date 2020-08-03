@@ -1,0 +1,48 @@
+package pe.com.builderp.core.escalafon.ejb.dao.local;
+
+import java.util.List;
+
+import javax.ejb.Local;
+
+import pe.com.builderp.core.escalafon.model.dto.ContratoAcademicoDTO;
+import pe.com.builderp.core.escalafon.model.jpa.ContratoAcademico;
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+
+/**
+ * La Class ContratoAcademicoDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Sun Dec 31 00:35:58 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface ContratoAcademicoDaoLocal  extends GenericDAOLocal<String,ContratoAcademico> {
+	/**
+	 * Listar contrato academico.
+	 *
+	 * @param contratoAcademico el contrato academicoDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<ContratoAcademico> listarContratoAcademico(ContratoAcademicoDTO contratoAcademico) throws Exception;
+	
+	/**
+	 * contar lista contrato academico.
+	 *
+	 * @param contratoAcademico el contrato academico
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarContratoAcademico(ContratoAcademicoDTO contratoAcademico);
+	/**
+	 * Generar id contratoAcademico.
+	 *
+	 * @return the String
+	 * @throws Exception the exception
+	 */
+	String generarIdContratoAcademico() throws Exception;
+}

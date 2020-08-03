@@ -1,0 +1,120 @@
+package pe.com.edu.siaa.core.ejb.service.rest.admision.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.admision.local.AdmisionServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.admision.TipoPersonaDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class TipoPersonaRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Thu Nov 09 09:12:02 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/tipoPersonaRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class TipoPersonaRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient AdmisionServiceLocal admisionServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<TipoPersonaDTO> crear(TipoPersonaDTO tipoPersona) throws Exception {
+		return controladorAccion(tipoPersona,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<TipoPersonaDTO> modificar(TipoPersonaDTO tipoPersona) throws Exception {
+		return controladorAccion(tipoPersona,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<TipoPersonaDTO> eliminar(@PathParam("id") Long idTipoPersona) throws Exception {
+		TipoPersonaDTO tipoPersona = new TipoPersonaDTO();
+		tipoPersona.setIdTipoPersona(idTipoPersona);		
+		return controladorAccion(tipoPersona,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<TipoPersonaDTO> controladorAccion(TipoPersonaDTO tipoPersona, AccionType accionType){
+		ResultadoRestVO<TipoPersonaDTO> resultado = new ResultadoRestVO<TipoPersonaDTO>();
+		 try {
+    		resultado.setObjetoResultado(admisionServiceLocal.controladorAccionTipoPersona(tipoPersona,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<TipoPersonaDTO> finById(@PathParam("id") Long idTipoPersona) throws Exception {
+		TipoPersonaDTO tipoPersona = new TipoPersonaDTO();
+		tipoPersona.setIdTipoPersona(idTipoPersona);
+		return controladorAccion(tipoPersona,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<TipoPersonaDTO> listarTipoPersona(@Context UriInfo info){
+		ResultadoRestVO<TipoPersonaDTO> resultado = new ResultadoRestVO<TipoPersonaDTO>();
+		TipoPersonaDTO tipoPersona = transferUriInfo(info);
+		 try {
+			resultado.setListaResultado(admisionServiceLocal.listarTipoPersona(tipoPersona));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<TipoPersonaDTO> contarTipoPersona(@Context UriInfo info){
+		ResultadoRestVO<TipoPersonaDTO> resultado = new ResultadoRestVO<TipoPersonaDTO>();
+		TipoPersonaDTO tipoPersona = transferUriInfo(info);
+		 try {
+			 resultado.setContador(admisionServiceLocal.contarListarTipoPersona(tipoPersona));
+			 if (resultado.isData()) {
+				resultado.setListaResultado(admisionServiceLocal.listarTipoPersona(tipoPersona));
+			 }
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<TipoPersonaDTO> inicializarTipoPersona(@Context UriInfo info) throws Exception {
+	     TipoPersonaDTO tipoPersona = transferUriInfo(info);
+		 ResultadoRestVO<TipoPersonaDTO> resultado = new ResultadoRestVO<TipoPersonaDTO>();
+		 try {
+    		resultado.setObjetoResultado(tipoPersona);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private TipoPersonaDTO transferUriInfo(@Context UriInfo info) {
+		TipoPersonaDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,TipoPersonaDTO.class);
+		return resultado;
+	}
+}

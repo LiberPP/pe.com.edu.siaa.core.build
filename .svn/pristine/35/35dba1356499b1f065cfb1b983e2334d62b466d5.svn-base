@@ -1,0 +1,50 @@
+package pe.com.edu.siaa.core.ejb.dao.nota.local;
+
+import java.util.List;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.dto.nota.ConceptoNotaDTO;
+import pe.com.edu.siaa.core.model.jpa.nota.ConceptoNota;
+
+/**
+ * La Class ConceptoNotaDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 11:25:10 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface ConceptoNotaDaoLocal  extends GenericDAOLocal<String,ConceptoNota> {
+	/**
+	 * Listar concepto nota.
+	 *
+	 * @param conceptoNota el concepto notaDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<ConceptoNota> listarConceptoNota(String flagObligatorio,String estado,String idDetCargaLectiva) throws Exception;
+	
+	List<ConceptoNota> listarConceptoNota(ConceptoNotaDTO conceptoNota) throws Exception;
+	
+	/**
+	 * contar lista concepto nota.
+	 *
+	 * @param conceptoNota el concepto nota
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarConceptoNota(ConceptoNotaDTO conceptoNota);
+	/**
+	 * Generar id conceptoNota.
+	 *
+	 * @return the String
+	 * @throws Exception the exception
+	 */
+	String generarIdConceptoNota() throws Exception;
+}

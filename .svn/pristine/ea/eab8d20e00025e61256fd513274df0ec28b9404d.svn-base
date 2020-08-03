@@ -1,0 +1,48 @@
+package pe.com.edu.siaa.core.ejb.dao.matricula.local;
+
+import java.util.List;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.dto.matricula.AperturaCierreMatriculaDTO;
+import pe.com.edu.siaa.core.model.jpa.matricula.AperturaCierreMatricula;
+
+/**
+ * La Class AperturaCierreMatriculaDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 11:25:10 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface AperturaCierreMatriculaDaoLocal  extends GenericDAOLocal<String,AperturaCierreMatricula> {
+	/**
+	 * Listar apertura cierre matricula.
+	 *
+	 * @param aperturaCierreMatricula el apertura cierre matriculaDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<AperturaCierreMatricula> listarAperturaCierreMatricula(AperturaCierreMatriculaDTO aperturaCierreMatricula) throws Exception;
+	
+	/**
+	 * contar lista apertura cierre matricula.
+	 *
+	 * @param aperturaCierreMatricula el apertura cierre matricula
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarAperturaCierreMatricula(AperturaCierreMatriculaDTO aperturaCierreMatricula);
+	/**
+	 * Generar id aperturaCierreMatricula.
+	 *
+	 * @return the String
+	 * @throws Exception the exception
+	 */
+	String generarIdAperturaCierreMatricula() throws Exception;
+}

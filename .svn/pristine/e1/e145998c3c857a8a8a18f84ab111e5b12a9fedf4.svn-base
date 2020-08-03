@@ -1,0 +1,167 @@
+package pe.com.edu.siaa.core.model.jpa.admision;
+
+import java.io.Serializable;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import pe.com.edu.siaa.core.model.jpa.matricula.Personal;
+import pe.com.edu.siaa.core.model.util.ConfiguracionEntityManagerUtil;
+
+/**
+ * La Class CierreAnhoSemestre.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 09:56:47 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Entity
+@Table(name = "CierreAnhoSemestre", schema = ConfiguracionEntityManagerUtil.ESQUEMA_ACADEMICO)
+public class CierreAnhoSemestre implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El anhosemestre. */
+    @Id
+    @Column(name = "idAnhoSemestre" , length = 5)
+    private String anhosemestre;
+   
+    /** El fechacierre. */
+    @Temporal( TemporalType.TIMESTAMP)
+    @Column(name = "fechaCierre")
+    private Date fechacierre;
+   
+    /** El usuario creacion. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuarioCreacion", referencedColumnName = "idPersonal")
+    private Personal usuarioCreacion;
+   
+    /**
+     * Instancia un nuevo cierre anho semestre.
+     */
+    public CierreAnhoSemestre() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo cierre anho semestre.
+     *
+     * @param anhosemestre el anhosemestre
+     * @param fechacierre el fechacierre
+     * @param usuarioCreacion el usuario creacion
+     */
+    public CierreAnhoSemestre(String anhosemestre, Date fechacierre, Personal usuarioCreacion) {
+        super();
+        this.anhosemestre = anhosemestre;
+        this.fechacierre = fechacierre;
+        this.usuarioCreacion = usuarioCreacion;
+    }
+   
+    //get y set
+    /**
+     * Obtiene anhosemestre.
+     *
+     * @return anhosemestre
+     */
+     public String getAnhosemestre() {
+        return this.anhosemestre;
+    }
+    /**
+     * Establece el anhosemestre.
+     *
+     * @param anhosemestre el new anhosemestre
+     */
+    public void setAnhosemestre(String anhosemestre) {
+        this.anhosemestre = anhosemestre;
+    }
+    /**
+     * Obtiene fechacierre.
+     *
+     * @return fechacierre
+     */
+     public Date getFechacierre() {
+        return this.fechacierre;
+    }
+    /**
+     * Establece el fechacierre.
+     *
+     * @param fechacierre el new fechacierre
+     */
+    public void setFechacierre(Date fechacierre) {
+        this.fechacierre = fechacierre;
+    }
+    /**
+     * Obtiene usuario creacion.
+     *
+     * @return usuario creacion
+     */
+     public Personal getUsuarioCreacion() {
+        return this.usuarioCreacion;
+    }
+    /**
+     * Establece el usuario creacion.
+     *
+     * @param usuarioCreacion el new usuario creacion
+     */
+    public void setUsuarioCreacion(Personal usuarioCreacion) {
+        this.usuarioCreacion = usuarioCreacion;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((anhosemestre == null) ? 0 : anhosemestre.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        CierreAnhoSemestre other = (CierreAnhoSemestre) obj;
+        if (anhosemestre == null) {
+            if (other.anhosemestre != null) {
+                return false;
+            }
+        } else if (!anhosemestre.equals(other.anhosemestre)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "CierreAnhoSemestre [anhosemestre=" + anhosemestre + "]";
+    }
+   
+}

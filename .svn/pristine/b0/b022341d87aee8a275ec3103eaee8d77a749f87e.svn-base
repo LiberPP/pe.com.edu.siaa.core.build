@@ -1,0 +1,128 @@
+package pe.com.edu.siaa.core.ejb.dao.pago.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.persistence.Query;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericAcademicoDAOImpl;
+import pe.com.edu.siaa.core.ejb.dao.pago.local.AlumnoConvenioDaoLocal;
+import pe.com.edu.siaa.core.model.dto.matricula.AlumnoConvenioDTO;
+import pe.com.edu.siaa.core.model.jpa.pago.AlumnoConvenio;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+
+/**
+ * La Class AlumnoConvenioDaoImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 19:53:32 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+public class AlumnoConvenioDaoImpl extends  GenericAcademicoDAOImpl<String, AlumnoConvenio> implements AlumnoConvenioDaoLocal  {
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.AlumnoConvenioDaoLocal#listarAlumnoConvenio(pe.com.edu.siaa.core.model.jpa.seguridad.AlumnoConvenio)
+     */  
+    @Override	 
+    public List<AlumnoConvenio> listarAlumnoConvenio(AlumnoConvenioDTO alumnoConvenio) {
+        Query query = generarQueryListaAlumnoConvenio(alumnoConvenio, false);
+        query.setFirstResult(alumnoConvenio.getStartRow());
+        query.setMaxResults(alumnoConvenio.getOffset());
+        return query.getResultList();
+    }   
+   
+    /**
+     * Generar query lista AlumnoConvenio.
+     *
+     * @param AlumnoConvenioDTO el alumnoConvenio
+     * @param esContador el es contador
+     * @return the query
+     */
+    private Query generarQueryListaAlumnoConvenio(AlumnoConvenioDTO alumnoConvenio, boolean esContador) {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        if (esContador) {
+            jpaql.append(" select count(o.idAlumnoConvenio) from AlumnoConvenio o where 1=1 ");
+        } else {
+            jpaql.append(" select o from AlumnoConvenio o where 1=1 ");           
+        }
+		if (!StringUtils.isNullOrEmpty(alumnoConvenio.getSearch())) {
+	          jpaql.append(" and upper(o.idAlumnoConvenio) like :search ");
+	          parametros.put("search", "%" + alumnoConvenio.getSearch().toUpperCase() + "%");
+	    } else {
+			if (!StringUtils.isNullOrEmpty(alumnoConvenio.getNroDoc())) {
+				jpaql.append(" and upper(o.nroDoc) like :nroDoc ");
+				parametros.put("nroDoc", "%" + alumnoConvenio.getNroDoc().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(alumnoConvenio.getComentario())) {
+				jpaql.append(" and upper(o.comentario) like :comentario ");
+				parametros.put("comentario", "%" + alumnoConvenio.getComentario().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(alumnoConvenio.getEstado())) {
+				jpaql.append(" and upper(o.estado) like :estado ");
+				parametros.put("estado", "%" + alumnoConvenio.getEstado().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(alumnoConvenio.getFechaCreacion())) {
+				jpaql.append(" and o.fechaCreacion = :fechaCreacion ");
+				parametros.put("fechaCreacion", alumnoConvenio.getFechaCreacion());
+			}
+			if (!StringUtils.isNullOrEmpty(alumnoConvenio.getUsuarioCreacion())) {
+				jpaql.append(" and upper(o.usuarioCreacion) like :usuarioCreacion ");
+				parametros.put("usuarioCreacion", "%" + alumnoConvenio.getUsuarioCreacion().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(alumnoConvenio.getFechaModificacion())) {
+				jpaql.append(" and o.fechaModificacion = :fechaModificacion ");
+				parametros.put("fechaModificacion", alumnoConvenio.getFechaModificacion());
+			}
+			if (!StringUtils.isNullOrEmpty(alumnoConvenio.getUsuarioModificacion())) {
+				jpaql.append(" and upper(o.usuarioModificacion) like :usuarioModificacion ");
+				parametros.put("usuarioModificacion", "%" + alumnoConvenio.getUsuarioModificacion().toUpperCase() + "%");
+			}
+		}
+        if (!esContador) {
+            //jpaql.append(" ORDER BY 1 ");
+        }
+        Query query = createQuery(jpaql.toString(), parametros);
+        return query;
+    }
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.AlumnoConvenioDaoLocal#contarListar{entity.getClassName()}(pe.com.edu.siaa.core.model.jpa.seguridad.AlumnoConvenioDTO)
+     */
+	@Override
+    public int contarListarAlumnoConvenio(AlumnoConvenioDTO alumnoConvenio) {
+        int resultado = 0;
+        try {
+            //StringBuilder jpaql = new StringBuilder();
+            Query query = generarQueryListaAlumnoConvenio(alumnoConvenio, true);
+            resultado = ((Long) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            resultado = 0;
+        }
+        return resultado;
+    }
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.AlumnoConvenioDaoLocal#generarIdAlumnoConvenio()
+     */
+	 @Override
+    public String generarIdAlumnoConvenio() {
+        String resultado = "1";
+        Query query = createQuery("select max(o.idAlumnoConvenio) from AlumnoConvenio o", null);
+        List<Object> listLong =  query.getResultList();
+        if (listLong != null && listLong.size() > 0 && listLong.get(0) != null)  {
+            Long ultimoIdGenerado = Long.valueOf(listLong.get(0).toString());
+            if (!StringUtils.isNullOrEmpty(ultimoIdGenerado)) {
+                resultado = resultado + ultimoIdGenerado;
+            }
+        }
+        return resultado;
+    }
+   
+}

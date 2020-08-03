@@ -1,0 +1,120 @@
+package pe.com.edu.siaa.core.ejb.service.rest.encuesta.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.encuesta.local.EncuestaServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.encuesta.CuestionarioDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class CuestionarioRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Fri Sep 08 16:33:14 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/cuestionarioRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class CuestionarioRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient EncuestaServiceLocal encuestaServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<CuestionarioDTO> crear(CuestionarioDTO cuestionario) throws Exception {
+		return controladorAccion(cuestionario,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<CuestionarioDTO> modificar(CuestionarioDTO cuestionario) throws Exception {
+		return controladorAccion(cuestionario,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<CuestionarioDTO> eliminar(@PathParam("id") String idCuestionario) throws Exception {
+		CuestionarioDTO cuestionario = new CuestionarioDTO();
+		cuestionario.setIdCuestionario(idCuestionario);		
+		return controladorAccion(cuestionario,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<CuestionarioDTO> controladorAccion(CuestionarioDTO cuestionario, AccionType accionType){
+		ResultadoRestVO<CuestionarioDTO> resultado = new ResultadoRestVO<CuestionarioDTO>();
+		 try {
+    		resultado.setObjetoResultado(encuestaServiceLocal.controladorAccionCuestionario(cuestionario,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<CuestionarioDTO> finById(@PathParam("id") String idCuestionario) throws Exception {
+		CuestionarioDTO cuestionario = new CuestionarioDTO();
+		cuestionario.setIdCuestionario(idCuestionario);
+		return controladorAccion(cuestionario,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<CuestionarioDTO> listarCuestionario(@Context UriInfo info){
+		ResultadoRestVO<CuestionarioDTO> resultado = new ResultadoRestVO<CuestionarioDTO>();
+		CuestionarioDTO cuestionario = transferUriInfo(info);
+		 try {
+			resultado.setListaResultado(encuestaServiceLocal.listarCuestionario(cuestionario));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<CuestionarioDTO> contarCuestionario(@Context UriInfo info){
+		ResultadoRestVO<CuestionarioDTO> resultado = new ResultadoRestVO<CuestionarioDTO>();
+		CuestionarioDTO cuestionario = transferUriInfo(info);
+		 try {
+			 resultado.setContador(encuestaServiceLocal.contarListarCuestionario(cuestionario));
+			 if (resultado.isData()) {
+				resultado.setListaResultado(encuestaServiceLocal.listarCuestionario(cuestionario));
+			 }
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<CuestionarioDTO> inicializarCuestionario(@Context UriInfo info) throws Exception {
+	     CuestionarioDTO cuestionario = transferUriInfo(info);
+		 ResultadoRestVO<CuestionarioDTO> resultado = new ResultadoRestVO<CuestionarioDTO>();
+		 try {
+    		resultado.setObjetoResultado(cuestionario);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private CuestionarioDTO transferUriInfo(@Context UriInfo info) {
+		CuestionarioDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,CuestionarioDTO.class);
+		return resultado;
+	}
+}

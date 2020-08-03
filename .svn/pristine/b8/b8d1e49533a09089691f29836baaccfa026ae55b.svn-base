@@ -1,0 +1,662 @@
+package pe.com.edu.siaa.core.ejb.dao.nota.impl;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.persistence.Column;
+import javax.persistence.Query;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericAcademicoDAOImpl;
+import pe.com.edu.siaa.core.ejb.dao.nota.local.DetRegistroNotaDaoLocal;
+import pe.com.edu.siaa.core.ejb.util.log.Logger;
+import pe.com.edu.siaa.core.ejb.util.txt.Utilidades;
+import pe.com.edu.siaa.core.model.constante.util.ConstantesNota;
+import pe.com.edu.siaa.core.model.dto.admision.AnhoSemestreDTO;
+import pe.com.edu.siaa.core.model.dto.admision.PersonaDTO;
+import pe.com.edu.siaa.core.model.dto.admision.PostulanteDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.AlumnoDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.DetMatriculaDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.MatriculaDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.ResultadoNotaDTO;
+import pe.com.edu.siaa.core.model.dto.nota.DetRegistroNotaDTO;
+import pe.com.edu.siaa.core.model.dto.nota.NotaLetraDTO;
+import pe.com.edu.siaa.core.model.dto.nota.RegistroNotaDTO;
+import pe.com.edu.siaa.core.model.jpa.nota.DetRegistroNota;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+import pe.com.edu.siaa.core.model.vo.RegistroNotaVO;
+
+/**
+ * La Class DetRegistroNotaDaoImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 19:53:50 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+public class DetRegistroNotaDaoImpl extends  GenericAcademicoDAOImpl<String, DetRegistroNota> implements DetRegistroNotaDaoLocal  {
+
+	private Logger log = Logger.getLogger(DetRegistroNotaDaoImpl.class);
+
+	
+	@Override
+	 public Map<String,List<DetRegistroNota>> obtenerNotaAlumnoMariculado(List<String> listaIdMatricula) throws Exception {
+		   Map<String, Object> parametros = new HashMap<String, Object>();
+		   Map<String,List<DetRegistroNota>> resultado = new HashMap<String,List<DetRegistroNota>>();
+			if (listaIdMatricula == null || listaIdMatricula.size() == 0) {
+				return resultado;
+			}
+			StringBuilder jpaql = new StringBuilder();
+			jpaql.append("select drn ");
+			jpaql.append("  from DetRegistroNota drn left join fetch drn.registroNota rn left join fetch drn.notaLetra nl  left join fetch drn.notaLetraByNotaAplazado na left join fetch drn.detMatricula m ");
+			jpaql.append(" left join fetch m.detCargaLectiva dtc  left join fetch dtc.detPlanEstudio   where 1= 1  ");
+			
+			jpaql.append(" and drn.detMatricula.matricula.idMatricula in (:listaIdMatricula)  ");
+			 parametros.put("listaIdMatricula", listaIdMatricula);
+			 
+			Query query = createQuery(jpaql.toString(), parametros);
+			List<DetRegistroNota> resultadoTemp =  query.getResultList();
+			for (DetRegistroNota detRegistroNota : resultadoTemp) {
+				String key = detRegistroNota.getDetMatricula().getMatricula().getIdMatricula();
+				if (!resultado.containsKey(key)) {
+					List<DetRegistroNota> value = new ArrayList<DetRegistroNota>();
+					value.add(detRegistroNota);
+					resultado.put(key, value);
+				} else {
+					List<DetRegistroNota> value = resultado.get(key);
+					value.add(detRegistroNota);
+					resultado.put(key, value);
+				}
+			}
+			
+			return resultado;
+	   }
+	
+	@Override
+	   public Map<Long,List<RegistroNotaVO>> obtenerNotaAlumnoCertificadoEstudioByCicloMap(List<Long> listaIdCiclo, String idAlumno) throws Exception {
+			  Map<String, Object> parametros = new HashMap<String, Object>();
+			  Map<Long,List<RegistroNotaVO>> resultado = new  HashMap<Long, List<RegistroNotaVO>>();
+			  if (listaIdCiclo == null || listaIdCiclo.size() == 0) {
+				  return resultado;
+			  }
+				StringBuilder jpaql = generarQueryReporteNota(null, listaIdCiclo,true);
+				parametros.put("listaIdCiclo", listaIdCiclo);
+				parametros.put("idAlumno", idAlumno);
+				parametros.put("notaMinima", ConstantesNota.NOTA_MININA);
+				Query query = createNativeQuery(jpaql.toString(), parametros);
+				List<Object[]>   listaObject =  query.getResultList();
+				List<RegistroNotaVO> resultadoRegistroNotaDTO = parsearDatosRegistroNotaDTO(listaObject);
+				for (Long idCiclo : listaIdCiclo) {
+					List<RegistroNotaVO> value = new ArrayList<RegistroNotaVO>();
+					if (!resultado.containsKey(idCiclo)) {
+						for (RegistroNotaVO registroNotaDTO : resultadoRegistroNotaDTO) {
+							if (idCiclo.equals(registroNotaDTO.getIdCiclo())) {
+								value.add(registroNotaDTO);
+							}
+						}
+						resultado.put(idCiclo, value);
+					}
+					
+				}
+				return resultado;
+		  }
+	
+	 @Override
+	  public Map<Long,List<RegistroNotaVO>> obtenerNotaAlumnoMariculadoByCicloMap(List<Long> listaIdCiclo, String idAlumno) throws Exception {
+	 	    Map<String, Object> parametros = new HashMap<String, Object>();
+	 	   Map<Long,List<RegistroNotaVO>> resultado = new  HashMap<Long, List<RegistroNotaVO>>();
+	 		StringBuilder jpaql = generarQueryReporteNota(null, listaIdCiclo, false);
+	 		parametros.put("listaIdCiclo", listaIdCiclo);
+	 		parametros.put("idAlumno", idAlumno);
+	 		Query query = createNativeQuery(jpaql.toString(), parametros);
+	 		List<Object[]>   listaObject =  query.getResultList();
+	 		List<RegistroNotaVO> resultadoRegistroNotaDTO = parsearDatosRegistroNotaDTO(listaObject);
+			for (Long idCiclo : listaIdCiclo) {
+				List<RegistroNotaVO> value = new ArrayList<RegistroNotaVO>();
+				if (!resultado.containsKey(idCiclo)) {
+					for (RegistroNotaVO registroNotaDTO : resultadoRegistroNotaDTO) {
+						if (idCiclo.equals(registroNotaDTO.getIdCiclo())) {
+							value.add(registroNotaDTO);
+						}
+					}
+					resultado.put(idCiclo, value);
+				}
+				
+			}
+	 		return resultado;
+	   }
+	 
+	@Override
+	public Map<String,List<RegistroNotaVO>> obtenerNotaAlumnoMariculadoBySemestreMap(List<String> listaIdSemestre, String idAlumno) throws Exception {
+		    Map<String, Object> parametros = new HashMap<String, Object>();
+		    Map<String,List<RegistroNotaVO>>  resultado = new  HashMap<String, List<RegistroNotaVO>>();
+			StringBuilder jpaql = generarQueryReporteNota(listaIdSemestre, null,false);
+			parametros.put("listaIdSemestre", listaIdSemestre);
+			parametros.put("idAlumno", idAlumno);
+			Query query = createNativeQuery(jpaql.toString(), parametros);
+			List<Object[]>   listaObject =  query.getResultList();
+			List<RegistroNotaVO> resultadoRegistroNotaDTO = parsearDatosRegistroNotaDTO(listaObject);
+			for (String idSemestre : listaIdSemestre) {
+				List<RegistroNotaVO> value = new ArrayList<RegistroNotaVO>();
+				if (!resultado.containsKey(idSemestre)) {
+					for (RegistroNotaVO registroNotaDTO : resultadoRegistroNotaDTO) {
+						if (idSemestre.equals(registroNotaDTO.getAnhoSemestre().getIdAnhoSemestre())) {
+							value.add(registroNotaDTO);
+						}
+					}
+					resultado.put(idSemestre, value);
+				}
+				
+			}
+			return resultado;
+	 }
+	
+	/**
+	    * Parsear datos registro nota dto.
+	    *
+	    * @param listaObject el lista object
+	    * @return the list
+	    */
+	   private List<RegistroNotaVO> parsearDatosRegistroNotaDTO(List<Object[]>   listaObject) {
+	 	  List<RegistroNotaVO> resultado = new  ArrayList<RegistroNotaVO>();
+	 	  try {
+	 		  if (listaObject != null) {
+	 				for (Object[] res : listaObject) {
+	 					boolean isAplazado = false;
+	 					if (res[17] != null) {
+	 						isAplazado = true;
+	 					}
+	 					RegistroNotaVO registroNotaDTO  = new RegistroNotaVO();
+	 					if (res[0] != null) {
+	 						registroNotaDTO.setCodigoAsignatura(res[0].toString());
+	 					} 
+	 					if (res[1] != null) {
+	 						registroNotaDTO.setCurso(res[1].toString());
+	 					}
+	 					if (res[2] != null) {
+	 						registroNotaDTO.setCredito(Integer.parseInt(res[2].toString()));
+	 					}
+	 					if (res[3] != null) {
+	 						registroNotaDTO.setCiclo(res[3].toString());
+	 					}
+	 					if (isAplazado) {
+	 						registroNotaDTO.setPonderadoCurso(new BigDecimal(res[17].toString()));
+	 					} else {
+		 					if (res[4] != null) {
+		 						registroNotaDTO.setPonderadoCurso(new BigDecimal(res[4].toString()));
+		 					}
+	 					}
+	 					if (isAplazado) {
+	 						if (res[18] != null) {
+		 						registroNotaDTO.setNotaAbreviada( res[18].toString());
+		 					}
+		 					if (res[19] != null) {
+		 						registroNotaDTO.setNotaLetra(res[19].toString());
+		 					}
+	 					} else {
+		 					if (res[5] != null) {
+		 						registroNotaDTO.setNotaAbreviada( res[5].toString());
+		 					}
+		 					if (res[6] != null) {
+		 						registroNotaDTO.setNotaLetra(res[6].toString());
+		 					}
+	 					}
+	 					if (res[7] != null) {
+	 						registroNotaDTO.setTurno(res[7].toString());
+	 					}
+	 					if (StringUtils.isNotNullOrBlank(res[8])) {
+	 						registroNotaDTO.setObservacion(res[8].toString());
+	 					} else {
+	 						if (registroNotaDTO.getPonderadoCurso() != null) {
+	 							if (isAplazado) {
+	 								registroNotaDTO.setEsAplazado(true);
+	 								//registroNotaDTO.setObservacion(ConstantesNota.APLAZADO);
+	 								registroNotaDTO.setObservacion(ConstantesNota.DESAPROBADO);
+		 							if (registroNotaDTO.getPonderadoCurso().doubleValue() >= ConstantesNota.NOTA_MININA) {
+		 								registroNotaDTO.setObservacion(ConstantesNota.APROBADO);
+		 							}
+	 							 } else {
+		 							registroNotaDTO.setObservacion(ConstantesNota.DESAPROBADO);
+		 							if (registroNotaDTO.getPonderadoCurso().doubleValue() >= ConstantesNota.NOTA_MININA) {
+		 								registroNotaDTO.setObservacion(ConstantesNota.APROBADO);
+		 							}
+	 							}
+	 						}
+	 					}
+	 					AnhoSemestreDTO anhoSemestre = new AnhoSemestreDTO();
+	 					if (res[9] != null) {
+	 						anhoSemestre.setFechaInicio((Date)res[9]);
+	 					}
+	 					if (res[10] != null) {
+	 						anhoSemestre.setFechaCierre((Date)res[10]);
+	 					}
+	 					if (res[11] != null) {
+	 						registroNotaDTO.setIdCiclo(Long.valueOf(res[11].toString()));
+	 					}
+	 					if (res[12] != null) {
+	 						anhoSemestre.setIdAnhoSemestre(res[12].toString());
+	 					}
+	 					
+	 					if (res[13] != null) {
+	 						registroNotaDTO.setUsuarioCreacion(res[13].toString());
+	 					}
+	 					if (res[14] != null) {
+	 						registroNotaDTO.setUsuarioModificacion(res[14].toString());
+	 					}
+	 					if (res[15] != null) {
+	 						registroNotaDTO.setFechaCreacion((Date)res[15]);
+	 					}
+	 					if (res[16] != null) {
+	 						registroNotaDTO.setFechaModificacion((Date)res[16]);
+	 					}
+	 					registroNotaDTO.setAnhoSemestre(anhoSemestre);
+	 					resultado.add(registroNotaDTO);
+	 				}
+	 			}
+	 	  } catch (Exception e) {
+	 			log.error(e);
+	 		}
+	 	  return resultado;
+	   }
+	
+	/**
+	    * Generar query reporte nota.
+	    *
+	    * @param listaIdSemestre el lista id semestre
+	    * @param listaIdCiclo el lista id ciclo
+	    * @param esCertificadoEstudio el es certificado estudio
+	    * @return the string
+	    */
+	   private StringBuilder generarQueryReporteNota(List<String> listaIdSemestre, List<Long> listaIdCiclo,boolean esCertificadoEstudio) {
+	 	  StringBuilder jpaql = new StringBuilder();
+	 		jpaql.append(" SELECT   DetPlanEstudio.codigoAsignatura as CodigoAsignatura , DetPlanEstudio.descripcionCurso as NomCurso,DetPlanEstudio.credito as Credito,Ciclo.nombre as NomCiclo, DetRegistroNota.ponderadoCurso as PC, NotaLetra.abreviatura as AbrNotaLetra, NotaLetra.descripcion as NomNotaLetra, ItemTurno.nombre AS Turno, '' as Obervacion ");
+	 		jpaql.append(" , AnhoSemestre.fechaInicio, AnhoSemestre.fechaCierre ,DetPlanEstudio.idCiclo,(AnhoSemestre.idAnhoSemestre  ");
+	 		jpaql.append(Utilidades.obtenerContatenar());
+	 		jpaql.append("  ) as idSemestre ");
+	 		jpaql.append(" , DetRegistroNota.usuarioCreacion,DetRegistroNota.usuarioModificacion,DetRegistroNota.fechaCreacion,DetRegistroNota.fechaModificacion ");
+	 		jpaql.append(", DetRegistroNota.notaAplazado,NotaLetraA.abreviatura as AbrNotaLetraA, NotaLetraA.descripcion as NomNotaLetraA");
+	 		jpaql.append(" FROM dbo.DetRegistroNota DetRegistroNota INNER JOIN ");
+	 		jpaql.append(" dbo.NotaLetra NotaLetra on DetRegistroNota.ponderadoCurso= NotaLetra.idNotaLetra  left join ");
+	 		
+	 		jpaql.append(" dbo.NotaLetra NotaLetraA on DetRegistroNota.notaAplazado= NotaLetraA.idNotaLetra  inner join ");
+	 		
+	 		jpaql.append(" dbo.DetMatricula DetMatricula ON DetRegistroNota.idDetMatricula = DetMatricula.idDetMatricula INNER JOIN ");
+	 		jpaql.append(" dbo.Matricula Matricula ON DetMatricula.idMatricula = Matricula.idMatricula INNER JOIN ");
+	 		if (esCertificadoEstudio) {
+	 			jpaql.append(" dbo.Alumno Alumno ON Matricula.idAlumno = Alumno.idAlumno INNER JOIN ");
+	 		}
+	 		jpaql.append(" dbo.AnhoSemestre AnhoSemestre ON Matricula.idAnhoSemestre = AnhoSemestre.idAnhoSemestre INNER JOIN ");
+	 		jpaql.append(" dbo.RegistroNota RegistroNota on RegistroNota.idMatricula= Matricula.idMatricula INNER JOIN ");
+	 		jpaql.append(" dbo.DetCargaLectiva DetCargaLectiva ON DetMatricula.idDetCargaLectiva = DetCargaLectiva.idDetCargaLectiva LEFT JOIN ");
+	 		jpaql.append(" commo.Item ItemTurno ON DetCargaLectiva.idTurno = ItemTurno.idItem INNER JOIN ");
+	 		jpaql.append(" dbo.DetPlanEstudio DetPlanEstudio ON DetCargaLectiva.idDetPlanEstudio = DetPlanEstudio.idDetPlanEstudio INNER JOIN ");
+	 		if (esCertificadoEstudio) {
+	 			jpaql.append(" dbo.PlanEstudio PlanEstudio ON DetPlanEstudio.idPlanEstudio = PlanEstudio.idPlanEstudio INNER JOIN ");
+	 		}
+	 		jpaql.append(" commo.Item Ciclo on DetPlanEstudio.idCiclo=Ciclo.idItem ");
+	 		jpaql.append(" where Matricula.idAlumno=:idAlumno  ");
+	 		if (listaIdSemestre != null && listaIdSemestre.size() > 0) {
+	 			jpaql.append(" and Matricula.idAnhoSemestre in (:listaIdSemestre) ");
+	 		}
+	 		if (listaIdCiclo != null && listaIdCiclo.size() > 0 ) {
+	 			jpaql.append(" AND ( DetPlanEstudio.idCiclo in (:listaIdCiclo)) ");
+	 		}
+	 		if (esCertificadoEstudio) {
+	 			jpaql.append(" AND (  (DetRegistroNota.ponderadoCurso >= :notaMinima) or (DetRegistroNota.notaAplazado >= :notaMinima)) ");
+	 			jpaql.append(" AND (  PlanEstudio.idEscuela=Alumno.idEscuela ) ");
+	 		}
+	 		jpaql.append(" union ");
+	 		jpaql.append(" SELECT     DetPlanEstudio.codigoAsignatura as CodigoAsignatura, DetPlanEstudio.descripcionCurso as NomCurso, DetPlanEstudio.credito as Credito, Ciclo.nombre as NomCiclo, DetTraslado.nota as Nota, NotaLetra.abreviatura as AbrNotaLetra,NotaLetra.descripcion as NomNotaLetra,'-'as turno, ");
+	 		jpaql.append(" 'CONVALIDADO' as Obervacion ");
+	 		jpaql.append(" , AnhoSemestre.fechaInicio, AnhoSemestre.fechaCierre, DetPlanEstudio.idCiclo,(AnhoSemestre.idAnhoSemestre ");
+	 		jpaql.append(Utilidades.obtenerContatenar());
+	 		jpaql.append("  ) as idSemestre ");
+	 		jpaql.append(" , Traslado.usuarioCreacion,Traslado.usuarioModificacion,Traslado.fechaCreacion,Traslado.fechaModificacion ");
+	 		jpaql.append(", null,'', '' ");
+	 		jpaql.append(" FROM  dbo.DetTraslado DetTraslado INNER JOIN ");
+	 		jpaql.append(" dbo.Traslado Traslado ON DetTraslado.idTraslado = Traslado.idTraslado INNER JOIN ");
+	 		if (esCertificadoEstudio) {
+	 			jpaql.append(" dbo.Alumno Alumno ON Traslado.idAlumno = Alumno.idAlumno INNER JOIN ");
+	 		}
+	 		jpaql.append(" dbo.AnhoSemestre  AnhoSemestre  ON Traslado.idAnhoSemestre = AnhoSemestre.idAnhoSemestre INNER JOIN ");
+	 		
+	 		jpaql.append(" dbo.DetPlanEstudio DetPlanEstudio ON DetTraslado.idDetPlanEstudio = DetPlanEstudio.idDetPlanEstudio INNER JOIN ");
+	 		if (esCertificadoEstudio) {
+	 			jpaql.append(" dbo.PlanEstudio PlanEstudio ON DetPlanEstudio.idPlanEstudio = PlanEstudio.idPlanEstudio INNER JOIN ");
+	 		}
+	 		jpaql.append(" commo.Item Ciclo ON DetPlanEstudio.idCiclo = Ciclo.idItem inner join ");
+	 		jpaql.append(" dbo.NotaLetra NotaLetra on DetTraslado.nota=NotaLetra.idNotaLetra ");
+	 		jpaql.append(" WHERE ( Traslado.idAlumno=:idAlumno)  ");
+	 		if (listaIdSemestre != null && listaIdSemestre.size() > 0) {
+	 			jpaql.append(" AND ( Traslado.idAnhoSemestre in (:listaIdSemestre)) ");
+	 		}
+	 		if (listaIdCiclo != null && listaIdCiclo.size() > 0 ) {
+	 			jpaql.append(" AND ( DetPlanEstudio.idCiclo in (:listaIdCiclo)) ");
+	 		}
+	 		if (esCertificadoEstudio) {
+	 			jpaql.append(" AND (  DetTraslado.nota  >= :notaMinima) ");
+	 			jpaql.append(" AND (  PlanEstudio.idEscuela=Alumno.idEscuela ) ");
+	 		}
+	 		jpaql.append(" order by idCiclo,NomCurso ");
+	 		return jpaql;
+	   }
+	   
+	@Override
+	   public int obtenerCreditosAcomulado(String idAlumno,String idEscuela) throws Exception {
+		   int resultado = 0;
+		   StringBuilder jpaql = new StringBuilder();
+		   jpaql.append("SELECT   sum(DetMatricula.credito) ");
+		   jpaql.append(" FROM dbo.DetRegistroNota DetRegistroNota, ");
+		   jpaql.append(" dbo.DetMatricula DetMatricula, ");
+		   jpaql.append(" dbo.Matricula Matricula, ");
+		   jpaql.append(" dbo.DetCargaLectiva DetCargaLectiva , dbo.CargaLectiva CargaLectiva ");
+		   jpaql.append(" where DetRegistroNota.idDetMatricula = DetMatricula.idDetMatricula ");
+		   jpaql.append(" and DetMatricula.idMatricula = Matricula.idMatricula");
+		   jpaql.append(" and DetMatricula.idDetCargaLectiva = DetCargaLectiva.idDetCargaLectiva ");
+		   jpaql.append(" and DetCargaLectiva.idCargaLectiva = CargaLectiva.idCargaLectiva ");
+		   jpaql.append(" and Matricula.idAlumno=:idAlumno and (DetRegistroNota.ponderadoCurso >= :notaMinima or DetRegistroNota.notaAplazado >= :notaMinima ) ");
+		   jpaql.append(" and CargaLectiva.idEscuela = :idEscuela ");
+		   jpaql.append(" union ");
+		   jpaql.append(" SELECT      sum(DetTraslado.credito) ");
+		   jpaql.append(" FROM  dbo.DetTraslado DetTraslado, ");
+		   jpaql.append(" dbo.Traslado Traslado , dbo.DetPlanEstudio DetPlanEstudio, dbo.PlanEstudio PlanEstudio ");
+		   jpaql.append(" WHERE DetTraslado.idTraslado = Traslado.idTraslado ");
+		   jpaql.append(" and  DetTraslado.idDetPlanEstudio = DetPlanEstudio.idDetPlanEstudio");
+		   jpaql.append("  and DetPlanEstudio.idPlanEstudio = PlanEstudio.idPlanEstudio ");
+		   jpaql.append(" and ( Traslado.idAlumno=:idAlumno) and (DetTraslado.nota >= :notaMinima)  ");
+		   jpaql.append(" and PlanEstudio.idEscuela = :idEscuela  ");
+		   Query query = createNativeQuery(jpaql.toString(),null);
+		   query.setParameter("idAlumno", idAlumno);
+		   query.setParameter("notaMinima", ConstantesNota.NOTA_MININA);
+		   query.setParameter("idEscuela", idEscuela);
+			List<Object> listaDetRegistroNota = query.getResultList();
+			for (Object detRegistroNota : listaDetRegistroNota) {
+				if (detRegistroNota != null) {
+					String creditoAcomulado = detRegistroNota + "";
+					if (creditoAcomulado != null && !creditoAcomulado.equals("")) {
+						resultado = resultado +  Integer.parseInt(creditoAcomulado);
+					}
+				}
+			} 
+		return resultado;
+	   }
+	
+	@Override
+	public ResultadoNotaDTO obtenerCursoNotaMap(String idAlumno) throws Exception {
+		   Map<String, Object> parametros = new HashMap<String, Object>();
+		   ResultadoNotaDTO resultado = new ResultadoNotaDTO();
+		   Map<String, BigDecimal> resultadoNotaMap = new HashMap<String, BigDecimal>();
+		   Map<String, Integer> resultadoNumeroVecesLevoCursoMap = new HashMap<String, Integer>();
+		   StringBuilder jpaql = new StringBuilder();
+		   jpaql.append(" SELECT   (DetCargaLectiva.idDetPlanEstudio ");
+		   jpaql.append(Utilidades.obtenerContatenar());
+		   jpaql.append("  ) as idDetPlanEstudio ,DetRegistroNota.ponderadoCurso,DetRegistroNota.notaAplazado");
+		   jpaql.append(" FROM dbo.DetRegistroNota DetRegistroNota, ");
+		   jpaql.append(" dbo.DetMatricula DetMatricula, ");
+		   jpaql.append(" dbo.Matricula Matricula, ");
+		   jpaql.append(" dbo.DetCargaLectiva DetCargaLectiva ");
+		   jpaql.append(" where DetRegistroNota.idDetMatricula = DetMatricula.idDetMatricula ");
+		   jpaql.append(" and DetMatricula.idMatricula = Matricula.idMatricula");
+		   jpaql.append(" and DetMatricula.idDetCargaLectiva = DetCargaLectiva.idDetCargaLectiva");
+		   jpaql.append(" and Matricula.idAlumno=:idAlumno");
+		   jpaql.append(" union ");
+		   jpaql.append(" SELECT     (DetTraslado.idDetPlanEstudio ");
+		   jpaql.append(Utilidades.obtenerContatenar());
+		   jpaql.append("  ) as idDetPlanEstudio , DetTraslado.nota, 0");
+		   jpaql.append(" FROM  dbo.DetTraslado DetTraslado, ");
+		   jpaql.append(" dbo.Traslado Traslado ");
+		   jpaql.append(" WHERE DetTraslado.idTraslado = Traslado.idTraslado ");
+		   jpaql.append(" and ( Traslado.idAlumno=:idAlumno)");
+		   parametros.put("idAlumno", idAlumno);
+		   Query query = createNativeQuery(jpaql.toString(),parametros);
+			List<Object[]> listaDetRegistroNota = query.getResultList();
+			for (Object[] detRegistroNota : listaDetRegistroNota) {
+				String id = (String) detRegistroNota[0];
+				BigDecimal nota = new BigDecimal(detRegistroNota[1].toString());
+				if (detRegistroNota[2] != null) {
+					BigDecimal notaAplazado = new BigDecimal(detRegistroNota[2].toString());
+					if (notaAplazado.doubleValue() > 0) {
+						nota = notaAplazado;
+					}
+				}
+				if (!resultadoNotaMap.containsKey(id)) {
+					resultadoNotaMap.put(id, nota);
+					//contando
+					resultadoNumeroVecesLevoCursoMap.put(id, 1);
+				} else {
+					BigDecimal notaAntes = resultadoNotaMap.get(id);
+					BigDecimal notaActual = nota;
+					if (notaAntes.doubleValue() < notaActual.doubleValue() ) {
+						resultadoNotaMap.put(id, notaActual);
+					}
+					//contando
+					Integer contador = resultadoNumeroVecesLevoCursoMap.get(id);
+					contador++;
+					resultadoNumeroVecesLevoCursoMap.put(id, contador);
+				}
+			}
+			resultado.setCursoNotaMap(resultadoNotaMap);
+			resultado.setNumeroVecesLevoCursoMap(resultadoNumeroVecesLevoCursoMap);
+		   return resultado;
+	}
+	 
+	
+	@Override
+	public List<DetRegistroNotaDTO> obtenerNotaAlumnoMariculadoByCurso(String idDetCargaLectiva, String idAlumno, Boolean esActaEvaluacionFinalAplazado) throws Exception {
+		Map<String, Object> parametros = new HashMap<String, Object>();
+		List<DetRegistroNotaDTO> resultado = new ArrayList<DetRegistroNotaDTO>();
+		boolean ejecutarQuery = false;
+		StringBuilder jpaql = new StringBuilder();
+		jpaql.append("select drn.idDetRegistroNota,drn.registroNota.idRegistroNota, drn.detMatricula.idDetMatricula ");
+		jpaql.append(", drn.notaLetra.idNotaLetra, drn.detMatricula.matricula.alumno.codigoCarnet ");
+		jpaql.append(", drn.detMatricula.matricula.alumno.postulante.persona.nombre ");
+		jpaql.append(", drn.detMatricula.matricula.alumno.postulante.persona.apellidoPaterno ");
+		jpaql.append(", drn.detMatricula.matricula.alumno.postulante.persona.apellidoMaterno ");
+		jpaql.append(", drn.detMatricula.matricula.idMatricula,drn.notaLetraByNotaAplazado.idNotaLetra ");
+		
+		jpaql.append(", drn.notaLetra.abreviatura, drn.notaLetra.descripcion ");
+	
+		jpaql.append(", drn.notaLetraByNotaAplazado.abreviatura, drn.notaLetraByNotaAplazado.descripcion ");
+		jpaql.append(",drn.fechaCreacion, drn.fechaModificacion,drn.fechaNotaAplazado,drn.usuarioCreacion,drn.usuarioModificacion");
+		
+		//jpaql.append("  from DetRegistroNota drn where 1= 1 ");
+		jpaql.append("  from DetRegistroNota drn left join  drn.notaLetraByNotaAplazado   where 1 = 1 ");
+		if (StringUtils.isNotNullOrBlank(idDetCargaLectiva)) {
+			ejecutarQuery = true;
+			jpaql.append(" and drn.detMatricula.detCargaLectiva.idDetCargaLectiva=:idDetCargaLectiva ");
+			parametros.put("idDetCargaLectiva", idDetCargaLectiva);
+		}
+		if (idAlumno != null) {
+			if (StringUtils.isNotNullOrBlank(idAlumno)) {
+				ejecutarQuery = true;
+				jpaql.append(" and drn.detMatricula.matricula.alumno.idAlumno =:idAlumno  ");
+				parametros.put("idAlumno", idAlumno);
+			}
+		}
+		if (StringUtils.isNotNullOrBlank(esActaEvaluacionFinalAplazado)) {
+			if (esActaEvaluacionFinalAplazado) {
+				ejecutarQuery = true;
+				jpaql.append(" and drn.notaLetraByNotaAplazado.idNotaLetra > 0");
+			}
+		}
+		jpaql.append(" order by drn.detMatricula.matricula.alumno.postulante.persona.apellidoPaterno,drn.detMatricula.matricula.alumno.postulante.persona.apellidoMaterno,drn.detMatricula.matricula.alumno.postulante.persona.nombre ");
+		if (ejecutarQuery) {		
+			Query query = createQuery(jpaql.toString(), parametros);
+			List<Object[]> lisObject =  query.getResultList();
+			for (Object[] objects : lisObject) {
+				DetRegistroNotaDTO detRegistroNota = new  DetRegistroNotaDTO();
+				detRegistroNota.setIdDetRegistroNota(objects[0].toString());
+				detRegistroNota.setRegistroNota(new RegistroNotaDTO());
+				detRegistroNota.getRegistroNota().setIdRegistroNota(objects[1].toString());
+				detRegistroNota.setDetMatricula(new DetMatriculaDTO(objects[2].toString()));
+				detRegistroNota.setNotaLetra(new NotaLetraDTO(new BigDecimal(objects[3].toString())));
+				
+				detRegistroNota.getNotaLetra().setAbreviatura(objects[10].toString());
+				detRegistroNota.getNotaLetra().setDescripcion(objects[11].toString());
+				
+				detRegistroNota.getDetMatricula().setMatricula(new MatriculaDTO(objects[8].toString()));
+				detRegistroNota.getDetMatricula().getMatricula().setAlumno(new AlumnoDTO());
+				detRegistroNota.getDetMatricula().getMatricula().getAlumno().setCodigoCarnet(objects[4].toString());
+				detRegistroNota.getDetMatricula().getMatricula().getAlumno().setPostulante(new PostulanteDTO());
+				detRegistroNota.getDetMatricula().getMatricula().getAlumno().getPostulante().setPersona(new PersonaDTO());
+				detRegistroNota.getDetMatricula().getMatricula().getAlumno().getPostulante().getPersona().setNombre(objects[5].toString());
+				detRegistroNota.getDetMatricula().getMatricula().getAlumno().getPostulante().getPersona().setApellidoPaterno(objects[6].toString());
+				detRegistroNota.getDetMatricula().getMatricula().getAlumno().getPostulante().getPersona().setApellidoMaterno(objects[7].toString());
+				if (objects[9] != null) {
+					detRegistroNota.setNotaLetraByNotaAplazado(new NotaLetraDTO(new BigDecimal(objects[9].toString())));
+					detRegistroNota.getNotaLetraByNotaAplazado().setAbreviatura(objects[12].toString());
+					detRegistroNota.getNotaLetraByNotaAplazado().setDescripcion(objects[13].toString());
+				} else {
+					detRegistroNota.setNotaLetraByNotaAplazado(new NotaLetraDTO());
+				}
+				if (esActaEvaluacionFinalAplazado) {
+					//detRegistroNota.setObservacion(ConstantesNota.APLAZADO);
+					if (detRegistroNota.getNotaLetraByNotaAplazado().getIdNotaLetra() != null) {
+						detRegistroNota.setEsAplazado(true);
+						detRegistroNota.setObservacion(ConstantesNota.DESAPROBADO);
+						if (detRegistroNota.getNotaLetraByNotaAplazado().getIdNotaLetra().doubleValue() >= ConstantesNota.NOTA_MININA) {
+								detRegistroNota.setObservacion(ConstantesNota.APROBADO);
+					     }
+					}
+				} else {
+					if (detRegistroNota.getNotaLetra().getIdNotaLetra() != null) {
+						detRegistroNota.setObservacion(ConstantesNota.DESAPROBADO);
+						if (detRegistroNota.getNotaLetra().getIdNotaLetra().doubleValue() >= ConstantesNota.NOTA_MININA) {
+							detRegistroNota.setObservacion(ConstantesNota.APROBADO);
+						}
+					}
+				}
+				
+				//Auditoria
+				detRegistroNota.setFechaCreacion((Date)objects[14]);
+				detRegistroNota.setFechaModificacion((Date)objects[15]);
+				detRegistroNota.setFechaNotaAplazado((Date)objects[16]);
+				detRegistroNota.setUsuarioCreacion((String)objects[17]);
+				detRegistroNota.setUsuarioModificacion((String)objects[18]);
+				
+				resultado.add(detRegistroNota);
+			}
+		} 
+		return resultado;
+	}
+	
+	 @Override	 
+	 public List<DetRegistroNota> listarDetRegistroNota(String idRegistroNota) {
+	    	Map<String, Object> parametros = new HashMap<String, Object>();
+			boolean ejecutarQuery = false;
+			StringBuilder jpaql = new StringBuilder();
+			jpaql.append("from DetRegistroNota drn where 1 = 1 ");
+			
+			if (StringUtils.isNotNullOrBlank(idRegistroNota)) {
+				ejecutarQuery = true;
+				jpaql.append(" and drn.registroNota.idRegistroNota =:idRegistroNota  ");
+				parametros.put("idRegistroNota", idRegistroNota);
+			}
+			if (ejecutarQuery) {		
+				Query query = createQuery(jpaql.toString(), parametros);
+				return query.getResultList();
+			} 
+			return null;
+	    }   
+	   
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.DetRegistroNotaDaoLocal#listarDetRegistroNota(pe.com.edu.siaa.core.model.jpa.seguridad.DetRegistroNota)
+     */  
+    @Override	 
+    public List<DetRegistroNota> listarDetRegistroNota(DetRegistroNotaDTO detRegistroNota) {
+        Query query = generarQueryListaDetRegistroNota(detRegistroNota, false);
+        query.setFirstResult(detRegistroNota.getStartRow());
+        query.setMaxResults(detRegistroNota.getOffset());
+        return query.getResultList();
+    }   
+   
+    /**
+     * Generar query lista DetRegistroNota.
+     *
+     * @param DetRegistroNotaDTO el detRegistroNota
+     * @param esContador el es contador
+     * @return the query
+     */
+    private Query generarQueryListaDetRegistroNota(DetRegistroNotaDTO detRegistroNota, boolean esContador) {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        if (esContador) {
+            jpaql.append(" select count(o.idDetRegistronota) from DetRegistroNota o where 1=1 ");
+        } else {
+            jpaql.append(" select o from DetRegistroNota o where 1=1 ");           
+        }
+		if (!StringUtils.isNullOrEmpty(detRegistroNota.getSearch())) {
+	          jpaql.append(" and upper(o.idDetRegistronota) like :search ");
+	          parametros.put("search", "%" + detRegistroNota.getSearch().toUpperCase() + "%");
+	    } else {
+			if (!StringUtils.isNullOrEmpty(detRegistroNota.getFechaCreacion())) {
+				jpaql.append(" and o.fechaCreacion = :fechaCreacion ");
+				parametros.put("fechaCreacion", detRegistroNota.getFechaCreacion());
+			}
+			if (!StringUtils.isNullOrEmpty(detRegistroNota.getFechaModificacion())) {
+				jpaql.append(" and o.fechaModificacion = :fechaModificacion ");
+				parametros.put("fechaModificacion", detRegistroNota.getFechaModificacion());
+			}
+			if (!StringUtils.isNullOrEmpty(detRegistroNota.getFechaNotaAplazado())) {
+				jpaql.append(" and o.fechaNotaAplazado = :fechaNotaAplazado ");
+				parametros.put("fechaNotaAplazado", detRegistroNota.getFechaNotaAplazado());
+			}
+			if (!StringUtils.isNullOrEmpty(detRegistroNota.getUsuarioCreacion())) {
+				jpaql.append(" and upper(o.usuarioCreacion) like :usuarioCreacion ");
+				parametros.put("usuarioCreacion", "%" + detRegistroNota.getUsuarioCreacion().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(detRegistroNota.getUsuarioModificacion())) {
+				jpaql.append(" and upper(o.usuarioModificacion) like :usuarioModificacion ");
+				parametros.put("usuarioModificacion", "%" + detRegistroNota.getUsuarioModificacion().toUpperCase() + "%");
+			}
+		}
+        if (!esContador) {
+            //jpaql.append(" ORDER BY 1 ");
+        }
+        Query query = createQuery(jpaql.toString(), parametros);
+        return query;
+    }
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.DetRegistroNotaDaoLocal#contarListar{entity.getClassName()}(pe.com.edu.siaa.core.model.jpa.seguridad.DetRegistroNotaDTO)
+     */
+	@Override
+    public int contarListarDetRegistroNota(DetRegistroNotaDTO detRegistroNota) {
+        int resultado = 0;
+        try {
+            //StringBuilder jpaql = new StringBuilder();
+            Query query = generarQueryListaDetRegistroNota(detRegistroNota, true);
+            resultado = ((Long) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            resultado = 0;
+        }
+        return resultado;
+    }
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.DetRegistroNotaDaoLocal#generarIdDetRegistroNota()
+     */
+	 @Override
+    public String generarIdDetRegistroNota() {
+        String resultado = "1";
+        Query query = createQuery("select max(o.idDetRegistronota) from DetRegistroNota o", null);
+        List<Object> listLong =  query.getResultList();
+        if (listLong != null && listLong.size() > 0 && listLong.get(0) != null)  {
+            Long ultimoIdGenerado = Long.valueOf(listLong.get(0).toString());
+            if (!StringUtils.isNullOrEmpty(ultimoIdGenerado)) {
+                resultado = resultado + ultimoIdGenerado;
+            }
+        }
+        return resultado;
+    }
+   
+}

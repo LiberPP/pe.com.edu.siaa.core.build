@@ -1,0 +1,120 @@
+package pe.com.builderp.core.escalafon.ejb.service.rest.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.builderp.core.escalafon.ejb.service.local.EscalafonServiceLocal;
+import pe.com.builderp.core.escalafon.model.dto.FormacionProfesionalDTO;
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class FormacionProfesionalRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Sun Dec 31 00:35:59 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/formacionProfesionalRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class FormacionProfesionalRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient EscalafonServiceLocal escalafonServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<FormacionProfesionalDTO> crear(FormacionProfesionalDTO formacionProfesional) throws Exception {
+		return controladorAccion(formacionProfesional,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<FormacionProfesionalDTO> modificar(FormacionProfesionalDTO formacionProfesional) throws Exception {
+		return controladorAccion(formacionProfesional,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<FormacionProfesionalDTO> eliminar(@PathParam("id") String idFormacionProfesional) throws Exception {
+		FormacionProfesionalDTO formacionProfesional = new FormacionProfesionalDTO();
+		formacionProfesional.setIdFormacionProfesional(idFormacionProfesional);		
+		return controladorAccion(formacionProfesional,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<FormacionProfesionalDTO> controladorAccion(FormacionProfesionalDTO formacionProfesional, AccionType accionType){
+		ResultadoRestVO<FormacionProfesionalDTO> resultado = new ResultadoRestVO<FormacionProfesionalDTO>();
+		 try {
+    		resultado.setObjetoResultado(escalafonServiceLocal.controladorAccionFormacionProfesional(formacionProfesional,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<FormacionProfesionalDTO> finById(@PathParam("id") String idFormacionProfesional) throws Exception {
+		FormacionProfesionalDTO formacionProfesional = new FormacionProfesionalDTO();
+		formacionProfesional.setIdFormacionProfesional(idFormacionProfesional);
+		return controladorAccion(formacionProfesional,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<FormacionProfesionalDTO> listarFormacionProfesional(@Context UriInfo info){
+		ResultadoRestVO<FormacionProfesionalDTO> resultado = new ResultadoRestVO<FormacionProfesionalDTO>();
+		FormacionProfesionalDTO formacionProfesional = transferUriInfo(info);
+		 try {
+			resultado.setListaResultado(escalafonServiceLocal.listarFormacionProfesional(formacionProfesional));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<FormacionProfesionalDTO> contarFormacionProfesional(@Context UriInfo info){
+		ResultadoRestVO<FormacionProfesionalDTO> resultado = new ResultadoRestVO<FormacionProfesionalDTO>();
+		FormacionProfesionalDTO formacionProfesional = transferUriInfo(info);
+		 try {
+			 resultado.setContador(escalafonServiceLocal.contarListarFormacionProfesional(formacionProfesional));
+			 if (resultado.isData()) {
+				resultado.setListaResultado(escalafonServiceLocal.listarFormacionProfesional(formacionProfesional));
+			 }
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<FormacionProfesionalDTO> inicializarFormacionProfesional(@Context UriInfo info) throws Exception {
+	     FormacionProfesionalDTO formacionProfesional = transferUriInfo(info);
+		 ResultadoRestVO<FormacionProfesionalDTO> resultado = new ResultadoRestVO<FormacionProfesionalDTO>();
+		 try {
+    		resultado.setObjetoResultado(formacionProfesional);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private FormacionProfesionalDTO transferUriInfo(@Context UriInfo info) {
+		FormacionProfesionalDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,FormacionProfesionalDTO.class);
+		return resultado;
+	}
+}

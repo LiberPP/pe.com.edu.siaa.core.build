@@ -1,0 +1,112 @@
+package pe.com.edu.siaa.core.ejb.dao.matricula.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.persistence.Query;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericAcademicoDAOImpl;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.RegimenPensionarioDaoLocal;
+import pe.com.edu.siaa.core.model.dto.matricula.RegimenPensionarioDTO;
+import pe.com.edu.siaa.core.model.jpa.matricula.RegimenPensionario;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+
+/**
+ * La Class RegimenPensionarioDaoImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 19:53:32 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+public class RegimenPensionarioDaoImpl extends  GenericAcademicoDAOImpl<Integer, RegimenPensionario> implements RegimenPensionarioDaoLocal  {
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.RegimenPensionarioDaoLocal#listarRegimenPensionario(pe.com.edu.siaa.core.model.jpa.seguridad.RegimenPensionario)
+     */  
+    @Override	 
+    public List<RegimenPensionario> listarRegimenPensionario(RegimenPensionarioDTO regimenPensionario) {
+        Query query = generarQueryListaRegimenPensionario(regimenPensionario, false);
+        query.setFirstResult(regimenPensionario.getStartRow());
+        query.setMaxResults(regimenPensionario.getOffset());
+        return query.getResultList();
+    }   
+   
+    /**
+     * Generar query lista RegimenPensionario.
+     *
+     * @param RegimenPensionarioDTO el regimenPensionario
+     * @param esContador el es contador
+     * @return the query
+     */
+    private Query generarQueryListaRegimenPensionario(RegimenPensionarioDTO regimenPensionario, boolean esContador) {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        if (esContador) {
+            jpaql.append(" select count(o.idRegimenPensionario) from RegimenPensionario o where 1=1 ");
+        } else {
+            jpaql.append(" select o from RegimenPensionario o where 1=1 ");           
+        }
+		if (!StringUtils.isNullOrEmpty(regimenPensionario.getSearch())) {
+	          jpaql.append(" and upper(o.descripcion) like :search ");
+	          parametros.put("search", "%" + regimenPensionario.getSearch().toUpperCase() + "%");
+	    } else {
+			if (!StringUtils.isNullOrEmpty(regimenPensionario.getDescripcion())) {
+				jpaql.append(" and upper(o.descripcion) like :descripcion ");
+				parametros.put("descripcion", "%" + regimenPensionario.getDescripcion().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(regimenPensionario.getAbreviatura())) {
+				jpaql.append(" and upper(o.abreviatura) like :abreviatura ");
+				parametros.put("abreviatura", "%" + regimenPensionario.getAbreviatura().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(regimenPensionario.getTipo())) {
+				jpaql.append(" and upper(o.tipo) like :tipo ");
+				parametros.put("tipo", "%" + regimenPensionario.getTipo().toUpperCase() + "%");
+			}
+		}
+        if (!esContador) {
+            //jpaql.append(" ORDER BY 1 ");
+        }
+        Query query = createQuery(jpaql.toString(), parametros);
+        return query;
+    }
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.RegimenPensionarioDaoLocal#contarListar{entity.getClassName()}(pe.com.edu.siaa.core.model.jpa.seguridad.RegimenPensionarioDTO)
+     */
+	@Override
+    public int contarListarRegimenPensionario(RegimenPensionarioDTO regimenPensionario) {
+        int resultado = 0;
+        try {
+            //StringBuilder jpaql = new StringBuilder();
+            Query query = generarQueryListaRegimenPensionario(regimenPensionario, true);
+            resultado = ((Long) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            resultado = 0;
+        }
+        return resultado;
+    }
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.RegimenPensionarioDaoLocal#generarIdRegimenPensionario()
+     */
+	 @Override
+    public Integer generarIdRegimenPensionario() {
+        Integer resultado = 1;
+        Query query = createQuery("select max(o.idRegimenPensionario) from RegimenPensionario o", null);
+        List<Object> listLong =  query.getResultList();
+        if (listLong != null && listLong.size() > 0 && listLong.get(0) != null)  {
+            Long ultimoIdGenerado = Long.valueOf(listLong.get(0).toString());
+            if (!StringUtils.isNullOrEmpty(ultimoIdGenerado)) {
+                resultado = resultado + ultimoIdGenerado.intValue();
+            }
+        }
+        return resultado;
+    }
+   
+}

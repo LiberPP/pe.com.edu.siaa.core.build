@@ -1,0 +1,48 @@
+package pe.com.edu.siaa.core.ejb.dao.encuesta.local;
+
+import java.util.List;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.dto.encuesta.TemaDTO;
+import pe.com.edu.siaa.core.model.jpa.encuesta.Tema;
+
+/**
+ * La Class TemaDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Fri Sep 08 16:22:19 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface TemaDaoLocal  extends GenericDAOLocal<Long,Tema> {
+	/**
+	 * Listar tema.
+	 *
+	 * @param tema el temaDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<Tema> listarTema(TemaDTO tema) throws Exception;
+	
+	/**
+	 * contar lista tema.
+	 *
+	 * @param tema el tema
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarTema(TemaDTO tema);
+	/**
+	 * Generar id tema.
+	 *
+	 * @return the Long
+	 * @throws Exception the exception
+	 */
+	Long generarIdTema() throws Exception;
+}

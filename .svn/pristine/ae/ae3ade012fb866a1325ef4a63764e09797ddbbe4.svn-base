@@ -1,0 +1,198 @@
+package pe.com.edu.siaa.core.ejb.dao.matricula.impl;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.persistence.Query;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericAcademicoDAOImpl;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.DetMatriculaDaoLocal;
+import pe.com.edu.siaa.core.model.dto.matricula.DetMatriculaDTO;
+import pe.com.edu.siaa.core.model.jpa.matricula.DetMatricula;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+
+/**
+ * La Class DetMatriculaDaoImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 19:53:34 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+public class DetMatriculaDaoImpl extends  GenericAcademicoDAOImpl<String, DetMatricula> implements DetMatriculaDaoLocal  {
+
+	
+	@Override
+	public List<DetMatricula> obtenerDetalleMatricula(String idDetCargaLectiva,String idAlumno) throws Exception {
+		Map<String, Object> parametros = new HashMap<String, Object>();
+		boolean ejecutarQuery = false;
+		StringBuilder jpaql = new StringBuilder();
+		jpaql.append("from DetMatricula o left join fetch o.matricula mat left join fetch mat.alumno a left join fetch a.postulante pos left join fetch pos.persona per where 1 = 1 ");
+		if (StringUtils.isNotNullOrBlank(idDetCargaLectiva)) {
+			ejecutarQuery = true;
+			jpaql.append(" and o.detCargaLectiva.idDetCargaLectiva=:idDetCargaLectiva ");
+			parametros.put("idDetCargaLectiva", idDetCargaLectiva);
+			if (StringUtils.isNotNullOrBlank(idAlumno)) {
+				ejecutarQuery = true;
+				jpaql.append(" and a.idAlumno = :idAlumno ");
+				parametros.put("idAlumno", idAlumno);
+			}
+		}
+		jpaql.append(" order by o.matricula.alumno.codigoCarnet");
+		if (ejecutarQuery) {		
+			Query query = createQuery(jpaql.toString(), parametros);
+			return query.getResultList();
+		} 
+		return null;
+	}
+	
+	@Override
+	public List<String> listarDetMatriculaCurso(String idAlumno,String idAnhoSemestre) throws Exception {
+		Map<String, Object> parametros = new HashMap<String, Object>();
+		boolean ejecutarQuery = false;
+		StringBuilder jpaql = new StringBuilder();
+		jpaql.append("select dm.detCargaLectiva.idDetCargaLectiva from DetMatricula dm where 1 = 1 ");
+		if (idAlumno != null && idAnhoSemestre != null) {
+			if (idAlumno != null) {
+				if (StringUtils.isNotNullOrBlank(idAlumno)) {
+					ejecutarQuery = true;
+					jpaql.append(" and dm.matricula.alumno.idAlumno=:idAlumno ");
+					jpaql.append(" and dm.matricula.anhoSemestre.idAnhoSemestre=:idAnhoSemestre");
+					parametros.put("idAlumno", idAlumno);
+					parametros.put("idAnhoSemestre", idAnhoSemestre);
+				}
+			}
+		}
+		if (ejecutarQuery) {		
+			Query query = createQuery(jpaql.toString(), parametros);
+			return query.getResultList();
+		} 
+		return new ArrayList<String>();
+	}
+	
+	@Override
+	public List<DetMatricula> listarDetMatricula(String idMatricula) throws Exception {
+		Map<String, Object> parametros = new HashMap<String, Object>();
+		boolean ejecutarQuery = false;
+		StringBuilder jpaql = new StringBuilder();
+		jpaql.append("from DetMatricula dm left join fetch dm.detCargaLectiva dec left join fetch dec.detPlanEstudio dte  left join fetch dte.itemByCiclo left join fetch dec.itemByTurno where 1 = 1 ");
+		if (StringUtils.isNotNullOrBlank(idMatricula)) {
+			ejecutarQuery = true;
+			jpaql.append(" and dm.matricula.idMatricula=:idMatricula ");
+			parametros.put("idMatricula", idMatricula);
+		}
+		jpaql.append(" order by dm.detCargaLectiva.detPlanEstudio.descripcionCurso");
+		if (ejecutarQuery) {		
+			Query query = createQuery(jpaql.toString(), parametros);
+			return query.getResultList();
+		} 
+		return null;
+	}
+	
+	@Override
+	public String generarCodigoDetMatricula(String idMatricula) throws Exception {
+	       String resultado = idMatricula + "01";
+			Query query = createQuery("select max(dm.idDetMatricula) from DetMatricula dm where dm.matricula.idMatricula=:idMatricula",new HashMap<String,Object>());
+			query.setParameter("idMatricula", idMatricula);
+			List<String> listaCodigo = query.getResultList();
+			if (listaCodigo != null && listaCodigo.size() > 0) {
+			     String ultimoCodigoGenerado = listaCodigo.get(0);
+				 if (StringUtils.isNotNullOrBlank(ultimoCodigoGenerado)) {
+					 long ultimoCodigo = Long.parseLong(ultimoCodigoGenerado.trim());
+					 ultimoCodigo++;
+					 resultado = "" + ultimoCodigo;
+				}
+			 }
+			return resultado;
+	}
+			
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.DetMatriculaDaoLocal#listarDetMatricula(pe.com.edu.siaa.core.model.jpa.seguridad.DetMatricula)
+     */  
+    @Override	 
+    public List<DetMatricula> listarDetMatricula(DetMatriculaDTO detMatricula) {
+        Query query = generarQueryListaDetMatricula(detMatricula, false);
+        query.setFirstResult(detMatricula.getStartRow());
+        query.setMaxResults(detMatricula.getOffset());
+        return query.getResultList();
+    }   
+   
+    /**
+     * Generar query lista DetMatricula.
+     *
+     * @param DetMatriculaDTO el detMatricula
+     * @param esContador el es contador
+     * @return the query
+     */
+    private Query generarQueryListaDetMatricula(DetMatriculaDTO detMatricula, boolean esContador) {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        if (esContador) {
+            jpaql.append(" select count(o.idDetMatricula) from DetMatricula o where 1=1 ");
+        } else {
+            jpaql.append(" select o from DetMatricula o where 1=1 ");           
+        }
+		if (!StringUtils.isNullOrEmpty(detMatricula.getSearch())) {
+	          jpaql.append(" and upper(o.idDetMatricula) like :search ");
+	          parametros.put("search", "%" + detMatricula.getSearch().toUpperCase() + "%");
+	    } else {
+			if (!StringUtils.isNullOrEmpty(detMatricula.getDescripcionCurso())) {
+				jpaql.append(" and upper(o.descripcionCurso) like :descripcionCurso ");
+				parametros.put("descripcionCurso", "%" + detMatricula.getDescripcionCurso().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmptyNumeric(detMatricula.getCredito())) {
+				jpaql.append(" and o.credito = :credito ");
+				parametros.put("credito", detMatricula.getCredito());
+			}
+			if (!StringUtils.isNullOrEmpty(detMatricula.getEstado())) {
+				jpaql.append(" and upper(o.estado) like :estado ");
+				parametros.put("estado", "%" + detMatricula.getEstado().toUpperCase() + "%");
+			}
+		}
+        if (!esContador) {
+            //jpaql.append(" ORDER BY 1 ");
+        }
+        Query query = createQuery(jpaql.toString(), parametros);
+        return query;
+    }
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.DetMatriculaDaoLocal#contarListar{entity.getClassName()}(pe.com.edu.siaa.core.model.jpa.seguridad.DetMatriculaDTO)
+     */
+	@Override
+    public int contarListarDetMatricula(DetMatriculaDTO detMatricula) {
+        int resultado = 0;
+        try {
+            //StringBuilder jpaql = new StringBuilder();
+            Query query = generarQueryListaDetMatricula(detMatricula, true);
+            resultado = ((Long) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            resultado = 0;
+        }
+        return resultado;
+    }
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.DetMatriculaDaoLocal#generarIdDetMatricula()
+     */
+	 @Override
+    public String generarIdDetMatricula() {
+        String resultado = "1";
+        Query query = createQuery("select max(o.idDetMatricula) from DetMatricula o", null);
+        List<Object> listLong =  query.getResultList();
+        if (listLong != null && listLong.size() > 0 && listLong.get(0) != null)  {
+            Long ultimoIdGenerado = Long.valueOf(listLong.get(0).toString());
+            if (!StringUtils.isNullOrEmpty(ultimoIdGenerado)) {
+                resultado = resultado + ultimoIdGenerado;
+            }
+        }
+        return resultado;
+    }
+   
+}

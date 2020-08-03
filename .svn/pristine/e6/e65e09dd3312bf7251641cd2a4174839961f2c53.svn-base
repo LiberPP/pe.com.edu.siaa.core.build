@@ -1,0 +1,48 @@
+package pe.com.edu.siaa.core.ejb.dao.matricula.local;
+
+import java.util.List;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.dto.matricula.ConsejeroDTO;
+import pe.com.edu.siaa.core.model.jpa.matricula.Consejero;
+
+/**
+ * La Class ConsejeroDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 11:25:05 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface ConsejeroDaoLocal  extends GenericDAOLocal<String,Consejero> {
+	/**
+	 * Listar consejero.
+	 *
+	 * @param consejero el consejeroDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<Consejero> listarConsejero(ConsejeroDTO consejero) throws Exception;
+	
+	/**
+	 * contar lista consejero.
+	 *
+	 * @param consejero el consejero
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarConsejero(ConsejeroDTO consejero);
+	/**
+	 * Generar id consejero.
+	 *
+	 * @return the String
+	 * @throws Exception the exception
+	 */
+	String generarIdConsejero() throws Exception;
+}

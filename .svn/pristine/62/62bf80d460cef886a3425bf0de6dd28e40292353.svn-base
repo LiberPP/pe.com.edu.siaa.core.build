@@ -1,0 +1,120 @@
+package pe.com.edu.siaa.core.ejb.service.rest.pago.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.pago.local.PagoServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.pago.FraccionamientoDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class FraccionamientoRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:28 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/fraccionamientoRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class FraccionamientoRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient PagoServiceLocal pagoServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<FraccionamientoDTO> crear(FraccionamientoDTO fraccionamiento) throws Exception {
+		return controladorAccion(fraccionamiento,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<FraccionamientoDTO> modificar(FraccionamientoDTO fraccionamiento) throws Exception {
+		return controladorAccion(fraccionamiento,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<FraccionamientoDTO> eliminar(@PathParam("id") String idFraccionamiento) throws Exception {
+		FraccionamientoDTO fraccionamiento = new FraccionamientoDTO();
+		fraccionamiento.setIdFraccionamiento(idFraccionamiento);		
+		return controladorAccion(fraccionamiento,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<FraccionamientoDTO> controladorAccion(FraccionamientoDTO fraccionamiento, AccionType accionType){
+		ResultadoRestVO<FraccionamientoDTO> resultado = new ResultadoRestVO<FraccionamientoDTO>();
+		 try {
+    		//resultado.setObjetoResultado(pagoServiceLocal.registrarFraccionamiento(fraccionamiento,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<FraccionamientoDTO> finById(@PathParam("id") String idFraccionamiento) throws Exception {
+		FraccionamientoDTO fraccionamiento = new FraccionamientoDTO();
+		fraccionamiento.setIdFraccionamiento(idFraccionamiento);
+		return controladorAccion(fraccionamiento,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<FraccionamientoDTO> listarFraccionamiento(@Context UriInfo info){
+		ResultadoRestVO<FraccionamientoDTO> resultado = new ResultadoRestVO<FraccionamientoDTO>();
+		FraccionamientoDTO fraccionamiento = transferUriInfo(info);
+		 try {
+    		//resultado.setListaResultado(pagoServiceLocal.listarFraccionamiento(fraccionamiento));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<FraccionamientoDTO> contarListarFraccionamiento(@Context UriInfo info){
+		ResultadoRestVO<FraccionamientoDTO> resultado = new ResultadoRestVO<FraccionamientoDTO>();
+		FraccionamientoDTO fraccionamiento = transferUriInfo(info);
+		 try {
+    		//resultado.setContador(pagoServiceLocal.contarListarFraccionamiento(fraccionamiento));
+    		if (resultado.isData()) {
+    			//resultado.setListaResultado(pagoServiceLocal.listarFraccionamiento(fraccionamiento));
+    		}
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<FraccionamientoDTO> inicializarFraccionamiento(@Context UriInfo info) throws Exception {
+	     FraccionamientoDTO fraccionamiento = transferUriInfo(info);
+		 ResultadoRestVO<FraccionamientoDTO> resultado = new ResultadoRestVO<FraccionamientoDTO>();
+		 try {
+    		resultado.setObjetoResultado(fraccionamiento);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private FraccionamientoDTO transferUriInfo(@Context UriInfo info) {
+		FraccionamientoDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,FraccionamientoDTO.class);
+		return resultado;
+	}
+}

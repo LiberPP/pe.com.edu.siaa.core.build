@@ -1,0 +1,253 @@
+package pe.com.edu.siaa.core.model.jpa.matricula;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import pe.com.edu.siaa.core.model.jpa.nota.DetRegistroNota;
+import pe.com.edu.siaa.core.model.util.ConfiguracionEntityManagerUtil;
+
+/**
+ * La Class DetMatricula.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 09:56:48 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Entity
+@Table(name = "DetMatricula", schema = ConfiguracionEntityManagerUtil.ESQUEMA_ACADEMICO)
+public class DetMatricula implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id det matricula. */
+    @Id
+    @Column(name = "idDetMatricula" , length = 17)
+    private String idDetMatricula;
+   
+    /** El matricula. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idMatricula", referencedColumnName = "idMatricula")
+    private Matricula matricula;
+   
+    /** El det carga lectiva. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idDetCargaLectiva", referencedColumnName = "idDetCargaLectiva")
+    private DetCargaLectiva detCargaLectiva;
+   
+    /** El descripcion curso. */
+    @Column(name = "descripcionCurso" , length = 200)
+    private String descripcionCurso;
+   
+    /** El credito. */
+    @Column(name = "credito" , precision = 32 , scale = 0)
+    private Integer credito;
+   
+    /** El estado. */
+    @Column(name = "estado" , length = 1)
+    private String estado;
+   
+    /** El det matricula det registro nota list. */
+    @OneToMany(mappedBy = "detMatricula", fetch = FetchType.LAZY)
+    private List<DetRegistroNota> detMatriculaDetRegistroNotaList = new ArrayList<DetRegistroNota>();
+    
+    /**
+     * Instancia un nuevo det matricula.
+     */
+    public DetMatricula() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo det matricula.
+     *
+     * @param idDetMatricula el id det matricula
+     * @param matricula el matricula
+     * @param detCargaLectiva el det carga lectiva
+     * @param descripcionCurso el descripcion curso
+     * @param credito el credito
+     * @param estado el estado
+     */
+    public DetMatricula(String idDetMatricula, Matricula matricula,DetCargaLectiva detCargaLectiva,String descripcionCurso, Integer credito, String estado ) {
+        super();
+        this.idDetMatricula = idDetMatricula;
+        this.matricula = matricula;
+        this.detCargaLectiva = detCargaLectiva;
+        this.descripcionCurso = descripcionCurso;
+        this.credito = credito;
+        this.estado = estado;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id det matricula.
+     *
+     * @return id det matricula
+     */
+     public String getIdDetMatricula() {
+        return this.idDetMatricula;
+    }
+    /**
+     * Establece el id det matricula.
+     *
+     * @param idDetMatricula el new id det matricula
+     */
+    public void setIdDetMatricula(String idDetMatricula) {
+        this.idDetMatricula = idDetMatricula;
+    }
+    /**
+     * Obtiene matricula.
+     *
+     * @return matricula
+     */
+     public Matricula getMatricula() {
+        return this.matricula;
+    }
+    /**
+     * Establece el matricula.
+     *
+     * @param matricula el new matricula
+     */
+    public void setMatricula(Matricula matricula) {
+        this.matricula = matricula;
+    }
+    /**
+     * Obtiene det carga lectiva.
+     *
+     * @return det carga lectiva
+     */
+     public DetCargaLectiva getDetCargaLectiva() {
+        return this.detCargaLectiva;
+    }
+    /**
+     * Establece el det carga lectiva.
+     *
+     * @param detCargaLectiva el new det carga lectiva
+     */
+    public void setDetCargaLectiva(DetCargaLectiva detCargaLectiva) {
+        this.detCargaLectiva = detCargaLectiva;
+    }
+    /**
+     * Obtiene descripcion curso.
+     *
+     * @return descripcion curso
+     */
+     public String getDescripcionCurso() {
+        return this.descripcionCurso;
+    }
+    /**
+     * Establece el descripcion curso.
+     *
+     * @param descripcionCurso el new descripcion curso
+     */
+    public void setDescripcionCurso(String descripcionCurso) {
+        this.descripcionCurso = descripcionCurso;
+    }
+    /**
+     * Obtiene credito.
+     *
+     * @return credito
+     */
+     public Integer getCredito() {
+        return this.credito;
+    }
+    /**
+     * Establece el credito.
+     *
+     * @param credito el new credito
+     */
+    public void setCredito(Integer credito) {
+        this.credito = credito;
+    }
+    /**
+     * Obtiene estado.
+     *
+     * @return estado
+     */
+     public String getEstado() {
+        return this.estado;
+    }
+    /**
+     * Establece el estado.
+     *
+     * @param estado el new estado
+     */
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+    /**
+     * Establece el det matricula det registro nota list.
+     *
+     * @param detMatriculaDetRegistroNotaList el new det matricula det registro nota list
+     */
+    public List<DetRegistroNota> getDetMatriculaDetRegistroNotaList(){
+        return this.detMatriculaDetRegistroNotaList;
+    }
+    /**
+     * Establece el det matricula list.
+     *
+     * @param detMatriculaList el new det matricula list
+     */
+    public void setDetMatriculaDetRegistroNotaList(List<DetRegistroNota> detMatriculaDetRegistroNotaList) {
+        this.detMatriculaDetRegistroNotaList = detMatriculaDetRegistroNotaList;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idDetMatricula == null) ? 0 : idDetMatricula.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        DetMatricula other = (DetMatricula) obj;
+        if (idDetMatricula == null) {
+            if (other.idDetMatricula != null) {
+                return false;
+            }
+        } else if (!idDetMatricula.equals(other.idDetMatricula)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "DetMatricula [idDetMatricula=" + idDetMatricula + "]";
+    }
+   
+}

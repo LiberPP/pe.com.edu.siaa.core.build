@@ -1,0 +1,143 @@
+package pe.com.edu.siaa.core.ejb.service.rest.nota.impl;
+
+import java.util.Date;
+import java.util.List;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.seguridad.jwt.rsa.util.AppHTTPHeaderNames;
+import pe.com.edu.siaa.core.ejb.service.nota.local.NotaServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.ejb.util.cache.AppAuthenticator;
+import pe.com.edu.siaa.core.model.dto.nota.AsistenciaDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class AsistenciaRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:27 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+//TODO:Revisar todos los metodos que no se usan
+@Stateless
+@Path("/asistenciaRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class AsistenciaRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient NotaServiceLocal notaServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<AsistenciaDTO> registrarNota(@Context HttpHeaders httpHeaders,List<AsistenciaDTO> listaAsistencia) throws Exception {
+		ResultadoRestVO<AsistenciaDTO> resultado = new ResultadoRestVO<AsistenciaDTO>();
+		String serviceKey = httpHeaders.getHeaderString( AppHTTPHeaderNames.SERVICE_KEY );
+		String authToken = httpHeaders.getHeaderString( AppHTTPHeaderNames.AUTH_TOKEN );
+		String userName = AppAuthenticator.getInstance().getUserName(authToken);
+		notaServiceLocal.registrarAsistencia(listaAsistencia,userName);
+		return resultado;
+	}
+	@PUT
+	public ResultadoRestVO<AsistenciaDTO> modificar(AsistenciaDTO asistencia) throws Exception {
+		return controladorAccion(asistencia,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<AsistenciaDTO> eliminar(@PathParam("id") String idAsistencia) throws Exception {
+		AsistenciaDTO asistencia = new AsistenciaDTO();
+		asistencia.setIdAsistencia(idAsistencia);		
+		return controladorAccion(asistencia,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<AsistenciaDTO> controladorAccion(AsistenciaDTO asistencia, AccionType accionType){
+		ResultadoRestVO<AsistenciaDTO> resultado = new ResultadoRestVO<AsistenciaDTO>();
+		 try {
+    		resultado.setObjetoResultado(notaServiceLocal.controladorAccionAsistencia(asistencia,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<AsistenciaDTO> finById(@PathParam("id") String idAsistencia) throws Exception {
+		AsistenciaDTO asistencia = new AsistenciaDTO();
+		asistencia.setIdAsistencia(idAsistencia);
+		return controladorAccion(asistencia,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<AsistenciaDTO> listarAsistencia(@Context UriInfo info){
+		ResultadoRestVO<AsistenciaDTO> resultado = new ResultadoRestVO<AsistenciaDTO>();
+		AsistenciaDTO asistencia = transferUriInfo(info);
+		 try {
+    		resultado.setListaResultado(notaServiceLocal.listarAsistencia(asistencia));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/obtenerAsistencia/{idDetCargaLectiva}/{idAlumno}/{fechaHorario}")
+	public ResultadoRestVO<AsistenciaDTO> obtenerAsistencia(@Context HttpHeaders httpHeaders,@PathParam("idDetCargaLectiva") String idDetCargaLectiva,@PathParam("idAlumno") String idAlumno, @PathParam("fechaHorario") Date fechaHorario){
+		ResultadoRestVO<AsistenciaDTO> resultado = new ResultadoRestVO<AsistenciaDTO>();
+		 try {
+			 String serviceKey = httpHeaders.getHeaderString( AppHTTPHeaderNames.SERVICE_KEY );
+			 String authToken = httpHeaders.getHeaderString( AppHTTPHeaderNames.AUTH_TOKEN );
+			 String userName = AppAuthenticator.getInstance().getUserName(authToken);
+    		 resultado.setListaResultado(notaServiceLocal.obtenerAsistencia(idDetCargaLectiva,idAlumno,fechaHorario,userName));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<Integer> contarListarAsistencia(@Context UriInfo info){
+		ResultadoRestVO<Integer> resultado = new ResultadoRestVO<Integer>();
+		AsistenciaDTO asistencia = transferUriInfo(info);
+		 try {
+    		resultado.setObjetoResultado(notaServiceLocal.contarListarAsistencia(asistencia));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<AsistenciaDTO> inicializarAsistencia(@Context UriInfo info) throws Exception {
+	     AsistenciaDTO asistencia = transferUriInfo(info);
+		 ResultadoRestVO<AsistenciaDTO> resultado = new ResultadoRestVO<AsistenciaDTO>();
+		 try {
+    		resultado.setObjetoResultado(asistencia);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private AsistenciaDTO transferUriInfo(@Context UriInfo info) {
+		AsistenciaDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,AsistenciaDTO.class);
+		return resultado;
+	}
+}

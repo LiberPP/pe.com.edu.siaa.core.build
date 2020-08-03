@@ -1,0 +1,117 @@
+package pe.com.edu.siaa.core.ejb.service.rest.admision.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.admision.local.AdmisionServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.admision.CierreAnhoSemestreDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class CierreAnhoSemestreRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:27 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/cierreAnhoSemestreRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class CierreAnhoSemestreRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient AdmisionServiceLocal admisionServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<CierreAnhoSemestreDTO> crear(CierreAnhoSemestreDTO cierreAnhoSemestre) throws Exception {
+		return controladorAccion(cierreAnhoSemestre,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<CierreAnhoSemestreDTO> modificar(CierreAnhoSemestreDTO cierreAnhoSemestre) throws Exception {
+		return controladorAccion(cierreAnhoSemestre,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<CierreAnhoSemestreDTO> eliminar(@PathParam("id") String anhosemestre) throws Exception {
+		CierreAnhoSemestreDTO cierreAnhoSemestre = new CierreAnhoSemestreDTO();
+		cierreAnhoSemestre.setAnhosemestre(anhosemestre);		
+		return controladorAccion(cierreAnhoSemestre,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<CierreAnhoSemestreDTO> controladorAccion(CierreAnhoSemestreDTO cierreAnhoSemestre, AccionType accionType){
+		ResultadoRestVO<CierreAnhoSemestreDTO> resultado = new ResultadoRestVO<CierreAnhoSemestreDTO>();
+		 try {
+    		resultado.setObjetoResultado(admisionServiceLocal.controladorAccionCierreAnhoSemestre(cierreAnhoSemestre,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<CierreAnhoSemestreDTO> finById(@PathParam("id") String anhosemestre) throws Exception {
+		CierreAnhoSemestreDTO cierreAnhoSemestre = new CierreAnhoSemestreDTO();
+		cierreAnhoSemestre.setAnhosemestre(anhosemestre);
+		return controladorAccion(cierreAnhoSemestre,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<CierreAnhoSemestreDTO> listarCierreAnhoSemestre(@Context UriInfo info){
+		ResultadoRestVO<CierreAnhoSemestreDTO> resultado = new ResultadoRestVO<CierreAnhoSemestreDTO>();
+		CierreAnhoSemestreDTO cierreAnhoSemestre = transferUriInfo(info);
+		 try {
+    		resultado.setListaResultado(admisionServiceLocal.listarCierreAnhoSemestre(cierreAnhoSemestre));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<Integer> contarListarCierreAnhoSemestre(@Context UriInfo info){
+		ResultadoRestVO<Integer> resultado = new ResultadoRestVO<Integer>();
+		CierreAnhoSemestreDTO cierreAnhoSemestre = transferUriInfo(info);
+		 try {
+    		resultado.setObjetoResultado(admisionServiceLocal.contarListarCierreAnhoSemestre(cierreAnhoSemestre));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<CierreAnhoSemestreDTO> inicializarCierreAnhoSemestre(@Context UriInfo info) throws Exception {
+	     CierreAnhoSemestreDTO cierreAnhoSemestre = transferUriInfo(info);
+		 ResultadoRestVO<CierreAnhoSemestreDTO> resultado = new ResultadoRestVO<CierreAnhoSemestreDTO>();
+		 try {
+    		resultado.setObjetoResultado(cierreAnhoSemestre);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private CierreAnhoSemestreDTO transferUriInfo(@Context UriInfo info) {
+		CierreAnhoSemestreDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,CierreAnhoSemestreDTO.class);
+		return resultado;
+	}
+}

@@ -1,0 +1,48 @@
+package pe.com.builderp.core.escalafon.ejb.dao.local;
+
+import java.util.List;
+
+import javax.ejb.Local;
+
+import pe.com.builderp.core.escalafon.model.dto.ProyectoInvestigacionDTO;
+import pe.com.builderp.core.escalafon.model.jpa.ProyectoInvestigacion;
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+
+/**
+ * La Class ProyectoInvestigacionDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Sun Dec 31 00:35:59 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface ProyectoInvestigacionDaoLocal  extends GenericDAOLocal<String,ProyectoInvestigacion> {
+	/**
+	 * Listar proyecto investigacion.
+	 *
+	 * @param proyectoInvestigacion el proyecto investigacionDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<ProyectoInvestigacion> listarProyectoInvestigacion(ProyectoInvestigacionDTO proyectoInvestigacion) throws Exception;
+	
+	/**
+	 * contar lista proyecto investigacion.
+	 *
+	 * @param proyectoInvestigacion el proyecto investigacion
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarProyectoInvestigacion(ProyectoInvestigacionDTO proyectoInvestigacion);
+	/**
+	 * Generar id proyectoInvestigacion.
+	 *
+	 * @return the String
+	 * @throws Exception the exception
+	 */
+	String generarIdProyectoInvestigacion() throws Exception;
+}

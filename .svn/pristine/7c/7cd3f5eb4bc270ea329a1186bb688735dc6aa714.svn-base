@@ -1,0 +1,523 @@
+package pe.com.edu.siaa.core.model.jpa.admision;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import pe.com.edu.siaa.core.model.jpa.matricula.Alumno;
+import pe.com.edu.siaa.core.model.jpa.matricula.AperturaCierreMatricula;
+import pe.com.edu.siaa.core.model.jpa.matricula.CargaLectiva;
+import pe.com.edu.siaa.core.model.jpa.matricula.Matricula;
+import pe.com.edu.siaa.core.model.jpa.matricula.OrganoDirectivo;
+import pe.com.edu.siaa.core.model.jpa.matricula.Traslado;
+import pe.com.edu.siaa.core.model.jpa.pago.AlumnoConvenio;
+import pe.com.edu.siaa.core.model.jpa.pago.ControlPago;
+import pe.com.edu.siaa.core.model.jpa.pago.CuotaConcepto;
+import pe.com.edu.siaa.core.model.jpa.pago.PlanPagos;
+import pe.com.edu.siaa.core.model.util.ConfiguracionEntityManagerUtil;
+
+/**
+ * La Class AnhoSemestre.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 09:56:46 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Entity
+@Table(name = "AnhoSemestre", schema = ConfiguracionEntityManagerUtil.ESQUEMA_ACADEMICO)
+public class AnhoSemestre implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id anho semestre. */
+    @Id
+    @Column(name = "idAnhoSemestre" , length = 5)
+    private String idAnhoSemestre;
+   
+    /** El anho. */
+    @Column(name = "anho" , length = 50)
+    private String anho;
+   
+    /** El semestre. */
+    @Column(name = "semestre" , length = 1)
+    private String semestre;
+   
+    /** El fecha inicio. */
+    @Temporal( TemporalType.TIMESTAMP)
+    @Column(name = "fechaInicio")
+    private Date fechaInicio;
+   
+    /** El fecha cierre. */
+    @Temporal( TemporalType.TIMESTAMP)
+    @Column(name = "fechaCierre")
+    private Date fechaCierre;
+   
+    /** El estado. */
+    @Column(name = "estado" , length = 1)
+    private String estado;
+   
+    /** El anho semestre ingreso alumno list. */
+    @OneToMany(mappedBy = "anhoSemestreIngreso", fetch = FetchType.LAZY)
+    private List<Alumno> anhoSemestreIngresoAlumnoList = new ArrayList<Alumno>();
+    
+    /** El anho semestre egreso alumno list. */
+    @OneToMany(mappedBy = "anhoSemestreEgreso", fetch = FetchType.LAZY)
+    private List<Alumno> anhoSemestreEgresoAlumnoList = new ArrayList<Alumno>();
+    
+    /** El anho semestre alumno convenio list. */
+    @OneToMany(mappedBy = "anhoSemestre", fetch = FetchType.LAZY)
+    private List<AlumnoConvenio> anhoSemestreAlumnoConvenioList = new ArrayList<AlumnoConvenio>();
+    
+    /** El anho semestre apertura cierre matricula list. */
+    @OneToMany(mappedBy = "anhoSemestre", fetch = FetchType.LAZY)
+    private List<AperturaCierreMatricula> anhoSemestreAperturaCierreMatriculaList = new ArrayList<AperturaCierreMatricula>();
+    
+    /** El anho semestre carga lectiva list. */
+    @OneToMany(mappedBy = "anhoSemestre", fetch = FetchType.LAZY)
+    private List<CargaLectiva> anhoSemestreCargaLectivaList = new ArrayList<CargaLectiva>();
+    
+    /** El anhosemestre cierre anho semestre list. */
+    @OneToMany(mappedBy = "anhosemestre", fetch = FetchType.LAZY)
+    private List<CierreAnhoSemestre> anhosemestreCierreAnhoSemestreList = new ArrayList<CierreAnhoSemestre>();
+    
+    /** El anho semestre control pago list. */
+    @OneToMany(mappedBy = "anhoSemestre", fetch = FetchType.LAZY)
+    private List<ControlPago> anhoSemestreControlPagoList = new ArrayList<ControlPago>();
+    
+    /** El anho semestre cronograma list. */
+    @OneToMany(mappedBy = "anhoSemestre", fetch = FetchType.LAZY)
+    private List<Cronograma> anhoSemestreCronogramaList = new ArrayList<Cronograma>();
+    
+    /** El anho semestre cuota concepto list. */
+    @OneToMany(mappedBy = "anhoSemestre", fetch = FetchType.LAZY)
+    private List<CuotaConcepto> anhoSemestreCuotaConceptoList = new ArrayList<CuotaConcepto>();
+    
+    /** El anho semestre matricula list. */
+    @OneToMany(mappedBy = "anhoSemestre", fetch = FetchType.LAZY)
+    private List<Matricula> anhoSemestreMatriculaList = new ArrayList<Matricula>();
+    
+    /** El anho semestre organo directivo list. */
+    @OneToMany(mappedBy = "anhoSemestre", fetch = FetchType.LAZY)
+    private List<OrganoDirectivo> anhoSemestreOrganoDirectivoList = new ArrayList<OrganoDirectivo>();
+    
+    /** El anho semestre plan pagos list. */
+    @OneToMany(mappedBy = "anhoSemestre", fetch = FetchType.LAZY)
+    private List<PlanPagos> anhoSemestrePlanPagosList = new ArrayList<PlanPagos>();
+    
+    /** El anho semestre postulante list. */
+    @OneToMany(mappedBy = "anhoSemestre", fetch = FetchType.LAZY)
+    private List<Postulante> anhoSemestrePostulanteList = new ArrayList<Postulante>();
+    
+    /** El anho semestre traslado list. */
+    @OneToMany(mappedBy = "anhoSemestre", fetch = FetchType.LAZY)
+    private List<Traslado> anhoSemestreTrasladoList = new ArrayList<Traslado>();
+    
+    /**
+     * Instancia un nuevo anho semestre.
+     */
+    public AnhoSemestre() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo anho semestre.
+     *
+     * @param idAnhoSemestre el id anho semestre
+     * @param anho el anho
+     * @param semestre el semestre
+     * @param fechaInicio el fecha inicio
+     * @param fechaCierre el fecha cierre
+     * @param estado el estado
+     */
+    public AnhoSemestre(String idAnhoSemestre, String anho, String semestre, Date fechaInicio, Date fechaCierre, String estado ) {
+        super();
+        this.idAnhoSemestre = idAnhoSemestre;
+        this.anho = anho;
+        this.semestre = semestre;
+        this.fechaInicio = fechaInicio;
+        this.fechaCierre = fechaCierre;
+        this.estado = estado;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id anho semestre.
+     *
+     * @return id anho semestre
+     */
+     public String getIdAnhoSemestre() {
+        return this.idAnhoSemestre;
+    }
+    /**
+     * Establece el id anho semestre.
+     *
+     * @param idAnhoSemestre el new id anho semestre
+     */
+    public void setIdAnhoSemestre(String idAnhoSemestre) {
+        this.idAnhoSemestre = idAnhoSemestre;
+    }
+    /**
+     * Obtiene anho.
+     *
+     * @return anho
+     */
+     public String getAnho() {
+        return this.anho;
+    }
+    /**
+     * Establece el anho.
+     *
+     * @param anho el new anho
+     */
+    public void setAnho(String anho) {
+        this.anho = anho;
+    }
+    /**
+     * Obtiene semestre.
+     *
+     * @return semestre
+     */
+     public String getSemestre() {
+        return this.semestre;
+    }
+    /**
+     * Establece el semestre.
+     *
+     * @param semestre el new semestre
+     */
+    public void setSemestre(String semestre) {
+        this.semestre = semestre;
+    }
+    /**
+     * Obtiene fecha inicio.
+     *
+     * @return fecha inicio
+     */
+     public Date getFechaInicio() {
+        return this.fechaInicio;
+    }
+    /**
+     * Establece el fecha inicio.
+     *
+     * @param fechaInicio el new fecha inicio
+     */
+    public void setFechaInicio(Date fechaInicio) {
+        this.fechaInicio = fechaInicio;
+    }
+    /**
+     * Obtiene fecha cierre.
+     *
+     * @return fecha cierre
+     */
+     public Date getFechaCierre() {
+        return this.fechaCierre;
+    }
+    /**
+     * Establece el fecha cierre.
+     *
+     * @param fechaCierre el new fecha cierre
+     */
+    public void setFechaCierre(Date fechaCierre) {
+        this.fechaCierre = fechaCierre;
+    }
+    /**
+     * Obtiene estado.
+     *
+     * @return estado
+     */
+     public String getEstado() {
+        return this.estado;
+    }
+    /**
+     * Establece el estado.
+     *
+     * @param estado el new estado
+     */
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+    /**
+     * Establece el anho semestre ingreso alumno list.
+     *
+     * @param anhoSemestreIngresoAlumnoList el new anho semestre ingreso alumno list
+     */
+    public List<Alumno> getAnhoSemestreIngresoAlumnoList(){
+        return this.anhoSemestreIngresoAlumnoList;
+    }
+    /**
+     * Establece el anho semestre ingreso list.
+     *
+     * @param anhoSemestreIngresoList el new anho semestre ingreso list
+     */
+    public void setAnhoSemestreIngresoAlumnoList(List<Alumno> anhoSemestreIngresoAlumnoList) {
+        this.anhoSemestreIngresoAlumnoList = anhoSemestreIngresoAlumnoList;
+    }   
+    /**
+     * Establece el anho semestre egreso alumno list.
+     *
+     * @param anhoSemestreEgresoAlumnoList el new anho semestre egreso alumno list
+     */
+    public List<Alumno> getAnhoSemestreEgresoAlumnoList(){
+        return this.anhoSemestreEgresoAlumnoList;
+    }
+    /**
+     * Establece el anho semestre egreso list.
+     *
+     * @param anhoSemestreEgresoList el new anho semestre egreso list
+     */
+    public void setAnhoSemestreEgresoAlumnoList(List<Alumno> anhoSemestreEgresoAlumnoList) {
+        this.anhoSemestreEgresoAlumnoList = anhoSemestreEgresoAlumnoList;
+    }   
+    /**
+     * Establece el anho semestre alumno convenio list.
+     *
+     * @param anhoSemestreAlumnoConvenioList el new anho semestre alumno convenio list
+     */
+    public List<AlumnoConvenio> getAnhoSemestreAlumnoConvenioList(){
+        return this.anhoSemestreAlumnoConvenioList;
+    }
+    /**
+     * Establece el anho semestre list.
+     *
+     * @param anhoSemestreList el new anho semestre list
+     */
+    public void setAnhoSemestreAlumnoConvenioList(List<AlumnoConvenio> anhoSemestreAlumnoConvenioList) {
+        this.anhoSemestreAlumnoConvenioList = anhoSemestreAlumnoConvenioList;
+    }   
+    /**
+     * Establece el anho semestre apertura cierre matricula list.
+     *
+     * @param anhoSemestreAperturaCierreMatriculaList el new anho semestre apertura cierre matricula list
+     */
+    public List<AperturaCierreMatricula> getAnhoSemestreAperturaCierreMatriculaList(){
+        return this.anhoSemestreAperturaCierreMatriculaList;
+    }
+    /**
+     * Establece el anho semestre list.
+     *
+     * @param anhoSemestreList el new anho semestre list
+     */
+    public void setAnhoSemestreAperturaCierreMatriculaList(List<AperturaCierreMatricula> anhoSemestreAperturaCierreMatriculaList) {
+        this.anhoSemestreAperturaCierreMatriculaList = anhoSemestreAperturaCierreMatriculaList;
+    }   
+    /**
+     * Establece el anho semestre carga lectiva list.
+     *
+     * @param anhoSemestreCargaLectivaList el new anho semestre carga lectiva list
+     */
+    public List<CargaLectiva> getAnhoSemestreCargaLectivaList(){
+        return this.anhoSemestreCargaLectivaList;
+    }
+    /**
+     * Establece el anho semestre list.
+     *
+     * @param anhoSemestreList el new anho semestre list
+     */
+    public void setAnhoSemestreCargaLectivaList(List<CargaLectiva> anhoSemestreCargaLectivaList) {
+        this.anhoSemestreCargaLectivaList = anhoSemestreCargaLectivaList;
+    }   
+    /**
+     * Establece el anhosemestre cierre anho semestre list.
+     *
+     * @param anhosemestreCierreAnhoSemestreList el new anhosemestre cierre anho semestre list
+     */
+    public List<CierreAnhoSemestre> getAnhosemestreCierreAnhoSemestreList(){
+        return this.anhosemestreCierreAnhoSemestreList;
+    }
+    /**
+     * Establece el anhosemestre list.
+     *
+     * @param anhosemestreList el new anhosemestre list
+     */
+    public void setAnhosemestreCierreAnhoSemestreList(List<CierreAnhoSemestre> anhosemestreCierreAnhoSemestreList) {
+        this.anhosemestreCierreAnhoSemestreList = anhosemestreCierreAnhoSemestreList;
+    }   
+    /**
+     * Establece el anho semestre control pago list.
+     *
+     * @param anhoSemestreControlPagoList el new anho semestre control pago list
+     */
+    public List<ControlPago> getAnhoSemestreControlPagoList(){
+        return this.anhoSemestreControlPagoList;
+    }
+    /**
+     * Establece el anho semestre list.
+     *
+     * @param anhoSemestreList el new anho semestre list
+     */
+    public void setAnhoSemestreControlPagoList(List<ControlPago> anhoSemestreControlPagoList) {
+        this.anhoSemestreControlPagoList = anhoSemestreControlPagoList;
+    }   
+    /**
+     * Establece el anho semestre cronograma list.
+     *
+     * @param anhoSemestreCronogramaList el new anho semestre cronograma list
+     */
+    public List<Cronograma> getAnhoSemestreCronogramaList(){
+        return this.anhoSemestreCronogramaList;
+    }
+    /**
+     * Establece el anho semestre list.
+     *
+     * @param anhoSemestreList el new anho semestre list
+     */
+    public void setAnhoSemestreCronogramaList(List<Cronograma> anhoSemestreCronogramaList) {
+        this.anhoSemestreCronogramaList = anhoSemestreCronogramaList;
+    }   
+    /**
+     * Establece el anho semestre cuota concepto list.
+     *
+     * @param anhoSemestreCuotaConceptoList el new anho semestre cuota concepto list
+     */
+    public List<CuotaConcepto> getAnhoSemestreCuotaConceptoList(){
+        return this.anhoSemestreCuotaConceptoList;
+    }
+    /**
+     * Establece el anho semestre list.
+     *
+     * @param anhoSemestreList el new anho semestre list
+     */
+    public void setAnhoSemestreCuotaConceptoList(List<CuotaConcepto> anhoSemestreCuotaConceptoList) {
+        this.anhoSemestreCuotaConceptoList = anhoSemestreCuotaConceptoList;
+    }   
+    /**
+     * Establece el anho semestre matricula list.
+     *
+     * @param anhoSemestreMatriculaList el new anho semestre matricula list
+     */
+    public List<Matricula> getAnhoSemestreMatriculaList(){
+        return this.anhoSemestreMatriculaList;
+    }
+    /**
+     * Establece el anho semestre list.
+     *
+     * @param anhoSemestreList el new anho semestre list
+     */
+    public void setAnhoSemestreMatriculaList(List<Matricula> anhoSemestreMatriculaList) {
+        this.anhoSemestreMatriculaList = anhoSemestreMatriculaList;
+    }   
+    /**
+     * Establece el anho semestre organo directivo list.
+     *
+     * @param anhoSemestreOrganoDirectivoList el new anho semestre organo directivo list
+     */
+    public List<OrganoDirectivo> getAnhoSemestreOrganoDirectivoList(){
+        return this.anhoSemestreOrganoDirectivoList;
+    }
+    /**
+     * Establece el anho semestre list.
+     *
+     * @param anhoSemestreList el new anho semestre list
+     */
+    public void setAnhoSemestreOrganoDirectivoList(List<OrganoDirectivo> anhoSemestreOrganoDirectivoList) {
+        this.anhoSemestreOrganoDirectivoList = anhoSemestreOrganoDirectivoList;
+    }   
+    /**
+     * Establece el anho semestre plan pagos list.
+     *
+     * @param anhoSemestrePlanPagosList el new anho semestre plan pagos list
+     */
+    public List<PlanPagos> getAnhoSemestrePlanPagosList(){
+        return this.anhoSemestrePlanPagosList;
+    }
+    /**
+     * Establece el anho semestre list.
+     *
+     * @param anhoSemestreList el new anho semestre list
+     */
+    public void setAnhoSemestrePlanPagosList(List<PlanPagos> anhoSemestrePlanPagosList) {
+        this.anhoSemestrePlanPagosList = anhoSemestrePlanPagosList;
+    }   
+    /**
+     * Establece el anho semestre postulante list.
+     *
+     * @param anhoSemestrePostulanteList el new anho semestre postulante list
+     */
+    public List<Postulante> getAnhoSemestrePostulanteList(){
+        return this.anhoSemestrePostulanteList;
+    }
+    /**
+     * Establece el anho semestre list.
+     *
+     * @param anhoSemestreList el new anho semestre list
+     */
+    public void setAnhoSemestrePostulanteList(List<Postulante> anhoSemestrePostulanteList) {
+        this.anhoSemestrePostulanteList = anhoSemestrePostulanteList;
+    }   
+    /**
+     * Establece el anho semestre traslado list.
+     *
+     * @param anhoSemestreTrasladoList el new anho semestre traslado list
+     */
+    public List<Traslado> getAnhoSemestreTrasladoList(){
+        return this.anhoSemestreTrasladoList;
+    }
+    /**
+     * Establece el anho semestre list.
+     *
+     * @param anhoSemestreList el new anho semestre list
+     */
+    public void setAnhoSemestreTrasladoList(List<Traslado> anhoSemestreTrasladoList) {
+        this.anhoSemestreTrasladoList = anhoSemestreTrasladoList;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idAnhoSemestre == null) ? 0 : idAnhoSemestre.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        AnhoSemestre other = (AnhoSemestre) obj;
+        if (idAnhoSemestre == null) {
+            if (other.idAnhoSemestre != null) {
+                return false;
+            }
+        } else if (!idAnhoSemestre.equals(other.idAnhoSemestre)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "AnhoSemestre [idAnhoSemestre=" + idAnhoSemestre + "]";
+    }
+   
+}

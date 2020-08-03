@@ -1,0 +1,135 @@
+package pe.com.edu.siaa.core.ejb.dao.matricula.impl;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.persistence.Query;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericAcademicoDAOImpl;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.PreRequisitoDaoLocal;
+import pe.com.edu.siaa.core.model.dto.matricula.PreRequisitoDTO;
+import pe.com.edu.siaa.core.model.jpa.matricula.PreRequisito;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+
+/**
+ * La Class PreRequisitoDaoImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 19:53:33 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+public class PreRequisitoDaoImpl extends  GenericAcademicoDAOImpl<String, PreRequisito> implements PreRequisitoDaoLocal  {
+
+	
+	@Override
+	public Map<String,List<PreRequisito>> obtenerPreRequisitoMap(List<String> listaIdetPlanEstudio) throws Exception {
+		Map<String,List<PreRequisito>> resultado = new HashMap<String, List<PreRequisito>>();
+		if (listaIdetPlanEstudio == null || listaIdetPlanEstudio.size() == 0) {
+			return resultado;
+		}
+		Map<String, Object> parametros = new HashMap<String, Object>();
+		StringBuilder jpaql = new StringBuilder();
+		jpaql.append("from PreRequisito pr left join fetch pr.detPlanEstudio left join fetch pr.detPlanEstudioRequisito where 1 = 1 ");
+		jpaql.append(" and pr.detPlanEstudio.idDetPlanEstudio in (:listaIdetPlanEstudio) ");
+		parametros.put("listaIdetPlanEstudio", listaIdetPlanEstudio);
+		jpaql.append(" order by pr.detPlanEstudio.descripcionCurso");
+		Query query = createQuery(jpaql.toString(), parametros);
+		
+		List<PreRequisito> listaPreRequisitos = query.getResultList();
+		 
+		for (String idDetPlanEstudio : listaIdetPlanEstudio) {
+			if (!resultado.containsKey(idDetPlanEstudio)) {
+				List<PreRequisito> listRequisito = new ArrayList<PreRequisito>();
+				 for (PreRequisito preRequisito : listaPreRequisitos) {
+					 if (idDetPlanEstudio.equals(preRequisito.getDetPlanEstudio().getIdDetPlanEstudio())) {
+						 listRequisito.add(preRequisito);
+					 }
+				 }
+				 resultado.put(idDetPlanEstudio, listRequisito);
+			}
+		}
+		
+		
+		return resultado;
+	}
+	
+	
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.PreRequisitoDaoLocal#listarPreRequisito(pe.com.edu.siaa.core.model.jpa.seguridad.PreRequisito)
+     */  
+    @Override	 
+    public List<PreRequisito> listarPreRequisito(PreRequisitoDTO preRequisito) {
+        Query query = generarQueryListaPreRequisito(preRequisito, false);
+        query.setFirstResult(preRequisito.getStartRow());
+        query.setMaxResults(preRequisito.getOffset());
+        return query.getResultList();
+    }   
+   
+    /**
+     * Generar query lista PreRequisito.
+     *
+     * @param PreRequisitoDTO el preRequisito
+     * @param esContador el es contador
+     * @return the query
+     */
+    private Query generarQueryListaPreRequisito(PreRequisitoDTO preRequisito, boolean esContador) {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        if (esContador) {
+            jpaql.append(" select count(o.idPreRequisito) from PreRequisito o where 1=1 ");
+        } else {
+            jpaql.append(" select o from PreRequisito o where 1=1 ");           
+        }
+		if (!StringUtils.isNullOrEmpty(preRequisito.getSearch())) {
+	          jpaql.append(" and upper(o.idPreRequisito) like :search ");
+	          parametros.put("search", "%" + preRequisito.getSearch().toUpperCase() + "%");
+	    } else {
+		}
+        if (!esContador) {
+            //jpaql.append(" ORDER BY 1 ");
+        }
+        Query query = createQuery(jpaql.toString(), parametros);
+        return query;
+    }
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.PreRequisitoDaoLocal#contarListar{entity.getClassName()}(pe.com.edu.siaa.core.model.jpa.seguridad.PreRequisitoDTO)
+     */
+	@Override
+    public int contarListarPreRequisito(PreRequisitoDTO preRequisito) {
+        int resultado = 0;
+        try {
+            //StringBuilder jpaql = new StringBuilder();
+            Query query = generarQueryListaPreRequisito(preRequisito, true);
+            resultado = ((Long) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            resultado = 0;
+        }
+        return resultado;
+    }
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.PreRequisitoDaoLocal#generarIdPreRequisito()
+     */
+	 @Override
+    public String generarIdPreRequisito() {
+        String resultado = "1";
+        Query query = createQuery("select max(o.idPreRequisito) from PreRequisito o", null);
+        List<Object> listLong =  query.getResultList();
+        if (listLong != null && listLong.size() > 0 && listLong.get(0) != null)  {
+            Long ultimoIdGenerado = Long.valueOf(listLong.get(0).toString());
+            if (!StringUtils.isNullOrEmpty(ultimoIdGenerado)) {
+                resultado = resultado + ultimoIdGenerado;
+            }
+        }
+        return resultado;
+    }
+   
+}

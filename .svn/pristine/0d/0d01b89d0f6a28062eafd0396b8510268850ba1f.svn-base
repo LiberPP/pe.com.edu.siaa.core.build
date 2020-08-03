@@ -1,0 +1,48 @@
+package pe.com.edu.siaa.core.ejb.dao.nota.local;
+
+import java.util.List;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.dto.nota.DefinirCriterioEvaluacionDTO;
+import pe.com.edu.siaa.core.model.jpa.nota.DefinirCriterioEvaluacion;
+
+/**
+ * La Class DefinirCriterioEvaluacionDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 11:25:21 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface DefinirCriterioEvaluacionDaoLocal  extends GenericDAOLocal<String,DefinirCriterioEvaluacion> {
+	/**
+	 * Listar definir criterio evaluacion.
+	 *
+	 * @param definirCriterioEvaluacion el definir criterio evaluacionDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<DefinirCriterioEvaluacion> listarDefinirCriterioEvaluacion(DefinirCriterioEvaluacionDTO definirCriterioEvaluacion) throws Exception;
+	
+	/**
+	 * contar lista definir criterio evaluacion.
+	 *
+	 * @param definirCriterioEvaluacion el definir criterio evaluacion
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarDefinirCriterioEvaluacion(DefinirCriterioEvaluacionDTO definirCriterioEvaluacion);
+	/**
+	 * Generar id definirCriterioEvaluacion.
+	 *
+	 * @return the String
+	 * @throws Exception the exception
+	 */
+	String generarIdDefinirCriterioEvaluacion() throws Exception;
+}

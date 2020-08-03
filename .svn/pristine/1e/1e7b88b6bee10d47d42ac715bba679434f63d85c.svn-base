@@ -1,0 +1,131 @@
+package pe.com.edu.siaa.core.ejb.service.rest.admision.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.admision.local.AdmisionServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.admision.CronogramaDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class CronogramaRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:24 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/cronogramaRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class CronogramaRestController extends GenericServiceRestImpl {
+
+	@EJB
+	private transient AdmisionServiceLocal admisionServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<CronogramaDTO> crear(CronogramaDTO cronograma) throws Exception {
+		return controladorAccion(cronograma,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<CronogramaDTO> modificar(CronogramaDTO cronograma) throws Exception {
+		return controladorAccion(cronograma,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<CronogramaDTO> eliminar(@PathParam("id") String idCronograma) throws Exception {
+		CronogramaDTO cronograma = new CronogramaDTO();
+		cronograma.setIdCronograma(idCronograma);		
+		return controladorAccion(cronograma,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<CronogramaDTO> controladorAccion(CronogramaDTO cronograma, AccionType accionType){
+		ResultadoRestVO<CronogramaDTO> resultado = new ResultadoRestVO<CronogramaDTO>();
+		 try {
+    		resultado.setObjetoResultado(admisionServiceLocal.controladorAccionCronograma(cronograma,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<CronogramaDTO> finById(@PathParam("id") String idCronograma) throws Exception {
+		CronogramaDTO cronograma = new CronogramaDTO();
+		cronograma.setIdCronograma(idCronograma);
+		return controladorAccion(cronograma,AccionType.FIND_BY_ID);
+	}
+	@GET
+	@Path("/existeCronogramaValidoBySemestre/{idAnhoSemestre}/{tipoCronograma}/{codigoCronograma}/{idEntidadUniversitaria}")
+	public ResultadoRestVO<Boolean> existeCronogramaValidoBySemestre(@PathParam("idAnhoSemestre") String idAnhoSemestre, @PathParam("tipoCronograma") Long tipoCronograma, @PathParam("codigoCronograma") Long codigoCronograma, @PathParam("idEntidadUniversitaria") Long idEntidadUniversitaria) throws Exception {
+		ResultadoRestVO<Boolean> resultado = new ResultadoRestVO<Boolean>();
+		 try {
+			 resultado.setObjetoResultado(admisionServiceLocal.existeCronogramaValidoBySemestre(idAnhoSemestre, tipoCronograma, codigoCronograma, idEntidadUniversitaria));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<CronogramaDTO> listarCronograma(@Context UriInfo info){
+		ResultadoRestVO<CronogramaDTO> resultado = new ResultadoRestVO<CronogramaDTO>();
+		CronogramaDTO cronograma = transferUriInfo(info);
+		 try {
+			resultado.setListaResultado(admisionServiceLocal.listarCronograma(cronograma));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<CronogramaDTO> contarCronograma(@Context UriInfo info){
+		ResultadoRestVO<CronogramaDTO> resultado = new ResultadoRestVO<CronogramaDTO>();
+		CronogramaDTO cronograma = transferUriInfo(info);
+		 try {
+			 resultado.setContador(admisionServiceLocal.contarListarCronograma(cronograma));
+			 if (resultado.isData()) {
+				resultado.setListaResultado(admisionServiceLocal.listarCronograma(cronograma));
+			 }
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	
+	@GET
+    @Path("/")
+	public ResultadoRestVO<CronogramaDTO> inicializarCronograma(@Context UriInfo info) throws Exception {
+	     CronogramaDTO cronograma = transferUriInfo(info);
+		 ResultadoRestVO<CronogramaDTO> resultado = new ResultadoRestVO<CronogramaDTO>();
+		 try {
+    		resultado.setObjetoResultado(cronograma);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private CronogramaDTO transferUriInfo(@Context UriInfo info) {
+		CronogramaDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,CronogramaDTO.class);
+		return resultado;
+	}
+}

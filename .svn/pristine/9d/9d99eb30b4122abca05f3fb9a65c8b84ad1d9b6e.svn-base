@@ -1,0 +1,211 @@
+package pe.com.edu.siaa.core.model.dto.matricula;
+
+import java.io.Serializable;
+
+import pe.com.edu.siaa.core.model.dto.BasePaginator;
+import pe.com.edu.siaa.core.model.dto.nota.NotaLetraDTO;
+
+/**
+ * La Class DetTrasladoDTO.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 1.0, Tue Apr 18 09:56:50 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+public class DetTrasladoDTO extends BasePaginator implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id det traslado. */
+    private String idDetTraslado;
+   
+    /** El traslado. */
+    private TrasladoDTO traslado;
+   
+    /** El det plan estudio. */
+    private DetPlanEstudioDTO detPlanEstudio;
+   
+    /** El nota letra. */
+    private NotaLetraDTO notaLetra;
+   
+    /** El credito. */
+    private Integer credito;
+   
+    /** El curso convalidado. */
+    private String cursoConvalidado;
+   
+    /**
+     * Instancia un nuevo det trasladoDTO.
+     */
+    public DetTrasladoDTO() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo det trasladoDTO.
+     *
+     * @param idDetTraslado el id det traslado
+     * @param traslado el traslado
+     * @param detPlanEstudio el det plan estudio
+     * @param notaLetra el nota letra
+     * @param credito el credito
+     * @param cursoConvalidado el curso convalidado
+     */
+    public DetTrasladoDTO(String idDetTraslado, TrasladoDTO traslado,DetPlanEstudioDTO detPlanEstudio,NotaLetraDTO notaLetra,Integer credito, String cursoConvalidado ) {
+        super();
+        this.idDetTraslado = idDetTraslado;
+        this.traslado = traslado;
+        this.detPlanEstudio = detPlanEstudio;
+        this.notaLetra = notaLetra;
+        this.credito = credito;
+        this.cursoConvalidado = cursoConvalidado;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id det traslado.
+     *
+     * @return id det traslado
+     */
+     public String getIdDetTraslado() {
+        return this.idDetTraslado;
+    }
+    /**
+     * Establece el id det traslado.
+     *
+     * @param idDetTraslado el new id det traslado
+     */
+    public void setIdDetTraslado(String idDetTraslado) {
+        this.idDetTraslado = idDetTraslado;
+    }
+    /**
+     * Obtiene traslado.
+     *
+     * @return traslado
+     */
+     public TrasladoDTO getTraslado() {
+        return this.traslado;
+    }
+    /**
+     * Establece el traslado.
+     *
+     * @param traslado el new traslado
+     */
+    public void setTraslado(TrasladoDTO traslado) {
+        this.traslado = traslado;
+    }
+    /**
+     * Obtiene det plan estudio.
+     *
+     * @return det plan estudio
+     */
+     public DetPlanEstudioDTO getDetPlanEstudio() {
+        return this.detPlanEstudio;
+    }
+    /**
+     * Establece el det plan estudio.
+     *
+     * @param detPlanEstudio el new det plan estudio
+     */
+    public void setDetPlanEstudio(DetPlanEstudioDTO detPlanEstudio) {
+        this.detPlanEstudio = detPlanEstudio;
+    }
+    /**
+     * Obtiene nota letra.
+     *
+     * @return nota letra
+     */
+     public NotaLetraDTO getNotaLetra() {
+        return this.notaLetra;
+    }
+    /**
+     * Establece el nota letra.
+     *
+     * @param notaLetra el new nota letra
+     */
+    public void setNotaLetra(NotaLetraDTO notaLetra) {
+        this.notaLetra = notaLetra;
+    }
+    /**
+     * Obtiene credito.
+     *
+     * @return credito
+     */
+     public Integer getCredito() {
+        return this.credito;
+    }
+    /**
+     * Establece el credito.
+     *
+     * @param credito el new credito
+     */
+    public void setCredito(Integer credito) {
+        this.credito = credito;
+    }
+    /**
+     * Obtiene curso convalidado.
+     *
+     * @return curso convalidado
+     */
+     public String getCursoConvalidado() {
+        return this.cursoConvalidado;
+    }
+    /**
+     * Establece el curso convalidado.
+     *
+     * @param cursoConvalidado el new curso convalidado
+     */
+    public void setCursoConvalidado(String cursoConvalidado) {
+        this.cursoConvalidado = cursoConvalidado;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idDetTraslado == null) ? 0 : idDetTraslado.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        DetTrasladoDTO other = (DetTrasladoDTO) obj;
+        if (idDetTraslado == null) {
+            if (other.idDetTraslado != null) {
+                return false;
+            }
+        } else if (!idDetTraslado.equals(other.idDetTraslado)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "DetTrasladoDTO [idDetTraslado=" + idDetTraslado + "]";
+    }
+   
+}

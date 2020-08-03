@@ -1,0 +1,302 @@
+package pe.com.edu.siaa.core.model.jpa.encuesta;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import pe.com.edu.siaa.core.model.jpa.matricula.Alumno;
+import pe.com.edu.siaa.core.model.util.ConfiguracionEntityManagerUtil;
+
+/**
+ * La Class EncuestaCampo.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Feb 20 09:07:26 COT 2018
+ * @since SIAA-CORE 2.1
+ */
+@Entity
+@Table(name = "EncuestaCampo", schema = ConfiguracionEntityManagerUtil.ESQUEMA_ENCUESTA)
+public class EncuestaCampo implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id encuesta campo. */
+    @Id
+    @Column(name = "idEncuestaCampo" , length = 32)
+    private String idEncuestaCampo;
+   
+    /** El encuesta. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idEncuesta", referencedColumnName = "idEncuesta")
+    private Encuesta encuesta;
+   
+    /** El alumno. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idAlumno", referencedColumnName = "idAlumno")
+    private Alumno alumno;
+   
+    /** El rango generado. */
+    @Column(name = "rangoGenerado")
+    private Long rangoGenerado;
+   
+    /** El estado. */
+    @Column(name = "estado" , length = 1)
+    private String estado;
+   
+    /** El fecha inicio. */
+    @Temporal( TemporalType.TIMESTAMP)
+    @Column(name = "fechaInicio")
+    private Date fechaInicio;
+   
+    /** El fecha fin. */
+    @Temporal( TemporalType.TIMESTAMP)
+    @Column(name = "fechaFin")
+    private Date fechaFin;
+   
+    /** El ip acceso. */
+    @Column(name = "ipAcceso" , length = 50)
+    private String ipAcceso;
+   
+    /** El encuesta campo encuesta campo det list. */
+    @OneToMany(mappedBy = "encuestaCampo", fetch = FetchType.LAZY)
+    private List<EncuestaCampoDet> encuestaCampoEncuestaCampoDetList = new ArrayList<EncuestaCampoDet>();
+    
+    /**
+     * Instancia un nuevo encuesta campo.
+     */
+    public EncuestaCampo() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo encuesta campo.
+     *
+     * @param idEncuestaCampo el id encuesta campo
+     * @param encuesta el encuesta
+     * @param alumno el alumno
+     * @param rangoGenerado el rango generado
+     * @param estado el estado
+     * @param fechaInicio el fecha inicio
+     * @param fechaFin el fecha fin
+     * @param ipAcceso el ip acceso
+     */
+    public EncuestaCampo(String idEncuestaCampo, Encuesta encuesta,Alumno alumno,Long rangoGenerado, String estado, Date fechaInicio, Date fechaFin, String ipAcceso ) {
+        super();
+        this.idEncuestaCampo = idEncuestaCampo;
+        this.encuesta = encuesta;
+        this.alumno = alumno;
+        this.rangoGenerado = rangoGenerado;
+        this.estado = estado;
+        this.fechaInicio = fechaInicio;
+        this.fechaFin = fechaFin;
+        this.ipAcceso = ipAcceso;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id encuesta campo.
+     *
+     * @return id encuesta campo
+     */
+     public String getIdEncuestaCampo() {
+        return this.idEncuestaCampo;
+    }
+    /**
+     * Establece el id encuesta campo.
+     *
+     * @param idEncuestaCampo el new id encuesta campo
+     */
+    public void setIdEncuestaCampo(String idEncuestaCampo) {
+        this.idEncuestaCampo = idEncuestaCampo;
+    }
+    /**
+     * Obtiene encuesta.
+     *
+     * @return encuesta
+     */
+     public Encuesta getEncuesta() {
+        return this.encuesta;
+    }
+    /**
+     * Establece el encuesta.
+     *
+     * @param encuesta el new encuesta
+     */
+    public void setEncuesta(Encuesta encuesta) {
+        this.encuesta = encuesta;
+    }
+    /**
+     * Obtiene alumno.
+     *
+     * @return alumno
+     */
+     public Alumno getAlumno() {
+        return this.alumno;
+    }
+    /**
+     * Establece el alumno.
+     *
+     * @param alumno el new alumno
+     */
+    public void setAlumno(Alumno alumno) {
+        this.alumno = alumno;
+    }
+    /**
+     * Obtiene rango generado.
+     *
+     * @return rango generado
+     */
+     public Long getRangoGenerado() {
+        return this.rangoGenerado;
+    }
+    /**
+     * Establece el rango generado.
+     *
+     * @param rangoGenerado el new rango generado
+     */
+    public void setRangoGenerado(Long rangoGenerado) {
+        this.rangoGenerado = rangoGenerado;
+    }
+    /**
+     * Obtiene estado.
+     *
+     * @return estado
+     */
+     public String getEstado() {
+        return this.estado;
+    }
+    /**
+     * Establece el estado.
+     *
+     * @param estado el new estado
+     */
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+    /**
+     * Obtiene fecha inicio.
+     *
+     * @return fecha inicio
+     */
+     public Date getFechaInicio() {
+        return this.fechaInicio;
+    }
+    /**
+     * Establece el fecha inicio.
+     *
+     * @param fechaInicio el new fecha inicio
+     */
+    public void setFechaInicio(Date fechaInicio) {
+        this.fechaInicio = fechaInicio;
+    }
+    /**
+     * Obtiene fecha fin.
+     *
+     * @return fecha fin
+     */
+     public Date getFechaFin() {
+        return this.fechaFin;
+    }
+    /**
+     * Establece el fecha fin.
+     *
+     * @param fechaFin el new fecha fin
+     */
+    public void setFechaFin(Date fechaFin) {
+        this.fechaFin = fechaFin;
+    }
+    /**
+     * Obtiene ip acceso.
+     *
+     * @return ip acceso
+     */
+     public String getIpAcceso() {
+        return this.ipAcceso;
+    }
+    /**
+     * Establece el ip acceso.
+     *
+     * @param ipAcceso el new ip acceso
+     */
+    public void setIpAcceso(String ipAcceso) {
+        this.ipAcceso = ipAcceso;
+    }
+    /**
+     * Establece el encuesta campo encuesta campo det list.
+     *
+     * @param encuestaCampoEncuestaCampoDetList el new encuesta campo encuesta campo det list
+     */
+    public List<EncuestaCampoDet> getEncuestaCampoEncuestaCampoDetList(){
+        return this.encuestaCampoEncuestaCampoDetList;
+    }
+    /**
+     * Establece el encuesta campo list.
+     *
+     * @param encuestaCampoList el new encuesta campo list
+     */
+    public void setEncuestaCampoEncuestaCampoDetList(List<EncuestaCampoDet> encuestaCampoEncuestaCampoDetList) {
+        this.encuestaCampoEncuestaCampoDetList = encuestaCampoEncuestaCampoDetList;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idEncuestaCampo == null) ? 0 : idEncuestaCampo.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        EncuestaCampo other = (EncuestaCampo) obj;
+        if (idEncuestaCampo == null) {
+            if (other.idEncuestaCampo != null) {
+                return false;
+            }
+        } else if (!idEncuestaCampo.equals(other.idEncuestaCampo)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "EncuestaCampo [idEncuestaCampo=" + idEncuestaCampo + "]";
+    }
+   
+}

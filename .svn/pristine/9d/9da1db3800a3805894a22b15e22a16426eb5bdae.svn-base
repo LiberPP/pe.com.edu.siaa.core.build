@@ -1,0 +1,854 @@
+package pe.com.edu.siaa.core.ejb.service.admision.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+
+import pe.com.edu.siaa.core.ejb.dao.admision.local.AnhoSemestreDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.admision.local.CierreAnhoSemestreDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.admision.local.CronogramaDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.admision.local.DocumentoRequeridoDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.admision.local.EntidadUniversitariaDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.admision.local.EscuelaDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.admision.local.EstablecimientoDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.admision.local.FacultadDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.admision.local.NacionalidadDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.admision.local.PersonaDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.admision.local.PostulanteDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.admision.local.ProcedenciaDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.admision.local.TipoPersonaDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.admision.local.TipoSectorDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.admision.local.UniversidadDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.CargoDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.PersonalDaoLocal;
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.admision.local.AdmisionServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.util.FechaUtil;
+import pe.com.edu.siaa.core.ejb.util.proceso.AdmisionUtil;
+import pe.com.edu.siaa.core.model.dto.admision.AnhoSemestreDTO;
+import pe.com.edu.siaa.core.model.dto.admision.CierreAnhoSemestreDTO;
+import pe.com.edu.siaa.core.model.dto.admision.CronogramaDTO;
+import pe.com.edu.siaa.core.model.dto.admision.DocumentoRequeridoDTO;
+import pe.com.edu.siaa.core.model.dto.admision.EntidadUniversitariaDTO;
+import pe.com.edu.siaa.core.model.dto.admision.EscuelaDTO;
+import pe.com.edu.siaa.core.model.dto.admision.EstablecimientoDTO;
+import pe.com.edu.siaa.core.model.dto.admision.FacultadDTO;
+import pe.com.edu.siaa.core.model.dto.admision.NacionalidadDTO;
+import pe.com.edu.siaa.core.model.dto.admision.PersonaDTO;
+import pe.com.edu.siaa.core.model.dto.admision.PostulanteDTO;
+import pe.com.edu.siaa.core.model.dto.admision.ProcedenciaDTO;
+import pe.com.edu.siaa.core.model.dto.admision.TipoPersonaDTO;
+import pe.com.edu.siaa.core.model.dto.admision.TipoSectorDTO;
+import pe.com.edu.siaa.core.model.dto.admision.UniversidadDTO;
+import pe.com.edu.siaa.core.model.estate.EstadoAnhoSemestreState;
+import pe.com.edu.siaa.core.model.jpa.admision.AnhoSemestre;
+import pe.com.edu.siaa.core.model.jpa.admision.CierreAnhoSemestre;
+import pe.com.edu.siaa.core.model.jpa.admision.Cronograma;
+import pe.com.edu.siaa.core.model.jpa.admision.EntidadUniversitaria;
+import pe.com.edu.siaa.core.model.jpa.admision.Escuela;
+import pe.com.edu.siaa.core.model.jpa.admision.Establecimiento;
+import pe.com.edu.siaa.core.model.jpa.admision.Facultad;
+import pe.com.edu.siaa.core.model.jpa.admision.Nacionalidad;
+import pe.com.edu.siaa.core.model.jpa.admision.Persona;
+import pe.com.edu.siaa.core.model.jpa.admision.Postulante;
+import pe.com.edu.siaa.core.model.jpa.admision.Procedencia;
+import pe.com.edu.siaa.core.model.jpa.admision.TipoPersona;
+import pe.com.edu.siaa.core.model.jpa.admision.TipoSector;
+import pe.com.edu.siaa.core.model.jpa.admision.Universidad;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.model.type.CronogramaType;
+import pe.com.edu.siaa.core.model.vo.SelectItemVO;
+
+
+/**
+ * La Class AdmisionServiceImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:23 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+ @Stateless
+ @EJB(name = "java:app/AdmisionService", beanInterface = AdmisionServiceLocal.class)
+ @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+public class AdmisionServiceImpl implements AdmisionServiceLocal{
+	
+	/** El servicio cronograma dao impl. */
+	@EJB
+	private CronogramaDaoLocal cronogramaDaoImpl; 
+	
+	/** El servicio anho semestre dao impl. */
+	@EJB
+	private AnhoSemestreDaoLocal anhoSemestreDaoImpl; 
+	
+	/** El servicio cierre anho semestre dao impl. */
+	@EJB
+	private CierreAnhoSemestreDaoLocal cierreAnhoSemestreDaoImpl; 
+
+	/** El servicio personal dao impl. */
+	@EJB
+	private PersonalDaoLocal personalDaoImpl; 
+	
+	/** El servicio documento requerido dao impl. */
+	@EJB
+	private DocumentoRequeridoDaoLocal documentoRequeridoDaoImpl; 
+	
+	/** El servicio escuela dao impl. */
+	@EJB
+	private EscuelaDaoLocal escuelaDaoImpl; 
+	
+	/** El servicio nacionalidad dao impl. */
+	@EJB
+	private NacionalidadDaoLocal nacionalidadDaoImpl; 
+	
+	/** El servicio tipo sector dao impl. */
+	@EJB
+	private TipoSectorDaoLocal tipoSectorDaoImpl; 
+	
+	/** El servicio tipo persona dao impl. */
+	@EJB
+	private TipoPersonaDaoLocal tipoPersonaDaoImpl; 
+	
+	/** El servicio cargo dao impl. */
+	@EJB
+	private CargoDaoLocal cargoDaoImpl; 
+	
+	/** El servicio entidad universitaria dao impl. */
+	@EJB
+	private EntidadUniversitariaDaoLocal entidadUniversitariaDaoImpl; 
+	
+	/** El servicio universidad dao impl. */
+	@EJB
+	private UniversidadDaoLocal universidadDaoImpl; 
+	
+	/** El servicio persona dao impl. */
+	@EJB
+	private PersonaDaoLocal personaDaoImpl; 
+	
+	/** El servicio establecimiento dao impl. */
+	@EJB
+	private EstablecimientoDaoLocal establecimientoDaoImpl; 
+	
+	/** El servicio procedencia dao impl. */
+	@EJB
+	private ProcedenciaDaoLocal procedenciaDaoImpl; 
+	
+	/** El servicio postulante dao impl. */
+	@EJB
+	private PostulanteDaoLocal postulanteDaoImpl; 
+
+	/** El servicio facultad dao impl. */
+	@EJB
+	private FacultadDaoLocal facultadDaoImpl; 
+	
+	@Override
+	public List<SelectItemVO> listarTipoPersonaSelectItem() throws Exception {
+		List<SelectItemVO> resultado = new ArrayList<SelectItemVO>();
+		List<TipoPersonaDTO> listaTipoPersona = this.listarTipoPersona(new TipoPersonaDTO());
+		for (TipoPersonaDTO tipoPersona : listaTipoPersona) {
+			resultado.add(new SelectItemVO(tipoPersona.getIdTipoPersona(), tipoPersona.getDescripcion(), tipoPersona.getDescripcion()));
+		}
+		return resultado;
+	}
+	
+	@Override
+	public List<SelectItemVO> listarProcedenciaSelectItem() throws Exception {
+		List<SelectItemVO> resultado = new ArrayList<SelectItemVO>();
+		List<ProcedenciaDTO> listaProcedencia = this.listarProcedencia(new ProcedenciaDTO());
+		for (ProcedenciaDTO procedencia : listaProcedencia) {
+			resultado.add(new SelectItemVO(procedencia.getIdProcedencia(), procedencia.getDescripcion(), procedencia.getDescripcion()));
+		}
+		return resultado;
+	}
+	
+	@Override
+	public  Map<String,CronogramaDTO> listarCronogramaMap(List<String> listaIdAnhoSemestre,CronogramaType cronogramaType,Long idEntidadUniversitaria) throws Exception  {
+		return cronogramaDaoImpl.listarCronogramaMap(listaIdAnhoSemestre, cronogramaType, idEntidadUniversitaria);
+	}
+	
+	@Override
+	public boolean existeCronogramaValidoBySemestre(String idAnhoSemestre, Long tipoCronograma,Long codigoCronograma, Long idEntidadUniversitaria) throws Exception {
+		  boolean resultado = false;
+		  CronogramaDTO cronograma = obtenerCronogramaBySemestre(idAnhoSemestre, tipoCronograma, codigoCronograma, idEntidadUniversitaria);
+		  if (cronograma != null) {
+			  if (AdmisionUtil.esFechaValida(FechaUtil.obtenerFecha(), cronograma)) {
+				  resultado = true;
+		  		}
+		  }
+		  return resultado;
+	  }
+	
+	@Override
+	public CronogramaDTO obtenerCronogramaBySemestre(String idAnhoSemestre, Long tipoCronograma,Long codigoCronograma, Long idEntidadUniversitaria) throws Exception {
+		  return TransferDataObjectUtil.transferObjetoEntityDTO(cronogramaDaoImpl.obtenerCronogramaBySemestre(idAnhoSemestre, tipoCronograma, codigoCronograma, idEntidadUniversitaria),CronogramaDTO.class);
+	  }
+	 
+	@Override
+	public AnhoSemestreDTO obtenerAnhoSemestreByEstado(EstadoAnhoSemestreState estadoAnhoSemestreState) throws Exception {
+	  return TransferDataObjectUtil.transferObjetoEntityDTO(anhoSemestreDaoImpl.obtenerAnhoSemestreByEstado(estadoAnhoSemestreState),AnhoSemestreDTO.class);
+	}
+	
+	@Override
+	public CronogramaDTO controladorAccionCronograma(CronogramaDTO cronograma, AccionType accionType) throws Exception {
+		CronogramaDTO resultado = null;
+		Cronograma resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				cronograma.setIdCronograma(this.cronogramaDaoImpl.generarCodigoCronograma(cronograma.getAnhoSemestre().getIdAnhoSemestre()));
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(cronograma, Cronograma.class,"entidadUniversitaria@PK@","anhoSemestre@PK@");
+				this.cronogramaDaoImpl.save(resultadoEntity);	
+				resultado = cronograma;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(cronograma, Cronograma.class,"entidadUniversitaria@PK@","anhoSemestre@PK@");
+				this.cronogramaDaoImpl.update(resultadoEntity);
+				resultado = cronograma;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.cronogramaDaoImpl.find(Cronograma.class, cronograma.getIdCronograma());
+				this.cronogramaDaoImpl.delete(resultadoEntity);
+				resultado = cronograma;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.cronogramaDaoImpl.find(Cronograma.class, cronograma.getIdCronograma());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,CronogramaDTO.class);
+				break;
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<CronogramaDTO> listarCronograma(CronogramaDTO cronograma) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.cronogramaDaoImpl.listarCronograma(cronograma),CronogramaDTO.class);
+	}
+	@Override
+	public int contarListarCronograma(CronogramaDTO cronograma){
+		return  this.cronogramaDaoImpl.contarListarCronograma(cronograma);
+	}
+	
+	@Override
+	public AnhoSemestreDTO controladorAccionAnhoSemestre(AnhoSemestreDTO anhoSemestre, AccionType accionType) throws Exception {
+		AnhoSemestreDTO resultado = null;
+		AnhoSemestre resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				anhoSemestre.setIdAnhoSemestre(this.anhoSemestreDaoImpl.generarIdAnhoSemestre());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(anhoSemestre, AnhoSemestre.class);
+				this.anhoSemestreDaoImpl.save(resultadoEntity);	
+				resultado = anhoSemestre;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(anhoSemestre, AnhoSemestre.class);
+				this.anhoSemestreDaoImpl.update(resultadoEntity);
+				resultado = anhoSemestre;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.anhoSemestreDaoImpl.find(AnhoSemestre.class, anhoSemestre.getIdAnhoSemestre());
+				this.anhoSemestreDaoImpl.delete(resultadoEntity);
+				resultado = anhoSemestre;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.anhoSemestreDaoImpl.find(AnhoSemestre.class, anhoSemestre.getIdAnhoSemestre());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,AnhoSemestreDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.anhoSemestreDaoImpl.findByNombre(anhoSemestre),AnhoSemestreDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<AnhoSemestreDTO> listarAnhoSemestre(AnhoSemestreDTO anhoSemestre) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.anhoSemestreDaoImpl.listarAnhoSemestre(anhoSemestre),AnhoSemestreDTO.class);
+	}
+	@Override
+	public int contarListarAnhoSemestre(AnhoSemestreDTO anhoSemestre){
+		return  this.anhoSemestreDaoImpl.contarListarAnhoSemestre(anhoSemestre);
+	}
+	
+	@Override
+	public CierreAnhoSemestreDTO controladorAccionCierreAnhoSemestre(CierreAnhoSemestreDTO cierreAnhoSemestre, AccionType accionType) throws Exception {
+		CierreAnhoSemestreDTO resultado = null;
+		CierreAnhoSemestre resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				cierreAnhoSemestre.setAnhosemestre(this.cierreAnhoSemestreDaoImpl.generarIdCierreAnhoSemestre());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(cierreAnhoSemestre, CierreAnhoSemestre.class,"usuarioCreacion@PK@");
+				this.cierreAnhoSemestreDaoImpl.save(resultadoEntity);	
+				resultado = cierreAnhoSemestre;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(cierreAnhoSemestre, CierreAnhoSemestre.class,"usuarioCreacion@PK@");
+				this.cierreAnhoSemestreDaoImpl.update(resultadoEntity);
+				resultado = cierreAnhoSemestre;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.cierreAnhoSemestreDaoImpl.find(CierreAnhoSemestre.class, cierreAnhoSemestre.getAnhosemestre());
+				this.cierreAnhoSemestreDaoImpl.delete(resultadoEntity);
+				resultado = cierreAnhoSemestre;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.cierreAnhoSemestreDaoImpl.find(CierreAnhoSemestre.class, cierreAnhoSemestre.getAnhosemestre());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,CierreAnhoSemestreDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.cierreAnhoSemestreDaoImpl.findByNombre(cierreAnhoSemestre),CierreAnhoSemestreDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<CierreAnhoSemestreDTO> listarCierreAnhoSemestre(CierreAnhoSemestreDTO cierreAnhoSemestre) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.cierreAnhoSemestreDaoImpl.listarCierreAnhoSemestre(cierreAnhoSemestre),CierreAnhoSemestreDTO.class);
+	}
+	@Override
+	public int contarListarCierreAnhoSemestre(CierreAnhoSemestreDTO cierreAnhoSemestre){
+		return  this.cierreAnhoSemestreDaoImpl.contarListarCierreAnhoSemestre(cierreAnhoSemestre);
+	}
+	
+	
+	@Override
+	public List<DocumentoRequeridoDTO> listarDocumentoRequerido(String idPostulante) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.documentoRequeridoDaoImpl.listarDocumentoRequerido(idPostulante),DocumentoRequeridoDTO.class,"itemByDocumento");
+	}
+	
+	
+	@Override
+	public EscuelaDTO controladorAccionEscuela(EscuelaDTO escuela, AccionType accionType) throws Exception {
+		EscuelaDTO resultado = null;
+		Escuela resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				escuela.setIdEscuela(this.escuelaDaoImpl.generarIdEscuela());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(escuela, Escuela.class,"facultad@PK@","itemByTipoEspecialidad@PK@","itemByClaseEspecialidad@PK@");
+				this.escuelaDaoImpl.save(resultadoEntity);	
+				resultado = escuela;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(escuela, Escuela.class,"facultad@PK@","itemByTipoEspecialidad@PK@","itemByClaseEspecialidad@PK@");
+				this.escuelaDaoImpl.update(resultadoEntity);
+				resultado = escuela;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.escuelaDaoImpl.find(Escuela.class, escuela.getIdEscuela());
+				this.escuelaDaoImpl.delete(resultadoEntity);
+				resultado = escuela;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.escuelaDaoImpl.find(Escuela.class, escuela.getIdEscuela());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,EscuelaDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.escuelaDaoImpl.findByNombre(escuela),EscuelaDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<EscuelaDTO> listarEscuela(EscuelaDTO escuela) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.escuelaDaoImpl.listarEscuela(escuela),EscuelaDTO.class,"facultad","itemByTipoEspecialidad","itemByClaseEspecialidad");
+	}
+	@Override
+	public int contarListarEscuela(EscuelaDTO escuela){
+		return  this.escuelaDaoImpl.contarListarEscuela(escuela);
+	}
+	
+	@Override
+	public NacionalidadDTO controladorAccionNacionalidad(NacionalidadDTO nacionalidad, AccionType accionType) throws Exception {
+		NacionalidadDTO resultado = null;
+		Nacionalidad resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				nacionalidad.setIdNacionalidad(this.nacionalidadDaoImpl.generarIdNacionalidad());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(nacionalidad, Nacionalidad.class);
+				this.nacionalidadDaoImpl.save(resultadoEntity);	
+				resultado = nacionalidad;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(nacionalidad, Nacionalidad.class);
+				this.nacionalidadDaoImpl.update(resultadoEntity);
+				resultado = nacionalidad;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.nacionalidadDaoImpl.find(Nacionalidad.class, nacionalidad.getIdNacionalidad());
+				this.nacionalidadDaoImpl.delete(resultadoEntity);
+				resultado = nacionalidad;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.nacionalidadDaoImpl.find(Nacionalidad.class, nacionalidad.getIdNacionalidad());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,NacionalidadDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.nacionalidadDaoImpl.findByNombre(nacionalidad),NacionalidadDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<NacionalidadDTO> listarNacionalidad(NacionalidadDTO nacionalidad) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.nacionalidadDaoImpl.listarNacionalidad(nacionalidad),NacionalidadDTO.class);
+	}
+	@Override
+	public int contarListarNacionalidad(NacionalidadDTO nacionalidad){
+		return  this.nacionalidadDaoImpl.contarListarNacionalidad(nacionalidad);
+	}
+	@Override
+	public TipoSectorDTO controladorAccionTipoSector(TipoSectorDTO tipoSector, AccionType accionType) throws Exception {
+		TipoSectorDTO resultado = null;
+		TipoSector resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				tipoSector.setIdTipoSector(this.tipoSectorDaoImpl.generarIdTipoSector());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(tipoSector, TipoSector.class);
+				this.tipoSectorDaoImpl.save(resultadoEntity);	
+				resultado = tipoSector;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(tipoSector, TipoSector.class);
+				this.tipoSectorDaoImpl.update(resultadoEntity);
+				resultado = tipoSector;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.tipoSectorDaoImpl.find(TipoSector.class, tipoSector.getIdTipoSector());
+				this.tipoSectorDaoImpl.delete(resultadoEntity);
+				resultado = tipoSector;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.tipoSectorDaoImpl.find(TipoSector.class, tipoSector.getIdTipoSector());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,TipoSectorDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.tipoSectorDaoImpl.findByNombre(tipoSector),TipoSectorDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<TipoSectorDTO> listarTipoSector(TipoSectorDTO tipoSector) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.tipoSectorDaoImpl.listarTipoSector(tipoSector),TipoSectorDTO.class);
+	}
+	@Override
+	public int contarListarTipoSector(TipoSectorDTO tipoSector){
+		return  this.tipoSectorDaoImpl.contarListarTipoSector(tipoSector);
+	}
+	@Override
+	public TipoPersonaDTO controladorAccionTipoPersona(TipoPersonaDTO tipoPersona, AccionType accionType) throws Exception {
+		TipoPersonaDTO resultado = null;
+		TipoPersona resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				tipoPersona.setIdTipoPersona(this.tipoPersonaDaoImpl.generarIdTipoPersona());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(tipoPersona, TipoPersona.class);
+				this.tipoPersonaDaoImpl.save(resultadoEntity);	
+				resultado = tipoPersona;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(tipoPersona, TipoPersona.class);
+				this.tipoPersonaDaoImpl.update(resultadoEntity);
+				resultado = tipoPersona;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.tipoPersonaDaoImpl.find(TipoPersona.class, tipoPersona.getIdTipoPersona());
+				this.tipoPersonaDaoImpl.delete(resultadoEntity);
+				resultado = tipoPersona;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.tipoPersonaDaoImpl.find(TipoPersona.class, tipoPersona.getIdTipoPersona());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,TipoPersonaDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.tipoPersonaDaoImpl.findByNombre(tipoPersona),TipoPersonaDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<TipoPersonaDTO> listarTipoPersona(TipoPersonaDTO tipoPersona) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.tipoPersonaDaoImpl.listarTipoPersona(tipoPersona),TipoPersonaDTO.class);
+	}
+	@Override
+	public int contarListarTipoPersona(TipoPersonaDTO tipoPersona){
+		return  this.tipoPersonaDaoImpl.contarListarTipoPersona(tipoPersona);
+	}
+	
+	@Override
+	public EntidadUniversitariaDTO controladorAccionEntidadUniversitaria(EntidadUniversitariaDTO entidadUniversitaria, AccionType accionType) throws Exception {
+		EntidadUniversitariaDTO resultado = null;
+		EntidadUniversitaria resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				entidadUniversitaria.setIdEntidadUniversitaria(this.entidadUniversitariaDaoImpl.generarIdEntidadUniversitaria());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(entidadUniversitaria, EntidadUniversitaria.class,"establecimiento@PK@","itemByTipoEntidadUniversitaria@PK@");
+				this.entidadUniversitariaDaoImpl.save(resultadoEntity);	
+				resultado = entidadUniversitaria;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(entidadUniversitaria, EntidadUniversitaria.class,"establecimiento@PK@","itemByTipoEntidadUniversitaria@PK@");
+				this.entidadUniversitariaDaoImpl.update(resultadoEntity);
+				resultado = entidadUniversitaria;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.entidadUniversitariaDaoImpl.find(EntidadUniversitaria.class, entidadUniversitaria.getIdEntidadUniversitaria());
+				this.entidadUniversitariaDaoImpl.delete(resultadoEntity);
+				resultado = entidadUniversitaria;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.entidadUniversitariaDaoImpl.find(EntidadUniversitaria.class, entidadUniversitaria.getIdEntidadUniversitaria());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,EntidadUniversitariaDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.entidadUniversitariaDaoImpl.findByNombre(entidadUniversitaria),EntidadUniversitariaDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<EntidadUniversitariaDTO> listarEntidadUniversitaria(EntidadUniversitariaDTO entidadUniversitaria) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.entidadUniversitariaDaoImpl.listarEntidadUniversitaria(entidadUniversitaria),EntidadUniversitariaDTO.class,"establecimiento","itemByTipoEntidadUniversitaria");
+	}
+	@Override
+	public int contarListarEntidadUniversitaria(EntidadUniversitariaDTO entidadUniversitaria){
+		return  this.entidadUniversitariaDaoImpl.contarListarEntidadUniversitaria(entidadUniversitaria);
+	}
+	@Override
+	public UniversidadDTO controladorAccionUniversidad(UniversidadDTO universidad, AccionType accionType) throws Exception {
+		UniversidadDTO resultado = null;
+		Universidad resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				universidad.setIdUniversidad(this.universidadDaoImpl.generarIdUniversidad());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(universidad, Universidad.class);
+				this.universidadDaoImpl.save(resultadoEntity);	
+				resultado = universidad;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(universidad, Universidad.class);
+				this.universidadDaoImpl.update(resultadoEntity);
+				resultado = universidad;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.universidadDaoImpl.find(Universidad.class, universidad.getIdUniversidad());
+				this.universidadDaoImpl.delete(resultadoEntity);
+				resultado = universidad;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.universidadDaoImpl.find(Universidad.class, universidad.getIdUniversidad());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,UniversidadDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.universidadDaoImpl.findByNombre(universidad),UniversidadDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<UniversidadDTO> listarUniversidad(UniversidadDTO universidad) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.universidadDaoImpl.listarUniversidad(universidad),UniversidadDTO.class);
+	}
+	@Override
+	public int contarListarUniversidad(UniversidadDTO universidad){
+		return  this.universidadDaoImpl.contarListarUniversidad(universidad);
+	}
+	
+	@Override
+	public PersonaDTO controladorAccionPersona(PersonaDTO persona, AccionType accionType) throws Exception {
+		PersonaDTO resultado = null;
+		Persona resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				persona.setIdPersona(this.personaDaoImpl.generarIdPersona());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(persona, Persona.class,"tipoPersona@PK@","itemByTipoDocIdentidad@PK@","itemByEstadoCivil@PK@","itemByTipoVia@PK@","itemByZona@PK@","procedencia@PK@","itemByIdioma@PK@","itemByNivelEducativo@PK@","nacionalidad@PK@","ubigeoByNacimiento@PK@","ubigeoByActual@PK@","entidadUniversitaria@PK@");
+				this.personaDaoImpl.save(resultadoEntity);	
+				resultado = persona;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(persona, Persona.class,"tipoPersona@PK@","itemByTipoDocIdentidad@PK@","itemByEstadoCivil@PK@","itemByTipoVia@PK@","itemByZona@PK@","procedencia@PK@","itemByIdioma@PK@","itemByNivelEducativo@PK@","nacionalidad@PK@","ubigeoByNacimiento@PK@","ubigeoByActual@PK@","entidadUniversitaria@PK@");
+				this.personaDaoImpl.update(resultadoEntity);
+				resultado = persona;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.personaDaoImpl.find(Persona.class, persona.getIdPersona());
+				this.personaDaoImpl.delete(resultadoEntity);
+				resultado = persona;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.personaDaoImpl.find(Persona.class, persona.getIdPersona());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,PersonaDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.personaDaoImpl.findByNombre(persona),PersonaDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<PersonaDTO> listarPersona(PersonaDTO persona) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.personaDaoImpl.listarPersona(persona),PersonaDTO.class,"tipoPersona","itemByTipoDocIdentidad","itemByEstadoCivil","itemByTipoVia","itemByZona","itemByIdioma","itemByNivelEducativo","procedencia","nacionalidad","ubigeoByNacimiento","ubigeoByActual","entidadUniversitaria");
+	}
+	@Override
+	public int contarListarPersona(PersonaDTO persona){
+		return  this.personaDaoImpl.contarListarPersona(persona);
+	}
+	
+	@Override
+	public EstablecimientoDTO controladorAccionEstablecimiento(EstablecimientoDTO establecimiento, AccionType accionType) throws Exception {
+		EstablecimientoDTO resultado = null;
+		Establecimiento resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				establecimiento.setIdEstablecimiento(this.establecimientoDaoImpl.generarIdEstablecimiento());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(establecimiento, Establecimiento.class,"universidad@PK@","itemByTipoInfraestructura@PK@","ubigeo@PK@","itemByZona@PK@","itemByTipoVia@PK@");
+				this.establecimientoDaoImpl.save(resultadoEntity);	
+				resultado = establecimiento;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(establecimiento, Establecimiento.class,"universidad@PK@","itemByTipoInfraestructura@PK@","ubigeo@PK@","itemByZona@PK@","itemByTipoVia@PK@");
+				this.establecimientoDaoImpl.update(resultadoEntity);
+				resultado = establecimiento;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.establecimientoDaoImpl.find(Establecimiento.class, establecimiento.getIdEstablecimiento());
+				this.establecimientoDaoImpl.delete(resultadoEntity);
+				resultado = establecimiento;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.establecimientoDaoImpl.find(Establecimiento.class, establecimiento.getIdEstablecimiento());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,EstablecimientoDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.establecimientoDaoImpl.findByNombre(establecimiento),EstablecimientoDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		return resultado;
+	}
+	@Override
+	public List<EstablecimientoDTO> listarEstablecimiento(EstablecimientoDTO establecimiento) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.establecimientoDaoImpl.listarEstablecimiento(establecimiento),EstablecimientoDTO.class,"universidad","itemByTipoInfraestructura","ubigeo","itemByZona","itemByTipoVia");
+	}
+	@Override
+	public int contarListarEstablecimiento(EstablecimientoDTO establecimiento){
+		return  this.establecimientoDaoImpl.contarListarEstablecimiento(establecimiento);
+	}
+	@Override
+	public ProcedenciaDTO controladorAccionProcedencia(ProcedenciaDTO procedencia, AccionType accionType) throws Exception {
+		ProcedenciaDTO resultado = null;
+		Procedencia resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				procedencia.setIdProcedencia(this.procedenciaDaoImpl.generarIdProcedencia());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(procedencia, Procedencia.class,"itemByTipoColegio@PK@","ubigeo@PK@");
+				this.procedenciaDaoImpl.save(resultadoEntity);	
+				resultado = procedencia;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(procedencia, Procedencia.class,"itemByTipoColegio@PK@","ubigeo@PK@");
+				this.procedenciaDaoImpl.update(resultadoEntity);
+				resultado = procedencia;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.procedenciaDaoImpl.find(Procedencia.class, procedencia.getIdProcedencia());
+				this.procedenciaDaoImpl.delete(resultadoEntity);
+				resultado = procedencia;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.procedenciaDaoImpl.find(Procedencia.class, procedencia.getIdProcedencia());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,ProcedenciaDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.procedenciaDaoImpl.findByNombre(procedencia),ProcedenciaDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<ProcedenciaDTO> listarProcedencia(ProcedenciaDTO procedencia) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.procedenciaDaoImpl.listarProcedencia(procedencia),ProcedenciaDTO.class,"itemByTipoColegio","ubigeo");
+	}
+	@Override
+	public int contarListarProcedencia(ProcedenciaDTO procedencia){
+		return  this.procedenciaDaoImpl.contarListarProcedencia(procedencia);
+	}
+	@Override
+	public PostulanteDTO controladorAccionPostulante(PostulanteDTO postulante, AccionType accionType) throws Exception {
+		PostulanteDTO resultado = null;
+		Postulante resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				postulante.setIdPostulante(this.postulanteDaoImpl.generarIdPostulante());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(postulante, Postulante.class,"persona@PK@","anhoSemestre@PK@","escuelaByOpcion1@PK@","escuelaByOpcion2@PK@","escuelaByIngreso@PK@","itemByModalidad@PK@","itemByTipoPreparacion@PK@","itemByTurnoAtencion@PK@");
+				this.postulanteDaoImpl.save(resultadoEntity);	
+				resultado = postulante;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(postulante, Postulante.class,"persona@PK@","anhoSemestre@PK@","escuelaByOpcion1@PK@","escuelaByOpcion2@PK@","escuelaByIngreso@PK@","itemByModalidad@PK@","itemByTipoPreparacion@PK@","itemByTurnoAtencion@PK@");
+				this.postulanteDaoImpl.update(resultadoEntity);
+				resultado = postulante;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.postulanteDaoImpl.find(Postulante.class, postulante.getIdPostulante());
+				this.postulanteDaoImpl.delete(resultadoEntity);
+				resultado = postulante;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.postulanteDaoImpl.find(Postulante.class, postulante.getIdPostulante());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,PostulanteDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.postulanteDaoImpl.findByNombre(postulante),PostulanteDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<PostulanteDTO> listarPostulante(PostulanteDTO postulante) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.postulanteDaoImpl.listarPostulante(postulante),PostulanteDTO.class);
+	}
+	@Override
+	public int contarListarPostulante(PostulanteDTO postulante){
+		return  this.postulanteDaoImpl.contarListarPostulante(postulante);
+	}
+	
+	@Override
+	public FacultadDTO controladorAccionFacultad(FacultadDTO facultad, AccionType accionType) throws Exception {
+		FacultadDTO resultado = null;
+		Facultad resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				facultad.setIdFacultad(this.facultadDaoImpl.generarIdFacultad());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(facultad, Facultad.class);
+				this.facultadDaoImpl.save(resultadoEntity);	
+				resultado = facultad;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(facultad, Facultad.class);
+				this.facultadDaoImpl.update(resultadoEntity);
+				resultado = facultad;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.facultadDaoImpl.find(Facultad.class, facultad.getIdFacultad());
+				this.facultadDaoImpl.delete(resultadoEntity);
+				resultado = facultad;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.facultadDaoImpl.find(Facultad.class, facultad.getIdFacultad());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,FacultadDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.facultadDaoImpl.findByNombre(facultad),FacultadDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<FacultadDTO> listarFacultad(FacultadDTO facultad) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.facultadDaoImpl.listarFacultad(facultad),FacultadDTO.class);
+	}
+	@Override
+	public int contarListarFacultad(FacultadDTO facultad){
+		return  this.facultadDaoImpl.contarListarFacultad(facultad);
+	}
+	
+}

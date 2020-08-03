@@ -1,0 +1,226 @@
+package pe.com.edu.siaa.core.model.jpa.matricula;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import pe.com.edu.siaa.core.model.util.ConfiguracionEntityManagerUtil;
+
+/**
+ * La Class Cargo.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 09:56:51 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Entity
+@Table(name = "Cargo", schema = ConfiguracionEntityManagerUtil.ESQUEMA_ACADEMICO)
+public class Cargo implements Serializable {
+	 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id cargo. */
+    @Id
+    @Column(name = "idCargo" , length = 4)
+    private String idCargo;
+   
+    /** El descripcion. */
+    @Column(name = "descripcion" , length = 50)
+    private String descripcion;
+   
+    /** El tipo cargo. */
+    @Column(name = "tipoCargo" , length = 1)
+    private String tipoCargo;
+   
+    /** El codigo. */
+    @Column(name = "codigo" , length = 50)
+    private String codigo;
+   
+    /** El estado. */
+    @Column(name = "estado" , length = 1)
+    private String estado;
+   
+    /** El cargo personal list. */
+    @OneToMany(mappedBy = "cargo", fetch = FetchType.LAZY)
+    private List<Personal> cargoPersonalList = new ArrayList<Personal>();
+    
+    /**
+     * Instancia un nuevo cargo.
+     */
+    public Cargo() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo cargo.
+     *
+     * @param idCargo el id cargo
+     * @param descripcion el descripcion
+     * @param tipoCargo el tipo cargo
+     * @param codigo el codigo
+     * @param estado el estado
+     */
+    public Cargo(String idCargo, String descripcion, String tipoCargo, String codigo, String estado ) {
+        super();
+        this.idCargo = idCargo;
+        this.descripcion = descripcion;
+        this.tipoCargo = tipoCargo;
+        this.codigo = codigo;
+        this.estado = estado;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id cargo.
+     *
+     * @return id cargo
+     */
+     public String getIdCargo() {
+        return this.idCargo;
+    }
+    /**
+     * Establece el id cargo.
+     *
+     * @param idCargo el new id cargo
+     */
+    public void setIdCargo(String idCargo) {
+        this.idCargo = idCargo;
+    }
+    /**
+     * Obtiene descripcion.
+     *
+     * @return descripcion
+     */
+     public String getDescripcion() {
+        return this.descripcion;
+    }
+    /**
+     * Establece el descripcion.
+     *
+     * @param descripcion el new descripcion
+     */
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+    /**
+     * Obtiene tipo cargo.
+     *
+     * @return tipo cargo
+     */
+     public String getTipoCargo() {
+        return this.tipoCargo;
+    }
+    /**
+     * Establece el tipo cargo.
+     *
+     * @param tipoCargo el new tipo cargo
+     */
+    public void setTipoCargo(String tipoCargo) {
+        this.tipoCargo = tipoCargo;
+    }
+    /**
+     * Obtiene codigo.
+     *
+     * @return codigo
+     */
+     public String getCodigo() {
+        return this.codigo;
+    }
+    /**
+     * Establece el codigo.
+     *
+     * @param codigo el new codigo
+     */
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+    /**
+     * Obtiene estado.
+     *
+     * @return estado
+     */
+     public String getEstado() {
+        return this.estado;
+    }
+    /**
+     * Establece el estado.
+     *
+     * @param estado el new estado
+     */
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+    /**
+     * Establece el cargo personal list.
+     *
+     * @param cargoPersonalList el new cargo personal list
+     */
+    public List<Personal> getCargoPersonalList(){
+        return this.cargoPersonalList;
+    }
+    /**
+     * Establece el cargo list.
+     *
+     * @param cargoList el new cargo list
+     */
+    public void setCargoPersonalList(List<Personal> cargoPersonalList) {
+        this.cargoPersonalList = cargoPersonalList;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idCargo == null) ? 0 : idCargo.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Cargo other = (Cargo) obj;
+        if (idCargo == null) {
+            if (other.idCargo != null) {
+                return false;
+            }
+        } else if (!idCargo.equals(other.idCargo)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Cargo [idCargo=" + idCargo + "]";
+    }
+   
+}

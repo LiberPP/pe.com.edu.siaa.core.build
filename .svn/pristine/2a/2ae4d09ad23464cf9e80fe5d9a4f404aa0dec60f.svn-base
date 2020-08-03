@@ -1,0 +1,114 @@
+package pe.com.builderp.core.facturacion.ejb.service.rest.venta.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.builderp.core.facturacion.ejb.service.venta.local.VentaServiceLocal;
+import pe.com.builderp.core.facturacion.model.dto.venta.VentaDTO;
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.seguridad.jwt.rsa.util.AppHTTPHeaderNames;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class VentaRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Thu Dec 28 12:02:24 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/ventaRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class VentaRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient VentaServiceLocal ventaServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<VentaDTO> registrarVenta(@Context HttpHeaders httpHeaders,VentaDTO venta) throws Exception {
+		ResultadoRestVO<VentaDTO> resultado = new ResultadoRestVO<VentaDTO>();
+		String serviceKey = httpHeaders.getHeaderString( AppHTTPHeaderNames.SERVICE_KEY );
+		String authToken = httpHeaders.getHeaderString( AppHTTPHeaderNames.AUTH_TOKEN );
+		String ip = httpHeaders.getHeaderString( AppHTTPHeaderNames.ORIGIN );
+		venta.setIpAcceso(ip);
+		venta.setServiceKey(serviceKey);
+		venta.setAuthToken(authToken);		
+		 try {
+			 resultado.setObjetoResultado(ventaServiceLocal.registrarVenta(venta));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<VentaDTO> eliminar(@PathParam("id") String idVenta) throws Exception {
+		ResultadoRestVO<VentaDTO> resultado = new ResultadoRestVO<VentaDTO>();
+		VentaDTO venta = new VentaDTO();
+		venta.setIdVenta(idVenta);		
+		return resultado;
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<VentaDTO> listarVenta(@Context UriInfo info){
+		ResultadoRestVO<VentaDTO> resultado = new ResultadoRestVO<VentaDTO>();
+		VentaDTO venta = transferUriInfo(info);
+		 try {
+			resultado.setListaResultado(ventaServiceLocal.listarVenta(venta));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<VentaDTO> contarVenta(@Context UriInfo info){
+		ResultadoRestVO<VentaDTO> resultado = new ResultadoRestVO<VentaDTO>();
+		VentaDTO venta = transferUriInfo(info);
+		 try {
+			 resultado.setContador(ventaServiceLocal.contarListarVenta(venta));
+			 if (resultado.isData()) {
+				resultado.setListaResultado(ventaServiceLocal.listarVenta(venta));
+			 }
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<VentaDTO> inicializarVenta(@Context UriInfo info) throws Exception {
+	     VentaDTO venta = transferUriInfo(info);
+		 ResultadoRestVO<VentaDTO> resultado = new ResultadoRestVO<VentaDTO>();
+		 try {
+    		resultado.setObjetoResultado(venta);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private VentaDTO transferUriInfo(@Context UriInfo info) {
+		VentaDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,VentaDTO.class);
+		return resultado;
+	}
+}

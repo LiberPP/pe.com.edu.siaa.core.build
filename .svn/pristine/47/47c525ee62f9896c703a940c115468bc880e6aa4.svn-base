@@ -1,0 +1,281 @@
+package pe.com.edu.siaa.core.model.jpa.pago;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import pe.com.edu.siaa.core.model.util.ConfiguracionEntityManagerUtil;
+
+/**
+ * La Class DetPlanPagos.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 09:56:45 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Entity
+@Table(name = "DetPlanPagos", schema = ConfiguracionEntityManagerUtil.ESQUEMA_ACADEMICO)
+public class DetPlanPagos implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id det plan pagos. */
+    @Id
+    @Column(name = "idDetPlanPagos" , length = 18)
+    private String idDetPlanPagos;
+   
+    /** El plan pagos. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idPlanPagos", referencedColumnName = "idPlanPagos")
+    private PlanPagos planPagos;
+   
+    /** El cuota concepto. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idCuotaConcepto", referencedColumnName = "idCuotaConcepto")
+    private CuotaConcepto cuotaConcepto;
+   
+    /** El cuota. */
+    @Column(name = "cuota" , precision = 18 , scale = 2)
+    private BigDecimal cuota;
+   
+    /** El monto resta. */
+    @Column(name = "montoResta" , precision = 18 , scale = 2)
+    private BigDecimal montoResta;
+   
+    /** El fecha vencimiento. */
+    @Temporal( TemporalType.TIMESTAMP)
+    @Column(name = "fechaVencimiento")
+    private Date fechaVencimiento;
+   
+    /** El flag fraccionado. */
+    @Column(name = "flagFraccionado" , length = 1)
+    private String flagFraccionado;
+   
+      
+    /** El det plan pagos fraccionamiento list. */
+    @OneToMany(mappedBy = "detPlanPagos", fetch = FetchType.LAZY)
+    private List<Fraccionamiento> detPlanPagosFraccionamientoList = new ArrayList<Fraccionamiento>();
+    
+    /**
+     * Instancia un nuevo det plan pagos.
+     */
+    public DetPlanPagos() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo det plan pagos.
+     *
+     * @param idDetPlanPagos el id det plan pagos
+     * @param planPagos el plan pagos
+     * @param cuotaConcepto el cuota concepto
+     * @param cuota el cuota
+     * @param montoResta el monto resta
+     * @param fechaVencimiento el fecha vencimiento
+     * @param flagFraccionado el flag fraccionado
+     */
+    public DetPlanPagos(String idDetPlanPagos, PlanPagos planPagos,CuotaConcepto cuotaConcepto,BigDecimal cuota, BigDecimal montoResta, Date fechaVencimiento, String flagFraccionado ) {
+        super();
+        this.idDetPlanPagos = idDetPlanPagos;
+        this.planPagos = planPagos;
+        this.cuotaConcepto = cuotaConcepto;
+        this.cuota = cuota;
+        this.montoResta = montoResta;
+        this.fechaVencimiento = fechaVencimiento;
+        this.flagFraccionado = flagFraccionado;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id det plan pagos.
+     *
+     * @return id det plan pagos
+     */
+     public String getIdDetPlanPagos() {
+        return this.idDetPlanPagos;
+    }
+    /**
+     * Establece el id det plan pagos.
+     *
+     * @param idDetPlanPagos el new id det plan pagos
+     */
+    public void setIdDetPlanPagos(String idDetPlanPagos) {
+        this.idDetPlanPagos = idDetPlanPagos;
+    }
+    /**
+     * Obtiene plan pagos.
+     *
+     * @return plan pagos
+     */
+     public PlanPagos getPlanPagos() {
+        return this.planPagos;
+    }
+    /**
+     * Establece el plan pagos.
+     *
+     * @param planPagos el new plan pagos
+     */
+    public void setPlanPagos(PlanPagos planPagos) {
+        this.planPagos = planPagos;
+    }
+    /**
+     * Obtiene cuota concepto.
+     *
+     * @return cuota concepto
+     */
+     public CuotaConcepto getCuotaConcepto() {
+        return this.cuotaConcepto;
+    }
+    /**
+     * Establece el cuota concepto.
+     *
+     * @param cuotaConcepto el new cuota concepto
+     */
+    public void setCuotaConcepto(CuotaConcepto cuotaConcepto) {
+        this.cuotaConcepto = cuotaConcepto;
+    }
+    /**
+     * Obtiene cuota.
+     *
+     * @return cuota
+     */
+     public BigDecimal getCuota() {
+        return this.cuota;
+    }
+    /**
+     * Establece el cuota.
+     *
+     * @param cuota el new cuota
+     */
+    public void setCuota(BigDecimal cuota) {
+        this.cuota = cuota;
+    }
+    /**
+     * Obtiene monto resta.
+     *
+     * @return monto resta
+     */
+     public BigDecimal getMontoResta() {
+        return this.montoResta;
+    }
+    /**
+     * Establece el monto resta.
+     *
+     * @param montoResta el new monto resta
+     */
+    public void setMontoResta(BigDecimal montoResta) {
+        this.montoResta = montoResta;
+    }
+    /**
+     * Obtiene fecha vencimiento.
+     *
+     * @return fecha vencimiento
+     */
+     public Date getFechaVencimiento() {
+        return this.fechaVencimiento;
+    }
+    /**
+     * Establece el fecha vencimiento.
+     *
+     * @param fechaVencimiento el new fecha vencimiento
+     */
+    public void setFechaVencimiento(Date fechaVencimiento) {
+        this.fechaVencimiento = fechaVencimiento;
+    }
+    /**
+     * Obtiene flag fraccionado.
+     *
+     * @return flag fraccionado
+     */
+     public String getFlagFraccionado() {
+        return this.flagFraccionado;
+    }
+    /**
+     * Establece el flag fraccionado.
+     *
+     * @param flagFraccionado el new flag fraccionado
+     */
+    public void setFlagFraccionado(String flagFraccionado) {
+        this.flagFraccionado = flagFraccionado;
+    }
+  
+    /**
+     * Establece el det plan pagos fraccionamiento list.
+     *
+     * @param detPlanPagosFraccionamientoList el new det plan pagos fraccionamiento list
+     */
+    public List<Fraccionamiento> getDetPlanPagosFraccionamientoList(){
+        return this.detPlanPagosFraccionamientoList;
+    }
+    /**
+     * Establece el det plan pagos list.
+     *
+     * @param detPlanPagosList el new det plan pagos list
+     */
+    public void setDetPlanPagosFraccionamientoList(List<Fraccionamiento> detPlanPagosFraccionamientoList) {
+        this.detPlanPagosFraccionamientoList = detPlanPagosFraccionamientoList;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idDetPlanPagos == null) ? 0 : idDetPlanPagos.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        DetPlanPagos other = (DetPlanPagos) obj;
+        if (idDetPlanPagos == null) {
+            if (other.idDetPlanPagos != null) {
+                return false;
+            }
+        } else if (!idDetPlanPagos.equals(other.idDetPlanPagos)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "DetPlanPagos [idDetPlanPagos=" + idDetPlanPagos + "]";
+    }
+   
+}

@@ -1,0 +1,255 @@
+package pe.com.edu.siaa.core.model.dto.pago;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import pe.com.edu.siaa.core.model.dto.BasePaginator;
+import pe.com.edu.siaa.core.model.dto.admision.AnhoSemestreDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.AlumnoDTO;
+
+/**
+ * La Class PlanPagosDTO.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 1.0, Tue Apr 18 09:56:54 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+public class PlanPagosDTO extends BasePaginator implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id plan pagos. */
+    private String idPlanPagos;
+   
+    /** El anho semestre. */
+    private AnhoSemestreDTO anhoSemestre;
+   
+    /** El alumno. */
+    private AlumnoDTO alumno;
+   
+    /** El fecha creacion. */
+    private Date fechaCreacion;
+   
+    /** El usuario creacion. */
+    private String usuarioCreacion;
+   
+    /** El fecha modificacion. */
+    private Date fechaModificacion;
+   
+    /** El usuario modificacion. */
+    private String usuarioModificacion;
+   
+    /** El plan pagos det plan pagos list. */
+    private List<DetPlanPagosDTO> planPagosDetPlanPagosList = new ArrayList<DetPlanPagosDTO>();
+   
+    /**
+     * Instancia un nuevo plan pagosDTO.
+     */
+    public PlanPagosDTO() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo plan pagosDTO.
+     *
+     * @param idPlanPagos el id plan pagos
+     * @param anhoSemestre el anho semestre
+     * @param alumno el alumno
+     * @param fechaCreacion el fecha creacion
+     * @param usuarioCreacion el usuario creacion
+     * @param fechaModificacion el fecha modificacion
+     * @param usuarioModificacion el usuario modificacion
+     */
+    public PlanPagosDTO(String idPlanPagos, AnhoSemestreDTO anhoSemestre,AlumnoDTO alumno,Date fechaCreacion, String usuarioCreacion, Date fechaModificacion, String usuarioModificacion ) {
+        super();
+        this.idPlanPagos = idPlanPagos;
+        this.anhoSemestre = anhoSemestre;
+        this.alumno = alumno;
+        this.fechaCreacion = fechaCreacion;
+        this.usuarioCreacion = usuarioCreacion;
+        this.fechaModificacion = fechaModificacion;
+        this.usuarioModificacion = usuarioModificacion;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id plan pagos.
+     *
+     * @return id plan pagos
+     */
+     public String getIdPlanPagos() {
+        return this.idPlanPagos;
+    }
+    /**
+     * Establece el id plan pagos.
+     *
+     * @param idPlanPagos el new id plan pagos
+     */
+    public void setIdPlanPagos(String idPlanPagos) {
+        this.idPlanPagos = idPlanPagos;
+    }
+    /**
+     * Obtiene anho semestre.
+     *
+     * @return anho semestre
+     */
+     public AnhoSemestreDTO getAnhoSemestre() {
+        return this.anhoSemestre;
+    }
+    /**
+     * Establece el anho semestre.
+     *
+     * @param anhoSemestre el new anho semestre
+     */
+    public void setAnhoSemestre(AnhoSemestreDTO anhoSemestre) {
+        this.anhoSemestre = anhoSemestre;
+    }
+    /**
+     * Obtiene alumno.
+     *
+     * @return alumno
+     */
+     public AlumnoDTO getAlumno() {
+        return this.alumno;
+    }
+    /**
+     * Establece el alumno.
+     *
+     * @param alumno el new alumno
+     */
+    public void setAlumno(AlumnoDTO alumno) {
+        this.alumno = alumno;
+    }
+    /**
+     * Obtiene fecha creacion.
+     *
+     * @return fecha creacion
+     */
+     public Date getFechaCreacion() {
+        return this.fechaCreacion;
+    }
+    /**
+     * Establece el fecha creacion.
+     *
+     * @param fechaCreacion el new fecha creacion
+     */
+    public void setFechaCreacion(Date fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
+    }
+    /**
+     * Obtiene usuario creacion.
+     *
+     * @return usuario creacion
+     */
+     public String getUsuarioCreacion() {
+        return this.usuarioCreacion;
+    }
+    /**
+     * Establece el usuario creacion.
+     *
+     * @param usuarioCreacion el new usuario creacion
+     */
+    public void setUsuarioCreacion(String usuarioCreacion) {
+        this.usuarioCreacion = usuarioCreacion;
+    }
+    /**
+     * Obtiene fecha modificacion.
+     *
+     * @return fecha modificacion
+     */
+     public Date getFechaModificacion() {
+        return this.fechaModificacion;
+    }
+    /**
+     * Establece el fecha modificacion.
+     *
+     * @param fechaModificacion el new fecha modificacion
+     */
+    public void setFechaModificacion(Date fechaModificacion) {
+        this.fechaModificacion = fechaModificacion;
+    }
+    /**
+     * Obtiene usuario modificacion.
+     *
+     * @return usuario modificacion
+     */
+     public String getUsuarioModificacion() {
+        return this.usuarioModificacion;
+    }
+    /**
+     * Establece el usuario modificacion.
+     *
+     * @param usuarioModificacion el new usuario modificacion
+     */
+    public void setUsuarioModificacion(String usuarioModificacion) {
+        this.usuarioModificacion = usuarioModificacion;
+    }
+    /**
+     * Establece el plan pagos det plan pagos list.
+     *
+     * @param planPagosDetPlanPagosList el new plan pagos det plan pagos list
+     */
+    public List<DetPlanPagosDTO> getPlanPagosDetPlanPagosList(){
+        return this.planPagosDetPlanPagosList;
+    }
+    /**
+     * Establece el plan pagos list.
+     *
+     * @param planPagosList el new plan pagos list
+     */
+    public void setPlanPagosDetPlanPagosList(List<DetPlanPagosDTO> planPagosDetPlanPagosList) {
+        this.planPagosDetPlanPagosList = planPagosDetPlanPagosList;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idPlanPagos == null) ? 0 : idPlanPagos.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        PlanPagosDTO other = (PlanPagosDTO) obj;
+        if (idPlanPagos == null) {
+            if (other.idPlanPagos != null) {
+                return false;
+            }
+        } else if (!idPlanPagos.equals(other.idPlanPagos)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "PlanPagosDTO [idPlanPagos=" + idPlanPagos + "]";
+    }
+   
+}

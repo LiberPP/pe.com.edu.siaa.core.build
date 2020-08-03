@@ -1,0 +1,117 @@
+package pe.com.edu.siaa.core.ejb.service.rest.matricula.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.matricula.local.MatriculaServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.matricula.ConvalidacionPlanEstudioDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class ConvalidacionPlanEstudioRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:39 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/convalidacionPlanEstudioRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class ConvalidacionPlanEstudioRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient MatriculaServiceLocal matriculaServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<ConvalidacionPlanEstudioDTO> crear(ConvalidacionPlanEstudioDTO convalidacionPlanEstudio) throws Exception {
+		return controladorAccion(convalidacionPlanEstudio,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<ConvalidacionPlanEstudioDTO> modificar(ConvalidacionPlanEstudioDTO convalidacionPlanEstudio) throws Exception {
+		return controladorAccion(convalidacionPlanEstudio,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<ConvalidacionPlanEstudioDTO> eliminar(@PathParam("id") String idConvalidacionPlanEstudio) throws Exception {
+		ConvalidacionPlanEstudioDTO convalidacionPlanEstudio = new ConvalidacionPlanEstudioDTO();
+		convalidacionPlanEstudio.setIdConvalidacionPlanEstudio(idConvalidacionPlanEstudio);		
+		return controladorAccion(convalidacionPlanEstudio,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<ConvalidacionPlanEstudioDTO> controladorAccion(ConvalidacionPlanEstudioDTO convalidacionPlanEstudio, AccionType accionType){
+		ResultadoRestVO<ConvalidacionPlanEstudioDTO> resultado = new ResultadoRestVO<ConvalidacionPlanEstudioDTO>();
+		 try {
+    		resultado.setObjetoResultado(matriculaServiceLocal.controladorAccionConvalidacionPlanEstudio(convalidacionPlanEstudio,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<ConvalidacionPlanEstudioDTO> finById(@PathParam("id") String idConvalidacionPlanEstudio) throws Exception {
+		ConvalidacionPlanEstudioDTO convalidacionPlanEstudio = new ConvalidacionPlanEstudioDTO();
+		convalidacionPlanEstudio.setIdConvalidacionPlanEstudio(idConvalidacionPlanEstudio);
+		return controladorAccion(convalidacionPlanEstudio,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<ConvalidacionPlanEstudioDTO> listarConvalidacionPlanEstudio(@Context UriInfo info){
+		ResultadoRestVO<ConvalidacionPlanEstudioDTO> resultado = new ResultadoRestVO<ConvalidacionPlanEstudioDTO>();
+		ConvalidacionPlanEstudioDTO convalidacionPlanEstudio = transferUriInfo(info);
+		 try {
+    		resultado.setListaResultado(matriculaServiceLocal.listarConvalidacionPlanEstudio(convalidacionPlanEstudio));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<Integer> contarListarConvalidacionPlanEstudio(@Context UriInfo info){
+		ResultadoRestVO<Integer> resultado = new ResultadoRestVO<Integer>();
+		ConvalidacionPlanEstudioDTO convalidacionPlanEstudio = transferUriInfo(info);
+		 try {
+    		resultado.setObjetoResultado(matriculaServiceLocal.contarListarConvalidacionPlanEstudio(convalidacionPlanEstudio));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<ConvalidacionPlanEstudioDTO> inicializarConvalidacionPlanEstudio(@Context UriInfo info) throws Exception {
+	     ConvalidacionPlanEstudioDTO convalidacionPlanEstudio = transferUriInfo(info);
+		 ResultadoRestVO<ConvalidacionPlanEstudioDTO> resultado = new ResultadoRestVO<ConvalidacionPlanEstudioDTO>();
+		 try {
+    		resultado.setObjetoResultado(convalidacionPlanEstudio);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private ConvalidacionPlanEstudioDTO transferUriInfo(@Context UriInfo info) {
+		ConvalidacionPlanEstudioDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,ConvalidacionPlanEstudioDTO.class);
+		return resultado;
+	}
+}

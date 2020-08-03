@@ -1,0 +1,71 @@
+package pe.com.edu.siaa.core.ejb.dao.encuesta.impl;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.persistence.Query;
+
+import pe.com.edu.siaa.core.ejb.dao.encuesta.local.AlternativaDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericEncuestaDAOImpl;
+import pe.com.edu.siaa.core.ejb.factory.CollectionUtil;
+import pe.com.edu.siaa.core.ejb.util.jms.UUIDUtil;
+import pe.com.edu.siaa.core.model.jpa.encuesta.Alternativa;
+
+/**
+ * La Class AlternativaDaoImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Fri Sep 08 19:44:51 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+public class AlternativaDaoImpl extends  GenericEncuestaDAOImpl<String, Alternativa> implements AlternativaDaoLocal  {
+	
+	    /* (non-Javadoc)
+	     * @see pe.com.conta.core.ejb.dao.encuesta.local.AlternativaDaoLocal#listarAlternativa(pe.com.conta.core.model.jpa.encuesta.Alternativa)
+	     */
+	    @Override
+	    public List<Alternativa> listarAlternativa(List<String> listaIdCuestionario) throws Exception {
+	    	if (CollectionUtil.isEmpty(listaIdCuestionario)) {
+	    		return new ArrayList<Alternativa>();
+	    	}
+	        Query query = generarQueryListaAlternativa(listaIdCuestionario);
+	        return query.getResultList();
+	    }   
+	   
+	    /**
+	     * Generar query lista Alternativa.
+	     *
+	     * @param AlternativaDTO el alternativa
+	     * @param esContador el es contador
+	     * @return the query
+	     */
+	    private Query generarQueryListaAlternativa(List<String> listaIdCuestionario) throws Exception {
+	        Map<String, Object> parametros = new HashMap<String, Object>();
+	        StringBuilder jpaql = new StringBuilder();
+	        jpaql.append(" select o from Alternativa o left join fetch o.opcionAlternativa left join fetch o.cuestionario where 1=1 ");           
+	      
+	        jpaql.append(" and o.cuestionario.idCuestionario in (:listaIdCuestionario) ");
+	        parametros.put("listaIdCuestionario",listaIdCuestionario);
+			
+	        Query query = createQuery(jpaql.toString(), parametros);
+	        return query;
+	    }
+
+
+	    /* (non-Javadoc)
+	     * @see pe.com.conta.core.ejb.dao.encuesta.local.AlternativaDaoLocal#generarIdAlternativa()
+	     */
+	    @Override
+	    public String generarIdAlternativa() throws Exception {
+	        return UUIDUtil.generarElementUUID();
+	    }
+	   
+	}

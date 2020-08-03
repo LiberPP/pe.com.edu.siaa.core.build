@@ -1,0 +1,190 @@
+package pe.com.edu.siaa.core.model.dto.matricula;
+
+import java.io.Serializable;
+import java.util.Date;
+
+import pe.com.edu.siaa.core.model.dto.BasePaginator;
+
+/**
+ * La Class AsignaPlanEstudioDTO.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 1.0, Tue Apr 18 09:56:57 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+public class AsignaPlanEstudioDTO extends BasePaginator implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id asigna planestudio. */
+    private String idAsignaPlanestudio;
+   
+    /** El alumno. */
+    private AlumnoDTO alumno;
+   
+    /** El plan estudio. */
+    private PlanEstudioDTO planEstudio;
+   
+    /** El estado. */
+    private String estado;
+   
+    /** El fecha crea. */
+    private Date fechaCrea;
+   
+    /**
+     * Instancia un nuevo asigna plan estudioDTO.
+     */
+    public AsignaPlanEstudioDTO() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo asigna plan estudioDTO.
+     *
+     * @param idAsignaPlanestudio el id asigna planestudio
+     * @param alumno el alumno
+     * @param planEstudio el plan estudio
+     * @param estado el estado
+     * @param fechaCrea el fecha crea
+     */
+    public AsignaPlanEstudioDTO(String idAsignaPlanestudio, AlumnoDTO alumno,PlanEstudioDTO planEstudio,String estado, Date fechaCrea ) {
+        super();
+        this.idAsignaPlanestudio = idAsignaPlanestudio;
+        this.alumno = alumno;
+        this.planEstudio = planEstudio;
+        this.estado = estado;
+        this.fechaCrea = fechaCrea;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id asigna planestudio.
+     *
+     * @return id asigna planestudio
+     */
+     public String getIdAsignaPlanestudio() {
+        return this.idAsignaPlanestudio;
+    }
+    /**
+     * Establece el id asigna planestudio.
+     *
+     * @param idAsignaPlanestudio el new id asigna planestudio
+     */
+    public void setIdAsignaPlanestudio(String idAsignaPlanestudio) {
+        this.idAsignaPlanestudio = idAsignaPlanestudio;
+    }
+    /**
+     * Obtiene alumno.
+     *
+     * @return alumno
+     */
+     public AlumnoDTO getAlumno() {
+        return this.alumno;
+    }
+    /**
+     * Establece el alumno.
+     *
+     * @param alumno el new alumno
+     */
+    public void setAlumno(AlumnoDTO alumno) {
+        this.alumno = alumno;
+    }
+    /**
+     * Obtiene plan estudio.
+     *
+     * @return plan estudio
+     */
+     public PlanEstudioDTO getPlanEstudio() {
+        return this.planEstudio;
+    }
+    /**
+     * Establece el plan estudio.
+     *
+     * @param planEstudio el new plan estudio
+     */
+    public void setPlanEstudio(PlanEstudioDTO planEstudio) {
+        this.planEstudio = planEstudio;
+    }
+    /**
+     * Obtiene estado.
+     *
+     * @return estado
+     */
+     public String getEstado() {
+        return this.estado;
+    }
+    /**
+     * Establece el estado.
+     *
+     * @param estado el new estado
+     */
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+    /**
+     * Obtiene fecha crea.
+     *
+     * @return fecha crea
+     */
+     public Date getFechaCrea() {
+        return this.fechaCrea;
+    }
+    /**
+     * Establece el fecha crea.
+     *
+     * @param fechaCrea el new fecha crea
+     */
+    public void setFechaCrea(Date fechaCrea) {
+        this.fechaCrea = fechaCrea;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idAsignaPlanestudio == null) ? 0 : idAsignaPlanestudio.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        AsignaPlanEstudioDTO other = (AsignaPlanEstudioDTO) obj;
+        if (idAsignaPlanestudio == null) {
+            if (other.idAsignaPlanestudio != null) {
+                return false;
+            }
+        } else if (!idAsignaPlanestudio.equals(other.idAsignaPlanestudio)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "AsignaPlanEstudioDTO [idAsignaPlanestudio=" + idAsignaPlanestudio + "]";
+    }
+   
+}

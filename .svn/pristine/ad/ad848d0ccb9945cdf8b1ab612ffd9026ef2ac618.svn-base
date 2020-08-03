@@ -1,0 +1,787 @@
+package pe.com.edu.siaa.core.model.jpa.matricula;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import pe.com.edu.siaa.core.model.jpa.admision.CierreAnhoSemestre;
+import pe.com.edu.siaa.core.model.jpa.admision.Persona;
+import pe.com.edu.siaa.core.model.jpa.common.Item;
+import pe.com.edu.siaa.core.model.util.ConfiguracionEntityManagerUtil;
+
+/**
+ * La Class Personal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 09:56:48 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Entity
+@Table(name = "Personal", schema = ConfiguracionEntityManagerUtil.ESQUEMA_ACADEMICO)
+public class Personal implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id personal. */
+    @Id
+    @Column(name = "idPersonal" , length = 10)
+    private String idPersonal;
+   
+    /** El persona. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idPersona", referencedColumnName = "idPersona")
+    private Persona persona;
+   
+    /** El codigo personal. */
+    @Column(name = "codigoPersonal" , length = 10)
+    private String codigoPersonal;
+   
+    /** El item by condicion laboral. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idCondicionLaboral", referencedColumnName = "idItem")
+    private Item itemByCondicionLaboral;
+   
+    /** El profesion. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idProfesion", referencedColumnName = "idProfesion")
+    private Profesion profesion;
+   
+    /** El item by categoria alumno. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idCategoriaDocente", referencedColumnName = "idItem")
+    private Item itemByCategoriaDocente;
+   
+    /** El item by grado instruccion. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idGradoInstruccion", referencedColumnName = "idItem")
+    private Item itemByGradoInstruccion;
+   
+    /** El item by dedicacion docente. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idDedicacionDocente", referencedColumnName = "idItem")
+    private Item itemByDedicacionDocente;
+   
+    /** El item by tipo trabajador. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idTipoTrabajador", referencedColumnName = "idItem")
+    private Item itemByTipoTrabajador;
+   
+    /** El item by tipo ocupacion universitaria. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idTipoOcupacionUniversitaria", referencedColumnName = "idItem")
+    private Item itemByTipoOcupacionUniversitaria;
+   
+    /** El regimen pensionario. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idRegimenPensionario", referencedColumnName = "idRegimenPensionario")
+    private RegimenPensionario regimenPensionario;
+   
+    /** El cargo. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idCargo", referencedColumnName = "idCargo")
+    private Cargo cargo;
+   
+    /** El item by tipo contrato. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idTipoContrato", referencedColumnName = "idItem")
+    private Item itemByTipoContrato;
+   
+    /** El fecha ingreso. */
+    @Temporal( TemporalType.TIMESTAMP)
+    @Column(name = "fechaIngreso")
+    private Date fechaIngreso;
+   
+    /** El fecha salida. */
+    @Temporal( TemporalType.TIMESTAMP)
+    @Column(name = "fechaSalida")
+    private Date fechaSalida;
+   
+    /** El estado. */
+    @Column(name = "estado" , length = 1)
+    private String estado;
+   
+    /** El fecha inscripcion. */
+    @Temporal( TemporalType.TIMESTAMP)
+    @Column(name = "fechaInscripcion")
+    private Date fechaInscripcion;
+   
+    /** El flag discapacidad. */
+    @Column(name = "flagDiscapacidad" , length = 1)
+    private String flagDiscapacidad;
+   
+    /** El flag sindicalizado. */
+    @Column(name = "flagSindicalizado" , length = 1)
+    private String flagSindicalizado;
+   
+    /** El afiliado e p s. */
+    @Column(name = "afiliadoEPS" , length = 1)
+    private String afiliadoEPS;
+   
+    /** El seguro medico. */
+    @Column(name = "seguroMedico" , length = 1)
+    private String seguroMedico;
+   
+    /** El madre responsabilidad familiar. */
+    @Column(name = "madreResponsabilidadFamiliar" , length = 1)
+    private String madreResponsabilidadFamiliar;
+   
+    /** El item by tipo centro formacion profesional. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idTipoCentroFormacionProfesional", referencedColumnName = "idItem")
+    private Item itemByTipoCentroFormacionProfesional;
+   
+    /** El sujeto horario nocturno. */
+    @Column(name = "sujetoHorarioNocturno" , length = 1)
+    private String sujetoHorarioNocturno;
+   
+    /** El usuario creacion apertura cierre matricula list. */
+    @OneToMany(mappedBy = "usuarioCreacion", fetch = FetchType.LAZY)
+    private List<AperturaCierreMatricula> usuarioCreacionAperturaCierreMatriculaList = new ArrayList<AperturaCierreMatricula>();
+    
+    /** El usuario modificacion apertura cierre matricula list. */
+    @OneToMany(mappedBy = "usuarioModificacion", fetch = FetchType.LAZY)
+    private List<AperturaCierreMatricula> usuarioModificacionAperturaCierreMatriculaList = new ArrayList<AperturaCierreMatricula>();
+    
+    /** El usuario creacion cierre anho semestre list. */
+    @OneToMany(mappedBy = "usuarioCreacion", fetch = FetchType.LAZY)
+    private List<CierreAnhoSemestre> usuarioCreacionCierreAnhoSemestreList = new ArrayList<CierreAnhoSemestre>();
+    
+    /** El personal by docente det carga lectiva list. */
+    @OneToMany(mappedBy = "personalByDocente", fetch = FetchType.LAZY)
+    private List<DetCargaLectiva> personalByDocenteDetCargaLectivaList = new ArrayList<DetCargaLectiva>();
+    
+    /** El personal by docente practica det carga lectiva list. */
+    @OneToMany(mappedBy = "personalByDocentePractica", fetch = FetchType.LAZY)
+    private List<DetCargaLectiva> personalByDocentePracticaDetCargaLectivaList = new ArrayList<DetCargaLectiva>();
+    
+    /** El personal by docente horario list. */
+    @OneToMany(mappedBy = "personalByDocente", fetch = FetchType.LAZY)
+    private List<Horario> personalByDocenteHorarioList = new ArrayList<Horario>();
+    
+    /** El personal organo directivo list. */
+    @OneToMany(mappedBy = "personal", fetch = FetchType.LAZY)
+    private List<OrganoDirectivo> personalOrganoDirectivoList = new ArrayList<OrganoDirectivo>();
+    
+    /**
+     * Instancia un nuevo personal.
+     */
+    public Personal() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo personal.
+     *
+     * @param idPersonal el id personal
+     * @param persona el persona
+     * @param codigoPersonal el codigo personal
+     * @param itemByCondicionLaboral el item by condicion laboral
+     * @param profesion el profesion
+     * @param itemByCategoriaDocente el item by categoria alumno
+     * @param itemByGradoInstruccion el item by grado instruccion
+     * @param itemByDedicacionDocente el item by dedicacion docente
+     * @param itemByTipoTrabajador el item by tipo trabajador
+     * @param itemByTipoOcupacionUniversitaria el item by tipo ocupacion universitaria
+     * @param regimenPensionario el regimen pensionario
+     * @param cargo el cargo
+     * @param itemByTipoContrato el item by tipo contrato
+     * @param fechaIngreso el fecha ingreso
+     * @param fechaSalida el fecha salida
+     * @param estado el estado
+     * @param fechaInscripcion el fecha inscripcion
+     * @param flagDiscapacidad el flag discapacidad
+     * @param flagSindicalizado el flag sindicalizado
+     * @param afiliadoEPS el afiliado e p s
+     * @param seguroMedico el seguro medico
+     * @param madreResponsabilidadFamiliar el madre responsabilidad familiar
+     * @param itemByTipoCentroFormacionProfesional el item by tipo centro formacion profesional
+     * @param sujetoHorarioNocturno el sujeto horario nocturno
+     */
+    public Personal(String idPersonal, Persona persona,String codigoPersonal, Item itemByCondicionLaboral,Profesion profesion,Item itemByCategoriaDocente,Item itemByGradoInstruccion,Item itemByDedicacionDocente,Item itemByTipoTrabajador,Item itemByTipoOcupacionUniversitaria,RegimenPensionario regimenPensionario,Cargo cargo,Item itemByTipoContrato,Date fechaIngreso, Date fechaSalida, String estado, Date fechaInscripcion, String flagDiscapacidad, String flagSindicalizado, String afiliadoEPS, String seguroMedico, String madreResponsabilidadFamiliar, Item itemByTipoCentroFormacionProfesional,String sujetoHorarioNocturno ) {
+        super();
+        this.idPersonal = idPersonal;
+        this.persona = persona;
+        this.codigoPersonal = codigoPersonal;
+        this.itemByCondicionLaboral = itemByCondicionLaboral;
+        this.profesion = profesion;
+        this.itemByCategoriaDocente = itemByCategoriaDocente;
+        this.itemByGradoInstruccion = itemByGradoInstruccion;
+        this.itemByDedicacionDocente = itemByDedicacionDocente;
+        this.itemByTipoTrabajador = itemByTipoTrabajador;
+        this.itemByTipoOcupacionUniversitaria = itemByTipoOcupacionUniversitaria;
+        this.regimenPensionario = regimenPensionario;
+        this.cargo = cargo;
+        this.itemByTipoContrato = itemByTipoContrato;
+        this.fechaIngreso = fechaIngreso;
+        this.fechaSalida = fechaSalida;
+        this.estado = estado;
+        this.fechaInscripcion = fechaInscripcion;
+        this.flagDiscapacidad = flagDiscapacidad;
+        this.flagSindicalizado = flagSindicalizado;
+        this.afiliadoEPS = afiliadoEPS;
+        this.seguroMedico = seguroMedico;
+        this.madreResponsabilidadFamiliar = madreResponsabilidadFamiliar;
+        this.itemByTipoCentroFormacionProfesional = itemByTipoCentroFormacionProfesional;
+        this.sujetoHorarioNocturno = sujetoHorarioNocturno;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id personal.
+     *
+     * @return id personal
+     */
+     public String getIdPersonal() {
+        return this.idPersonal;
+    }
+    /**
+     * Establece el id personal.
+     *
+     * @param idPersonal el new id personal
+     */
+    public void setIdPersonal(String idPersonal) {
+        this.idPersonal = idPersonal;
+    }
+    /**
+     * Obtiene persona.
+     *
+     * @return persona
+     */
+     public Persona getPersona() {
+        return this.persona;
+    }
+    /**
+     * Establece el persona.
+     *
+     * @param persona el new persona
+     */
+    public void setPersona(Persona persona) {
+        this.persona = persona;
+    }
+    /**
+     * Obtiene codigo personal.
+     *
+     * @return codigo personal
+     */
+     public String getCodigoPersonal() {
+        return this.codigoPersonal;
+    }
+    /**
+     * Establece el codigo personal.
+     *
+     * @param codigoPersonal el new codigo personal
+     */
+    public void setCodigoPersonal(String codigoPersonal) {
+        this.codigoPersonal = codigoPersonal;
+    }
+    /**
+     * Obtiene item by condicion laboral.
+     *
+     * @return item by condicion laboral
+     */
+     public Item getItemByCondicionLaboral() {
+        return this.itemByCondicionLaboral;
+    }
+    /**
+     * Establece el item by condicion laboral.
+     *
+     * @param itemByCondicionLaboral el new item by condicion laboral
+     */
+    public void setItemByCondicionLaboral(Item itemByCondicionLaboral) {
+        this.itemByCondicionLaboral = itemByCondicionLaboral;
+    }
+    /**
+     * Obtiene profesion.
+     *
+     * @return profesion
+     */
+     public Profesion getProfesion() {
+        return this.profesion;
+    }
+    /**
+     * Establece el profesion.
+     *
+     * @param profesion el new profesion
+     */
+    public void setProfesion(Profesion profesion) {
+        this.profesion = profesion;
+    }
+    /**
+     * Obtiene item by categoria alumno.
+     *
+     * @return item by categoria alumno
+     */
+     public Item getItemByCategoriaDocente() {
+        return this.itemByCategoriaDocente;
+    }
+    /**
+     * Establece el item by categoria alumno.
+     *
+     * @param itemByCategoriaAlumno el new item by categoria alumno
+     */
+    public void setItemByCategoriaDocente(Item itemByCategoriaDocente) {
+        this.itemByCategoriaDocente = itemByCategoriaDocente;
+    }
+    /**
+     * Obtiene item by grado instruccion.
+     *
+     * @return item by grado instruccion
+     */
+     public Item getItemByGradoInstruccion() {
+        return this.itemByGradoInstruccion;
+    }
+    /**
+     * Establece el item by grado instruccion.
+     *
+     * @param itemByGradoInstruccion el new item by grado instruccion
+     */
+    public void setItemByGradoInstruccion(Item itemByGradoInstruccion) {
+        this.itemByGradoInstruccion = itemByGradoInstruccion;
+    }
+    /**
+     * Obtiene item by dedicacion docente.
+     *
+     * @return item by dedicacion docente
+     */
+     public Item getItemByDedicacionDocente() {
+        return this.itemByDedicacionDocente;
+    }
+    /**
+     * Establece el item by dedicacion docente.
+     *
+     * @param itemByDedicacionDocente el new item by dedicacion docente
+     */
+    public void setItemByDedicacionDocente(Item itemByDedicacionDocente) {
+        this.itemByDedicacionDocente = itemByDedicacionDocente;
+    }
+    /**
+     * Obtiene item by tipo trabajador.
+     *
+     * @return item by tipo trabajador
+     */
+     public Item getItemByTipoTrabajador() {
+        return this.itemByTipoTrabajador;
+    }
+    /**
+     * Establece el item by tipo trabajador.
+     *
+     * @param itemByTipoTrabajador el new item by tipo trabajador
+     */
+    public void setItemByTipoTrabajador(Item itemByTipoTrabajador) {
+        this.itemByTipoTrabajador = itemByTipoTrabajador;
+    }
+    /**
+     * Obtiene item by tipo ocupacion universitaria.
+     *
+     * @return item by tipo ocupacion universitaria
+     */
+     public Item getItemByTipoOcupacionUniversitaria() {
+        return this.itemByTipoOcupacionUniversitaria;
+    }
+    /**
+     * Establece el item by tipo ocupacion universitaria.
+     *
+     * @param itemByTipoOcupacionUniversitaria el new item by tipo ocupacion universitaria
+     */
+    public void setItemByTipoOcupacionUniversitaria(Item itemByTipoOcupacionUniversitaria) {
+        this.itemByTipoOcupacionUniversitaria = itemByTipoOcupacionUniversitaria;
+    }
+    /**
+     * Obtiene regimen pensionario.
+     *
+     * @return regimen pensionario
+     */
+     public RegimenPensionario getRegimenPensionario() {
+        return this.regimenPensionario;
+    }
+    /**
+     * Establece el regimen pensionario.
+     *
+     * @param regimenPensionario el new regimen pensionario
+     */
+    public void setRegimenPensionario(RegimenPensionario regimenPensionario) {
+        this.regimenPensionario = regimenPensionario;
+    }
+    /**
+     * Obtiene cargo.
+     *
+     * @return cargo
+     */
+     public Cargo getCargo() {
+        return this.cargo;
+    }
+    /**
+     * Establece el cargo.
+     *
+     * @param cargo el new cargo
+     */
+    public void setCargo(Cargo cargo) {
+        this.cargo = cargo;
+    }
+    /**
+     * Obtiene item by tipo contrato.
+     *
+     * @return item by tipo contrato
+     */
+     public Item getItemByTipoContrato() {
+        return this.itemByTipoContrato;
+    }
+    /**
+     * Establece el item by tipo contrato.
+     *
+     * @param itemByTipoContrato el new item by tipo contrato
+     */
+    public void setItemByTipoContrato(Item itemByTipoContrato) {
+        this.itemByTipoContrato = itemByTipoContrato;
+    }
+    /**
+     * Obtiene fecha ingreso.
+     *
+     * @return fecha ingreso
+     */
+     public Date getFechaIngreso() {
+        return this.fechaIngreso;
+    }
+    /**
+     * Establece el fecha ingreso.
+     *
+     * @param fechaIngreso el new fecha ingreso
+     */
+    public void setFechaIngreso(Date fechaIngreso) {
+        this.fechaIngreso = fechaIngreso;
+    }
+    /**
+     * Obtiene fecha salida.
+     *
+     * @return fecha salida
+     */
+     public Date getFechaSalida() {
+        return this.fechaSalida;
+    }
+    /**
+     * Establece el fecha salida.
+     *
+     * @param fechaSalida el new fecha salida
+     */
+    public void setFechaSalida(Date fechaSalida) {
+        this.fechaSalida = fechaSalida;
+    }
+    /**
+     * Obtiene estado.
+     *
+     * @return estado
+     */
+     public String getEstado() {
+        return this.estado;
+    }
+    /**
+     * Establece el estado.
+     *
+     * @param estado el new estado
+     */
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+    /**
+     * Obtiene fecha inscripcion.
+     *
+     * @return fecha inscripcion
+     */
+     public Date getFechaInscripcion() {
+        return this.fechaInscripcion;
+    }
+    /**
+     * Establece el fecha inscripcion.
+     *
+     * @param fechaInscripcion el new fecha inscripcion
+     */
+    public void setFechaInscripcion(Date fechaInscripcion) {
+        this.fechaInscripcion = fechaInscripcion;
+    }
+    /**
+     * Obtiene flag discapacidad.
+     *
+     * @return flag discapacidad
+     */
+     public String getFlagDiscapacidad() {
+        return this.flagDiscapacidad;
+    }
+    /**
+     * Establece el flag discapacidad.
+     *
+     * @param flagDiscapacidad el new flag discapacidad
+     */
+    public void setFlagDiscapacidad(String flagDiscapacidad) {
+        this.flagDiscapacidad = flagDiscapacidad;
+    }
+    /**
+     * Obtiene flag sindicalizado.
+     *
+     * @return flag sindicalizado
+     */
+     public String getFlagSindicalizado() {
+        return this.flagSindicalizado;
+    }
+    /**
+     * Establece el flag sindicalizado.
+     *
+     * @param flagSindicalizado el new flag sindicalizado
+     */
+    public void setFlagSindicalizado(String flagSindicalizado) {
+        this.flagSindicalizado = flagSindicalizado;
+    }
+    /**
+     * Obtiene afiliado e p s.
+     *
+     * @return afiliado e p s
+     */
+     public String getAfiliadoEPS() {
+        return this.afiliadoEPS;
+    }
+    /**
+     * Establece el afiliado e p s.
+     *
+     * @param afiliadoEPS el new afiliado e p s
+     */
+    public void setAfiliadoEPS(String afiliadoEPS) {
+        this.afiliadoEPS = afiliadoEPS;
+    }
+    /**
+     * Obtiene seguro medico.
+     *
+     * @return seguro medico
+     */
+     public String getSeguroMedico() {
+        return this.seguroMedico;
+    }
+    /**
+     * Establece el seguro medico.
+     *
+     * @param seguroMedico el new seguro medico
+     */
+    public void setSeguroMedico(String seguroMedico) {
+        this.seguroMedico = seguroMedico;
+    }
+    /**
+     * Obtiene madre responsabilidad familiar.
+     *
+     * @return madre responsabilidad familiar
+     */
+     public String getMadreResponsabilidadFamiliar() {
+        return this.madreResponsabilidadFamiliar;
+    }
+    /**
+     * Establece el madre responsabilidad familiar.
+     *
+     * @param madreResponsabilidadFamiliar el new madre responsabilidad familiar
+     */
+    public void setMadreResponsabilidadFamiliar(String madreResponsabilidadFamiliar) {
+        this.madreResponsabilidadFamiliar = madreResponsabilidadFamiliar;
+    }
+    /**
+     * Obtiene item by tipo centro formacion profesional.
+     *
+     * @return item by tipo centro formacion profesional
+     */
+     public Item getItemByTipoCentroFormacionProfesional() {
+        return this.itemByTipoCentroFormacionProfesional;
+    }
+    /**
+     * Establece el item by tipo centro formacion profesional.
+     *
+     * @param itemByTipoCentroFormacionProfesional el new item by tipo centro formacion profesional
+     */
+    public void setItemByTipoCentroFormacionProfesional(Item itemByTipoCentroFormacionProfesional) {
+        this.itemByTipoCentroFormacionProfesional = itemByTipoCentroFormacionProfesional;
+    }
+    /**
+     * Obtiene sujeto horario nocturno.
+     *
+     * @return sujeto horario nocturno
+     */
+     public String getSujetoHorarioNocturno() {
+        return this.sujetoHorarioNocturno;
+    }
+    /**
+     * Establece el sujeto horario nocturno.
+     *
+     * @param sujetoHorarioNocturno el new sujeto horario nocturno
+     */
+    public void setSujetoHorarioNocturno(String sujetoHorarioNocturno) {
+        this.sujetoHorarioNocturno = sujetoHorarioNocturno;
+    }
+    /**
+     * Establece el usuario creacion apertura cierre matricula list.
+     *
+     * @param usuarioCreacionAperturaCierreMatriculaList el new usuario creacion apertura cierre matricula list
+     */
+    public List<AperturaCierreMatricula> getUsuarioCreacionAperturaCierreMatriculaList(){
+        return this.usuarioCreacionAperturaCierreMatriculaList;
+    }
+    /**
+     * Establece el usuario creacion list.
+     *
+     * @param usuarioCreacionList el new usuario creacion list
+     */
+    public void setUsuarioCreacionAperturaCierreMatriculaList(List<AperturaCierreMatricula> usuarioCreacionAperturaCierreMatriculaList) {
+        this.usuarioCreacionAperturaCierreMatriculaList = usuarioCreacionAperturaCierreMatriculaList;
+    }   
+    /**
+     * Establece el usuario modificacion apertura cierre matricula list.
+     *
+     * @param usuarioModificacionAperturaCierreMatriculaList el new usuario modificacion apertura cierre matricula list
+     */
+    public List<AperturaCierreMatricula> getUsuarioModificacionAperturaCierreMatriculaList(){
+        return this.usuarioModificacionAperturaCierreMatriculaList;
+    }
+    /**
+     * Establece el usuario modificacion list.
+     *
+     * @param usuarioModificacionList el new usuario modificacion list
+     */
+    public void setUsuarioModificacionAperturaCierreMatriculaList(List<AperturaCierreMatricula> usuarioModificacionAperturaCierreMatriculaList) {
+        this.usuarioModificacionAperturaCierreMatriculaList = usuarioModificacionAperturaCierreMatriculaList;
+    }   
+    /**
+     * Establece el usuario creacion cierre anho semestre list.
+     *
+     * @param usuarioCreacionCierreAnhoSemestreList el new usuario creacion cierre anho semestre list
+     */
+    public List<CierreAnhoSemestre> getUsuarioCreacionCierreAnhoSemestreList(){
+        return this.usuarioCreacionCierreAnhoSemestreList;
+    }
+    /**
+     * Establece el usuario creacion list.
+     *
+     * @param usuarioCreacionList el new usuario creacion list
+     */
+    public void setUsuarioCreacionCierreAnhoSemestreList(List<CierreAnhoSemestre> usuarioCreacionCierreAnhoSemestreList) {
+        this.usuarioCreacionCierreAnhoSemestreList = usuarioCreacionCierreAnhoSemestreList;
+    }   
+    /**
+     * Establece el personal by docente det carga lectiva list.
+     *
+     * @param personalByDocenteDetCargaLectivaList el new personal by docente det carga lectiva list
+     */
+    public List<DetCargaLectiva> getPersonalByDocenteDetCargaLectivaList(){
+        return this.personalByDocenteDetCargaLectivaList;
+    }
+    /**
+     * Establece el personal by docente list.
+     *
+     * @param personalByDocenteList el new personal by docente list
+     */
+    public void setPersonalByDocenteDetCargaLectivaList(List<DetCargaLectiva> personalByDocenteDetCargaLectivaList) {
+        this.personalByDocenteDetCargaLectivaList = personalByDocenteDetCargaLectivaList;
+    }   
+    /**
+     * Establece el personal by docente practica det carga lectiva list.
+     *
+     * @param personalByDocentePracticaDetCargaLectivaList el new personal by docente practica det carga lectiva list
+     */
+    public List<DetCargaLectiva> getPersonalByDocentePracticaDetCargaLectivaList(){
+        return this.personalByDocentePracticaDetCargaLectivaList;
+    }
+    /**
+     * Establece el personal by docente practica list.
+     *
+     * @param personalByDocentePracticaList el new personal by docente practica list
+     */
+    public void setPersonalByDocentePracticaDetCargaLectivaList(List<DetCargaLectiva> personalByDocentePracticaDetCargaLectivaList) {
+        this.personalByDocentePracticaDetCargaLectivaList = personalByDocentePracticaDetCargaLectivaList;
+    }   
+    /**
+     * Establece el personal by docente horario list.
+     *
+     * @param personalByDocenteHorarioList el new personal by docente horario list
+     */
+    public List<Horario> getPersonalByDocenteHorarioList(){
+        return this.personalByDocenteHorarioList;
+    }
+    /**
+     * Establece el personal by docente list.
+     *
+     * @param personalByDocenteList el new personal by docente list
+     */
+    public void setPersonalByDocenteHorarioList(List<Horario> personalByDocenteHorarioList) {
+        this.personalByDocenteHorarioList = personalByDocenteHorarioList;
+    }   
+    /**
+     * Establece el personal organo directivo list.
+     *
+     * @param personalOrganoDirectivoList el new personal organo directivo list
+     */
+    public List<OrganoDirectivo> getPersonalOrganoDirectivoList(){
+        return this.personalOrganoDirectivoList;
+    }
+    /**
+     * Establece el personal list.
+     *
+     * @param personalList el new personal list
+     */
+    public void setPersonalOrganoDirectivoList(List<OrganoDirectivo> personalOrganoDirectivoList) {
+        this.personalOrganoDirectivoList = personalOrganoDirectivoList;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idPersonal == null) ? 0 : idPersonal.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Personal other = (Personal) obj;
+        if (idPersonal == null) {
+            if (other.idPersonal != null) {
+                return false;
+            }
+        } else if (!idPersonal.equals(other.idPersonal)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Personal [idPersonal=" + idPersonal + "]";
+    }
+   
+}

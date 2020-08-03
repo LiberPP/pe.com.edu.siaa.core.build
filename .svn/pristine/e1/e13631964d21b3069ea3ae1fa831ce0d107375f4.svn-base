@@ -1,0 +1,133 @@
+package pe.com.edu.siaa.core.ejb.service.rest.nota.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.nota.local.NotaServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.nota.ConceptoNotaDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class ConceptoNotaRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:32 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/conceptoNotaRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class ConceptoNotaRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient NotaServiceLocal notaServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<ConceptoNotaDTO> crear(ConceptoNotaDTO conceptoNota) throws Exception {
+		return controladorAccion(conceptoNota,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<ConceptoNotaDTO> modificar(ConceptoNotaDTO conceptoNota) throws Exception {
+		return controladorAccion(conceptoNota,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<ConceptoNotaDTO> eliminar(@PathParam("id") String idConceptoNota) throws Exception {
+		ConceptoNotaDTO conceptoNota = new ConceptoNotaDTO();
+		conceptoNota.setIdConceptoNota(idConceptoNota);		
+		return controladorAccion(conceptoNota,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<ConceptoNotaDTO> controladorAccion(ConceptoNotaDTO conceptoNota, AccionType accionType){
+		ResultadoRestVO<ConceptoNotaDTO> resultado = new ResultadoRestVO<ConceptoNotaDTO>();
+		 try {
+    		resultado.setObjetoResultado(notaServiceLocal.controladorAccionConceptoNota(conceptoNota,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<ConceptoNotaDTO> finById(@PathParam("id") String idConceptoNota) throws Exception {
+		ConceptoNotaDTO conceptoNota = new ConceptoNotaDTO();
+		conceptoNota.setIdConceptoNota(idConceptoNota);
+		return controladorAccion(conceptoNota,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/obtenerConceptoNota/{flagObligatorio}/{estado}/{idDetCargaLectiva}")
+	public ResultadoRestVO<ConceptoNotaDTO> obtenerConceptoNota(@PathParam("flagObligatorio") String flagObligatorio,@PathParam("estado") String estado,@PathParam("idDetCargaLectiva")String idDetCargaLectiva){
+		ResultadoRestVO<ConceptoNotaDTO> resultado = new ResultadoRestVO<ConceptoNotaDTO>();
+		 try {
+    		resultado.setListaResultado(notaServiceLocal.listarConceptoNota(flagObligatorio,estado,idDetCargaLectiva));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<ConceptoNotaDTO> listarConceptoNota(@Context UriInfo info){
+		ResultadoRestVO<ConceptoNotaDTO> resultado = new ResultadoRestVO<ConceptoNotaDTO>();
+		ConceptoNotaDTO conceptoNota = transferUriInfo(info);
+		 try {
+    		resultado.setListaResultado(notaServiceLocal.listarConceptoNota(conceptoNota));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<ConceptoNotaDTO> contarListarConceptoNota(@Context UriInfo info){
+		ResultadoRestVO<ConceptoNotaDTO> resultado = new ResultadoRestVO<ConceptoNotaDTO>();
+		ConceptoNotaDTO conceptoNota = transferUriInfo(info);
+		 try {
+    		resultado.setContador(notaServiceLocal.contarListarConceptoNota(conceptoNota));
+    		 if (resultado.isData()) {
+				 resultado.setListaResultado(notaServiceLocal.listarConceptoNota(conceptoNota));
+			 }
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<ConceptoNotaDTO> inicializarConceptoNota(@Context UriInfo info) throws Exception {
+	     ConceptoNotaDTO conceptoNota = transferUriInfo(info);
+		 ResultadoRestVO<ConceptoNotaDTO> resultado = new ResultadoRestVO<ConceptoNotaDTO>();
+		 try {
+    		resultado.setObjetoResultado(conceptoNota);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private ConceptoNotaDTO transferUriInfo(@Context UriInfo info) {
+		ConceptoNotaDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,ConceptoNotaDTO.class);
+		return resultado;
+	}
+}

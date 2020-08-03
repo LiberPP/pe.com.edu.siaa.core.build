@@ -1,0 +1,48 @@
+package pe.com.edu.siaa.core.ejb.dao.matricula.local;
+
+import java.util.List;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.dto.matricula.CargoDTO;
+import pe.com.edu.siaa.core.model.jpa.matricula.Cargo;
+
+/**
+ * La Class CargoDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 11:25:09 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface CargoDaoLocal  extends GenericDAOLocal<String,Cargo> {
+	/**
+	 * Listar cargo.
+	 *
+	 * @param cargo el cargoDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<Cargo> listarCargo(CargoDTO cargo) throws Exception;
+	
+	/**
+	 * contar lista cargo.
+	 *
+	 * @param cargo el cargo
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarCargo(CargoDTO cargo);
+	/**
+	 * Generar id cargo.
+	 *
+	 * @return the String
+	 * @throws Exception the exception
+	 */
+	String generarIdCargo() throws Exception;
+}

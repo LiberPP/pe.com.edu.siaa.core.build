@@ -1,0 +1,48 @@
+package pe.com.edu.siaa.core.ejb.dao.admision.local;
+
+import java.util.List;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.dto.admision.FacultadDTO;
+import pe.com.edu.siaa.core.model.jpa.admision.Facultad;
+
+/**
+ * La Class FacultadDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 11:25:12 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface FacultadDaoLocal  extends GenericDAOLocal<String,Facultad> {
+	/**
+	 * Listar facultad.
+	 *
+	 * @param facultad el facultadDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<Facultad> listarFacultad(FacultadDTO facultad) throws Exception;
+	
+	/**
+	 * contar lista facultad.
+	 *
+	 * @param facultad el facultad
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarFacultad(FacultadDTO facultad);
+	/**
+	 * Generar id facultad.
+	 *
+	 * @return the String
+	 * @throws Exception the exception
+	 */
+	String generarIdFacultad() throws Exception;
+}

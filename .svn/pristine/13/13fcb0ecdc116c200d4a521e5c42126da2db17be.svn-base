@@ -1,0 +1,60 @@
+package pe.com.edu.siaa.core.ejb.dao.admision.local;
+
+import java.util.List;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.dto.admision.AnhoSemestreDTO;
+import pe.com.edu.siaa.core.model.estate.EstadoAnhoSemestreState;
+import pe.com.edu.siaa.core.model.jpa.admision.AnhoSemestre;
+
+/**
+ * La Class AnhoSemestreDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 11:25:03 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface AnhoSemestreDaoLocal  extends GenericDAOLocal<String,AnhoSemestre> {
+	
+
+	/**
+	 * Obtener anho semestre activo.
+	 *
+	 * @param estadoAnhoSemestreState el estado anho semestre state
+	 * @return the anho semestre
+	 * @throws BusinessException the business exception
+	 */
+	AnhoSemestre obtenerAnhoSemestreByEstado(EstadoAnhoSemestreState estadoAnhoSemestreState) throws Exception;
+	
+	/**
+	 * Listar anho semestre.
+	 *
+	 * @param anhoSemestre el anho semestreDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<AnhoSemestre> listarAnhoSemestre(AnhoSemestreDTO anhoSemestre) throws Exception;
+	
+	/**
+	 * contar lista anho semestre.
+	 *
+	 * @param anhoSemestre el anho semestre
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarAnhoSemestre(AnhoSemestreDTO anhoSemestre);
+	/**
+	 * Generar id anhoSemestre.
+	 *
+	 * @return the String
+	 * @throws Exception the exception
+	 */
+	String generarIdAnhoSemestre() throws Exception;
+}

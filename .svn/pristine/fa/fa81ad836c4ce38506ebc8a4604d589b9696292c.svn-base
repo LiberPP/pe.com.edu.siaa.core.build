@@ -1,0 +1,95 @@
+/*
+ * 
+ */
+package pe.com.edu.siaa.core.model.dto.matricula;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+
+
+// TODO: Auto-generated Javadoc
+/**
+ * <ul>
+ * <li>Copyright 2012 BUILD SOFT S.A.C - BS. Todos los derechos reservados.</li>
+ * </ul>
+ * 
+ * La Class ResultadoNotaDTO.
+ *
+ * @author ndavilal.
+ * @version 1.0 , 22/09/2013
+ * @since SIAA 2.0
+ */
+public class ResultadoNotaDTO  implements Serializable {
+
+	/** La Constante serialVersionUID. */
+	private static final long serialVersionUID = 1L;
+
+	/** El curso nota map. */
+	private Map<String,BigDecimal> cursoNotaMap = new HashMap<String, BigDecimal>();
+
+    /** La numero veces levo curso map. */
+	private Map<String,Integer> numeroVecesLevoCursoMap = new HashMap<String, Integer>();
+	/**
+	 * Instancia un nuevo matricula dto.
+	 */
+	public ResultadoNotaDTO() {
+		super();
+	}
+	
+	
+	
+	/**
+	 * Instancia un nuevo resultado nota dto.
+	 *
+	 * @param cursoNotaMap el curso nota map
+	 * @param numeroVecesLevoCursoMap el numero veces levo curso map
+	 */
+	public ResultadoNotaDTO(Map<String, BigDecimal> cursoNotaMap,
+			Map<String, Integer> numeroVecesLevoCursoMap) {
+		super();
+		this.cursoNotaMap = cursoNotaMap;
+		this.numeroVecesLevoCursoMap = numeroVecesLevoCursoMap;
+	}
+
+
+
+	/**
+	 * Obtiene curso nota map.
+	 *
+	 * @return curso nota map
+	 */
+	public Map<String, BigDecimal> getCursoNotaMap() {
+		return cursoNotaMap;
+	}
+	
+	/**
+	 * Sets the curso nota map.
+	 *
+	 * @param cursoNotaMap el curso nota map
+	 */
+	public void setCursoNotaMap(Map<String, BigDecimal> cursoNotaMap) {
+		this.cursoNotaMap = cursoNotaMap;
+	}
+	
+	/**
+	 * Obtiene numero veces levo curso map.
+	 *
+	 * @return numero veces levo curso map
+	 */
+	public Map<String, Integer> getNumeroVecesLevoCursoMap() {
+		return numeroVecesLevoCursoMap;
+	}
+	
+	/**
+	 * Sets the numero veces levo curso map.
+	 *
+	 * @param numeroVecesLevoCursoMap el numero veces levo curso map
+	 */
+	public void setNumeroVecesLevoCursoMap(
+			Map<String, Integer> numeroVecesLevoCursoMap) {
+		this.numeroVecesLevoCursoMap = numeroVecesLevoCursoMap;
+	}
+	
+}

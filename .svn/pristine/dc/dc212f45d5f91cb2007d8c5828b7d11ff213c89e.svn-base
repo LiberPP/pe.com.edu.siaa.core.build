@@ -1,0 +1,461 @@
+package pe.com.edu.siaa.core.model.jpa.admision;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import pe.com.edu.siaa.core.model.jpa.common.Item;
+import pe.com.edu.siaa.core.model.jpa.matricula.Alumno;
+import pe.com.edu.siaa.core.model.util.ConfiguracionEntityManagerUtil;
+
+/**
+ * La Class Postulante.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 09:56:54 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Entity
+@Table(name = "Postulante", schema = ConfiguracionEntityManagerUtil.ESQUEMA_ACADEMICO)
+public class Postulante implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id postulante. */
+    @Id
+    @Column(name = "idPostulante" , length = 13)
+    private String idPostulante;
+   
+    /** El persona. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idPersona", referencedColumnName = "idPersona")
+    private Persona persona;
+   
+    /** El anho semestre. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idAhnoSemestre", referencedColumnName = "idAnhoSemestre")
+    private AnhoSemestre anhoSemestre;
+   
+    /** El escuela by opcion1. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idEscuelaOpcion1", referencedColumnName = "idEscuela")
+    private Escuela escuelaByOpcion1;
+   
+    /** El escuela by opcion2. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idEscuelaOpcion2", referencedColumnName = "idEscuela")
+    private Escuela escuelaByOpcion2;
+   
+    /** El escuela by ingreso. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idEscuelaIngreso", referencedColumnName = "idEscuela")
+    private Escuela escuelaByIngreso;
+   
+    /** El item by modalidad. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idModalidad", referencedColumnName = "idItem")
+    private Item itemByModalidad;
+   
+    /** El item by tipo preparacion. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idTipoPreparacion", referencedColumnName = "idItem")
+    private Item itemByTipoPreparacion;
+   
+    /** El item by turno atencion. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idTurnoAtencion", referencedColumnName = "idItem")
+    private Item itemByTurnoAtencion;
+   
+    /** El codigo postulante. */
+    @Column(name = "codigoPostulante" , length = 10)
+    private String codigoPostulante;
+   
+    /** El puntaje. */
+    @Column(name = "puntaje" , precision = 18 , scale = 1)
+    private BigDecimal puntaje;
+   
+    /** El flag ingreso. */
+    @Column(name = "flagIngreso" , length = 1)
+    private String flagIngreso;
+   
+    /** El estado. */
+    @Column(name = "estado" , length = 1)
+    private String estado;
+   
+    /** El fecha creacion. */
+    @Temporal( TemporalType.TIMESTAMP)
+    @Column(name = "fechaCreacion")
+    private Date fechaCreacion;
+   
+    /** El postulante alumno list. */
+    @OneToMany(mappedBy = "postulante", fetch = FetchType.LAZY)
+    private List<Alumno> postulanteAlumnoList = new ArrayList<Alumno>();
+    
+    /** El postulante documento requerido list. */
+    @OneToMany(mappedBy = "postulante", fetch = FetchType.LAZY)
+    private List<DocumentoRequerido> postulanteDocumentoRequeridoList = new ArrayList<DocumentoRequerido>();
+    
+    /**
+     * Instancia un nuevo postulante.
+     */
+    public Postulante() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo postulante.
+     *
+     * @param idPostulante el id postulante
+     * @param persona el persona
+     * @param anhoSemestre el anho semestre
+     * @param escuelaByOpcion1 el escuela by opcion1
+     * @param escuelaByOpcion2 el escuela by opcion2
+     * @param escuelaByIngreso el escuela by ingreso
+     * @param itemByModalidad el item by modalidad
+     * @param itemByTipoPreparacion el item by tipo preparacion
+     * @param itemByTurnoAtencion el item by turno atencion
+     * @param codigoPostulante el codigo postulante
+     * @param puntaje el puntaje
+     * @param flagIngreso el flag ingreso
+     * @param estado el estado
+     * @param fechaCreacion el fecha creacion
+     */
+    public Postulante(String idPostulante, Persona persona,AnhoSemestre anhoSemestre,Escuela escuelaByOpcion1,Escuela escuelaByOpcion2,Escuela escuelaByIngreso,Item itemByModalidad,Item itemByTipoPreparacion,Item itemByTurnoAtencion,String codigoPostulante, BigDecimal puntaje, String flagIngreso, String estado, Date fechaCreacion ) {
+        super();
+        this.idPostulante = idPostulante;
+        this.persona = persona;
+        this.anhoSemestre = anhoSemestre;
+        this.escuelaByOpcion1 = escuelaByOpcion1;
+        this.escuelaByOpcion2 = escuelaByOpcion2;
+        this.escuelaByIngreso = escuelaByIngreso;
+        this.itemByModalidad = itemByModalidad;
+        this.itemByTipoPreparacion = itemByTipoPreparacion;
+        this.itemByTurnoAtencion = itemByTurnoAtencion;
+        this.codigoPostulante = codigoPostulante;
+        this.puntaje = puntaje;
+        this.flagIngreso = flagIngreso;
+        this.estado = estado;
+        this.fechaCreacion = fechaCreacion;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id postulante.
+     *
+     * @return id postulante
+     */
+     public String getIdPostulante() {
+        return this.idPostulante;
+    }
+    /**
+     * Establece el id postulante.
+     *
+     * @param idPostulante el new id postulante
+     */
+    public void setIdPostulante(String idPostulante) {
+        this.idPostulante = idPostulante;
+    }
+    /**
+     * Obtiene persona.
+     *
+     * @return persona
+     */
+     public Persona getPersona() {
+        return this.persona;
+    }
+    /**
+     * Establece el persona.
+     *
+     * @param persona el new persona
+     */
+    public void setPersona(Persona persona) {
+        this.persona = persona;
+    }
+    /**
+     * Obtiene anho semestre.
+     *
+     * @return anho semestre
+     */
+     public AnhoSemestre getAnhoSemestre() {
+        return this.anhoSemestre;
+    }
+    /**
+     * Establece el anho semestre.
+     *
+     * @param anhoSemestre el new anho semestre
+     */
+    public void setAnhoSemestre(AnhoSemestre anhoSemestre) {
+        this.anhoSemestre = anhoSemestre;
+    }
+    /**
+     * Obtiene escuela by opcion1.
+     *
+     * @return escuela by opcion1
+     */
+     public Escuela getEscuelaByOpcion1() {
+        return this.escuelaByOpcion1;
+    }
+    /**
+     * Establece el escuela by opcion1.
+     *
+     * @param escuelaByOpcion1 el new escuela by opcion1
+     */
+    public void setEscuelaByOpcion1(Escuela escuelaByOpcion1) {
+        this.escuelaByOpcion1 = escuelaByOpcion1;
+    }
+    /**
+     * Obtiene escuela by opcion2.
+     *
+     * @return escuela by opcion2
+     */
+     public Escuela getEscuelaByOpcion2() {
+        return this.escuelaByOpcion2;
+    }
+    /**
+     * Establece el escuela by opcion2.
+     *
+     * @param escuelaByOpcion2 el new escuela by opcion2
+     */
+    public void setEscuelaByOpcion2(Escuela escuelaByOpcion2) {
+        this.escuelaByOpcion2 = escuelaByOpcion2;
+    }
+    /**
+     * Obtiene escuela by ingreso.
+     *
+     * @return escuela by ingreso
+     */
+     public Escuela getEscuelaByIngreso() {
+        return this.escuelaByIngreso;
+    }
+    /**
+     * Establece el escuela by ingreso.
+     *
+     * @param escuelaByIngreso el new escuela by ingreso
+     */
+    public void setEscuelaByIngreso(Escuela escuelaByIngreso) {
+        this.escuelaByIngreso = escuelaByIngreso;
+    }
+    /**
+     * Obtiene item by modalidad.
+     *
+     * @return item by modalidad
+     */
+     public Item getItemByModalidad() {
+        return this.itemByModalidad;
+    }
+    /**
+     * Establece el item by modalidad.
+     *
+     * @param itemByModalidad el new item by modalidad
+     */
+    public void setItemByModalidad(Item itemByModalidad) {
+        this.itemByModalidad = itemByModalidad;
+    }
+    /**
+     * Obtiene item by tipo preparacion.
+     *
+     * @return item by tipo preparacion
+     */
+     public Item getItemByTipoPreparacion() {
+        return this.itemByTipoPreparacion;
+    }
+    /**
+     * Establece el item by tipo preparacion.
+     *
+     * @param itemByTipoPreparacion el new item by tipo preparacion
+     */
+    public void setItemByTipoPreparacion(Item itemByTipoPreparacion) {
+        this.itemByTipoPreparacion = itemByTipoPreparacion;
+    }
+    /**
+     * Obtiene item by turno atencion.
+     *
+     * @return item by turno atencion
+     */
+     public Item getItemByTurnoAtencion() {
+        return this.itemByTurnoAtencion;
+    }
+    /**
+     * Establece el item by turno atencion.
+     *
+     * @param itemByTurnoAtencion el new item by turno atencion
+     */
+    public void setItemByTurnoAtencion(Item itemByTurnoAtencion) {
+        this.itemByTurnoAtencion = itemByTurnoAtencion;
+    }
+    /**
+     * Obtiene codigo postulante.
+     *
+     * @return codigo postulante
+     */
+     public String getCodigoPostulante() {
+        return this.codigoPostulante;
+    }
+    /**
+     * Establece el codigo postulante.
+     *
+     * @param codigoPostulante el new codigo postulante
+     */
+    public void setCodigoPostulante(String codigoPostulante) {
+        this.codigoPostulante = codigoPostulante;
+    }
+    /**
+     * Obtiene puntaje.
+     *
+     * @return puntaje
+     */
+     public BigDecimal getPuntaje() {
+        return this.puntaje;
+    }
+    /**
+     * Establece el puntaje.
+     *
+     * @param puntaje el new puntaje
+     */
+    public void setPuntaje(BigDecimal puntaje) {
+        this.puntaje = puntaje;
+    }
+    /**
+     * Obtiene flag ingreso.
+     *
+     * @return flag ingreso
+     */
+     public String getFlagIngreso() {
+        return this.flagIngreso;
+    }
+    /**
+     * Establece el flag ingreso.
+     *
+     * @param flagIngreso el new flag ingreso
+     */
+    public void setFlagIngreso(String flagIngreso) {
+        this.flagIngreso = flagIngreso;
+    }
+    /**
+     * Obtiene estado.
+     *
+     * @return estado
+     */
+     public String getEstado() {
+        return this.estado;
+    }
+    /**
+     * Establece el estado.
+     *
+     * @param estado el new estado
+     */
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+    /**
+     * Obtiene fecha creacion.
+     *
+     * @return fecha creacion
+     */
+     public Date getFechaCreacion() {
+        return this.fechaCreacion;
+    }
+    /**
+     * Establece el fecha creacion.
+     *
+     * @param fechaCreacion el new fecha creacion
+     */
+    public void setFechaCreacion(Date fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
+    }
+    /**
+     * Establece el postulante alumno list.
+     *
+     * @param postulanteAlumnoList el new postulante alumno list
+     */
+    public List<Alumno> getPostulanteAlumnoList(){
+        return this.postulanteAlumnoList;
+    }
+    /**
+     * Establece el postulante list.
+     *
+     * @param postulanteList el new postulante list
+     */
+    public void setPostulanteAlumnoList(List<Alumno> postulanteAlumnoList) {
+        this.postulanteAlumnoList = postulanteAlumnoList;
+    }   
+    /**
+     * Establece el postulante documento requerido list.
+     *
+     * @param postulanteDocumentoRequeridoList el new postulante documento requerido list
+     */
+    public List<DocumentoRequerido> getPostulanteDocumentoRequeridoList(){
+        return this.postulanteDocumentoRequeridoList;
+    }
+    /**
+     * Establece el postulante list.
+     *
+     * @param postulanteList el new postulante list
+     */
+    public void setPostulanteDocumentoRequeridoList(List<DocumentoRequerido> postulanteDocumentoRequeridoList) {
+        this.postulanteDocumentoRequeridoList = postulanteDocumentoRequeridoList;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idPostulante == null) ? 0 : idPostulante.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Postulante other = (Postulante) obj;
+        if (idPostulante == null) {
+            if (other.idPostulante != null) {
+                return false;
+            }
+        } else if (!idPostulante.equals(other.idPostulante)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Postulante [idPostulante=" + idPostulante + "]";
+    }
+   
+}

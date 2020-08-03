@@ -1,0 +1,325 @@
+package pe.com.edu.siaa.core.model.jpa.matricula;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import pe.com.edu.siaa.core.model.jpa.admision.AnhoSemestre;
+import pe.com.edu.siaa.core.model.jpa.admision.TipoPersona;
+import pe.com.edu.siaa.core.model.util.ConfiguracionEntityManagerUtil;
+
+/**
+ * La Class OrganoDirectivo.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 09:57:00 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Entity
+@Table(name = "OrganoDirectivo", schema = ConfiguracionEntityManagerUtil.ESQUEMA_ACADEMICO)
+public class OrganoDirectivo implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id organo directivo. */
+    @Id
+    @Column(name = "idOrganoDirectivo" , length = 19)
+    private String idOrganoDirectivo;
+   
+    /** El personal. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idPersonal", referencedColumnName = "idPersonal")
+    private Personal personal;
+   
+    /** El anho semestre. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idAhnoSemestre", referencedColumnName = "idAnhoSemestre")
+    private AnhoSemestre anhoSemestre;
+   
+    /** El tipo persona. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idTipoPersona", referencedColumnName = "idTipoPersona")
+    private TipoPersona tipoPersona;
+   
+    /** El grado abreviatura. */
+    @Column(name = "gradoAbreviatura" , length = 50)
+    private String gradoAbreviatura;
+   
+    /** El firma. */
+    @Column(name = "firma" , length = 50)
+    private String firma;
+   
+    /** El estado. */
+    @Column(name = "estado" , length = 1)
+    private String estado;
+   
+    /** El fecha creacion. */
+    @Temporal( TemporalType.TIMESTAMP)
+    @Column(name = "fechaCreacion")
+    private Date fechaCreacion;
+   
+    /** El usuario creacion. */
+    @Column(name = "usuarioCreacion" , length = 50)
+    private String usuarioCreacion;
+   
+    /** El organodirectivo consejero list. */
+    @OneToMany(mappedBy = "organodirectivo", fetch = FetchType.LAZY)
+    private List<Consejero> organodirectivoConsejeroList = new ArrayList<Consejero>();
+    
+    /**
+     * Instancia un nuevo organo directivo.
+     */
+    public OrganoDirectivo() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo organo directivo.
+     *
+     * @param idOrganoDirectivo el id organo directivo
+     * @param personal el personal
+     * @param anhoSemestre el anho semestre
+     * @param tipoPersona el tipo persona
+     * @param gradoAbreviatura el grado abreviatura
+     * @param firma el firma
+     * @param estado el estado
+     * @param fechaCreacion el fecha creacion
+     * @param usuarioCreacion el usuario creacion
+     */
+    public OrganoDirectivo(String idOrganoDirectivo, Personal personal,AnhoSemestre anhoSemestre,TipoPersona tipoPersona,String gradoAbreviatura, String firma, String estado, Date fechaCreacion, String usuarioCreacion ) {
+        super();
+        this.idOrganoDirectivo = idOrganoDirectivo;
+        this.personal = personal;
+        this.anhoSemestre = anhoSemestre;
+        this.tipoPersona = tipoPersona;
+        this.gradoAbreviatura = gradoAbreviatura;
+        this.firma = firma;
+        this.estado = estado;
+        this.fechaCreacion = fechaCreacion;
+        this.usuarioCreacion = usuarioCreacion;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id organo directivo.
+     *
+     * @return id organo directivo
+     */
+     public String getIdOrganoDirectivo() {
+        return this.idOrganoDirectivo;
+    }
+    /**
+     * Establece el id organo directivo.
+     *
+     * @param idOrganoDirectivo el new id organo directivo
+     */
+    public void setIdOrganoDirectivo(String idOrganoDirectivo) {
+        this.idOrganoDirectivo = idOrganoDirectivo;
+    }
+    /**
+     * Obtiene personal.
+     *
+     * @return personal
+     */
+     public Personal getPersonal() {
+        return this.personal;
+    }
+    /**
+     * Establece el personal.
+     *
+     * @param personal el new personal
+     */
+    public void setPersonal(Personal personal) {
+        this.personal = personal;
+    }
+    /**
+     * Obtiene anho semestre.
+     *
+     * @return anho semestre
+     */
+     public AnhoSemestre getAnhoSemestre() {
+        return this.anhoSemestre;
+    }
+    /**
+     * Establece el anho semestre.
+     *
+     * @param anhoSemestre el new anho semestre
+     */
+    public void setAnhoSemestre(AnhoSemestre anhoSemestre) {
+        this.anhoSemestre = anhoSemestre;
+    }
+    /**
+     * Obtiene tipo persona.
+     *
+     * @return tipo persona
+     */
+     public TipoPersona getTipoPersona() {
+        return this.tipoPersona;
+    }
+    /**
+     * Establece el tipo persona.
+     *
+     * @param tipoPersona el new tipo persona
+     */
+    public void setTipoPersona(TipoPersona tipoPersona) {
+        this.tipoPersona = tipoPersona;
+    }
+    /**
+     * Obtiene grado abreviatura.
+     *
+     * @return grado abreviatura
+     */
+     public String getGradoAbreviatura() {
+        return this.gradoAbreviatura;
+    }
+    /**
+     * Establece el grado abreviatura.
+     *
+     * @param gradoAbreviatura el new grado abreviatura
+     */
+    public void setGradoAbreviatura(String gradoAbreviatura) {
+        this.gradoAbreviatura = gradoAbreviatura;
+    }
+    /**
+     * Obtiene firma.
+     *
+     * @return firma
+     */
+     public String getFirma() {
+        return this.firma;
+    }
+    /**
+     * Establece el firma.
+     *
+     * @param firma el new firma
+     */
+    public void setFirma(String firma) {
+        this.firma = firma;
+    }
+    /**
+     * Obtiene estado.
+     *
+     * @return estado
+     */
+     public String getEstado() {
+        return this.estado;
+    }
+    /**
+     * Establece el estado.
+     *
+     * @param estado el new estado
+     */
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+    /**
+     * Obtiene fecha creacion.
+     *
+     * @return fecha creacion
+     */
+     public Date getFechaCreacion() {
+        return this.fechaCreacion;
+    }
+    /**
+     * Establece el fecha creacion.
+     *
+     * @param fechaCreacion el new fecha creacion
+     */
+    public void setFechaCreacion(Date fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
+    }
+    /**
+     * Obtiene usuario creacion.
+     *
+     * @return usuario creacion
+     */
+     public String getUsuarioCreacion() {
+        return this.usuarioCreacion;
+    }
+    /**
+     * Establece el usuario creacion.
+     *
+     * @param usuarioCreacion el new usuario creacion
+     */
+    public void setUsuarioCreacion(String usuarioCreacion) {
+        this.usuarioCreacion = usuarioCreacion;
+    }
+    /**
+     * Establece el organodirectivo consejero list.
+     *
+     * @param organodirectivoConsejeroList el new organodirectivo consejero list
+     */
+    public List<Consejero> getOrganodirectivoConsejeroList(){
+        return this.organodirectivoConsejeroList;
+    }
+    /**
+     * Establece el organodirectivo list.
+     *
+     * @param organodirectivoList el new organodirectivo list
+     */
+    public void setOrganodirectivoConsejeroList(List<Consejero> organodirectivoConsejeroList) {
+        this.organodirectivoConsejeroList = organodirectivoConsejeroList;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idOrganoDirectivo == null) ? 0 : idOrganoDirectivo.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        OrganoDirectivo other = (OrganoDirectivo) obj;
+        if (idOrganoDirectivo == null) {
+            if (other.idOrganoDirectivo != null) {
+                return false;
+            }
+        } else if (!idOrganoDirectivo.equals(other.idOrganoDirectivo)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "OrganoDirectivo [idOrganoDirectivo=" + idOrganoDirectivo + "]";
+    }
+   
+}

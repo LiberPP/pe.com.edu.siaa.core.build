@@ -1,0 +1,170 @@
+package pe.com.edu.siaa.core.model.dto.encuesta;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import pe.com.edu.siaa.core.model.dto.BasePaginator;
+
+ 
+
+/**
+ * La Class TemaDTO.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 1.0, Fri Sep 08 19:59:07 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+public class TemaDTO extends BasePaginator implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id tema. */
+    private Long idTema;
+   
+    /** El descripcion. */
+    private String descripcion;
+   
+    /** El estado. */
+    private String estado;
+   
+    /** El tema encuesta list. */
+    private List<EncuestaDTO> temaEncuestaList = new ArrayList<EncuestaDTO>();
+   
+    /**
+     * Instancia un nuevo temaDTO.
+     */
+    public TemaDTO() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo temaDTO.
+     *
+     * @param idTema el id tema
+     * @param descripcion el descripcion
+     * @param estado el estado
+     */
+    public TemaDTO(Long idTema, String descripcion, String estado ) {
+        super();
+        this.idTema = idTema;
+        this.descripcion = descripcion;
+        this.estado = estado;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id tema.
+     *
+     * @return id tema
+     */
+     public Long getIdTema() {
+        return this.idTema;
+    }
+    /**
+     * Establece el id tema.
+     *
+     * @param idTema el new id tema
+     */
+    public void setIdTema(Long idTema) {
+        this.idTema = idTema;
+    }
+    /**
+     * Obtiene descripcion.
+     *
+     * @return descripcion
+     */
+     public String getDescripcion() {
+        return this.descripcion;
+    }
+    /**
+     * Establece el descripcion.
+     *
+     * @param descripcion el new descripcion
+     */
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+    /**
+     * Obtiene estado.
+     *
+     * @return estado
+     */
+     public String getEstado() {
+        return this.estado;
+    }
+    /**
+     * Establece el estado.
+     *
+     * @param estado el new estado
+     */
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+    /**
+     * Establece el tema encuesta list.
+     *
+     * @param temaEncuestaList el new tema encuesta list
+     */
+    public List<EncuestaDTO> getTemaEncuestaList(){
+        return this.temaEncuestaList;
+    }
+    /**
+     * Establece el tema list.
+     *
+     * @param temaList el new tema list
+     */
+    public void setTemaEncuestaList(List<EncuestaDTO> temaEncuestaList) {
+        this.temaEncuestaList = temaEncuestaList;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idTema == null) ? 0 : idTema.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        TemaDTO other = (TemaDTO) obj;
+        if (idTema == null) {
+            if (other.idTema != null) {
+                return false;
+            }
+        } else if (!idTema.equals(other.idTema)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "TemaDTO [idTema=" + idTema + "]";
+    }
+   
+}

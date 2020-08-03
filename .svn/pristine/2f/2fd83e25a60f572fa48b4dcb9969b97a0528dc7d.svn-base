@@ -1,0 +1,58 @@
+package pe.com.edu.siaa.core.ejb.dao.matricula.local;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.dto.matricula.PreRequisitoDTO;
+import pe.com.edu.siaa.core.model.jpa.matricula.PreRequisito;
+
+/**
+ * La Class PreRequisitoDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 11:25:05 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface PreRequisitoDaoLocal  extends GenericDAOLocal<String,PreRequisito> {
+	
+	/**
+	 * Obtener pre requisito map.
+	 *
+	 * @param listaIdetPlanEstudio el lista idet plan estudio
+	 * @return the map
+	 * @throws Exception the exception
+	 */
+	Map<String,List<PreRequisito>> obtenerPreRequisitoMap(List<String> listaIdetPlanEstudio) throws Exception;
+	/**
+	 * Listar pre requisito.
+	 *
+	 * @param preRequisito el pre requisitoDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<PreRequisito> listarPreRequisito(PreRequisitoDTO preRequisito) throws Exception;
+	
+	/**
+	 * contar lista pre requisito.
+	 *
+	 * @param preRequisito el pre requisito
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarPreRequisito(PreRequisitoDTO preRequisito);
+	/**
+	 * Generar id preRequisito.
+	 *
+	 * @return the String
+	 * @throws Exception the exception
+	 */
+	String generarIdPreRequisito() throws Exception;
+}

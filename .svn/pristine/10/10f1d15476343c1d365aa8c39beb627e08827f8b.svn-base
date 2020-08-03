@@ -1,0 +1,231 @@
+package pe.com.edu.siaa.core.ejb.dao.admision.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.persistence.Query;
+
+import pe.com.edu.siaa.core.ejb.dao.admision.local.PersonaDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericAcademicoDAOImpl;
+import pe.com.edu.siaa.core.model.dto.admision.PersonaDTO;
+import pe.com.edu.siaa.core.model.estate.EstadoGeneralState;
+import pe.com.edu.siaa.core.model.jpa.admision.Persona;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+
+/**
+ * La Class PersonaDaoImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 19:53:38 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+public class PersonaDaoImpl extends  GenericAcademicoDAOImpl<String, Persona> implements PersonaDaoLocal  {
+
+	
+	@Override
+	public String generarCodigoPersona(String idAnhoSemestre) throws Exception {
+		String resultado = idAnhoSemestre + "00001";
+		 Query query = createQuery("select max(p.idPersona) from Persona p where substring(p.idPersona,1,5)=:idAnhoSemestre and substring(p.idPersona,6,1) != 'P' ",null);
+		 query.setParameter("idAnhoSemestre", idAnhoSemestre);
+		 List<String> listaCodigo = query.getResultList();
+		 if (listaCodigo != null && listaCodigo.size() > 0) {
+			 String ultimoCodigoGenerado = listaCodigo.get(0);
+			 if (StringUtils.isNotNullOrBlank(ultimoCodigoGenerado)) {
+				 long ultimoCodigo = Long.parseLong(ultimoCodigoGenerado.trim());
+				 ultimoCodigo++;
+				 resultado = "" + ultimoCodigo;
+				
+			 }
+		 }
+		return resultado;
+	}	
+	
+	@Override
+	public Persona validarLogin(String userName,String userPassword) throws Exception {
+		Persona resultado = null;
+		Map<String, Object> parametros = new HashMap<String, Object>();
+		parametros.put("userName", userName);
+		parametros.put("userPassword", userPassword);
+		parametros.put("estado", EstadoGeneralState.ACTIVO.getKey());
+		
+		Query query = createQuery("from Persona p left join fetch p.entidadUniversitaria  left join fetch p.tipoPersona  where   p.userName =:userName and p.userPassword=:userPassword and p.estado =:estado ", parametros);
+		
+		List<Persona> listaPersona = query.getResultList();
+		if (listaPersona != null && listaPersona.size() > 0) {
+			resultado = listaPersona.get(0);
+		}
+		return resultado;
+	}
+	
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.PersonaDaoLocal#listarPersona(pe.com.edu.siaa.core.model.jpa.seguridad.Persona)
+     */  
+    @Override	 
+    public List<Persona> listarPersona(PersonaDTO persona) {
+        Query query = generarQueryListaPersona(persona, false);
+        query.setFirstResult(persona.getStartRow());
+        query.setMaxResults(persona.getOffset());
+        return query.getResultList();
+    }   
+
+    /**
+     * Generar query lista Persona.
+     *
+     * @param PersonaDTO el persona
+     * @param esContador el es contador
+     * @return the query
+     */
+    private Query generarQueryListaPersona(PersonaDTO persona, boolean esContador) {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        if (esContador) {
+            jpaql.append(" select count(o.idPersona) from Persona o where 1=1 ");
+        } else {
+            jpaql.append(" select o from Persona o left join fetch o.tipoPersona left join fetch o.itemByTipoDocIdentidad left join fetch o.itemByEstadoCivil  ");
+            jpaql.append(" left join fetch o.itemByTipoVia left join fetch o.itemByZona left join fetch o.itemByIdioma  left join fetch o.itemByNivelEducativo  ");
+            jpaql.append(" left join fetch o.procedencia left join fetch o.nacionalidad left join fetch o.ubigeoByNacimiento  left join fetch o.ubigeoByActual  ");
+            jpaql.append(" left join fetch o.entidadUniversitaria where 1=1 ");
+            
+        }
+        if (!StringUtils.isNullOrEmpty(persona.getSearch())) {
+			jpaql.append(" and (TRANSLATE(UPPER(o.nombre || ' ' || o.apellidoPaterno || ' ' || o.apellidoMaterno ), :discriminaTildeMAC, :discriminaTildeMAT) like UPPER(translate(:search, :discriminaTildeMIC, :discriminaTildeMIT)) or (upper(o.nroDoc) like :search) ");
+			jpaql.append(" or ( TRANSLATE(UPPER(o.userName), :discriminaTildeMAC, :discriminaTildeMAT) like UPPER(translate(:search, :discriminaTildeMIC, :discriminaTildeMIT)) ) ) ");
+			parametros.putAll(obtenerParametroDiscriminarTilde());	
+	        parametros.put("search", "%" + persona.getSearch().toUpperCase() + "%");
+	    } else {
+			if (!StringUtils.isNullOrEmpty(persona.getNombre())) {
+				jpaql.append(" and upper(o.nombre) like :nombre ");
+				parametros.put("nombre", "%" + persona.getNombre().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(persona.getApellidoPaterno())) {
+				jpaql.append(" and upper(o.apellidoPaterno) like :apellidoPaterno ");
+				parametros.put("apellidoPaterno", "%" + persona.getApellidoPaterno().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(persona.getApellidoMaterno())) {
+				jpaql.append(" and upper(o.apellidoMaterno) like :apellidoMaterno ");
+				parametros.put("apellidoMaterno", "%" + persona.getApellidoMaterno().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(persona.getNroDoc())) {
+				jpaql.append(" and upper(o.nroDoc) like :nroDoc ");
+				parametros.put("nroDoc", "%" + persona.getNroDoc().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(persona.getGenero())) {
+				jpaql.append(" and upper(o.genero) like :genero ");
+				parametros.put("genero", "%" + persona.getGenero().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(persona.getEmail())) {
+				jpaql.append(" and upper(o.email) like :email ");
+				parametros.put("email", "%" + persona.getEmail().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(persona.getEmailAlternativo())) {
+				jpaql.append(" and upper(o.emailAlternativo) like :emailAlternativo ");
+				parametros.put("emailAlternativo", "%" + persona.getEmailAlternativo().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(persona.getTelefono1())) {
+				jpaql.append(" and upper(o.telefono1) like :telefono1 ");
+				parametros.put("telefono1", "%" + persona.getTelefono1().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(persona.getTelefono2())) {
+				jpaql.append(" and upper(o.telefono2) like :telefono2 ");
+				parametros.put("telefono2", "%" + persona.getTelefono2().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(persona.getCelular())) {
+				jpaql.append(" and upper(o.celular) like :celular ");
+				parametros.put("celular", "%" + persona.getCelular().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(persona.getRpm())) {
+				jpaql.append(" and upper(o.rpm) like :rpm ");
+				parametros.put("rpm", "%" + persona.getRpm().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(persona.getFax())) {
+				jpaql.append(" and upper(o.fax) like :fax ");
+				parametros.put("fax", "%" + persona.getFax().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(persona.getUserName())) {
+				jpaql.append(" and upper(o.userName) like :userName ");
+				parametros.put("userName", "%" + persona.getUserName().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(persona.getUserPassword())) {
+				jpaql.append(" and upper(o.userPassword) like :userPassword ");
+				parametros.put("userPassword", "%" + persona.getUserPassword().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(persona.getFechaNacimiento())) {
+				jpaql.append(" and o.fechaNacimiento = :fechaNacimiento ");
+				parametros.put("fechaNacimiento", persona.getFechaNacimiento());
+			}
+			if (!StringUtils.isNullOrEmpty(persona.getNombreZona())) {
+				jpaql.append(" and upper(o.nombreZona) like :nombreZona ");
+				parametros.put("nombreZona", "%" + persona.getNombreZona().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(persona.getNombreTipoVia())) {
+				jpaql.append(" and upper(o.nombreTipoVia) like :nombreTipoVia ");
+				parametros.put("nombreTipoVia", "%" + persona.getNombreTipoVia().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(persona.getDireccion())) {
+				jpaql.append(" and upper(o.direccion) like :direccion ");
+				parametros.put("direccion", "%" + persona.getDireccion().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmptyNumeric(persona.getAnhoConcluyoSecundaria())) {
+				jpaql.append(" and o.anhoConcluyoSecundaria = :anhoConcluyoSecundaria ");
+				parametros.put("anhoConcluyoSecundaria", persona.getAnhoConcluyoSecundaria());
+			}
+			if (!StringUtils.isNullOrEmpty(persona.getFoto())) {
+				jpaql.append(" and upper(o.foto) like :foto ");
+				parametros.put("foto", "%" + persona.getFoto().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(persona.getEstado())) {
+				jpaql.append(" and upper(o.estado) like :estado ");
+				parametros.put("estado", "%" + persona.getEstado().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(persona.getFechaCreacion())) {
+				jpaql.append(" and o.fechaCreacion = :fechaCreacion ");
+				parametros.put("fechaCreacion", persona.getFechaCreacion());
+			}
+		}
+        if (!esContador) {
+            //jpaql.append(" ORDER BY 1 ");
+        }
+        Query query = createQuery(jpaql.toString(), parametros);
+        return query;
+    }
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.PersonaDaoLocal#contarListar{entity.getClassName()}(pe.com.edu.siaa.core.model.jpa.seguridad.PersonaDTO)
+     */
+	@Override
+    public int contarListarPersona(PersonaDTO persona) {
+        int resultado = 0;
+        try {
+            //StringBuilder jpaql = new StringBuilder();
+            Query query = generarQueryListaPersona(persona, true);
+            resultado = ((Long) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            resultado = 0;
+        }
+        return resultado;
+    }
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.PersonaDaoLocal#generarIdPersona()
+     */
+	 @Override
+    public String generarIdPersona() {
+        String resultado = "1";
+        Query query = createQuery("select max(o.idPersona) from Persona o", null);
+        List<Object> listLong =  query.getResultList();
+        if (listLong != null && listLong.size() > 0 && listLong.get(0) != null)  {
+            Long ultimoIdGenerado = Long.valueOf(listLong.get(0).toString());
+            if (!StringUtils.isNullOrEmpty(ultimoIdGenerado)) {
+                resultado = resultado + ultimoIdGenerado;
+            }
+        }
+        return resultado;
+    }
+   
+}

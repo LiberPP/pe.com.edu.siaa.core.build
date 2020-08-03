@@ -1,0 +1,147 @@
+package pe.com.edu.siaa.core.model.dto.matricula;
+
+import java.io.Serializable;
+
+import pe.com.edu.siaa.core.model.dto.BasePaginator;
+
+/**
+ * La Class ConvalidacionPlanEstudioDTO.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 1.0, Tue Apr 18 09:56:59 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+public class ConvalidacionPlanEstudioDTO extends BasePaginator implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id convalidacion plan estudio. */
+    private String idConvalidacionPlanEstudio;
+   
+    /** El det plan estudio. */
+    private DetPlanEstudioDTO detPlanEstudio;
+   
+    /** El det plan estudio convalidar. */
+    private DetPlanEstudioDTO detPlanEstudioConvalidar;
+   
+    /**
+     * Instancia un nuevo convalidacion plan estudioDTO.
+     */
+    public ConvalidacionPlanEstudioDTO() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo convalidacion plan estudioDTO.
+     *
+     * @param idConvalidacionPlanEstudio el id convalidacion plan estudio
+     * @param detPlanEstudio el det plan estudio
+     * @param detPlanEstudioConvalidar el det plan estudio convalidar
+     */
+    public ConvalidacionPlanEstudioDTO(String idConvalidacionPlanEstudio, DetPlanEstudioDTO detPlanEstudio,DetPlanEstudioDTO detPlanEstudioConvalidar) {
+        super();
+        this.idConvalidacionPlanEstudio = idConvalidacionPlanEstudio;
+        this.detPlanEstudio = detPlanEstudio;
+        this.detPlanEstudioConvalidar = detPlanEstudioConvalidar;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id convalidacion plan estudio.
+     *
+     * @return id convalidacion plan estudio
+     */
+     public String getIdConvalidacionPlanEstudio() {
+        return this.idConvalidacionPlanEstudio;
+    }
+    /**
+     * Establece el id convalidacion plan estudio.
+     *
+     * @param idConvalidacionPlanEstudio el new id convalidacion plan estudio
+     */
+    public void setIdConvalidacionPlanEstudio(String idConvalidacionPlanEstudio) {
+        this.idConvalidacionPlanEstudio = idConvalidacionPlanEstudio;
+    }
+    /**
+     * Obtiene det plan estudio.
+     *
+     * @return det plan estudio
+     */
+     public DetPlanEstudioDTO getDetPlanEstudio() {
+        return this.detPlanEstudio;
+    }
+    /**
+     * Establece el det plan estudio.
+     *
+     * @param detPlanEstudio el new det plan estudio
+     */
+    public void setDetPlanEstudio(DetPlanEstudioDTO detPlanEstudio) {
+        this.detPlanEstudio = detPlanEstudio;
+    }
+    /**
+     * Obtiene det plan estudio convalidar.
+     *
+     * @return det plan estudio convalidar
+     */
+     public DetPlanEstudioDTO getDetPlanEstudioConvalidar() {
+        return this.detPlanEstudioConvalidar;
+    }
+    /**
+     * Establece el det plan estudio convalidar.
+     *
+     * @param detPlanEstudioConvalidar el new det plan estudio convalidar
+     */
+    public void setDetPlanEstudioConvalidar(DetPlanEstudioDTO detPlanEstudioConvalidar) {
+        this.detPlanEstudioConvalidar = detPlanEstudioConvalidar;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idConvalidacionPlanEstudio == null) ? 0 : idConvalidacionPlanEstudio.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        ConvalidacionPlanEstudioDTO other = (ConvalidacionPlanEstudioDTO) obj;
+        if (idConvalidacionPlanEstudio == null) {
+            if (other.idConvalidacionPlanEstudio != null) {
+                return false;
+            }
+        } else if (!idConvalidacionPlanEstudio.equals(other.idConvalidacionPlanEstudio)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "ConvalidacionPlanEstudioDTO [idConvalidacionPlanEstudio=" + idConvalidacionPlanEstudio + "]";
+    }
+   
+}

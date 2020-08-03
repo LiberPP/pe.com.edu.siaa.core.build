@@ -1,0 +1,2439 @@
+package pe.com.edu.siaa.core.ejb.service.matricula.impl;
+
+import java.io.File;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+
+import org.apache.commons.beanutils.BeanUtils;
+
+import pe.com.edu.siaa.core.ejb.dao.admision.local.DocumentoRequeridoDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.admision.local.PersonaDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.admision.local.PostulanteDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.AlumnoDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.AperturaCierreMatriculaDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.AsignaPlanEstudioDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.AulaDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.CargaLectivaDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.CargoDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.ConsejeroDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.ConvalidacionPlanEstudioDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.DetCargaLectivaDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.DetMatriculaDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.DetPlanEstudioDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.DetTrasladoDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.HorarioDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.HorarioTemDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.MatriculaDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.OrganoDirectivoDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.PabellonDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.PersonalDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.PlanEstudioDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.PreRequisitoDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.ProfesionDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.RegimenPensionarioDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.TrasladoDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.nota.local.CursoNotaDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.nota.local.DetRegistroNotaDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.nota.local.RegistroNotaDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.pago.local.PlanPagosDaoLocal;
+import pe.com.edu.siaa.core.ejb.factory.CollectionUtil;
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.admision.local.AdmisionServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.jms.impl.JMSSender;
+import pe.com.edu.siaa.core.ejb.service.local.GenerarReporteServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.local.MensajeriaServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.matricula.local.MatriculaServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.nota.local.NotaServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.seguridad.local.SeguridadServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.util.FechaUtil;
+import pe.com.edu.siaa.core.ejb.util.cache.AppAuthenticator;
+import pe.com.edu.siaa.core.ejb.util.cache.SeguridadCacheUtil;
+import pe.com.edu.siaa.core.ejb.util.cache.SelectItemServiceCacheUtil;
+import pe.com.edu.siaa.core.ejb.util.cryto.EncriptarUtil;
+import pe.com.edu.siaa.core.ejb.util.jasper.ArchivoUtilidades;
+import pe.com.edu.siaa.core.ejb.util.jms.UUIDUtil;
+import pe.com.edu.siaa.core.ejb.util.log.Logger;
+import pe.com.edu.siaa.core.ejb.util.motor.regla.ProcesarReglaUtil;
+import pe.com.edu.siaa.core.ejb.util.txt.Utilidades;
+import pe.com.edu.siaa.core.model.constante.util.ConstantesAdmision;
+import pe.com.edu.siaa.core.model.dto.admision.AnhoSemestreDTO;
+import pe.com.edu.siaa.core.model.dto.admision.DocumentoRequeridoDTO;
+import pe.com.edu.siaa.core.model.dto.admision.EntidadUniversitariaDTO;
+import pe.com.edu.siaa.core.model.dto.admision.EscuelaDTO;
+import pe.com.edu.siaa.core.model.dto.admision.PersonaDTO;
+import pe.com.edu.siaa.core.model.dto.admision.PostulanteDTO;
+import pe.com.edu.siaa.core.model.dto.common.ItemDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.AlumnoDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.AperturaCierreMatriculaDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.AsignaPlanEstudioDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.AulaDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.CargaLectivaDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.CargoDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.ConsejeroDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.ConvalidacionPlanEstudioDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.DetCargaLectivaDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.DetMatriculaDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.DetPlanEstudioDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.DetTrasladoDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.HorarioDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.HorarioTemDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.MatriculaDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.OrganoDirectivoDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.PabellonDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.PersonalDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.PlanEstudioDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.PreRequisitoDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.ProfesionDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.RegimenPensionarioDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.ResultadoNotaDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.TrasladoDTO;
+import pe.com.edu.siaa.core.model.dto.seguridad.TipoUsuarioDTO;
+import pe.com.edu.siaa.core.model.dto.seguridad.UsuarioDTO;
+import pe.com.edu.siaa.core.model.estate.EstadoGeneralState;
+import pe.com.edu.siaa.core.model.jpa.admision.AnhoSemestre;
+import pe.com.edu.siaa.core.model.jpa.admision.DocumentoRequerido;
+import pe.com.edu.siaa.core.model.jpa.admision.Persona;
+import pe.com.edu.siaa.core.model.jpa.admision.Postulante;
+import pe.com.edu.siaa.core.model.jpa.common.Item;
+import pe.com.edu.siaa.core.model.jpa.matricula.Alumno;
+import pe.com.edu.siaa.core.model.jpa.matricula.AperturaCierreMatricula;
+import pe.com.edu.siaa.core.model.jpa.matricula.AsignaPlanEstudio;
+import pe.com.edu.siaa.core.model.jpa.matricula.Aula;
+import pe.com.edu.siaa.core.model.jpa.matricula.CargaLectiva;
+import pe.com.edu.siaa.core.model.jpa.matricula.Cargo;
+import pe.com.edu.siaa.core.model.jpa.matricula.Consejero;
+import pe.com.edu.siaa.core.model.jpa.matricula.ConvalidacionPlanEstudio;
+import pe.com.edu.siaa.core.model.jpa.matricula.DetCargaLectiva;
+import pe.com.edu.siaa.core.model.jpa.matricula.DetMatricula;
+import pe.com.edu.siaa.core.model.jpa.matricula.DetPlanEstudio;
+import pe.com.edu.siaa.core.model.jpa.matricula.DetTraslado;
+import pe.com.edu.siaa.core.model.jpa.matricula.Horario;
+import pe.com.edu.siaa.core.model.jpa.matricula.HorarioTem;
+import pe.com.edu.siaa.core.model.jpa.matricula.Matricula;
+import pe.com.edu.siaa.core.model.jpa.matricula.OrganoDirectivo;
+import pe.com.edu.siaa.core.model.jpa.matricula.Pabellon;
+import pe.com.edu.siaa.core.model.jpa.matricula.Personal;
+import pe.com.edu.siaa.core.model.jpa.matricula.PlanEstudio;
+import pe.com.edu.siaa.core.model.jpa.matricula.PreRequisito;
+import pe.com.edu.siaa.core.model.jpa.matricula.Profesion;
+import pe.com.edu.siaa.core.model.jpa.matricula.RegimenPensionario;
+import pe.com.edu.siaa.core.model.jpa.matricula.Traslado;
+import pe.com.edu.siaa.core.model.jpa.nota.CursoNota;
+import pe.com.edu.siaa.core.model.jpa.nota.DetRegistroNota;
+import pe.com.edu.siaa.core.model.jpa.nota.NotaLetra;
+import pe.com.edu.siaa.core.model.jpa.nota.RegistroNota;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.model.type.AsuntoDetalleCorreoType;
+import pe.com.edu.siaa.core.model.type.DragHorarioType;
+import pe.com.edu.siaa.core.model.type.ListaItemType;
+import pe.com.edu.siaa.core.model.type.NombreReporteType;
+import pe.com.edu.siaa.core.model.type.ReglaType;
+import pe.com.edu.siaa.core.model.type.SemestreType;
+import pe.com.edu.siaa.core.model.type.TipoDetalleCorreoType;
+import pe.com.edu.siaa.core.model.type.TipoReporteGenerarType;
+import pe.com.edu.siaa.core.model.util.ConstanteConfigUtil;
+import pe.com.edu.siaa.core.model.util.ConstanteTypeUtil;
+import pe.com.edu.siaa.core.model.util.ResourceUtil;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+import pe.com.edu.siaa.core.model.vo.CorreoVO;
+import pe.com.edu.siaa.core.model.vo.DetalleCorreoVO;
+import pe.com.edu.siaa.core.model.vo.ParametroReporteVO;
+import pe.com.edu.siaa.core.model.vo.SelectItemVO;
+
+
+/**
+ * La Class MatriculaServiceImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:23 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+ @Stateless
+ @EJB(name = "java:app/MatriculaService", beanInterface = MatriculaServiceLocal.class)
+ @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+public class MatriculaServiceImpl implements MatriculaServiceLocal{
+	
+	 private Logger log = Logger.getLogger(MatriculaServiceImpl.class);
+   /** La Constante STYLO_CRUCE_HORARIO. */
+   private static final String STYLO_CRUCE_HORARIO = "cruceHorario";
+		
+	/** El servicio profesion dao impl. */
+	@EJB
+	private ProfesionDaoLocal profesionDaoImpl; 
+	
+	/** El servicio regimen pensionario dao impl. */
+	@EJB
+	private RegimenPensionarioDaoLocal regimenPensionarioDaoImpl; 
+	
+	/** El servicio convalidacion plan estudio dao impl. */
+	@EJB
+	private ConvalidacionPlanEstudioDaoLocal convalidacionPlanEstudioDaoImpl; 
+	
+	/** El servicio consejero dao impl. */
+	@EJB
+	private ConsejeroDaoLocal consejeroDaoImpl; 
+	
+	/** El servicio pre requisito dao impl. */
+	@EJB
+	private PreRequisitoDaoLocal preRequisitoDaoImpl; 
+	
+	/** El servicio horario tem dao impl. */
+	@EJB
+	private HorarioTemDaoLocal horarioTemDaoImpl; 
+	
+	/** El servicio det matricula dao impl. */
+	@EJB
+	private DetMatriculaDaoLocal detMatriculaDaoImpl; 
+
+	
+	/** El servicio personal dao impl. */
+	@EJB
+	private PersonalDaoLocal personalDaoImpl; 
+	
+	/** El servicio det traslado dao impl. */
+	@EJB
+	private DetTrasladoDaoLocal detTrasladoDaoImpl; 
+	
+	/** El servicio alumno dao impl. */
+	@EJB
+	private AlumnoDaoLocal alumnoDaoImpl; 
+	
+	/** El servicio postulante dao impl. */
+	@EJB
+	private PostulanteDaoLocal postulanteDaoImpl; 
+
+	/** El servicio persona dao impl. */
+	@EJB
+	private PersonaDaoLocal personaDaoImpl; 
+	
+	
+	/** El servicio det plan estudio dao impl. */
+	@EJB
+	private DetPlanEstudioDaoLocal detPlanEstudioDaoImpl; 
+	
+	/** El servicio cargo dao impl. */
+	@EJB
+	private CargoDaoLocal cargoDaoImpl; 
+	
+	/** El servicio apertura cierre matricula dao impl. */
+	@EJB
+	private AperturaCierreMatriculaDaoLocal aperturaCierreMatriculaDaoImpl; 
+	
+	/** El servicio aula dao impl. */
+	@EJB
+	private AulaDaoLocal aulaDaoImpl; 
+	
+	/** El servicio det carga lectiva dao impl. */
+	@EJB
+	private DetCargaLectivaDaoLocal detCargaLectivaDaoImpl; 
+	
+	/** El servicio plan pagos dao impl. */
+	@EJB
+	private PlanPagosDaoLocal planPagosDaoImpl; 
+	
+	/** El servicio horario dao impl. */
+	@EJB
+	private HorarioDaoLocal horarioDaoImpl; 
+	
+	/** El servicio pabellon dao impl. */
+	@EJB
+	private PabellonDaoLocal pabellonDaoImpl; 
+
+	/** El servicio traslado dao impl. */
+	@EJB
+	private TrasladoDaoLocal trasladoDaoImpl; 
+	
+	/** El servicio matricula dao impl. */
+	@EJB
+	private MatriculaDaoLocal matriculaDaoImpl; 
+	
+	/** El servicio asigna plan estudio dao impl. */
+	@EJB
+	private AsignaPlanEstudioDaoLocal asignaPlanEstudioDaoImpl; 
+	
+	/** El servicio carga lectiva dao impl. */
+	@EJB
+	private CargaLectivaDaoLocal cargaLectivaDaoImpl; 
+	
+	/** El servicio organo directivo dao impl. */
+	@EJB
+	private OrganoDirectivoDaoLocal organoDirectivoDaoImpl; 
+	
+	/** El servicio plan estudio dao impl. */
+	@EJB
+	private PlanEstudioDaoLocal planEstudioDaoImpl;
+	
+	@EJB
+	private NotaServiceLocal notaServiceLocal;
+	
+	/** El servicio registro nota dao impl. */
+	@EJB
+	private RegistroNotaDaoLocal registroNotaDaoImpl;
+	
+	/** El servicio det registro nota dao impl. */
+	@EJB
+	private DetRegistroNotaDaoLocal detRegistroNotaDaoImpl;
+	
+	/** El servicio curso nota dao impl. */
+	@EJB
+	private CursoNotaDaoLocal cursoNotaDaoImpl; 
+	
+	@EJB
+	private GenerarReporteServiceLocal	 generarReporteServiceImpl;
+	
+	/** La MensajeriaServiceLocal. */
+	@EJB
+	private MensajeriaServiceLocal mensajeriaServiceImpl;
+	
+	/** El servicio documento requerido dao impl. */
+	@EJB
+	private DocumentoRequeridoDaoLocal documentoRequeridoDaoImpl; 
+	
+	/** El servicio admision service impl. */
+	@EJB
+	private AdmisionServiceLocal admisionServiceImpl; 
+	
+	@EJB
+	private SeguridadServiceLocal seguridadServiceLocal; 
+	
+	@Override
+	public List<SelectItemVO> listarCargaLectivaSelectItem(CargaLectivaDTO cargaLectiva) throws Exception {
+		List<SelectItemVO> resultado = new ArrayList<SelectItemVO>();
+		List<CargaLectiva> listaCargaLectiva = this.listarCargaLectivaFiltro(cargaLectiva);
+		for (CargaLectiva cargaLectivaRes : listaCargaLectiva) {
+			resultado.add(new SelectItemVO(cargaLectivaRes.getIdCargaLectiva(), cargaLectivaRes.getNombre(), cargaLectivaRes.getNombre()));
+		}
+		return resultado;
+	}
+	private List<CargaLectiva> listarCargaLectivaFiltro(CargaLectivaDTO cargaLectiva) throws Exception {
+		return cargaLectivaDaoImpl.listarCargaLectivaFiltro(cargaLectiva);
+	}
+	
+	@Override
+	public List<DetCargaLectivaDTO> obtenerDetCargaLectiva(DetCargaLectivaDTO detCargaLectiva) throws Exception {
+		List<DetCargaLectivaDTO>  resultado = new ArrayList<DetCargaLectivaDTO>();
+		List<DetCargaLectiva>  resultadoTemp = this.detCargaLectivaDaoImpl.obtenerDetCargaLectiva(detCargaLectiva);
+		if (resultadoTemp != null) {
+			for (DetCargaLectiva objData : resultadoTemp) {
+				DetCargaLectivaDTO res = TransferDataObjectUtil.transferObjetoEntityDTO(objData, DetCargaLectivaDTO.class,"cargaLectiva:{entidadUniversitaria}","detPlanEstudio:{itemByCiclo}","itemByTurno","aula");
+				PersonalDTO personalByDocente = TransferDataObjectUtil.transferObjetoEntityDTO(objData.getPersonalByDocente(), PersonalDTO.class,"persona:{entidadUniversitaria}");
+				PersonalDTO personalByDocentePractica = TransferDataObjectUtil.transferObjetoEntityDTO(objData.getPersonalByDocente(), PersonalDTO.class,"persona:{entidadUniversitaria}");
+				res.setPersonalByDocente(personalByDocente);
+				res.setPersonalByDocentePractica(personalByDocentePractica);
+				resultado.add(res);
+			}
+		}
+		
+		return resultado;
+	}
+	
+	@Override
+	public List<SelectItemVO> listarProfesionSelectItem() throws Exception {
+		List<SelectItemVO> resultado = new ArrayList<SelectItemVO>();
+		List<ProfesionDTO> listaProfesion = this.listarProfesion(new ProfesionDTO());
+		for (ProfesionDTO profesion : listaProfesion) {
+			resultado.add(new SelectItemVO(profesion.getIdProfesion(), profesion.getDescripcion(), profesion.getDescripcion()));
+		}
+		return resultado;
+	}
+	
+	@Override
+	public List<SelectItemVO> listarCargoSelectItem() throws Exception {
+		List<SelectItemVO> resultado = new ArrayList<SelectItemVO>();
+		List<CargoDTO> listaCargo = this.listarCargo(new CargoDTO());
+		for (CargoDTO cargo : listaCargo) {
+			resultado.add(new SelectItemVO(cargo.getIdCargo(), cargo.getDescripcion(), cargo.getDescripcion()));
+		}
+		return resultado;
+	}
+	
+	@Override
+	public List<SelectItemVO> listarRegimenPensionarioSelectItem() throws Exception {
+		List<SelectItemVO> resultado = new ArrayList<SelectItemVO>();
+		List<RegimenPensionarioDTO> listaRegimenPensionario = this.listarRegimenPensionario(new RegimenPensionarioDTO());
+		for (RegimenPensionarioDTO regimenPensionario : listaRegimenPensionario) {
+			resultado.add(new SelectItemVO(regimenPensionario.getIdRegimenPensionario(), regimenPensionario.getDescripcion(), regimenPensionario.getDescripcion()));
+		}
+		return resultado;
+	}
+	
+	@Override
+	public PersonalDTO obtenerPersonalDirectivo(PersonalDTO personal)throws Exception {
+		return personalDaoImpl.obtenerPersonalDirectivo(personal);
+	}
+	
+	@Override
+	public List<SelectItemVO> obtenerSemestreMariculadoOrdenadoBySemestre(String idAlumno) throws Exception {
+		List<SelectItemVO> resultado = new ArrayList<SelectItemVO>();
+		List<AnhoSemestre> listaSemestreMatricula = matriculaDaoImpl.obtenerSemestreMariculadoOrdenadoBySemestre(idAlumno);
+		if (listaSemestreMatricula != null) {
+			for (AnhoSemestre objData : listaSemestreMatricula) {
+				String nomAnhoSemestre = obtenerDescripcionAnhoSemestre(objData);
+				resultado.add(new SelectItemVO(objData.getIdAnhoSemestre(), nomAnhoSemestre, nomAnhoSemestre));
+			}
+		}
+		return resultado;
+	}
+	private String obtenerDescripcionAnhoSemestre(AnhoSemestre anhoSemestre ) {
+		   String resultado  = "";
+		   if (anhoSemestre.getSemestre() != null && anhoSemestre.getAnho() != null) {
+					resultado = anhoSemestre.getAnho() + " - " + SemestreType.get(anhoSemestre.getSemestre()).getValue();
+				}
+		    return resultado;
+	}
+	@Override
+	public AlumnoDTO findAlumnoByPersona(String idPersona) throws Exception {
+		AlumnoDTO resultado = new AlumnoDTO();
+		Alumno alumno = alumnoDaoImpl.findAlumnoByPersona(idPersona);
+		resultado = TransferDataObjectUtil.transferObjetoEntityDTO(alumno,AlumnoDTO.class,"anhoSemestreIngreso","planEstudio","escuela","itemByCicloActual");
+		resultado.setPostulante(TransferDataObjectUtil.transferObjetoEntityDTO(alumno.getPostulante(),PostulanteDTO.class));
+		resultado.getPostulante().setPersona(TransferDataObjectUtil.transferObjetoEntityDTO(alumno.getPostulante().getPersona(),PersonaDTO.class));
+		
+		alumno = null;
+		return resultado;
+	}
+	
+	@Override
+	public List<HorarioDTO> listarHorario(List<String> listaIdDetCargaLectiva) throws Exception {
+		List<HorarioDTO> resultado = new ArrayList<HorarioDTO>();
+		if (CollectionUtil.isEmpty(listaIdDetCargaLectiva)) {
+			return resultado;
+		}
+		List<SelectItemVO> listaDia = SelectItemServiceCacheUtil.getInstance().obtenerSelecCboItem(ListaItemType.DIA);		
+		List<HorarioDTO> listaHorario = transferListHorario(listaIdDetCargaLectiva);
+		resultado = generarHorario(null,listaHorario, listaDia);
+		resultado = generarColorDocenteAlumno(resultado);
+		resultado = generarCruceHorario(resultado);
+		return resultado;
+	}
+	private List<HorarioDTO> transferListHorario(List<String> listaIdDetCargaLectiva) throws Exception {
+		List<Horario> listaTemp = horarioDaoImpl.listarHorario(listaIdDetCargaLectiva);
+		List<HorarioDTO> listaHorario = new ArrayList<HorarioDTO>(); 
+		for (Horario horario : listaTemp) {
+			HorarioDTO horarioDTO = TransferDataObjectUtil.transferObjetoEntityDTO(horario, HorarioDTO.class, "itemByDia");
+			horarioDTO.setDetCargaLectiva(TransferDataObjectUtil.transferObjetoEntityDTO(horario.getDetCargaLectiva(), DetCargaLectivaDTO.class, "aula","itemByTurno","detPlanEstudio:{itemByCiclo}"));
+			horarioDTO.getDetCargaLectiva().setPersonalByDocente(TransferDataObjectUtil.transferObjetoEntityDTO(horario.getDetCargaLectiva().getPersonalByDocente(), PersonalDTO.class, "persona:{entidadUniversitaria}"));
+			horarioDTO.getDetCargaLectiva().setPersonalByDocentePractica(TransferDataObjectUtil.transferObjetoEntityDTO(horario.getDetCargaLectiva().getPersonalByDocentePractica(), PersonalDTO.class, "persona:{entidadUniversitaria}"));
+			horarioDTO.getDetCargaLectiva().setCargaLectiva(TransferDataObjectUtil.transferObjetoEntityDTO(horario.getDetCargaLectiva().getCargaLectiva(), CargaLectivaDTO.class, "entidadUniversitaria","escuela"));
+			listaHorario.add(horarioDTO);
+		}	
+		listaTemp = null;
+		return listaHorario;
+	}
+	@Override
+	public List<HorarioDTO> listarHorarioAlumno(String idAlumno,String idAnhoSemestre) throws Exception {
+		List<HorarioDTO> resultado = new ArrayList<HorarioDTO>();
+		List<String> listaIdDetCargaLectiva = detMatriculaDaoImpl.listarDetMatriculaCurso(idAlumno,idAnhoSemestre);
+		if (listaIdDetCargaLectiva != null && listaIdDetCargaLectiva.size() > 0) {
+			List<SelectItemVO> listaDia = SelectItemServiceCacheUtil.getInstance().obtenerSelecCboItem(ListaItemType.DIA);
+			List<HorarioDTO> listaHorario = transferListHorario(listaIdDetCargaLectiva);
+			resultado = generarHorario(null,listaHorario, listaDia);
+			resultado = generarColorDocenteAlumno(resultado);
+			resultado = generarCruceHorario(resultado);
+		}
+		return resultado;
+	}
+	
+	@Override
+	public List<HorarioDTO> listarHorarioCiclo(HorarioDTO horario,boolean conCoclor) throws Exception {
+		List<HorarioDTO> resultado = new ArrayList<HorarioDTO>();
+		List<String> listaIdDetCargaLectiva = horarioDaoImpl.obtenerIdDetCargaLectiva(horario);
+		List<HorarioDTO> listaHorario = transferListHorario(listaIdDetCargaLectiva);
+		List<SelectItemVO> listaDia = SelectItemServiceCacheUtil.getInstance().obtenerSelecCboItem(ListaItemType.DIA);
+		resultado = generarHorario(horario,listaHorario, listaDia);
+		if (conCoclor) {
+			resultado = generarColorDocenteHorario(resultado);
+		} else {
+			resultado = generarCruceHorario(resultado);
+		}
+		return resultado;
+	}
+	
+	@Override
+	public List<HorarioDTO> listarHorarioDocenete(String idDocente,String idAnhoSemestre) throws Exception {
+		List<HorarioDTO> resultado = new ArrayList<HorarioDTO>();
+		PersonalDTO docente = new PersonalDTO();
+		docente.setIdPersonal(idDocente);
+		HorarioDTO horario = new HorarioDTO();
+		horario.setDetCargaLectiva(new DetCargaLectivaDTO());
+		horario.getDetCargaLectiva().setCargaLectiva(new CargaLectivaDTO());
+		horario.getDetCargaLectiva().setPersonalByDocente(docente);
+		horario.getDetCargaLectiva().setPersonalByDocentePractica(docente);
+		AnhoSemestreDTO anhoSemestre = new AnhoSemestreDTO();
+		anhoSemestre.setIdAnhoSemestre(idAnhoSemestre);
+		horario.getDetCargaLectiva().getCargaLectiva().setAnhoSemestre(anhoSemestre );
+		List<String> listaIdDetCargaLectiva = horarioDaoImpl.obtenerIdDetCargaLectiva(horario);
+		List<HorarioDTO> listaHorario = transferListHorario(listaIdDetCargaLectiva);
+		List<SelectItemVO> listaDia = SelectItemServiceCacheUtil.getInstance().obtenerSelecCboItem(ListaItemType.DIA);
+		resultado = generarHorario(null,listaHorario, listaDia);
+		resultado = generarColorDocenteAlumno(resultado);
+		resultado = generarCruceHorario(resultado);
+		return resultado;
+	}
+	private List<HorarioDTO> generarColorDocenteHorario(List<HorarioDTO> listaHorario) throws Exception {
+		List<HorarioDTO> resultado = new ArrayList<HorarioDTO>();
+		Map<String,String> horaioColorDocenteMap = new HashMap<String, String>();
+		Map<Integer,String> coloresMap = Utilidades.obtenerColoresMap();
+		String color = "red";
+		int posicion = 1;
+		for (HorarioDTO horario : listaHorario) {
+			for (HorarioDTO horarioColorDocente : horario.getListaHorario()) {				
+				if (StringUtils.isNotNullOrBlank(horarioColorDocente.getDetCargaLectiva().getPersonalByDocente().getIdPersonal())) {
+					String keyColorDocente = horarioColorDocente.getDetCargaLectiva().getPersonalByDocente().getIdPersonal();
+					String colorMap = horaioColorDocenteMap.get(keyColorDocente);
+					if (colorMap == null) {
+						color = coloresMap.get(posicion);
+						horaioColorDocenteMap.put(keyColorDocente, color);
+						horarioColorDocente.setStyleHorarioDocente(Utilidades.devolverColor(color));
+						posicion++;						
+						if (coloresMap.size() < posicion) {
+							posicion = posicion - 1 ;
+						}
+					} else {
+						horarioColorDocente.setStyleHorarioDocente(Utilidades.devolverColor(colorMap));
+					} 					
+				}
+			}
+		}
+		resultado = listaHorario;
+		return resultado;
+	}
+	private List<HorarioDTO> generarColorDocenteAlumno(List<HorarioDTO> listaHorario) throws Exception {
+		List<HorarioDTO> resultado = new ArrayList<HorarioDTO>();
+		Map<String,String> horaioColorDocenteMap = new HashMap<String, String>();
+		Map<Integer,String> coloresMap = Utilidades.obtenerColoresMap();
+		String color = "red";
+		int posicion = 1;
+		for (HorarioDTO horario : listaHorario) {
+			for (HorarioDTO horarioColorDocente : horario.getListaHorario()) {
+				String key = horarioColorDocente.getDetCargaLectiva().getIdDetCargaLectiva();
+				if (StringUtils.isNotNullOrBlank(key)) {
+					String keyColor = horarioColorDocente.getDetCargaLectiva().getIdDetCargaLectiva();
+					String colorMap = horaioColorDocenteMap.get(keyColor);
+					if (colorMap == null) {
+						color = coloresMap.get(posicion);
+						horaioColorDocenteMap.put(keyColor, color);
+						horarioColorDocente.setStyleHorarioDocente(Utilidades.devolverColor(color));
+						posicion++;						
+						if (coloresMap.size() < posicion) {
+							posicion = posicion - 1 ;
+						}
+					} else {
+						horarioColorDocente.setStyleHorarioDocente(Utilidades.devolverColor(colorMap));
+					} 					
+				}
+			}
+		}
+		resultado = listaHorario;
+		return resultado;
+	}
+	/**
+	 * Generar cruce horario.
+	 *
+	 * @param listaHorario el lista horario
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	private List<HorarioDTO> generarCruceHorario(List<HorarioDTO> listaHorario) throws Exception {
+		Map<String,Integer> horaioMap = new HashMap<String, Integer>();
+		Map<String,Integer> horaioDiaCursoMap = new HashMap<String, Integer>();
+		int cantidad = 0;
+		int cantidadDiaCurso = 0;
+		for (HorarioDTO horario : listaHorario) {
+			String key = horario.getHoraInicio() + horario.getHoraFin();
+			if (horaioMap.get(key) == null) {
+				cantidad = 1;
+			} else {
+				cantidad++;
+			}
+			horaioMap.put(key, cantidad);
+			for (HorarioDTO horarioCruzado : horario.getListaHorario()) {				
+				if (StringUtils.isNotNullOrBlank(horarioCruzado.getDetCargaLectiva().getIdDetCargaLectiva())) {
+					String keyDiaCurso = key + horarioCruzado.getItemByDia().getIdItem();
+					if (horaioDiaCursoMap.get(keyDiaCurso) == null) {
+						cantidadDiaCurso = 1;
+					} else {
+						cantidadDiaCurso++;
+					}
+					horaioDiaCursoMap.put(keyDiaCurso, cantidadDiaCurso);
+				}
+			}
+		}
+		for (HorarioDTO horario : listaHorario) {
+			String key = horario.getHoraInicio() + horario.getHoraFin();
+			if (horaioMap.get(key) > 1) {
+				for (HorarioDTO horarioCruzado : horario.getListaHorario()) {
+					if (StringUtils.isNotNullOrBlank(horarioCruzado.getDetCargaLectiva().getIdDetCargaLectiva())) {
+						String keyDiaCurso = key + horarioCruzado.getItemByDia().getIdItem();
+						if (horaioDiaCursoMap.get(keyDiaCurso) > 1) {
+							horarioCruzado.setStyleCruceHorario(STYLO_CRUCE_HORARIO);
+						}
+					}
+				}
+			}
+		}
+		return listaHorario;
+	}
+	/**
+	 * Generar horario.
+	 *
+	 * @param listaHorario el lista horario
+	 * @param listaDia el lista dia
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	private List<HorarioDTO> generarHorario(HorarioDTO horarioFiltro,List<HorarioDTO> listaHorario,List<SelectItemVO> listaDia) throws Exception {
+		List<HorarioDTO> resultado = new ArrayList<HorarioDTO>();
+		Map<String,Map<String,HorarioDTO>>  horarioErrorMap = generarCursoHorarioErrorMap(listaHorario);
+		Map<String,String>  horarioExistente = new HashMap<String, String>();
+		if (listaHorario != null && listaHorario.size() > 0) {
+			HorarioDTO horarioActual = (HorarioDTO)BeanUtils.cloneBean(listaHorario.get(0));		
+			String keyActual = generarKeyHorario(horarioActual);
+			List<HorarioDTO> listaHorarioDia = new ArrayList<HorarioDTO>();
+			
+			//completar horario dia
+			listaHorarioDia = this.completarHorarioDia(horarioFiltro,listaDia, keyActual, listaHorario);
+			horarioActual.setListaHorario(listaHorarioDia);
+			resultado.add(horarioActual);
+			horarioExistente.putAll(completarHorarioDiaMap(resultado));
+			
+			
+			for (int i = 1; i < listaHorario.size(); i++) {
+				HorarioDTO horarioTem = listaHorario.get(i);
+				horarioActual = (HorarioDTO)BeanUtils.cloneBean(listaHorario.get(i - 1));
+				String keyTemp =  generarKeyHorario(horarioTem);
+				String keyDia = keyErrorHorarioDia(horarioTem);
+				String keyCursoError =  keyErrorHorario(horarioTem);
+				Map<String,HorarioDTO> horarioErrorGeneradoMap = new HashMap<String, HorarioDTO>();
+				if (horarioErrorMap.containsKey(keyDia)) {
+					horarioErrorGeneradoMap = horarioErrorMap.get(keyDia);
+				}
+				boolean horarioCruzadoBD = horarioErrorGeneradoMap.containsKey(keyCursoError);
+				boolean keyActualHorario = !keyActual.equals(keyTemp);
+				if ( (keyActualHorario || horarioCruzadoBD) && !horarioExistente.containsKey(keyCursoError)) {
+					horarioActual = horarioTem ;
+					listaHorarioDia = new ArrayList<HorarioDTO>();
+					keyActual = generarKeyHorario(horarioActual);
+					//completar horario dia
+					if (!keyActualHorario && horarioCruzadoBD) {
+						List<HorarioDTO> listaHorarioError = new ArrayList<HorarioDTO>();
+						for (HorarioDTO horario : horarioErrorGeneradoMap.values()) {
+							String keyHorarioErrorTemp = keyErrorHorario(horario);
+							if (keyCursoError.equals(keyHorarioErrorTemp)) {
+								horarioExistente.put(keyCursoError, keyCursoError);
+								listaHorarioError.add(horario);
+							}
+						}
+						listaHorarioDia = this.completarHorarioDia(horarioFiltro,listaDia, keyActual, listaHorarioError);
+					} else {
+						listaHorarioDia = this.completarHorarioDia(horarioFiltro,listaDia, keyActual, listaHorario);
+					}
+					horarioActual.setListaHorario(listaHorarioDia);
+					resultado.add(horarioActual);
+					horarioExistente.putAll(completarHorarioDiaMap(resultado));
+				}
+				
+			}
+		}
+		return resultado;
+	}
+	
+	/**
+	 * Completar horario dia map.
+	 *
+	 * @param listaHorarioEvaluar el lista horario evaluar
+	 * @return the map
+	 * @throws Exception the exception
+	 */
+	private Map<String,String> completarHorarioDiaMap(List<HorarioDTO> listaHorarioEvaluar) throws Exception {
+		Map<String,String> resultado =  new HashMap<String, String>();
+		for (HorarioDTO horario : listaHorarioEvaluar) {
+			for (HorarioDTO horarioTemDia : horario.getListaHorario()) {
+				String keyCursoError =  "";
+				try {
+					keyCursoError = keyErrorHorario(horarioTemDia);
+				} catch (Exception e) {
+					keyCursoError = "";
+				}
+				
+				resultado.put(keyCursoError, keyCursoError);
+				
+			}	
+		}	
+			
+		return resultado;
+	}
+	/**
+	 * Completar horario dia.
+	 *
+	 * @param listaDia el lista dia
+	 * @param keyActual el key actual
+	 * @param listaHorarioEvaluar el lista horario evaluar
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	private List<HorarioDTO> completarHorarioDia(HorarioDTO horarioFiltro,List<SelectItemVO> listaDia,String keyActual, List<HorarioDTO> listaHorarioEvaluar) throws Exception {
+		List<HorarioDTO> resultado =  new ArrayList<HorarioDTO>();
+		List<HorarioDTO> listaHorarioDiaCompletar = new ArrayList<HorarioDTO>();
+		List<HorarioDTO> listaHorarioDia = new ArrayList<HorarioDTO>();
+		Map<Long,Integer> indexDiaMap = new HashMap<Long, Integer>();
+		for (int i = 0; i < listaDia.size(); i++) {
+			SelectItemVO dia = listaDia.get(i);
+			indexDiaMap.put((Long)dia.getId(), i);
+			listaHorarioDia.add(new HorarioDTO());
+		}
+		
+		Map<Long,HorarioDTO> horarioDiaMap = new HashMap<Long, HorarioDTO>();
+		for (HorarioDTO horarioTemDiaTemp : listaHorarioEvaluar) {
+			HorarioDTO horarioTemDia = (HorarioDTO)BeanUtils.cloneBean(horarioTemDiaTemp);
+			horarioTemDia.setEsMover(esMoverHorario(horarioFiltro, horarioTemDia));
+			String keyTempDia =  generarKeyHorario(horarioTemDia);
+			if (keyActual.equals(keyTempDia)) {
+				if (horarioDiaMap.get(horarioTemDia.getItemByDia().getIdItem()) == null) {
+					DetCargaLectivaDTO detCargaLectivaClonar = (DetCargaLectivaDTO) BeanUtils.cloneBean(horarioTemDia.getDetCargaLectiva()); 
+					horarioTemDia.setDetCargaLectiva(detCargaLectivaClonar);
+					horarioTemDia.setDragType(DragHorarioType.OCUPADO.getKey());
+					listaHorarioDia.set(indexDiaMap.get(horarioTemDia.getItemByDia().getIdItem()), horarioTemDia);
+					horarioDiaMap.put(horarioTemDia.getItemByDia().getIdItem(), horarioTemDia);
+				}
+			}
+		}    
+		for (SelectItemVO itemDia : listaDia) {	
+			if (horarioDiaMap.get(itemDia.getId()) == null) {
+				HorarioDTO horarioDia =  new HorarioDTO();
+				horarioDia.setDetCargaLectiva(new DetCargaLectivaDTO());
+				horarioDia.getDetCargaLectiva().setDetPlanEstudio(new DetPlanEstudioDTO());
+				horarioDia.getDetCargaLectiva().getDetPlanEstudio().setItemByCiclo(new ItemDTO());
+				horarioDia.getDetCargaLectiva().setPersonalByDocente(new PersonalDTO());
+				horarioDia.getDetCargaLectiva().getPersonalByDocente().setPersona(new PersonaDTO());
+				horarioDia.getDetCargaLectiva().setPersonalByDocentePractica(new PersonalDTO());
+				horarioDia.getDetCargaLectiva().getPersonalByDocentePractica().setPersona(new PersonaDTO());
+				horarioDia.getDetCargaLectiva().setAula(new AulaDTO());
+				horarioDia.getDetCargaLectiva().setItemByTurno(new ItemDTO());
+				horarioDia.getDetCargaLectiva().setCargaLectiva(new CargaLectivaDTO());
+				horarioDia.getDetCargaLectiva().getCargaLectiva().setEntidadUniversitaria(new EntidadUniversitariaDTO());
+				horarioDia.getDetCargaLectiva().getCargaLectiva().setEscuela(new EscuelaDTO());
+				horarioDia.setItemByDia(SelectItemServiceCacheUtil.getInstance().obtenerItem(Long.valueOf(itemDia.getId() + "")));
+				horarioDia.setDragType(DragHorarioType.PENDIENTE.getKey());
+				listaHorarioDiaCompletar.add(horarioDia);
+			}
+		}
+		for (HorarioDTO horarioCompletar : listaHorarioDiaCompletar) {
+			listaHorarioDia.set(indexDiaMap.get(horarioCompletar.getItemByDia().getIdItem()),horarioCompletar);
+		}
+		resultado = listaHorarioDia;
+		return resultado;
+	}
+	/**
+	 * Generar curso horario error map.
+	 *
+	 * @param listaHorario el lista horario
+	 * @return the map
+	 * @throws Exception the exception
+	 */
+	private Map<String,Map<String,HorarioDTO>> generarCursoHorarioErrorMap(List<HorarioDTO> listaHorario) throws Exception {
+		Map<String,Map<String,HorarioDTO>> resultado = new HashMap<String, Map<String,HorarioDTO>>();
+		if (listaHorario == null || listaHorario.size() == 0) {
+			return resultado;
+		}
+		for (HorarioDTO horario : listaHorario) {
+			 String key = keyErrorHorarioDia(horario);
+			 if (!resultado.containsKey(key)) {
+				 Map<String,HorarioDTO> value = new HashMap<String, HorarioDTO>();
+				 String keyError =  keyErrorHorario(horario);
+				 value.put(keyError, horario);
+				 resultado.put(key, value);
+			 } else {
+				 Map<String,HorarioDTO> value = resultado.get(key);
+				 String keyError = keyErrorHorario(horario); 	
+				 value.put(keyError, horario);
+				 resultado.put(key, value);
+			 }
+		}
+		return resultado;
+	}
+	
+	/**
+	 * Key error horario.
+	 *
+	 * @param horario el horario
+	 * @return the string
+	 */
+	private String keyErrorHorario(HorarioDTO horario) {
+		String resultado = "";
+		resultado = generarKeyHorario(horario) + horario.getItemByDia().getIdItem() + horario.getDetCargaLectiva().getIdDetCargaLectiva();
+		return resultado;
+	}
+	
+	/**
+	 * Key error horario dia.
+	 *
+	 * @param horario el horario
+	 * @return the string
+	 */
+	private String keyErrorHorarioDia(HorarioDTO horario) {
+		String resultado = "";
+		resultado = generarKeyHorario(horario) + horario.getItemByDia().getIdItem(); 	
+		return resultado;
+	}
+	private boolean esMoverHorario(HorarioDTO horarioFiltro,HorarioDTO horarioActual) {
+		boolean resultado = true;
+		Long idEntidad  =0L;
+		if (horarioFiltro != null) {
+			if (horarioFiltro.getDetCargaLectiva() != null) {
+				if (horarioFiltro.getDetCargaLectiva().getCargaLectiva() != null) {
+					if (horarioFiltro.getDetCargaLectiva().getCargaLectiva().getEntidadUniversitaria() != null) {
+						idEntidad = horarioFiltro.getDetCargaLectiva().getCargaLectiva().getEntidadUniversitaria().getIdEntidadUniversitaria();
+					}
+				}
+			}
+		}
+		Long idEntidadActual  =0L;
+		if (horarioActual != null) {
+			if (horarioActual.getDetCargaLectiva() != null) {
+				if (horarioActual.getDetCargaLectiva().getCargaLectiva() != null) {
+					if (horarioActual.getDetCargaLectiva().getCargaLectiva().getEntidadUniversitaria() != null) {
+						idEntidadActual = horarioActual.getDetCargaLectiva().getCargaLectiva().getEntidadUniversitaria().getIdEntidadUniversitaria();
+					}
+				}
+			}
+		}
+		if (idEntidadActual > 0) {
+			if (idEntidadActual.compareTo(idEntidad) != 0) {
+				resultado = false;
+			}
+		}
+		return resultado;
+	}
+	private String generarKeyHorario(HorarioDTO horario) {
+		String resultado = Utilidades.generarKeyHorario(horario);
+		return resultado;
+	}
+	@Override
+	public List<DetCargaLectivaDTO> obtenerCursosPosiblesLlevar(Map<String,Object> parametroMap) throws Exception {
+		List<DetCargaLectivaDTO> resultado = new ArrayList<DetCargaLectivaDTO>();	
+		String idAlumno = (String)parametroMap.get("idAlumno".toUpperCase()) ;
+		if (idAlumno == null) {
+			return resultado;
+		}
+		ResultadoNotaDTO resultadoNotaDTO = notaServiceLocal.obtenerCursoNotaMap(idAlumno);
+		List<String> listaIdetPlanEstudio = new ArrayList<String>();
+		List<DetCargaLectivaDTO> listaDetCarLectiva = detCargaLectivaDaoImpl.listarDetCargaLectiva(parametroMap);
+		for (DetCargaLectivaDTO detCargaLectiva2 : listaDetCarLectiva) {
+			if (!listaIdetPlanEstudio.contains(detCargaLectiva2.getDetPlanEstudio().getIdDetPlanEstudio())) {
+				listaIdetPlanEstudio.add(detCargaLectiva2.getDetPlanEstudio().getIdDetPlanEstudio());
+			}
+		}
+		Map<String,List<PreRequisito>> preRequisitoMap = preRequisitoDaoImpl.obtenerPreRequisitoMap(listaIdetPlanEstudio);
+		for (Map.Entry<String,List<PreRequisito>> objData : preRequisitoMap.entrySet()) {
+			for (PreRequisito objPreReq : objData.getValue()) {
+				if (!listaIdetPlanEstudio.contains(objPreReq.getDetPlanEstudioRequisito().getIdDetPlanEstudio())) {
+					listaIdetPlanEstudio.add(objPreReq.getDetPlanEstudioRequisito().getIdDetPlanEstudio());
+				}
+			}
+		}
+		Map<String,Map<String,String>> convalidacionPlanEstudio = convalidacionPlanEstudioDaoImpl.obtenerConvalidacionPlanEstudioMap(listaIdetPlanEstudio);
+		for (Map.Entry<String, Map<String,String>> objDataConvalida : convalidacionPlanEstudio.entrySet()) {
+			for (Map.Entry<String, String> objConvalidado : objDataConvalida.getValue().entrySet()) {
+				if (resultadoNotaDTO.getCursoNotaMap().containsKey(objConvalidado.getKey())) {
+					resultadoNotaDTO.getCursoNotaMap().put(objDataConvalida.getKey(), resultadoNotaDTO.getCursoNotaMap().get(objConvalidado.getKey()));
+				}
+			}
+			for (Map.Entry<String, String> objConvalidado : objDataConvalida.getValue().entrySet()) {
+				if (resultadoNotaDTO.getNumeroVecesLevoCursoMap().containsKey(objConvalidado.getKey())) {
+					resultadoNotaDTO.getNumeroVecesLevoCursoMap().put(objDataConvalida.getKey(), resultadoNotaDTO.getNumeroVecesLevoCursoMap().get(objConvalidado.getKey()));
+				}
+			}
+		}
+		//llenando pre requisito
+		for (DetCargaLectivaDTO cargaLectiva : listaDetCarLectiva) {
+			boolean tienePreRequisito = false;
+			List<DetPlanEstudioDTO> lisPreRequisitosTemp = new ArrayList<DetPlanEstudioDTO>();
+			List<PreRequisito> lisPreRequisitos = preRequisitoMap.get(cargaLectiva.getDetPlanEstudio().getIdDetPlanEstudio());
+			if (lisPreRequisitos == null) {
+				lisPreRequisitos = new ArrayList<PreRequisito>();
+			}
+			
+			for (PreRequisito preRequisto : lisPreRequisitos) {
+				lisPreRequisitosTemp.add(TransferDataObjectUtil.transferObjetoEntityDTO(preRequisto.getDetPlanEstudioRequisito(),DetPlanEstudioDTO.class));
+				tienePreRequisito = true;
+			}
+			cargaLectiva.getDetPlanEstudio().setCantidadPreRequisito(lisPreRequisitosTemp.size());
+			cargaLectiva.getDetPlanEstudio().setListaPrequisitos(lisPreRequisitosTemp);
+			cargaLectiva.getDetPlanEstudio().setTienePreRequisito(tienePreRequisito);
+			cargaLectiva.getDetPlanEstudio().setCantidadPreRequisito(lisPreRequisitosTemp.size());
+		}
+		//llenando objeto para procesar relgas
+		MatriculaDTO matriculaDTO = new MatriculaDTO();
+		matriculaDTO.setCursoNotaMap(resultadoNotaDTO.getCursoNotaMap());
+		matriculaDTO.setNumeroVecesLevoCursoMap(resultadoNotaDTO.getNumeroVecesLevoCursoMap());
+		matriculaDTO.setListaDetCarLectiva(listaDetCarLectiva);
+		ProcesarReglaUtil.procesarRegla(matriculaDTO, ReglaType.CURSOS_POSIBLES_MATRICULAR.getKey());
+		//procesar regla
+		for (DetCargaLectivaDTO cargaLectiva : listaDetCarLectiva) {
+			 if (cargaLectiva.isCursoLlevar()) {
+				 resultado.add(cargaLectiva);
+			 }
+		}
+		CollectionUtil.ordenador(false, resultado, "detPlanEstudio.itemByCiclo.idItem");
+		return resultado;
+	}
+	@Override
+	public MatriculaDTO registrarMatricula(MatriculaDTO matricula) throws Exception {
+		matricula.setItemByCiclo(obtenerCicloAlumnoEnBaseCreditoAculado(matricula.getAlumno()));
+		List<String> listaIdDetCargaLectiva = new ArrayList<String>();
+		for (DetCargaLectivaDTO detCargaLectiva : matricula.getListaDetCarLectiva()) {
+			if (!listaIdDetCargaLectiva.contains(detCargaLectiva.getIdDetCargaLectiva())) {
+				listaIdDetCargaLectiva.add(detCargaLectiva.getIdDetCargaLectiva());
+			}
+		}
+		List<HorarioDTO> listaHorario =listarHorario(listaIdDetCargaLectiva);
+		Map<Long,ItemDTO> turnoMap = new HashMap<Long,ItemDTO>();
+		List<SelectItemVO> listaTurno = SelectItemServiceCacheUtil.getInstance().obtenerSelecCboItem(ListaItemType.TURNO);
+		for (SelectItemVO itemDTO : listaTurno) {
+			turnoMap.put(Long.valueOf(itemDTO.getDescripcion()), SelectItemServiceCacheUtil.getInstance().obtenerItem(Long.valueOf(itemDTO.getId() + "")));
+		}
+		ItemDTO itemByIdTurnoActual = calcularItemTurno(listaHorario , turnoMap );
+		matricula.getAlumno().setItemByTurnoActual(itemByIdTurnoActual);
+		
+		Matricula  matriculaEntity = new Matricula();
+		String userName = AppAuthenticator.getInstance().getUserName(matricula.getAuthToken());
+		UsuarioDTO usuario = AppAuthenticator.getInstance().getUsuario(matricula.getServiceKey(), matricula.getAuthToken());
+		//Eliminado el detalle de matricula y nota
+		eliminarRegistrarMatricula(matricula.getIdMatricula(),false);
+		RegistroNota registroNota = new RegistroNota();
+		matricula.setFechaMatricula(FechaUtil.obtenerFecha());
+		if (!StringUtils.isNotNullOrBlank(matricula.getIdMatricula())) {
+			matricula.setFechaCreacion(FechaUtil.obtenerFecha());			
+			matricula.setUsuarioCreacion(userName);
+			matricula.setIdMatricula(matriculaDaoImpl.generarCodigoMatricula(matricula.getAnhoSemestre().getIdAnhoSemestre(),matricula.getAlumno().getIdAlumno()));
+			matriculaEntity = TransferDataObjectUtil.transferObjetoEntity(matricula, Matricula.class,"anhoSemestre@PK@","alumno@PK@","itemByCiclo@PK@");
+			matriculaEntity = matriculaDaoImpl.save(matriculaEntity);
+			//Generando nota en cero			
+			registroNota.setFechaCreacion(FechaUtil.obtenerFecha());
+			registroNota.setUsuarioCreacion(userName);
+			registroNota.setIdRegistroNota(matricula.getIdMatricula());
+			registroNota.setMatricula(matriculaEntity);
+			registroNota.setNotaFinal(BigDecimal.ZERO);
+			registroNota.setUsuarioCreacion(userName);
+			registroNota = registroNotaDaoImpl.save(registroNota);
+		} else {
+			registroNota = registroNotaDaoImpl.obtenerRegistroNotaByMatricula(matricula.getIdMatricula());
+			matricula.setUsuarioModificacion(userName);
+			matricula.setFechaModificacion(FechaUtil.obtenerFecha());
+			matriculaEntity = TransferDataObjectUtil.transferObjetoEntity(matricula, Matricula.class,"anhoSemestre@PK@","alumno@PK@","itemByCiclo@PK@");
+			registroNota.setFechaModificacion(FechaUtil.obtenerFecha());
+			registroNota.setIdRegistroNota(matricula.getIdMatricula());
+			registroNota.setMatricula(matriculaEntity);
+			registroNota.setNotaFinal(BigDecimal.ZERO);
+			registroNota.setUsuarioModificacion(userName);
+			registroNota = registroNotaDaoImpl.update(registroNota);			
+			matriculaEntity = matriculaDaoImpl.update(matriculaEntity);
+		}
+		for (DetCargaLectivaDTO detCargaLectiva : matricula.getListaDetCarLectiva()) {
+				DetMatricula detMatricula = new DetMatricula();
+				detMatricula.setCredito(detCargaLectiva.getDetPlanEstudio().getCredito());
+				detMatricula.setMatricula(matriculaEntity);
+				detMatricula.setDescripcionCurso(detCargaLectiva.getDetPlanEstudio().getDescripcionCurso());
+				detMatricula.setDetCargaLectiva(new DetCargaLectiva());
+				detMatricula.getDetCargaLectiva().setIdDetCargaLectiva(detCargaLectiva.getIdDetCargaLectiva());
+				detMatricula.setIdDetMatricula(detMatriculaDaoImpl.generarCodigoDetMatricula(matricula.getIdMatricula()));
+				detMatriculaDaoImpl.save(detMatricula);
+				//Generando nota en cero
+				DetRegistroNota detRegistroNota = new DetRegistroNota();
+				detRegistroNota.setIdDetRegistroNota(detMatricula.getIdDetMatricula());
+				detRegistroNota.setDetMatricula(detMatricula);
+				detRegistroNota.setNotaLetra(new NotaLetra());
+				detRegistroNota.getNotaLetra().setIdNotaLetra(new BigDecimal("0"));
+				detRegistroNota.setFechaCreacion(FechaUtil.obtenerFecha());
+				detRegistroNota.setUsuarioCreacion(userName);
+				detRegistroNota.setRegistroNota(registroNota);
+				detRegistroNotaDaoImpl.save(detRegistroNota);
+		}
+		AlumnoDTO alumno = matricula.getAlumno();
+		alumno.setItemByCicloActual(matricula.getItemByCiclo());
+		//actualizando datos del alumno
+		alumnoDaoImpl.actualizarAlumno(alumno);
+		return matricula;
+	}
+	/**
+	 * Enviar notificacion.
+	 *
+	 * @param matricula el matricula
+	 * @param listaDetCargaLectivaTemp el lista det carga lectiva temp
+	 */
+	@Override
+	public void enviarNotificacion(final MatriculaDTO matricula,List<DetCargaLectivaDTO> listaDetCargaLectivaTemp, UsuarioDTO usuario, String fileName) {
+		AlumnoDTO alumno = matricula.getAlumno();
+		ItemDTO itemByIdTurnoActual= alumno.getItemByTurnoActual();
+		if (itemByIdTurnoActual == null) {
+			itemByIdTurnoActual = new ItemDTO();
+			itemByIdTurnoActual.setDescripcion("");
+		}
+		alumno.setItemByTurnoActual(itemByIdTurnoActual);
+		List<String> destinatario = new ArrayList<String>();
+		if (StringUtils.isNotNullOrBlank(alumno.getPostulante().getPersona().getEmail())) {
+			destinatario.add(alumno.getPostulante().getPersona().getEmail());
+		}
+		if (StringUtils.isNotNullOrBlank(alumno.getPostulante().getPersona().getEmailAlternativo())) {
+			if (!destinatario.contains(alumno.getPostulante().getPersona().getEmailAlternativo())) {
+				destinatario.add(alumno.getPostulante().getPersona().getEmailAlternativo());
+			}
+		}
+		if (StringUtils.isNotNullOrBlank(usuario.getEmail())) {
+			if (!destinatario.contains(usuario.getEmail())) {
+				destinatario.add(usuario.getEmail());
+			}
+		}
+		//destinatario.add("adrianseng12@gmail.com");
+		//destinatario.add("ndavilal88@gmail.com");
+		//destinatario.add("bvegal0108@gmail.com");
+		//destinatario.add("raphaelparedes2@gmail.com");
+		
+		
+		Integer totalHoras = 0;
+		List<DetCargaLectivaDTO> listaDetCargaLectiva = new ArrayList<DetCargaLectivaDTO>();
+		for (DetCargaLectivaDTO detCargaLectiva : listaDetCargaLectivaTemp) {
+			if (detCargaLectiva.isChecked()) {
+				totalHoras = totalHoras + detCargaLectiva.getDetPlanEstudio().getHoraPractica() + detCargaLectiva.getDetPlanEstudio().getHoraTeorica();
+				listaDetCargaLectiva.add(detCargaLectiva);
+			}
+		}
+		if (alumno.getPostulante().getPersona().getDireccion() == null) {
+			alumno.getPostulante().getPersona().setDireccion("");
+		}
+		if (alumno.getPostulante().getPersona().getTelefono1() == null) {
+			alumno.getPostulante().getPersona().setTelefono1("");
+		}
+
+		Map<String,Object> dataModel = new HashMap<String, Object>();
+		dataModel.put("matricula", matricula);
+		dataModel.put("alumno", alumno);
+		dataModel.put("totalHoras", totalHoras);
+		dataModel.put("listaDetCargaLectiva", listaDetCargaLectiva);
+		dataModel.put("fechaMatricula", FechaUtil.obtenerFechaFormatoCompleto(matricula.getFechaMatricula()) );
+		String mensaje = mensajeriaServiceImpl.obtenerMensajeByTipo(AsuntoDetalleCorreoType.CURSO_MATRICULADO, "", dataModel);
+		List<DetalleCorreoVO> detalleCorreo = new ArrayList<DetalleCorreoVO>();	
+		for (String mail : destinatario) {
+			DetalleCorreoVO correoDestino = new DetalleCorreoVO(mail, TipoDetalleCorreoType.DESTINATARIO.getKey());		
+			detalleCorreo.add(correoDestino);
+		}		
+		String asunto = getDescription(null,AsuntoDetalleCorreoType.CURSO_MATRICULADO.getValue());
+		
+		CorreoVO correo = new CorreoVO();
+		correo.modificarUUID(fileName);
+		if (fileName != null) {
+			File[] archivosAdjuntos = new File[1];
+			String rutaArchivo =  ConstanteConfigUtil.generarRuta(ArchivoUtilidades.RUTA_RECURSOS_BYTE_BUFFER,  usuario.getUserName()) +  fileName + ".pdf" ;
+			File objFile = new File(rutaArchivo);
+			if (objFile.isFile()) {
+				archivosAdjuntos[0] = objFile;
+				correo.setArchivosAdjuntos(archivosAdjuntos);
+			}
+		}
+		correo.setNombreCompleto(usuario.getNombre() + " " +  usuario.getApellidoPaterno() + " " + usuario.getApellidoMaterno());
+		correo.setAsunto(asunto);
+		correo.setDetalleCorreo(detalleCorreo);
+		correo.setContenido(mensaje);
+		JMSSender.sendMessageCorreo(correo);
+		
+	}
+	/**
+	 * Obtiene description.
+	 *
+	 * @param locale el locale
+	 * @param value el value
+	 * @return description
+	 */
+	public String getDescription(Locale locale,String value) {
+		return ResourceUtil.getString(locale, ConstanteTypeUtil.BUNDLE_NAME_TYPE, value);
+	}	
+	@Override
+	public String generarReporteFichaMatricula(String idAnhoSemestre,String idAlumno,String usuario, boolean esCopiaCorreo) throws Exception {
+		String fileName = UUIDUtil.generarElementUUID();
+		String codigoGeneradoReporte = fileName;
+		Map<String, Object> parametros = new HashMap<String, Object>();
+		String[] subreportes;
+		subreportes = new String[0];	
+		parametros.put("Id_AhnoSemestre", idAnhoSemestre);
+		parametros.put("CodCarnet", idAlumno);
+		parametros.put("ruta", "");
+		parametros.put("ruta_foto", ArchivoUtilidades.RUTA_RECURSOS);
+		parametros.put("ruta_logo", "");
+		
+		parametros.put("SQL", Utilidades.obtenerQueryFichaMatriculaSQL());
+		parametros.put("SQL_SUB_REPORTE_CURSO", Utilidades.obtenerQueryFichaMatriculaSubReporteCursoSQL());
+		parametros.put("SQL_SUB_REPORTE_PRE_REQUI", Utilidades.obtenerQueryFichaMatriculaSubReportePreRequisitoSQL());
+		parametros = obtenerMapFichaMatricula(parametros);
+		NombreReporteType reporte = NombreReporteType.JR_REP_FICHA_MATRICULA_INDIVIDUAL;
+		ParametroReporteVO parametroReporteVO = new ParametroReporteVO(parametros, null, reporte, subreportes, null, false, "", "");
+		parametroReporteVO.setEsCopiaCorreo(esCopiaCorreo);
+		parametroReporteVO.setFormato(TipoReporteGenerarType.PDF.getKey());
+		parametroReporteVO.setUserName(usuario);
+		parametroReporteVO.setFileName(fileName);
+		codigoGeneradoReporte = generarReporteServiceImpl.obtenerParametroReporteBigMemory(parametroReporteVO);
+		return codigoGeneradoReporte;
+	}
+	
+	/**
+	 * Obtener map ficha matricula.
+	 *
+	 * @param parametros el parametros
+	 * @return the map
+	 */
+	public Map<String,Object> obtenerMapFichaMatricula(Map<String, Object> parametros) {
+		parametros.put("reporteMatricula.reporteFichaMatricula.pnl.title", getProperties("reporteMatricula.reporte.fichaMatricula.pnl.title"));
+		parametros.put("reporteMatricula.reporteFichaMatricula.input.logo", getProperties("reporteMatricula.reporte.fichaMatricula.label.logo"));
+		parametros.put("reporteMatricula.reporteFichaMatricula.label.apellidoPaterno", getProperties("reporteMatricula.reporte.fichaMatricula.label.apellidoPaterno"));
+		parametros.put("reporteMatricula.reporteFichaMatricula.label.apellidoMaterno", getProperties("reporteMatricula.reporte.fichaMatricula.label.apellidoMaterno"));
+		parametros.put("reporteMatricula.reporteFichaMatricula.label.nombres", getProperties("reporteMatricula.reporte.fichaMatricula.label.nombres"));
+		parametros.put("reporteMatricula.reporteFichaMatricula.label.escuela", getProperties("reporteMatricula.reporte.fichaMatricula.label.escuela"));
+		parametros.put("reporteMatricula.reporteFichaMatricula.label.ciclo", getProperties("reporteMatricula.reporte.fichaMatricula.label.ciclo"));
+		parametros.put("reporteMatricula.reporteFichaMatricula.label.turno", getProperties("reporteMatricula.reporte.fichaMatricula.label.turno"));
+		parametros.put("reporteMatricula.reporteFichaMatricula.input.foto", getProperties("reporteMatricula.reporte.fichaMatricula.input.foto"));
+		parametros.put("reporteMatricula.reporteFichaMatricula.label.domicilio", getProperties("reporteMatricula.reporte.fichaMatricula.label.domicilio"));
+		parametros.put("reporteMatricula.reporteFichaMatricula.label.telefono", getProperties("reporteMatricula.reporte.fichaMatricula.label.telefono"));
+		parametros.put("reporteMatricula.reporteFichaMatricula.label.codigoMatricula", getProperties("reporteMatricula.reporte.fichaMatricula.label.codigoMatricula"));
+		
+		parametros.put("reporteMatricula.reporteFichaMatricula.grilla.item", getPropertiesGrilla("reporteMatricula.reporte.fichaMatricula.grilla.item"));
+		parametros.put("reporteMatricula.reporteFichaMatricula.grilla.codigoAsignatura", getPropertiesGrilla("reporteMatricula.reporte.fichaMatricula.grilla.codigoAsignatura"));
+		parametros.put("reporteMatricula.reporteFichaMatricula.grilla.asignatura", getPropertiesGrilla("reporteMatricula.reporte.fichaMatricula.grilla.asignatura"));
+		parametros.put("reporteMatricula.reporteFichaMatricula.grilla.preRequisito", getPropertiesGrilla("reporteMatricula.reporte.fichaMatricula.grilla.preRequisito"));
+		parametros.put("reporteMatricula.reporteFichaMatricula.grilla.nroVeces", getPropertiesGrilla("reporteMatricula.reporte.fichaMatricula.grilla.nroVeces"));
+		parametros.put("reporteMatricula.reporteFichaMatricula.grilla.turno", getPropertiesGrilla("reporteMatricula.reporte.fichaMatricula.grilla.turno"));
+		parametros.put("reporteMatricula.reporteFichaMatricula.grilla.hrs", getPropertiesGrilla("reporteMatricula.reporte.fichaMatricula.grilla.hrs"));
+		parametros.put("reporteMatricula.reporteFichaMatricula.grilla.credito", getPropertiesGrilla("reporteMatricula.reporte.fichaMatricula.grilla.credito"));
+		parametros.put("reporteMatricula.reporteFichaMatricula.grilla.obs", getPropertiesGrilla("reporteMatricula.reporte.fichaMatricula.grilla.obs"));
+		return parametros;
+	}
+	private String getProperties(String key) {
+		return SeguridadCacheUtil.getProperties(key);
+	}
+	private String getPropertiesGrilla(String key) {
+		return SeguridadCacheUtil.getProperties(key);
+	}
+	//TODO:CONSIDERAR EN MOTOR DE REGLAS
+	private ItemDTO calcularItemTurno(List<HorarioDTO> listaHorarioTurno,Map<Long,ItemDTO> turnoMap) throws Exception {
+		ItemDTO resultado = new ItemDTO();
+		//TODO:constante o type de turno
+		Map<Long,Integer> turnoCantidad = new HashMap<Long,Integer>();
+		for (HorarioDTO horario : listaHorarioTurno) {
+			String[] horaInicioArray = horario.getHoraInicio().split(":");
+			String[] horaFinArray = horario.getHoraFin().split(":");
+			int horaInicio = Integer.parseInt(horaInicioArray[0].trim());
+			int horaFin = Integer.parseInt(horaFinArray[0].trim());
+			if (horaInicio >= 6 && horaFin <= 13 ) { //verificamos si es turno manaña
+				if (!turnoCantidad.containsKey(1L)) {
+					turnoCantidad.put(1L, 1);
+				} else {
+					int cantidad = turnoCantidad.get(1L);
+					cantidad++;
+					turnoCantidad.put(1L, cantidad);
+				}
+			} else if (horaInicio >= 14 && horaFin < 18 ) { //verificamos si es turno tarde
+				if (!turnoCantidad.containsKey(2L)) {
+					turnoCantidad.put(2L, 1);
+				} else {
+					int cantidad = turnoCantidad.get(2L);
+					cantidad++;
+					turnoCantidad.put(2L, cantidad);
+				}
+			} else if (horaInicio >= 18 && horaFin <= 24 ) { //verificamos si es turno noche
+				if (!turnoCantidad.containsKey(3L)) {
+					turnoCantidad.put(3L, 1);
+				} else {
+					int cantidad = turnoCantidad.get(3L);
+					cantidad++;
+					turnoCantidad.put(3L, cantidad);
+				}
+			}
+		}
+		Long codigo = 1L;//mañana por defecto
+		Integer cantidadMax = 0;
+		cantidadMax = turnoCantidad.get(codigo);
+		if (cantidadMax == null) {
+			cantidadMax = 0;
+		}
+		for (Map.Entry<Long,Integer> turnoCantidadValue : turnoCantidad.entrySet()) {
+			if (turnoCantidadValue.getValue() > cantidadMax) {
+				cantidadMax = turnoCantidadValue.getValue();
+				codigo = turnoCantidadValue.getKey();
+			} 
+		}
+		resultado = turnoMap.get(codigo);
+		return resultado;
+	}
+	
+	private ItemDTO obtenerCicloAlumnoEnBaseCreditoAculado(AlumnoDTO alumno) throws Exception {
+		ItemDTO resultado = new ItemDTO();
+		Long idCicloActual = ConstantesAdmision.CICLO_I; 
+		Long idCicloActualProcesar = ConstantesAdmision.CICLO_I; 
+		int creditoAcomuladoAlumno = detRegistroNotaDaoImpl.obtenerCreditosAcomulado(alumno.getIdAlumno(),alumno.getEscuela().getIdEscuela());
+		
+		Integer detPlanEstudioCredito = 0;
+		/*
+		 * CICLO CREDITO INTERVALO([X,Y >) 	
+			 I      22       1-22 	
+			 II     21       22-43	
+			 III    19       43-62	
+			 IV     20       62-82     	
+			 V      20       82-102	
+			 VI     20       102-122	
+			 VII    20       122-142	
+			 VIII   20       142-162	
+			 IX     20       162-182	
+			 X      21       182-203	
+
+*/
+		List<Object[]> detPlanEstudioResulCredito  = matriculaDaoImpl.obtenerCicloAlumnoEnBaseCreditoAculado(alumno.getPlanEstudio().getIdPlanEstudio());
+		Map<Long,Integer> cicloCreditoMap = new HashMap<Long, Integer>();
+		for (Object[] objects : detPlanEstudioResulCredito) {
+			Long idClicloCalcular = Long.parseLong(objects[0] + "");
+			Integer credito = Integer.parseInt(objects[1] + "");
+			cicloCreditoMap.put(idClicloCalcular, credito);
+		}
+		for (Object[] objects : detPlanEstudioResulCredito) {
+			Long idClicloCalcular = Long.parseLong(objects[0] + "");
+			Integer credito = Integer.parseInt(objects[1] + "");
+			detPlanEstudioCredito = detPlanEstudioCredito + credito;
+			if (idCicloActual.intValue() == idClicloCalcular ) {
+				if (creditoAcomuladoAlumno > 1 &&  creditoAcomuladoAlumno <= detPlanEstudioCredito ) {
+					idCicloActualProcesar = idClicloCalcular;
+					break;
+				}	
+			} else {
+				Integer creditoAnterior = cicloCreditoMap.get((idClicloCalcular - 1));
+				if (creditoAcomuladoAlumno > creditoAnterior &&  creditoAcomuladoAlumno <= detPlanEstudioCredito ) {
+					idCicloActualProcesar = idClicloCalcular;
+					break;
+				}	
+			}						
+		}
+		resultado = SelectItemServiceCacheUtil.getInstance().obtenerItem(idCicloActualProcesar);
+		return resultado;
+	}
+	@Override
+	public void eliminarRegistrarMatricula(String idMatricula) throws Exception {
+		//Eliminado el detalle de matricula y nota
+		 eliminarRegistrarMatricula(idMatricula,true);
+	}
+	private void eliminarRegistrarMatricula(String idMatricula, boolean isAll) throws Exception {
+		if (StringUtils.isNotNullOrBlank(idMatricula)) {
+			List<String> listaIdDetRegistroNota = new ArrayList<String>();
+			List<DetRegistroNota> listaDetRegistroNota = detRegistroNotaDaoImpl.listarDetRegistroNota(idMatricula);
+			for (DetRegistroNota detRegistroNotaDelete : listaDetRegistroNota) {
+				listaIdDetRegistroNota.add(detRegistroNotaDelete.getIdDetRegistroNota());
+			}
+			List<CursoNota> listaCursoNota = cursoNotaDaoImpl.obtenerCursoNotaList(listaIdDetRegistroNota );
+			for (CursoNota cursoNota : listaCursoNota) {
+				cursoNotaDaoImpl.delete(cursoNota);
+			}
+			for (DetRegistroNota detRegistroNotaDelete : listaDetRegistroNota) {
+				detRegistroNotaDaoImpl.delete(detRegistroNotaDelete);
+			}
+			List<DetMatricula> listaDetMatricula = detMatriculaDaoImpl.listarDetMatricula(idMatricula);
+			for (DetMatricula detMatriculaDelete : listaDetMatricula) {
+				detMatriculaDaoImpl.delete(detMatriculaDelete);
+			}
+			//
+			if (isAll) {
+				RegistroNota registroNotaEliminar = registroNotaDaoImpl.obtenerRegistroNotaByMatricula(idMatricula);
+				if (registroNotaEliminar != null) {
+					registroNotaDaoImpl.delete(registroNotaEliminar);
+				}
+				Matricula matriculaEliminar = matriculaDaoImpl.find(Matricula.class, idMatricula);
+				matriculaDaoImpl.delete(matriculaEliminar);
+			}
+			
+		}
+	}
+	@Override
+	public MatriculaDTO obtenerMatricula(String idAlumno, String idAnhoSemestre)throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTO(matriculaDaoImpl.obtenerMatricula(idAlumno,idAnhoSemestre), MatriculaDTO.class);
+	}
+	@Override
+	public int obtenerLimiteCredito(String idAlumno,String idPlanEstudio,Long idCiclo) throws Exception {
+		return matriculaDaoImpl.obtenerLimiteCredito(idAlumno,idPlanEstudio, idCiclo);
+	}
+	@Override
+	public PersonalDTO findPersonalByPersona(String idPersona) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTO(personalDaoImpl.findPersonalByPersona(idPersona),PersonalDTO.class,"persona:{entidadUniversitaria}");
+	}
+	
+	@Override
+	public ProfesionDTO controladorAccionProfesion(ProfesionDTO profesion, AccionType accionType) throws Exception {
+		ProfesionDTO resultado = null;
+		Profesion resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				profesion.setIdProfesion(this.profesionDaoImpl.generarIdProfesion());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(profesion, Profesion.class);
+				this.profesionDaoImpl.save(resultadoEntity);	
+				resultado = profesion;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(profesion, Profesion.class);
+				this.profesionDaoImpl.update(resultadoEntity);
+				resultado = profesion;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.profesionDaoImpl.find(Profesion.class, profesion.getIdProfesion());
+				this.profesionDaoImpl.delete(resultadoEntity);
+				resultado = profesion;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.profesionDaoImpl.find(Profesion.class, profesion.getIdProfesion());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,ProfesionDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.profesionDaoImpl.findByNombre(profesion),ProfesionDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<ProfesionDTO> listarProfesion(ProfesionDTO profesion) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.profesionDaoImpl.listarProfesion(profesion),ProfesionDTO.class);
+	}
+	@Override
+	public int contarListarProfesion(ProfesionDTO profesion){
+		return  this.profesionDaoImpl.contarListarProfesion(profesion);
+	}
+	
+	@Override
+	public RegimenPensionarioDTO controladorAccionRegimenPensionario(RegimenPensionarioDTO regimenPensionario, AccionType accionType) throws Exception {
+		RegimenPensionarioDTO resultado = null;
+		RegimenPensionario resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				regimenPensionario.setIdRegimenPensionario(this.regimenPensionarioDaoImpl.generarIdRegimenPensionario());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(regimenPensionario, RegimenPensionario.class);
+				this.regimenPensionarioDaoImpl.save(resultadoEntity);	
+				resultado = regimenPensionario;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(regimenPensionario, RegimenPensionario.class);
+				this.regimenPensionarioDaoImpl.update(resultadoEntity);
+				resultado = regimenPensionario;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.regimenPensionarioDaoImpl.find(RegimenPensionario.class, regimenPensionario.getIdRegimenPensionario());
+				this.regimenPensionarioDaoImpl.delete(resultadoEntity);
+				resultado = regimenPensionario;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.regimenPensionarioDaoImpl.find(RegimenPensionario.class, regimenPensionario.getIdRegimenPensionario());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,RegimenPensionarioDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.regimenPensionarioDaoImpl.findByNombre(regimenPensionario),RegimenPensionarioDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<RegimenPensionarioDTO> listarRegimenPensionario(RegimenPensionarioDTO regimenPensionario) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.regimenPensionarioDaoImpl.listarRegimenPensionario(regimenPensionario),RegimenPensionarioDTO.class);
+	}
+	@Override
+	public int contarListarRegimenPensionario(RegimenPensionarioDTO regimenPensionario){
+		return  this.regimenPensionarioDaoImpl.contarListarRegimenPensionario(regimenPensionario);
+	}
+	
+	@Override
+	public ConsejeroDTO controladorAccionConsejero(ConsejeroDTO consejero, AccionType accionType) throws Exception {
+		ConsejeroDTO resultado = null;
+		Consejero resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				consejero.setIdConsejero(this.consejeroDaoImpl.generarIdConsejero());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(consejero, Consejero.class,"organodirectivo@PK@","escuela@PK@");
+				this.consejeroDaoImpl.save(resultadoEntity);	
+				resultado = consejero;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(consejero, Consejero.class,"organodirectivo@PK@","escuela@PK@");
+				this.consejeroDaoImpl.update(resultadoEntity);
+				resultado = consejero;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.consejeroDaoImpl.find(Consejero.class, consejero.getIdConsejero());
+				this.consejeroDaoImpl.delete(resultadoEntity);
+				resultado = consejero;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.consejeroDaoImpl.find(Consejero.class, consejero.getIdConsejero());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,ConsejeroDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.consejeroDaoImpl.findByNombre(consejero),ConsejeroDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<ConsejeroDTO> listarConsejero(ConsejeroDTO consejero) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.consejeroDaoImpl.listarConsejero(consejero),ConsejeroDTO.class);
+	}
+	@Override
+	public int contarListarConsejero(ConsejeroDTO consejero){
+		return  this.consejeroDaoImpl.contarListarConsejero(consejero);
+	}
+	@Override
+	public PreRequisitoDTO controladorAccionPreRequisito(PreRequisitoDTO preRequisito, AccionType accionType) throws Exception {
+		PreRequisitoDTO resultado = null;
+		PreRequisito resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				preRequisito.setIdPreRequisito(this.preRequisitoDaoImpl.generarIdPreRequisito());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(preRequisito, PreRequisito.class,"detPlanEstudio@PK@","detPlanEstudioRequisito@PK@");
+				this.preRequisitoDaoImpl.save(resultadoEntity);	
+				resultado = preRequisito;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(preRequisito, PreRequisito.class,"detPlanEstudio@PK@","detPlanEstudioRequisito@PK@");
+				this.preRequisitoDaoImpl.update(resultadoEntity);
+				resultado = preRequisito;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.preRequisitoDaoImpl.find(PreRequisito.class, preRequisito.getIdPreRequisito());
+				this.preRequisitoDaoImpl.delete(resultadoEntity);
+				resultado = preRequisito;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.preRequisitoDaoImpl.find(PreRequisito.class, preRequisito.getIdPreRequisito());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,PreRequisitoDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.preRequisitoDaoImpl.findByNombre(preRequisito),PreRequisitoDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<PreRequisitoDTO> listarPreRequisito(PreRequisitoDTO preRequisito) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.preRequisitoDaoImpl.listarPreRequisito(preRequisito),PreRequisitoDTO.class);
+	}
+	@Override
+	public int contarListarPreRequisito(PreRequisitoDTO preRequisito){
+		return  this.preRequisitoDaoImpl.contarListarPreRequisito(preRequisito);
+	}
+	
+	@Override
+	public HorarioTemDTO controladorAccionHorarioTem(HorarioTemDTO horarioTem, AccionType accionType) throws Exception {
+		HorarioTemDTO resultado = null;
+		HorarioTem resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				horarioTem.setIdHorarioTem(this.horarioTemDaoImpl.generarIdHorarioTem());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(horarioTem, HorarioTem.class,"itemByDia@PK@");
+				this.horarioTemDaoImpl.save(resultadoEntity);	
+				resultado = horarioTem;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(horarioTem, HorarioTem.class,"itemByDia@PK@");
+				this.horarioTemDaoImpl.update(resultadoEntity);
+				resultado = horarioTem;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.horarioTemDaoImpl.find(HorarioTem.class, horarioTem.getIdHorarioTem());
+				this.horarioTemDaoImpl.delete(resultadoEntity);
+				resultado = horarioTem;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.horarioTemDaoImpl.find(HorarioTem.class, horarioTem.getIdHorarioTem());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,HorarioTemDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.horarioTemDaoImpl.findByNombre(horarioTem),HorarioTemDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<HorarioTemDTO> listarHorarioTem(HorarioTemDTO horarioTem) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.horarioTemDaoImpl.listarHorarioTem(horarioTem),HorarioTemDTO.class);
+	}
+	@Override
+	public int contarListarHorarioTem(HorarioTemDTO horarioTem){
+		return  this.horarioTemDaoImpl.contarListarHorarioTem(horarioTem);
+	}
+	@Override
+	public DetMatriculaDTO controladorAccionDetMatricula(DetMatriculaDTO detMatricula, AccionType accionType) throws Exception {
+		DetMatriculaDTO resultado = null;
+		DetMatricula resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				detMatricula.setIdDetMatricula(this.detMatriculaDaoImpl.generarIdDetMatricula());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(detMatricula, DetMatricula.class,"matricula@PK@","detCargaLectiva@PK@");
+				this.detMatriculaDaoImpl.save(resultadoEntity);	
+				resultado = detMatricula;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(detMatricula, DetMatricula.class,"matricula@PK@","detCargaLectiva@PK@");
+				this.detMatriculaDaoImpl.update(resultadoEntity);
+				resultado = detMatricula;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.detMatriculaDaoImpl.find(DetMatricula.class, detMatricula.getIdDetMatricula());
+				this.detMatriculaDaoImpl.delete(resultadoEntity);
+				resultado = detMatricula;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.detMatriculaDaoImpl.find(DetMatricula.class, detMatricula.getIdDetMatricula());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,DetMatriculaDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.detMatriculaDaoImpl.findByNombre(detMatricula),DetMatriculaDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<DetMatriculaDTO> listarDetMatricula(DetMatriculaDTO detMatricula) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.detMatriculaDaoImpl.listarDetMatricula(detMatricula),DetMatriculaDTO.class);
+	}
+	@Override
+	public int contarListarDetMatricula(DetMatriculaDTO detMatricula){
+		return  this.detMatriculaDaoImpl.contarListarDetMatricula(detMatricula);
+	}
+	
+	@Override
+	public PersonalDTO controladorAccionPersonal(PersonalDTO personal, AccionType accionType) throws Exception {
+		PersonalDTO resultado = null;
+		Personal resultadoEntity = null;
+		Persona personaEntity = null;
+		switch (accionType) {
+			case CREAR:
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(personal, Personal.class,"persona@PK@","itemByCondicionLaboral@PK@","profesion@PK@","itemByCategoriaAlumno@PK@","itemByGradoInstruccion@PK@","itemByDedicacionDocente@PK@","itemByTipoTrabajador@PK@","itemByTipoOcupacionUniversitaria@PK@","regimenPensionario@PK@","cargo@PK@","itemByTipoContrato@PK@","itemByTipoCentroFormacionProfesional@PK@");
+				personaEntity = TransferDataObjectUtil.transferObjetoEntity(personal.getPersona(), Persona.class,"tipoPersona@PK@","itemByTipoDocIdentidad@PK@","itemByEstadoCivil@PK@","itemByTipoVia@PK@","itemByZona@PK@","procedencia@PK@","itemByIdioma@PK@","itemByNivelEducativo@PK@","nacionalidad@PK@","ubigeoByNacimiento@PK@","ubigeoByActual@PK@","entidadUniversitaria@PK@");
+				personaEntity.setIdPersona(this.personaDaoImpl.generarCodigoPersona(personal.getAnhoSemestre().getIdAnhoSemestre()));
+				if (StringUtils.isNotNullOrBlank(personaEntity.getUserPassword())) {
+			    	personaEntity.setUserPassword(EncriptarUtil.encriptar(personaEntity.getUserPassword()));
+			    } else {
+			    	personaEntity.setUserPassword(EncriptarUtil.encriptar(personaEntity.getUserName()));
+			    }
+				resultadoEntity.setCodigoPersonal(personaEntity.getIdPersona());
+				resultadoEntity.setIdPersonal(personaEntity.getIdPersona());
+				personaEntity = this.personaDaoImpl.save(personaEntity);
+				resultadoEntity.setPersona(personaEntity);
+				resultadoEntity = this.personalDaoImpl.save(resultadoEntity);	
+				resultado = personal;
+				integracionUsuario(personaEntity, personal.getIdEntidadSelect(), accionType);
+				break;				
+			case MODIFICAR:
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(personal, Personal.class,"persona@PK@","itemByCondicionLaboral@PK@","profesion@PK@","itemByCategoriaAlumno@PK@","itemByGradoInstruccion@PK@","itemByDedicacionDocente@PK@","itemByTipoTrabajador@PK@","itemByTipoOcupacionUniversitaria@PK@","regimenPensionario@PK@","cargo@PK@","itemByTipoContrato@PK@","itemByTipoCentroFormacionProfesional@PK@");
+			    personaEntity = TransferDataObjectUtil.transferObjetoEntity(personal.getPersona(), Persona.class,"tipoPersona@PK@","itemByTipoDocIdentidad@PK@","itemByEstadoCivil@PK@","itemByTipoVia@PK@","itemByZona@PK@","procedencia@PK@","itemByIdioma@PK@","itemByNivelEducativo@PK@","nacionalidad@PK@","ubigeoByNacimiento@PK@","ubigeoByActual@PK@","entidadUniversitaria@PK@");
+			    if (StringUtils.isNotNullOrBlank(personaEntity.getUserPassword())) {
+			    	personaEntity.setUserPassword(EncriptarUtil.encriptar(personaEntity.getUserPassword()));
+			    } else {
+			    	personaEntity.setUserPassword(personal.getPersona().getUserPasswordEncriptado());
+			    }
+			    personaEntity = this.personaDaoImpl.update(personaEntity);
+			    resultadoEntity = this.personalDaoImpl.update(resultadoEntity);
+				resultado = personal;
+				integracionUsuario(personaEntity, personal.getIdEntidadSelect(), accionType);
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.personalDaoImpl.find(Personal.class, personal.getIdPersonal());
+				this.personalDaoImpl.delete(resultadoEntity);
+				resultado = personal;
+				integracionUsuario(resultadoEntity.getPersona(), personal.getIdEntidadSelect(), accionType);
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.personalDaoImpl.findPersonal(personal.getIdPersonal());
+				PersonaDTO persona = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity.getPersona(),PersonaDTO.class,"tipoPersona","itemByTipoDocIdentidad","itemByEstadoCivil","itemByTipoVia","itemByZona","procedencia","itemByIdioma","itemByNivelEducativo","nacionalidad","ubigeoByNacimiento","ubigeoByActual","entidadUniversitaria");
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,PersonalDTO.class,"itemByCondicionLaboral","profesion","itemByCategoriaDocente","itemByGradoInstruccion","itemByDedicacionDocente","itemByTipoTrabajador","itemByTipoOcupacionUniversitaria","regimenPensionario","cargo","itemByTipoContrato","itemByTipoCentroFormacionProfesional");
+				persona.setUserPasswordEncriptado(persona.getUserPassword());
+				persona.setUserPassword("");
+				resultado.setPersona(persona);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.personalDaoImpl.findByNombre(personal),PersonalDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<PersonalDTO> listarPersonal(PersonalDTO personal) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.personalDaoImpl.listarPersonal(personal),PersonalDTO.class,"persona");
+	}
+	@Override
+	public int contarListarPersonal(PersonalDTO personal){
+		return  this.personalDaoImpl.contarListarPersonal(personal);
+	}
+	
+	@Override
+	public DetTrasladoDTO controladorAccionDetTraslado(DetTrasladoDTO detTraslado, AccionType accionType) throws Exception {
+		DetTrasladoDTO resultado = null;
+		DetTraslado resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				detTraslado.setIdDetTraslado(this.detTrasladoDaoImpl.generarIdDetTraslado());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(detTraslado, DetTraslado.class,"traslado@PK@","detPlanEstudio@PK@","notaLetra@PK@");
+				this.detTrasladoDaoImpl.save(resultadoEntity);	
+				resultado = detTraslado;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(detTraslado, DetTraslado.class,"traslado@PK@","detPlanEstudio@PK@","notaLetra@PK@");
+				this.detTrasladoDaoImpl.update(resultadoEntity);
+				resultado = detTraslado;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.detTrasladoDaoImpl.find(DetTraslado.class, detTraslado.getIdDetTraslado());
+				this.detTrasladoDaoImpl.delete(resultadoEntity);
+				resultado = detTraslado;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.detTrasladoDaoImpl.find(DetTraslado.class, detTraslado.getIdDetTraslado());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,DetTrasladoDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.detTrasladoDaoImpl.findByNombre(detTraslado),DetTrasladoDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<DetTrasladoDTO> listarDetTraslado(DetTrasladoDTO detTraslado) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.detTrasladoDaoImpl.listarDetTraslado(detTraslado),DetTrasladoDTO.class);
+	}
+	@Override
+	public int contarListarDetTraslado(DetTrasladoDTO detTraslado){
+		return  this.detTrasladoDaoImpl.contarListarDetTraslado(detTraslado);
+	}
+	
+	@Override
+	public AlumnoDTO controladorAccionAlumno(AlumnoDTO alumno, AccionType accionType) throws Exception {
+		String userName = AppAuthenticator.getInstance().getUserName(alumno.getAuthToken());
+		AlumnoDTO resultado = null;
+		Alumno resultadoEntity = null;
+		Postulante postulanteEntity = null;
+		Persona personaEntity = null;
+		
+		boolean isCrearDocumentoRequerido = false;
+		switch (accionType) {
+			case CREAR:
+				alumno.setIdAlumno(this.alumnoDaoImpl.generarCodigoAlumno(alumno.getAnhoSemestreIngreso().getIdAnhoSemestre()));
+				alumno.setFechaCreacion(FechaUtil.obtenerFecha());
+				alumno.setUsuarioCreacion(userName);
+				alumno.setCodigoCarnet(this.alumnoDaoImpl.generarCodigoCarnet(alumno.getAnhoSemestreIngreso().getIdAnhoSemestre(),alumno.getEscuela().getCodigo()  + "",alumno.getEscuela().getIdEscuela()));
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(alumno, Alumno.class,"postulante@PK@","escuela@PK@","planEstudio@PK@","itemByCicloActual@PK@","itemByCategoriaAlumno@PK@","anhoSemestreIngreso@PK@","anhoSemestreEgreso@PK@","itemByTurnoActual@PK@");
+				postulanteEntity =  TransferDataObjectUtil.transferObjetoEntity(alumno.getPostulante(), Postulante.class,"persona@PK@","anhoSemestre@PK@","escuelaByOpcion1@PK@","escuelaByOpcion2@PK@","escuelaByIngreso@PK@","itemByModalidad@PK@","itemByTipoPreparacion@PK@","itemByTurnoAtencion@PK@");
+				personaEntity = TransferDataObjectUtil.transferObjetoEntity(alumno.getPostulante().getPersona(), Persona.class,"tipoPersona@PK@","itemByTipoDocIdentidad@PK@","itemByEstadoCivil@PK@","itemByTipoVia@PK@","itemByZona@PK@","procedencia@PK@","itemByIdioma@PK@","itemByNivelEducativo@PK@","nacionalidad@PK@","ubigeoByNacimiento@PK@","ubigeoByActual@PK@","entidadUniversitaria@PK@");
+				personaEntity.setIdPersona(this.personaDaoImpl.generarCodigoPersona(alumno.getAnhoSemestreIngreso().getIdAnhoSemestre()));
+				if (StringUtils.isNotNullOrBlank(personaEntity.getUserPassword())) {
+			    	personaEntity.setUserPassword(EncriptarUtil.encriptar(personaEntity.getUserPassword()));
+			    } else {
+			    	personaEntity.setUserPassword(EncriptarUtil.encriptar(personaEntity.getUserName()));
+			    }
+				personaEntity = this.personaDaoImpl.save(personaEntity);
+				postulanteEntity.setPersona(personaEntity);
+				postulanteEntity.setIdPostulante(this.postulanteDaoImpl.generarCodigoPostulante(personaEntity.getIdPersona()));
+				postulanteEntity = this.postulanteDaoImpl.save(postulanteEntity);
+				resultadoEntity.setPostulante(postulanteEntity);
+				resultadoEntity = this.alumnoDaoImpl.save(resultadoEntity);	
+				resultado = alumno;
+				isCrearDocumentoRequerido = true;
+                integracionUsuario(personaEntity, alumno.getIdEntidadSelect(), accionType);
+				break;				
+			case MODIFICAR:
+				alumno.setUsuarioModificacion(userName);
+				alumno.setFechaModificacion(FechaUtil.obtenerFecha());
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(alumno, Alumno.class,"postulante@PK@","escuela@PK@","planEstudio@PK@","itemByCicloActual@PK@","itemByCategoriaAlumno@PK@","anhoSemestreIngreso@PK@","anhoSemestreEgreso@PK@","itemByTurnoActual@PK@");
+			    postulanteEntity =  TransferDataObjectUtil.transferObjetoEntity(alumno.getPostulante(), Postulante.class,"persona@PK@","anhoSemestre@PK@","escuelaByOpcion1@PK@","escuelaByOpcion2@PK@","escuelaByIngreso@PK@","itemByModalidad@PK@","itemByTipoPreparacion@PK@","itemByTurnoAtencion@PK@");
+			    personaEntity = TransferDataObjectUtil.transferObjetoEntity(alumno.getPostulante().getPersona(), Persona.class,"tipoPersona@PK@","itemByTipoDocIdentidad@PK@","itemByEstadoCivil@PK@","itemByTipoVia@PK@","itemByZona@PK@","procedencia@PK@","itemByIdioma@PK@","itemByNivelEducativo@PK@","nacionalidad@PK@","ubigeoByNacimiento@PK@","ubigeoByActual@PK@","entidadUniversitaria@PK@");
+			    if (StringUtils.isNotNullOrBlank(personaEntity.getUserPassword())) {
+			    	personaEntity.setUserPassword(EncriptarUtil.encriptar(personaEntity.getUserPassword()));
+			    } else {
+			    	personaEntity.setUserPassword(alumno.getPostulante().getPersona().getUserPasswordEncriptado());
+			    }
+			    personaEntity = this.personaDaoImpl.update(personaEntity);
+			    postulanteEntity = this.postulanteDaoImpl.update(postulanteEntity);
+			    resultadoEntity = this.alumnoDaoImpl.update(resultadoEntity);
+				resultado = alumno;
+				isCrearDocumentoRequerido = true;
+				
+			    integracionUsuario(personaEntity, alumno.getIdEntidadSelect(), accionType);
+			    
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.alumnoDaoImpl.find(Alumno.class, alumno.getIdAlumno());				
+				List<DocumentoRequerido>  listaDocumentoEliminar = this.documentoRequeridoDaoImpl.listarDocumentoRequerido(resultadoEntity.getPostulante().getIdPostulante());
+				for (DocumentoRequerido documentoRequerido : listaDocumentoEliminar) {
+					documentoRequeridoDaoImpl.delete(documentoRequerido);
+				}
+				this.alumnoDaoImpl.delete(resultadoEntity);
+				this.postulanteDaoImpl.delete(resultadoEntity.getPostulante());
+				this.personaDaoImpl.delete(resultadoEntity.getPostulante().getPersona());
+				resultado = alumno;
+				integracionUsuario(resultadoEntity.getPostulante().getPersona(), alumno.getIdEntidadSelect(), accionType);
+				break;
+
+			case FIND_BY_ID:
+				resultadoEntity = this.alumnoDaoImpl.findAlumno(alumno.getIdAlumno());
+				PersonaDTO persona = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity.getPostulante().getPersona(),PersonaDTO.class,"tipoPersona","itemByTipoDocIdentidad","itemByEstadoCivil","itemByTipoVia","itemByZona","procedencia","itemByIdioma","itemByNivelEducativo","nacionalidad","ubigeoByNacimiento","ubigeoByActual","entidadUniversitaria");
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,AlumnoDTO.class,"postulante:{escuelaByOpcion1;escuelaByOpcion2;escuelaByIngreso;itemByModalidad;itemByTipoPreparacion;itemByTurnoAtencion;anhoSemestre}","escuela","planEstudio","itemByCicloActual","itemByCategoriaAlumno","anhoSemestreIngreso","anhoSemestreEgreso","itemByTurnoActual");
+				resultado.getPostulante().setPersona(persona);
+				persona.setUserPasswordEncriptado(persona.getUserPassword());
+				persona.setUserPassword("");
+				List<DocumentoRequeridoDTO> listaDocumentoRequerido = admisionServiceImpl.listarDocumentoRequerido(resultado.getPostulante().getIdPostulante());
+				for (DocumentoRequeridoDTO documentoRequeridoDTO : listaDocumentoRequerido) {
+					resultado.getPostulante().getListaDocumentoRequerido().add(new SelectItemVO(documentoRequeridoDTO.getItemByDocumento()));
+				}				
+				break;			
+				
+			default:
+				break;
+		}
+		if (isCrearDocumentoRequerido) {
+			crearDocumentoRequerido(postulanteEntity, alumno.getPostulante().getListaDocumentoRequerido(),accionType);
+		}
+		return resultado;
+	}
+	private void integracionUsuario(Persona personaEntity,String idEntidad,AccionType accionType) throws Exception {
+		UsuarioDTO usuario = null;
+		switch (accionType) {
+		case CREAR:
+			usuario = TransferDataObjectUtil.transferObjetoEntityVO(personaEntity, UsuarioDTO.class,true);
+		    usuario.setCodigoExterno(personaEntity.getIdPersona());
+		    usuario.setEstado(EstadoGeneralState.ACTIVO.getKey());
+		    if (personaEntity.getTipoPersona() != null) {
+		    	usuario.setTipoUsuario(new TipoUsuarioDTO());
+		    	usuario.getTipoUsuario().setIdTipoUsuario(personaEntity.getTipoPersona().getIdTipoPersona());
+		    }
+		    usuario.setIdEntidadSelect(idEntidad);//para asociar a la entidad		
+		    seguridadServiceLocal.integracionUsuario(usuario, accionType);
+			break;
+		case MODIFICAR:
+			usuario = TransferDataObjectUtil.transferObjetoEntityVO(personaEntity, UsuarioDTO.class,true);
+			if (personaEntity.getTipoPersona() != null) {
+		    	usuario.setTipoUsuario(new TipoUsuarioDTO());
+		    	usuario.getTipoUsuario().setIdTipoUsuario(personaEntity.getTipoPersona().getIdTipoPersona());
+		    }
+		    usuario.setCodigoExterno(personaEntity.getIdPersona());
+		    seguridadServiceLocal.integracionUsuario(usuario, accionType);
+			break;
+		case ELIMINAR:
+			usuario = TransferDataObjectUtil.transferObjetoEntityVO(personaEntity, UsuarioDTO.class,true);
+		    usuario.setCodigoExterno(personaEntity.getIdPersona());
+		    seguridadServiceLocal.integracionUsuario(usuario, accionType);
+			break;
+		default:
+			break;
+		}
+		
+	}
+	private void crearDocumentoRequerido(Postulante postulante,List<SelectItemVO> listaTipoDocumentoRequeridoTemp,AccionType accionType) throws Exception {
+		List<ItemDTO> listaTipoDocumentoRequerido = SelectItemServiceCacheUtil.getInstance().converItemDTO(listaTipoDocumentoRequeridoTemp);
+		if (AccionType.MODIFICAR.getKey().equals(accionType.getKey())) {
+			//ya que tiene uuid
+			documentoRequeridoDaoImpl.eliminarDocumentoRequerido(postulante.getIdPostulante());
+		}				
+		for (ItemDTO objItem : listaTipoDocumentoRequerido) {
+			if (objItem.isChecked()) {
+				DocumentoRequerido objPersist = new DocumentoRequerido();
+				objPersist.setPostulante(postulante);
+				objPersist.setItemByDocumento(TransferDataObjectUtil.transferObjetoEntityPK(objItem, Item.class));
+				objPersist.setIdDocumentoRequerido(UUIDUtil.generarElementUUID());
+				documentoRequeridoDaoImpl.save(objPersist);
+			}			
+		}
+	}
+	@Override
+	public List<AlumnoDTO> listarAlumno(AlumnoDTO alumno) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.alumnoDaoImpl.listarAlumno(alumno),AlumnoDTO.class,"postulante:{persona}","escuela", "planEstudio","itemByCicloActual");
+	}
+	@Override
+	public int contarListarAlumno(AlumnoDTO alumno){
+		return  this.alumnoDaoImpl.contarListarAlumno(alumno);
+	}
+	
+	@Override
+	public DetPlanEstudioDTO controladorAccionDetPlanEstudio(DetPlanEstudioDTO detPlanEstudio, AccionType accionType) throws Exception {
+		DetPlanEstudioDTO resultado = null;
+		DetPlanEstudio resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				detPlanEstudio.setIdDetPlanEstudio(this.detPlanEstudioDaoImpl.generarIdDetPlanEstudio());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(detPlanEstudio, DetPlanEstudio.class,"planEstudio@PK@","itemByCiclo@PK@");
+				this.detPlanEstudioDaoImpl.save(resultadoEntity);	
+				resultado = detPlanEstudio;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(detPlanEstudio, DetPlanEstudio.class,"planEstudio@PK@","itemByCiclo@PK@");
+				this.detPlanEstudioDaoImpl.update(resultadoEntity);
+				resultado = detPlanEstudio;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.detPlanEstudioDaoImpl.find(DetPlanEstudio.class, detPlanEstudio.getIdDetPlanEstudio());
+				this.detPlanEstudioDaoImpl.delete(resultadoEntity);
+				resultado = detPlanEstudio;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.detPlanEstudioDaoImpl.find(DetPlanEstudio.class, detPlanEstudio.getIdDetPlanEstudio());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,DetPlanEstudioDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.detPlanEstudioDaoImpl.findByNombre(detPlanEstudio),DetPlanEstudioDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<DetPlanEstudioDTO> listarDetPlanEstudio(DetPlanEstudioDTO detPlanEstudio) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.detPlanEstudioDaoImpl.listarDetPlanEstudio(detPlanEstudio),DetPlanEstudioDTO.class);
+	}
+	@Override
+	public int contarListarDetPlanEstudio(DetPlanEstudioDTO detPlanEstudio){
+		return  this.detPlanEstudioDaoImpl.contarListarDetPlanEstudio(detPlanEstudio);
+	}
+	
+	@Override
+	public CargoDTO controladorAccionCargo(CargoDTO cargo, AccionType accionType) throws Exception {
+		CargoDTO resultado = null;
+		Cargo resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				cargo.setIdCargo(this.cargoDaoImpl.generarIdCargo());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(cargo, Cargo.class);
+				this.cargoDaoImpl.save(resultadoEntity);	
+				resultado = cargo;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(cargo, Cargo.class);
+				this.cargoDaoImpl.update(resultadoEntity);
+				resultado = cargo;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.cargoDaoImpl.find(Cargo.class, cargo.getIdCargo());
+				this.cargoDaoImpl.delete(resultadoEntity);
+				resultado = cargo;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.cargoDaoImpl.find(Cargo.class, cargo.getIdCargo());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,CargoDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.cargoDaoImpl.findByNombre(cargo),CargoDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<CargoDTO> listarCargo(CargoDTO cargo) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.cargoDaoImpl.listarCargo(cargo),CargoDTO.class);
+	}
+	@Override
+	public int contarListarCargo(CargoDTO cargo){
+		return  this.cargoDaoImpl.contarListarCargo(cargo);
+	}
+	
+	@Override
+	public AperturaCierreMatriculaDTO controladorAccionAperturaCierreMatricula(AperturaCierreMatriculaDTO aperturaCierreMatricula, AccionType accionType) throws Exception {
+		AperturaCierreMatriculaDTO resultado = null;
+		AperturaCierreMatricula resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				aperturaCierreMatricula.setIdAperturaCierreMatricula(this.aperturaCierreMatriculaDaoImpl.generarIdAperturaCierreMatricula());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(aperturaCierreMatricula, AperturaCierreMatricula.class,"anhoSemestre@PK@","usuarioCreacion@PK@","usuarioModificacion@PK@");
+				this.aperturaCierreMatriculaDaoImpl.save(resultadoEntity);	
+				resultado = aperturaCierreMatricula;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(aperturaCierreMatricula, AperturaCierreMatricula.class,"anhoSemestre@PK@","usuarioCreacion@PK@","usuarioModificacion@PK@");
+				this.aperturaCierreMatriculaDaoImpl.update(resultadoEntity);
+				resultado = aperturaCierreMatricula;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.aperturaCierreMatriculaDaoImpl.find(AperturaCierreMatricula.class, aperturaCierreMatricula.getIdAperturaCierreMatricula());
+				this.aperturaCierreMatriculaDaoImpl.delete(resultadoEntity);
+				resultado = aperturaCierreMatricula;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.aperturaCierreMatriculaDaoImpl.find(AperturaCierreMatricula.class, aperturaCierreMatricula.getIdAperturaCierreMatricula());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,AperturaCierreMatriculaDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.aperturaCierreMatriculaDaoImpl.findByNombre(aperturaCierreMatricula),AperturaCierreMatriculaDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<AperturaCierreMatriculaDTO> listarAperturaCierreMatricula(AperturaCierreMatriculaDTO aperturaCierreMatricula) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.aperturaCierreMatriculaDaoImpl.listarAperturaCierreMatricula(aperturaCierreMatricula),AperturaCierreMatriculaDTO.class);
+	}
+	@Override
+	public int contarListarAperturaCierreMatricula(AperturaCierreMatriculaDTO aperturaCierreMatricula){
+		return  this.aperturaCierreMatriculaDaoImpl.contarListarAperturaCierreMatricula(aperturaCierreMatricula);
+	}
+	
+	@Override
+	public AulaDTO controladorAccionAula(AulaDTO aula, AccionType accionType) throws Exception {
+		AulaDTO resultado = null;
+		Aula resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				aula.setIdAula(this.aulaDaoImpl.generarIdAula());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(aula, Aula.class,"pabellon@PK@");
+				this.aulaDaoImpl.save(resultadoEntity);	
+				resultado = aula;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(aula, Aula.class,"pabellon@PK@");
+				this.aulaDaoImpl.update(resultadoEntity);
+				resultado = aula;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.aulaDaoImpl.find(Aula.class, aula.getIdAula());
+				this.aulaDaoImpl.delete(resultadoEntity);
+				resultado = aula;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.aulaDaoImpl.find(Aula.class, aula.getIdAula());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,AulaDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.aulaDaoImpl.findByNombre(aula),AulaDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<AulaDTO> listarAula(AulaDTO aula) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.aulaDaoImpl.listarAula(aula),AulaDTO.class,"pabellon");
+	}
+	@Override
+	public int contarListarAula(AulaDTO aula){
+		return  this.aulaDaoImpl.contarListarAula(aula);
+	}
+	@Override
+	public DetCargaLectivaDTO controladorAccionDetCargaLectiva(DetCargaLectivaDTO detCargaLectiva, AccionType accionType) throws Exception {
+		DetCargaLectivaDTO resultado = null;
+		DetCargaLectiva resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				detCargaLectiva.setIdDetCargaLectiva(this.detCargaLectivaDaoImpl.generarIdDetCargaLectiva());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(detCargaLectiva, DetCargaLectiva.class,"cargaLectiva@PK@","personalByDocente@PK@","personalByDocentePractica@PK@","detPlanEstudio@PK@","aula@PK@","itemByTurno@PK@");
+				this.detCargaLectivaDaoImpl.save(resultadoEntity);	
+				resultado = detCargaLectiva;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(detCargaLectiva, DetCargaLectiva.class,"cargaLectiva@PK@","personalByDocente@PK@","personalByDocentePractica@PK@","detPlanEstudio@PK@","aula@PK@","itemByTurno@PK@");
+				this.detCargaLectivaDaoImpl.update(resultadoEntity);
+				resultado = detCargaLectiva;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.detCargaLectivaDaoImpl.find(DetCargaLectiva.class, detCargaLectiva.getIdDetCargaLectiva());
+				this.detCargaLectivaDaoImpl.delete(resultadoEntity);
+				resultado = detCargaLectiva;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.detCargaLectivaDaoImpl.find(DetCargaLectiva.class, detCargaLectiva.getIdDetCargaLectiva());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,DetCargaLectivaDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.detCargaLectivaDaoImpl.findByNombre(detCargaLectiva),DetCargaLectivaDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<DetCargaLectivaDTO> listarDetCargaLectiva(DetCargaLectivaDTO detCargaLectiva) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.detCargaLectivaDaoImpl.listarDetCargaLectiva(detCargaLectiva),DetCargaLectivaDTO.class,"cargaLectiva:{escuela}","detPlanEstudio:{itemByCiclo}","itemByTurno");
+	}
+	@Override
+	public int contarListarDetCargaLectiva(DetCargaLectivaDTO detCargaLectiva){
+		return  this.detCargaLectivaDaoImpl.contarListarDetCargaLectiva(detCargaLectiva);
+	}
+	
+	@Override
+	public HorarioDTO controladorAccionHorario(HorarioDTO horario, AccionType accionType) throws Exception {
+		HorarioDTO resultado = null;
+		Horario resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				horario.setIdHorario(this.horarioDaoImpl.generarIdHorario());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(horario, Horario.class,"detCargaLectiva@PK@","personalByDocente@PK@","itemByDia@PK@");
+				this.horarioDaoImpl.save(resultadoEntity);	
+				resultado = horario;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(horario, Horario.class,"detCargaLectiva@PK@","personalByDocente@PK@","itemByDia@PK@");
+				this.horarioDaoImpl.update(resultadoEntity);
+				resultado = horario;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.horarioDaoImpl.find(Horario.class, horario.getIdHorario());
+				this.horarioDaoImpl.delete(resultadoEntity);
+				resultado = horario;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.horarioDaoImpl.find(Horario.class, horario.getIdHorario());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,HorarioDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.horarioDaoImpl.findByNombre(horario),HorarioDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<HorarioDTO> listarHorario(HorarioDTO horario) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.horarioDaoImpl.listarHorario(horario),HorarioDTO.class);
+	}
+	@Override
+	public int contarListarHorario(HorarioDTO horario){
+		return  this.horarioDaoImpl.contarListarHorario(horario);
+	}
+	
+	@Override
+	public PabellonDTO controladorAccionPabellon(PabellonDTO pabellon, AccionType accionType) throws Exception {
+		PabellonDTO resultado = null;
+		Pabellon resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				pabellon.setIdPabellon(this.pabellonDaoImpl.generarIdPabellon());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(pabellon, Pabellon.class,"entidadUniversitaria@PK@");
+				this.pabellonDaoImpl.save(resultadoEntity);	
+				resultado = pabellon;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(pabellon, Pabellon.class,"entidadUniversitaria@PK@");
+				this.pabellonDaoImpl.update(resultadoEntity);
+				resultado = pabellon;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.pabellonDaoImpl.find(Pabellon.class, pabellon.getIdPabellon());
+				this.pabellonDaoImpl.delete(resultadoEntity);
+				resultado = pabellon;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.pabellonDaoImpl.find(Pabellon.class, pabellon.getIdPabellon());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,PabellonDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.pabellonDaoImpl.findByNombre(pabellon),PabellonDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<PabellonDTO> listarPabellon(PabellonDTO pabellon) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.pabellonDaoImpl.listarPabellon(pabellon),PabellonDTO.class);
+	}
+	@Override
+	public int contarListarPabellon(PabellonDTO pabellon){
+		return  this.pabellonDaoImpl.contarListarPabellon(pabellon);
+	}
+	
+	@Override
+	public TrasladoDTO controladorAccionTraslado(TrasladoDTO traslado, AccionType accionType) throws Exception {
+		TrasladoDTO resultado = null;
+		Traslado resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				traslado.setIdTraslado(this.trasladoDaoImpl.generarIdTraslado());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(traslado, Traslado.class,"alumno@PK@","anhoSemestre@PK@");
+				this.trasladoDaoImpl.save(resultadoEntity);	
+				resultado = traslado;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(traslado, Traslado.class,"alumno@PK@","anhoSemestre@PK@");
+				this.trasladoDaoImpl.update(resultadoEntity);
+				resultado = traslado;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.trasladoDaoImpl.find(Traslado.class, traslado.getIdTraslado());
+				this.trasladoDaoImpl.delete(resultadoEntity);
+				resultado = traslado;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.trasladoDaoImpl.find(Traslado.class, traslado.getIdTraslado());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,TrasladoDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.trasladoDaoImpl.findByNombre(traslado),TrasladoDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<TrasladoDTO> listarTraslado(TrasladoDTO traslado) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.trasladoDaoImpl.listarTraslado(traslado),TrasladoDTO.class);
+	}
+	@Override
+	public int contarListarTraslado(TrasladoDTO traslado){
+		return  this.trasladoDaoImpl.contarListarTraslado(traslado);
+	}
+	
+	
+	@Override
+	public List<MatriculaDTO> listarMatricula(MatriculaDTO matricula) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.matriculaDaoImpl.listarMatricula(matricula),MatriculaDTO.class);
+	}
+	@Override
+	public int contarListarMatricula(MatriculaDTO matricula){
+		return  this.matriculaDaoImpl.contarListarMatricula(matricula);
+	}
+	@Override
+	public AsignaPlanEstudioDTO controladorAccionAsignaPlanEstudio(AsignaPlanEstudioDTO asignaPlanEstudio, AccionType accionType) throws Exception {
+		AsignaPlanEstudioDTO resultado = null;
+		AsignaPlanEstudio resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				asignaPlanEstudio.setIdAsignaPlanestudio(this.asignaPlanEstudioDaoImpl.generarIdAsignaPlanEstudio());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(asignaPlanEstudio, AsignaPlanEstudio.class,"alumno@PK@","planEstudio@PK@");
+				this.asignaPlanEstudioDaoImpl.save(resultadoEntity);	
+				resultado = asignaPlanEstudio;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(asignaPlanEstudio, AsignaPlanEstudio.class,"alumno@PK@","planEstudio@PK@");
+				this.asignaPlanEstudioDaoImpl.update(resultadoEntity);
+				resultado = asignaPlanEstudio;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.asignaPlanEstudioDaoImpl.find(AsignaPlanEstudio.class, asignaPlanEstudio.getIdAsignaPlanestudio());
+				this.asignaPlanEstudioDaoImpl.delete(resultadoEntity);
+				resultado = asignaPlanEstudio;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.asignaPlanEstudioDaoImpl.find(AsignaPlanEstudio.class, asignaPlanEstudio.getIdAsignaPlanestudio());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,AsignaPlanEstudioDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.asignaPlanEstudioDaoImpl.findByNombre(asignaPlanEstudio),AsignaPlanEstudioDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<AsignaPlanEstudioDTO> listarAsignaPlanEstudio(AsignaPlanEstudioDTO asignaPlanEstudio) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.asignaPlanEstudioDaoImpl.listarAsignaPlanEstudio(asignaPlanEstudio),AsignaPlanEstudioDTO.class);
+	}
+	@Override
+	public int contarListarAsignaPlanEstudio(AsignaPlanEstudioDTO asignaPlanEstudio){
+		return  this.asignaPlanEstudioDaoImpl.contarListarAsignaPlanEstudio(asignaPlanEstudio);
+	}
+	
+	@Override
+	public CargaLectivaDTO controladorAccionCargaLectiva(CargaLectivaDTO cargaLectiva, AccionType accionType) throws Exception {
+		CargaLectivaDTO resultado = null;
+		CargaLectiva resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				cargaLectiva.setIdCargaLectiva(this.cargaLectivaDaoImpl.generarIdCargaLectiva());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(cargaLectiva, CargaLectiva.class,"anhoSemestre@PK@","escuela@PK@","entidadUniversitaria@PK@");
+				this.cargaLectivaDaoImpl.save(resultadoEntity);	
+				resultado = cargaLectiva;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(cargaLectiva, CargaLectiva.class,"anhoSemestre@PK@","escuela@PK@","entidadUniversitaria@PK@");
+				this.cargaLectivaDaoImpl.update(resultadoEntity);
+				resultado = cargaLectiva;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.cargaLectivaDaoImpl.find(CargaLectiva.class, cargaLectiva.getIdCargaLectiva());
+				this.cargaLectivaDaoImpl.delete(resultadoEntity);
+				resultado = cargaLectiva;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.cargaLectivaDaoImpl.find(CargaLectiva.class, cargaLectiva.getIdCargaLectiva());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,CargaLectivaDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.cargaLectivaDaoImpl.findByNombre(cargaLectiva),CargaLectivaDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<CargaLectivaDTO> listarCargaLectiva(CargaLectivaDTO cargaLectiva) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.cargaLectivaDaoImpl.listarCargaLectiva(cargaLectiva),CargaLectivaDTO.class);
+	}
+	@Override
+	public int contarListarCargaLectiva(CargaLectivaDTO cargaLectiva){
+		return  this.cargaLectivaDaoImpl.contarListarCargaLectiva(cargaLectiva);
+	}
+	@Override
+	public ConvalidacionPlanEstudioDTO controladorAccionConvalidacionPlanEstudio(ConvalidacionPlanEstudioDTO convalidacionPlanEstudio, AccionType accionType) throws Exception {
+		ConvalidacionPlanEstudioDTO resultado = null;
+		ConvalidacionPlanEstudio resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				convalidacionPlanEstudio.setIdConvalidacionPlanEstudio(this.convalidacionPlanEstudioDaoImpl.generarIdConvalidacionPlanEstudio());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(convalidacionPlanEstudio, ConvalidacionPlanEstudio.class,"detPlanEstudio@PK@","detPlanEstudioConvalidar@PK@");
+				this.convalidacionPlanEstudioDaoImpl.save(resultadoEntity);	
+				resultado = convalidacionPlanEstudio;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(convalidacionPlanEstudio, ConvalidacionPlanEstudio.class,"detPlanEstudio@PK@","detPlanEstudioConvalidar@PK@");
+				this.convalidacionPlanEstudioDaoImpl.update(resultadoEntity);
+				resultado = convalidacionPlanEstudio;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.convalidacionPlanEstudioDaoImpl.find(ConvalidacionPlanEstudio.class, convalidacionPlanEstudio.getIdConvalidacionPlanEstudio());
+				this.convalidacionPlanEstudioDaoImpl.delete(resultadoEntity);
+				resultado = convalidacionPlanEstudio;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.convalidacionPlanEstudioDaoImpl.find(ConvalidacionPlanEstudio.class, convalidacionPlanEstudio.getIdConvalidacionPlanEstudio());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,ConvalidacionPlanEstudioDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.convalidacionPlanEstudioDaoImpl.findByNombre(convalidacionPlanEstudio),ConvalidacionPlanEstudioDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<ConvalidacionPlanEstudioDTO> listarConvalidacionPlanEstudio(ConvalidacionPlanEstudioDTO convalidacionPlanEstudio) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.convalidacionPlanEstudioDaoImpl.listarConvalidacionPlanEstudio(convalidacionPlanEstudio),ConvalidacionPlanEstudioDTO.class);
+	}
+	@Override
+	public int contarListarConvalidacionPlanEstudio(ConvalidacionPlanEstudioDTO convalidacionPlanEstudio){
+		return  this.convalidacionPlanEstudioDaoImpl.contarListarConvalidacionPlanEstudio(convalidacionPlanEstudio);
+	}
+	
+	@Override
+	public OrganoDirectivoDTO controladorAccionOrganoDirectivo(OrganoDirectivoDTO organoDirectivo, AccionType accionType) throws Exception {
+		OrganoDirectivoDTO resultado = null;
+		OrganoDirectivo resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				organoDirectivo.setIdOrganoDirectivo(this.organoDirectivoDaoImpl.generarIdOrganoDirectivo());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(organoDirectivo, OrganoDirectivo.class,"personal@PK@","anhoSemestre@PK@","tipoPersona@PK@");
+				this.organoDirectivoDaoImpl.save(resultadoEntity);	
+				resultado = organoDirectivo;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(organoDirectivo, OrganoDirectivo.class,"personal@PK@","anhoSemestre@PK@","tipoPersona@PK@");
+				this.organoDirectivoDaoImpl.update(resultadoEntity);
+				resultado = organoDirectivo;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.organoDirectivoDaoImpl.find(OrganoDirectivo.class, organoDirectivo.getIdOrganoDirectivo());
+				this.organoDirectivoDaoImpl.delete(resultadoEntity);
+				resultado = organoDirectivo;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.organoDirectivoDaoImpl.find(OrganoDirectivo.class, organoDirectivo.getIdOrganoDirectivo());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,OrganoDirectivoDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.organoDirectivoDaoImpl.findByNombre(organoDirectivo),OrganoDirectivoDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<OrganoDirectivoDTO> listarOrganoDirectivo(OrganoDirectivoDTO organoDirectivo) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.organoDirectivoDaoImpl.listarOrganoDirectivo(organoDirectivo),OrganoDirectivoDTO.class);
+	}
+	@Override
+	public int contarListarOrganoDirectivo(OrganoDirectivoDTO organoDirectivo){
+		return  this.organoDirectivoDaoImpl.contarListarOrganoDirectivo(organoDirectivo);
+	}
+	@Override
+	public PlanEstudioDTO controladorAccionPlanEstudio(PlanEstudioDTO planEstudio, AccionType accionType) throws Exception {
+		PlanEstudioDTO resultado = null;
+		PlanEstudio resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				planEstudio.setIdPlanEstudio(this.planEstudioDaoImpl.generarIdPlanEstudio());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(planEstudio, PlanEstudio.class,"escuela@PK@");
+				this.planEstudioDaoImpl.save(resultadoEntity);	
+				resultado = planEstudio;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(planEstudio, PlanEstudio.class,"escuela@PK@");
+				this.planEstudioDaoImpl.update(resultadoEntity);
+				resultado = planEstudio;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.planEstudioDaoImpl.find(PlanEstudio.class, planEstudio.getIdPlanEstudio());
+				this.planEstudioDaoImpl.delete(resultadoEntity);
+				resultado = planEstudio;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.planEstudioDaoImpl.find(PlanEstudio.class, planEstudio.getIdPlanEstudio());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,PlanEstudioDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.planEstudioDaoImpl.findByNombre(planEstudio),PlanEstudioDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<PlanEstudioDTO> listarPlanEstudio(PlanEstudioDTO planEstudio) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.planEstudioDaoImpl.listarPlanEstudio(planEstudio),PlanEstudioDTO.class);
+	}
+	@Override
+	public int contarListarPlanEstudio(PlanEstudioDTO planEstudio){
+		return  this.planEstudioDaoImpl.contarListarPlanEstudio(planEstudio);
+	}
+	
+}

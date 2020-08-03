@@ -1,0 +1,79 @@
+package pe.com.edu.siaa.core.ejb.dao.matricula.local;
+
+import java.util.List;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.dto.matricula.DetMatriculaDTO;
+import pe.com.edu.siaa.core.model.jpa.matricula.DetMatricula;
+
+/**
+ * La Class DetMatriculaDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 11:25:06 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface DetMatriculaDaoLocal  extends GenericDAOLocal<String,DetMatricula> {
+	
+	
+	List<DetMatricula> obtenerDetalleMatricula(String idDetCargaLectiva,String idAlumno) throws Exception;
+	/**
+	 * Listar det matricula curso.
+	 *
+	 * @param alumno el alumno
+	 * @param anhoSemestre el anho semestre
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<String> listarDetMatriculaCurso(String idAlumno,String idAnhoSemestre) throws Exception;
+	
+	/**
+	 * Listar detMatricula.
+	 *
+	 * @param detMatricula el detMatricula
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<DetMatricula> listarDetMatricula(String idMatricula) throws Exception;
+	
+	//TODO:aqui
+		/**
+		 * Generar codigo detMatricula idSemestre + idAlumno ejemplo 20051200510017, 20051200510018.
+		 *
+		 * @param detMatricula el det carga lectiva
+		 * @return the string
+		 * @throws Exception the exception
+		 */
+		String generarCodigoDetMatricula(String idMatricula) throws Exception;
+	/**
+	 * Listar det matricula.
+	 *
+	 * @param detMatricula el det matriculaDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<DetMatricula> listarDetMatricula(DetMatriculaDTO detMatricula) throws Exception;
+	
+	/**
+	 * contar lista det matricula.
+	 *
+	 * @param detMatricula el det matricula
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarDetMatricula(DetMatriculaDTO detMatricula);
+	/**
+	 * Generar id detMatricula.
+	 *
+	 * @return the String
+	 * @throws Exception the exception
+	 */
+	String generarIdDetMatricula() throws Exception;
+}

@@ -1,0 +1,174 @@
+package pe.com.edu.siaa.core.ejb.dao.nota.impl;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.persistence.Query;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericAcademicoDAOImpl;
+import pe.com.edu.siaa.core.ejb.dao.nota.local.CursoNotaDaoLocal;
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.model.dto.nota.CursoNotaDTO;
+import pe.com.edu.siaa.core.model.jpa.nota.CursoNota;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+
+/**
+ * La Class CursoNotaDaoImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 19:53:43 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+public class CursoNotaDaoImpl extends  GenericAcademicoDAOImpl<String, CursoNota> implements CursoNotaDaoLocal  {
+
+	@Override
+	public Map<String,List<CursoNotaDTO>> obtenerCursoNotaMap(List<String> listaIdDetRegistroNota) throws Exception {
+		Map<String,List<CursoNotaDTO>> resultado = new HashMap<String, List<CursoNotaDTO>>();
+		Map<String, Object> parametros = new HashMap<String, Object>();
+		boolean ejecutarQuery = false;
+		StringBuilder jpaql = new StringBuilder();
+		jpaql.append("from CursoNota cn left join fetch cn.conceptoNota cpn left join fetch cpn.itemByTipoNota left join fetch cn.detRegistroNota where 1 = 1 ");
+		if (listaIdDetRegistroNota != null && listaIdDetRegistroNota.size() > 0) {
+			ejecutarQuery = true;
+			jpaql.append(" and cn.detRegistroNota.idDetRegistroNota in (:listaIdDetRegistroNota) ");
+		    parametros.put("listaIdDetRegistroNota", listaIdDetRegistroNota);
+		}
+		//jpaql.append(" order by cn.conceptoNota.descripcion");
+		if (ejecutarQuery) {		
+			Query query = createQuery(jpaql.toString(), parametros);
+			List<CursoNota> listaCursoNota =  query.getResultList();
+			for (String idDetRegistroNota : listaIdDetRegistroNota) {
+				if (!resultado.containsKey(idDetRegistroNota)) {
+					List<CursoNotaDTO> listaCursoNotaValue =  new ArrayList<CursoNotaDTO>();
+					for (CursoNota objCursoNota : listaCursoNota) {
+						CursoNotaDTO cursoNota = TransferDataObjectUtil.transferObjetoEntityDTO(objCursoNota, CursoNotaDTO.class,"conceptoNota:{itemByTipoNota}");
+						if (idDetRegistroNota.equals(objCursoNota.getDetRegistroNota().getIdDetRegistroNota())) {
+							listaCursoNotaValue.add(cursoNota);
+						}
+					}
+					resultado.put(idDetRegistroNota, listaCursoNotaValue);
+				}
+			}
+			
+		} 
+		return resultado;
+	}
+	
+	@Override
+	public List<CursoNota> obtenerCursoNotaList(List<String> listaIdDetRegistroNota) throws Exception {
+		Map<String, Object> parametros = new HashMap<String, Object>();
+		boolean ejecutarQuery = false;
+		StringBuilder jpaql = new StringBuilder();
+		jpaql.append("from CursoNota cn where 1 = 1 ");
+		if (listaIdDetRegistroNota != null && listaIdDetRegistroNota.size() > 0) {
+			ejecutarQuery = true;
+			jpaql.append(" and cn.detRegistroNota.idDetRegistroNota in (:listaIdDetRegistroNota) ");
+		    parametros.put("listaIdDetRegistroNota", listaIdDetRegistroNota);
+		}
+		//jpaql.append(" order by cn.conceptoNota.descripcion");
+		if (ejecutarQuery) {		
+			Query query = createQuery(jpaql.toString(), parametros);
+			return query.getResultList();
+		} 
+		return new ArrayList<CursoNota>();
+	}
+	
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.CursoNotaDaoLocal#listarCursoNota(pe.com.edu.siaa.core.model.jpa.seguridad.CursoNota)
+     */  
+    @Override	 
+    public List<CursoNota> listarCursoNota(CursoNotaDTO cursoNota) {
+        Query query = generarQueryListaCursoNota(cursoNota, false);
+        query.setFirstResult(cursoNota.getStartRow());
+        query.setMaxResults(cursoNota.getOffset());
+        return query.getResultList();
+    }   
+   
+    /**
+     * Generar query lista CursoNota.
+     *
+     * @param CursoNotaDTO el cursoNota
+     * @param esContador el es contador
+     * @return the query
+     */
+    private Query generarQueryListaCursoNota(CursoNotaDTO cursoNota, boolean esContador) {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        if (esContador) {
+            jpaql.append(" select count(o.idCursoNota) from CursoNota o where 1=1 ");
+        } else {
+            jpaql.append(" select o from CursoNota o where 1=1 ");           
+        }
+		if (!StringUtils.isNullOrEmpty(cursoNota.getSearch())) {
+	          jpaql.append(" and upper(o.idCursoNota) like :search ");
+	          parametros.put("search", "%" + cursoNota.getSearch().toUpperCase() + "%");
+	    } else {
+			if (!StringUtils.isNullOrEmptyNumeric(cursoNota.getNota())) {
+				jpaql.append(" and o.nota = :nota ");
+				parametros.put("nota", cursoNota.getNota());
+			}
+		}
+        if (!esContador) {
+            //jpaql.append(" ORDER BY 1 ");
+        }
+        Query query = createQuery(jpaql.toString(), parametros);
+        return query;
+    }
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.CursoNotaDaoLocal#contarListar{entity.getClassName()}(pe.com.edu.siaa.core.model.jpa.seguridad.CursoNotaDTO)
+     */
+	@Override
+    public int contarListarCursoNota(CursoNotaDTO cursoNota) {
+        int resultado = 0;
+        try {
+            //StringBuilder jpaql = new StringBuilder();
+            Query query = generarQueryListaCursoNota(cursoNota, true);
+            resultado = ((Long) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            resultado = 0;
+        }
+        return resultado;
+    }
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.CursoNotaDaoLocal#generarIdCursoNota()
+     */
+	 @Override
+    public String generarIdCursoNota() {
+        String resultado = "1";
+        Query query = createQuery("select max(o.idCursoNota) from CursoNota o", null);
+        List<Object> listLong =  query.getResultList();
+        if (listLong != null && listLong.size() > 0 && listLong.get(0) != null)  {
+            Long ultimoIdGenerado = Long.valueOf(listLong.get(0).toString());
+            if (!StringUtils.isNullOrEmpty(ultimoIdGenerado)) {
+                resultado = resultado + ultimoIdGenerado;
+            }
+        }
+        return resultado;
+    }
+   
+	 @Override
+		public String generarCodigoCursoNota(CursoNotaDTO cursoNota) throws Exception {
+			String resultado = cursoNota.getConceptoNota().getIdConceptoNota() + "00001";
+			Query query = createQuery("select max(cn.idCursoNota) from CursoNota cn where cn.conceptoNota.idConceptoNota=:idConceptoNota ",null);
+			query.setParameter("idConceptoNota", cursoNota.getConceptoNota().getIdConceptoNota());
+			 List<String> listaCodigo = query.getResultList();
+			 if (listaCodigo != null && listaCodigo.size() > 0) {
+				 String ultimoCodigoGenerado = listaCodigo.get(0);
+				 if (StringUtils.isNotNullOrBlank(ultimoCodigoGenerado)) {
+					 long ultimoCodigo = Long.parseLong(ultimoCodigoGenerado.toString());
+					 ultimoCodigo++;
+					 resultado = "" + ultimoCodigo;
+				 }
+			 }
+			return resultado;
+		}
+}

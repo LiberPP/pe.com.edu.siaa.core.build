@@ -1,0 +1,543 @@
+package pe.com.edu.siaa.core.model.jpa.admision;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import pe.com.edu.siaa.core.model.jpa.common.Item;
+import pe.com.edu.siaa.core.model.jpa.common.Ubigeo;
+import pe.com.edu.siaa.core.model.util.ConfiguracionEntityManagerUtil;
+
+/**
+ * La Class Establecimiento.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 09:56:53 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Entity
+@Table(name = "Establecimiento", schema = ConfiguracionEntityManagerUtil.ESQUEMA_ACADEMICO)
+public class Establecimiento implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id establecimiento. */
+    @Id
+    @Column(name = "idEstablecimiento" , precision = 18 , scale = 0)
+    private Long idEstablecimiento;
+   
+    /** El universidad. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idUniversidad", referencedColumnName = "idUniversidad")
+    private Universidad universidad;
+   
+    /** El codigo establecimiento. */
+    @Column(name = "codigoEstablecimiento" , length = 16)
+    private String codigoEstablecimiento;
+   
+    /** El item by tipo infraestructura. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idTipoInfraestructura", referencedColumnName = "idItem")
+    private Item itemByTipoInfraestructura;
+   
+    /** El nombre. */
+    @Column(name = "nombre" , length = 256)
+    private String nombre;
+   
+    /** El abreviatura. */
+    @Column(name = "abreviatura" , length = 64)
+    private String abreviatura;
+   
+    /** El ubigeo. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idUbigeo", referencedColumnName = "idUbigeo")
+    private Ubigeo ubigeo;
+   
+    /** El item by zona. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idZona", referencedColumnName = "idItem")
+    private Item itemByZona;
+   
+    /** El nombre zona. */
+    @Column(name = "nombrezona" , length = 150)
+    private String nombreZona;
+   
+    /** El item by tipo via. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idTipoVia", referencedColumnName = "idItem")
+    private Item itemByTipoVia;
+   
+    /** El nombre tipo via. */
+    @Column(name = "nombreTipoVia" , length = 150)
+    private String nombreTipoVia;
+   
+    /** El numero. */
+    @Column(name = "numero" , precision = 18 , scale = 0)
+    private Long numero;
+   
+    /** El kilometro. */
+    @Column(name = "kilometro" , precision = 18 , scale = 0)
+    private Long kilometro;
+   
+    /** El manzana. */
+    @Column(name = "manzana" , length = 50)
+    private String manzana;
+   
+    /** El lote. */
+    @Column(name = "lote" , length = 50)
+    private String lote;
+   
+    /** El telefono1. */
+    @Column(name = "telefono1" , length = 50)
+    private String telefono1;
+   
+    /** El telefono2. */
+    @Column(name = "telefono2" , length = 50)
+    private String telefono2;
+   
+    /** El email. */
+    @Column(name = "email" , length = 128)
+    private String email;
+   
+    /** El email alternativo. */
+    @Column(name = "emailAlternativo" , length = 128)
+    private String emailAlternativo;
+   
+    /** El establecimiento entidad universitaria list. */
+    @OneToMany(mappedBy = "establecimiento", fetch = FetchType.LAZY)
+    private List<EntidadUniversitaria> establecimientoEntidadUniversitariaList = new ArrayList<EntidadUniversitaria>();
+    
+    /**
+     * Instancia un nuevo establecimiento.
+     */
+    public Establecimiento() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo establecimiento.
+     *
+     * @param idEstablecimiento el id establecimiento
+     * @param universidad el universidad
+     * @param codigoEstablecimiento el codigo establecimiento
+     * @param itemByTipoInfraestructura el item by tipo infraestructura
+     * @param nombre el nombre
+     * @param abreviatura el abreviatura
+     * @param ubigeo el ubigeo
+     * @param itemByZona el item by zona
+     * @param nombreZona el nombre zona
+     * @param itemByTipoVia el item by tipo via
+     * @param nombreTipoVia el nombre tipo via
+     * @param numero el numero
+     * @param kilometro el kilometro
+     * @param manzana el manzana
+     * @param lote el lote
+     * @param telefono1 el telefono1
+     * @param telefono2 el telefono2
+     * @param email el email
+     * @param emailAlternativo el email alternativo
+     */
+    public Establecimiento(Long idEstablecimiento, Universidad universidad,String codigoEstablecimiento, Item itemByTipoInfraestructura,String nombre, String abreviatura, Ubigeo ubigeo,Item itemByZona,String nombreZona, Item itemByTipoVia,String nombreTipoVia, Long numero, Long kilometro, String manzana, String lote, String telefono1, String telefono2, String email, String emailAlternativo ) {
+        super();
+        this.idEstablecimiento = idEstablecimiento;
+        this.universidad = universidad;
+        this.codigoEstablecimiento = codigoEstablecimiento;
+        this.itemByTipoInfraestructura = itemByTipoInfraestructura;
+        this.nombre = nombre;
+        this.abreviatura = abreviatura;
+        this.ubigeo = ubigeo;
+        this.itemByZona = itemByZona;
+        this.nombreZona = nombreZona;
+        this.itemByTipoVia = itemByTipoVia;
+        this.nombreTipoVia = nombreTipoVia;
+        this.numero = numero;
+        this.kilometro = kilometro;
+        this.manzana = manzana;
+        this.lote = lote;
+        this.telefono1 = telefono1;
+        this.telefono2 = telefono2;
+        this.email = email;
+        this.emailAlternativo = emailAlternativo;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id establecimiento.
+     *
+     * @return id establecimiento
+     */
+     public Long getIdEstablecimiento() {
+        return this.idEstablecimiento;
+    }
+    /**
+     * Establece el id establecimiento.
+     *
+     * @param idEstablecimiento el new id establecimiento
+     */
+    public void setIdEstablecimiento(Long idEstablecimiento) {
+        this.idEstablecimiento = idEstablecimiento;
+    }
+    /**
+     * Obtiene universidad.
+     *
+     * @return universidad
+     */
+     public Universidad getUniversidad() {
+        return this.universidad;
+    }
+    /**
+     * Establece el universidad.
+     *
+     * @param universidad el new universidad
+     */
+    public void setUniversidad(Universidad universidad) {
+        this.universidad = universidad;
+    }
+    /**
+     * Obtiene codigo establecimiento.
+     *
+     * @return codigo establecimiento
+     */
+     public String getCodigoEstablecimiento() {
+        return this.codigoEstablecimiento;
+    }
+    /**
+     * Establece el codigo establecimiento.
+     *
+     * @param codigoEstablecimiento el new codigo establecimiento
+     */
+    public void setCodigoEstablecimiento(String codigoEstablecimiento) {
+        this.codigoEstablecimiento = codigoEstablecimiento;
+    }
+    /**
+     * Obtiene item by tipo infraestructura.
+     *
+     * @return item by tipo infraestructura
+     */
+     public Item getItemByTipoInfraestructura() {
+        return this.itemByTipoInfraestructura;
+    }
+    /**
+     * Establece el item by tipo infraestructura.
+     *
+     * @param itemByTipoInfraestructura el new item by tipo infraestructura
+     */
+    public void setItemByTipoInfraestructura(Item itemByTipoInfraestructura) {
+        this.itemByTipoInfraestructura = itemByTipoInfraestructura;
+    }
+    /**
+     * Obtiene nombre.
+     *
+     * @return nombre
+     */
+     public String getNombre() {
+        return this.nombre;
+    }
+    /**
+     * Establece el nombre.
+     *
+     * @param nombre el new nombre
+     */
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+    /**
+     * Obtiene abreviatura.
+     *
+     * @return abreviatura
+     */
+     public String getAbreviatura() {
+        return this.abreviatura;
+    }
+    /**
+     * Establece el abreviatura.
+     *
+     * @param abreviatura el new abreviatura
+     */
+    public void setAbreviatura(String abreviatura) {
+        this.abreviatura = abreviatura;
+    }
+    /**
+     * Obtiene ubigeo.
+     *
+     * @return ubigeo
+     */
+     public Ubigeo getUbigeo() {
+        return this.ubigeo;
+    }
+    /**
+     * Establece el ubigeo.
+     *
+     * @param ubigeo el new ubigeo
+     */
+    public void setUbigeo(Ubigeo ubigeo) {
+        this.ubigeo = ubigeo;
+    }
+    /**
+     * Obtiene item by zona.
+     *
+     * @return item by zona
+     */
+     public Item getItemByZona() {
+        return this.itemByZona;
+    }
+    /**
+     * Establece el item by zona.
+     *
+     * @param itemByZona el new item by zona
+     */
+    public void setItemByZona(Item itemByZona) {
+        this.itemByZona = itemByZona;
+    }
+    /**
+     * Obtiene nombre zona.
+     *
+     * @return nombre zona
+     */
+     public String getNombreZona() {
+        return this.nombreZona;
+    }
+    /**
+     * Establece el nombre zona.
+     *
+     * @param nombreZona el new nombre zona
+     */
+    public void setNombreZona(String nombreZona) {
+        this.nombreZona = nombreZona;
+    }
+    /**
+     * Obtiene item by tipo via.
+     *
+     * @return item by tipo via
+     */
+     public Item getItemByTipoVia() {
+        return this.itemByTipoVia;
+    }
+    /**
+     * Establece el item by tipo via.
+     *
+     * @param itemByTipoVia el new item by tipo via
+     */
+    public void setItemByTipoVia(Item itemByTipoVia) {
+        this.itemByTipoVia = itemByTipoVia;
+    }
+    /**
+     * Obtiene nombre tipo via.
+     *
+     * @return nombre tipo via
+     */
+     public String getNombreTipoVia() {
+        return this.nombreTipoVia;
+    }
+    /**
+     * Establece el nombre tipo via.
+     *
+     * @param nombreTipoVia el new nombre tipo via
+     */
+    public void setNombreTipoVia(String nombreTipoVia) {
+        this.nombreTipoVia = nombreTipoVia;
+    }
+    /**
+     * Obtiene numero.
+     *
+     * @return numero
+     */
+     public Long getNumero() {
+        return this.numero;
+    }
+    /**
+     * Establece el numero.
+     *
+     * @param numero el new numero
+     */
+    public void setNumero(Long numero) {
+        this.numero = numero;
+    }
+    /**
+     * Obtiene kilometro.
+     *
+     * @return kilometro
+     */
+     public Long getKilometro() {
+        return this.kilometro;
+    }
+    /**
+     * Establece el kilometro.
+     *
+     * @param kilometro el new kilometro
+     */
+    public void setKilometro(Long kilometro) {
+        this.kilometro = kilometro;
+    }
+    /**
+     * Obtiene manzana.
+     *
+     * @return manzana
+     */
+     public String getManzana() {
+        return this.manzana;
+    }
+    /**
+     * Establece el manzana.
+     *
+     * @param manzana el new manzana
+     */
+    public void setManzana(String manzana) {
+        this.manzana = manzana;
+    }
+    /**
+     * Obtiene lote.
+     *
+     * @return lote
+     */
+     public String getLote() {
+        return this.lote;
+    }
+    /**
+     * Establece el lote.
+     *
+     * @param lote el new lote
+     */
+    public void setLote(String lote) {
+        this.lote = lote;
+    }
+    /**
+     * Obtiene telefono1.
+     *
+     * @return telefono1
+     */
+     public String getTelefono1() {
+        return this.telefono1;
+    }
+    /**
+     * Establece el telefono1.
+     *
+     * @param telefono1 el new telefono1
+     */
+    public void setTelefono1(String telefono1) {
+        this.telefono1 = telefono1;
+    }
+    /**
+     * Obtiene telefono2.
+     *
+     * @return telefono2
+     */
+     public String getTelefono2() {
+        return this.telefono2;
+    }
+    /**
+     * Establece el telefono2.
+     *
+     * @param telefono2 el new telefono2
+     */
+    public void setTelefono2(String telefono2) {
+        this.telefono2 = telefono2;
+    }
+    /**
+     * Obtiene email.
+     *
+     * @return email
+     */
+     public String getEmail() {
+        return this.email;
+    }
+    /**
+     * Establece el email.
+     *
+     * @param email el new email
+     */
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    /**
+     * Obtiene email alternativo.
+     *
+     * @return email alternativo
+     */
+     public String getEmailAlternativo() {
+        return this.emailAlternativo;
+    }
+    /**
+     * Establece el email alternativo.
+     *
+     * @param emailAlternativo el new email alternativo
+     */
+    public void setEmailAlternativo(String emailAlternativo) {
+        this.emailAlternativo = emailAlternativo;
+    }
+    /**
+     * Establece el establecimiento entidad universitaria list.
+     *
+     * @param establecimientoEntidadUniversitariaList el new establecimiento entidad universitaria list
+     */
+    public List<EntidadUniversitaria> getEstablecimientoEntidadUniversitariaList(){
+        return this.establecimientoEntidadUniversitariaList;
+    }
+    /**
+     * Establece el establecimiento list.
+     *
+     * @param establecimientoList el new establecimiento list
+     */
+    public void setEstablecimientoEntidadUniversitariaList(List<EntidadUniversitaria> establecimientoEntidadUniversitariaList) {
+        this.establecimientoEntidadUniversitariaList = establecimientoEntidadUniversitariaList;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idEstablecimiento == null) ? 0 : idEstablecimiento.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Establecimiento other = (Establecimiento) obj;
+        if (idEstablecimiento == null) {
+            if (other.idEstablecimiento != null) {
+                return false;
+            }
+        } else if (!idEstablecimiento.equals(other.idEstablecimiento)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Establecimiento [idEstablecimiento=" + idEstablecimiento + "]";
+    }
+   
+}

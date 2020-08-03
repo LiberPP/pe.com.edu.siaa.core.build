@@ -1,0 +1,252 @@
+package pe.com.edu.siaa.core.ejb.dao.matricula.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.persistence.Query;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericAcademicoDAOImpl;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.AlumnoDaoLocal;
+import pe.com.edu.siaa.core.ejb.factory.CollectionUtil;
+import pe.com.edu.siaa.core.model.dto.matricula.AlumnoDTO;
+import pe.com.edu.siaa.core.model.estate.EstadoGeneralState;
+import pe.com.edu.siaa.core.model.jpa.matricula.Alumno;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+
+/**
+ * La Class AlumnoDaoImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 19:53:36 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+public class AlumnoDaoImpl extends  GenericAcademicoDAOImpl<String, Alumno> implements AlumnoDaoLocal  {
+
+	@Override
+	public String generarCodigoAlumno(String idAnhoSemestre) throws Exception {
+		String resultado = idAnhoSemestre.trim() + "00001";
+		 Query query = createQuery("select max(a.idAlumno) from Alumno a where a.anhoSemestreIngreso.idAnhoSemestre=:idAnhoSemestre",null);
+		 query.setParameter("idAnhoSemestre", idAnhoSemestre);
+		 List<String> listaCodigo = query.getResultList();
+		 if (listaCodigo != null && listaCodigo.size() > 0) {
+			 String ultimoCodigoGenerado = listaCodigo.get(0);
+			 if (StringUtils.isNotNullOrBlank(ultimoCodigoGenerado)) {
+				 long ultimoCodigo = Long.parseLong(ultimoCodigoGenerado.trim());
+				 ultimoCodigo++;
+				 resultado = "" + ultimoCodigo;		
+			 }
+		 }
+		return resultado.trim();
+	}	
+	
+	@Override
+	//TODO:SACAR EN REGLA
+	public String generarCodigoCarnet(String idAnhoSemestre,String codigoEscuela,String idEscuela) throws Exception {
+		//2006101001
+		String resultado = idAnhoSemestre.trim() + "" + codigoEscuela + "0001";
+		 Query query = createQuery("select max(a.codigoCarnet) from Alumno a where a.anhoSemestreIngreso.idAnhoSemestre =:idAnhoSemestre and a.escuela.idEscuela=:idEscuela ", null);
+		 query.setParameter("idAnhoSemestre", idAnhoSemestre);
+		 query.setParameter("idEscuela", idEscuela);
+		 List<String> listaCodigo = query.getResultList();
+		 if (listaCodigo != null && listaCodigo.size() > 0) {
+			 String ultimoCodigoGenerado = listaCodigo.get(0);
+			 if (StringUtils.isNotNullOrBlank(ultimoCodigoGenerado)) {
+				 long ultimoCodigo = Long.parseLong(ultimoCodigoGenerado.trim());
+				 ultimoCodigo++;
+				 resultado = "" + ultimoCodigo;
+			 }
+		 }
+		return resultado;
+	}
+	
+	/* (non-Javadoc)
+	 * @see pe.edu.upp.siaa.matricula.dao.AlumnoDaoLocal#actualizarAlumno(pe.edu.upp.siaa.entity.Alumno)
+	 */
+	@Override
+	public void actualizarAlumno(AlumnoDTO alumno) throws Exception {
+		StringBuilder jpaql = new StringBuilder();
+		Map<String,Object> parametros = new HashMap<String,Object>();
+		boolean ejecutarQuery = false;
+		String coma = "";
+		jpaql.append(" update Alumno set  ");
+		if (alumno.getItemByCicloActual() != null) {
+			if (alumno.getItemByCicloActual().getIdItem() != null) {
+				ejecutarQuery = true;
+				jpaql.append("  itemByCicloActual.idItem=:idItemCiclo");
+				coma = ",";
+				parametros.put("idItemCiclo", alumno.getItemByCicloActual().getIdItem() );
+			}
+		}
+		if (alumno.getItemByTurnoActual() != null) {
+			if (alumno.getItemByTurnoActual().getIdItem() != null) {
+				ejecutarQuery = true;
+				jpaql.append(coma);
+				jpaql.append(" itemByTurnoActual.idItem=:idItemTurno");
+				coma = ",";
+				parametros.put("idItemTurno", alumno.getItemByTurnoActual().getIdItem() );
+			}
+		}
+		if (alumno.getCreditoAcumulado() != null) {
+			 jpaql.append(coma);
+			 jpaql.append(" creditoAcumulado=:creditoAcumulado");
+			 coma = ",";
+			 parametros.put("creditoAcumulado", alumno.getCreditoAcumulado() );
+		}
+		jpaql.append("  where idAlumno=:idAlumno");
+		parametros.put("idAlumno", alumno.getIdAlumno());
+		if (ejecutarQuery) {			
+			Query query = createQuery(jpaql.toString(),parametros);			
+			query.executeUpdate();
+		}
+	}
+	
+	@Override
+	public Alumno findAlumnoByPersona(String idPersona) throws Exception {
+		Alumno resultado = null;
+		StringBuilder jpaql = new StringBuilder();
+		jpaql.append("from Alumno a left join fetch a.anhoSemestreIngreso left join fetch a.planEstudio ");
+		jpaql.append(" left join fetch a.escuela ");
+		jpaql.append(" left join fetch a.postulante p ");
+		jpaql.append(" left join fetch p.persona ");
+		jpaql.append(" left join fetch a.itemByCicloActual ");
+		jpaql.append(" where a.postulante.persona.idPersona =:idPersona and a.estadoAlumno=:estadoAlumno");
+		Query query = createQuery(jpaql.toString(),null);
+		query.setParameter("idPersona", idPersona);
+		query.setParameter("estadoAlumno", EstadoGeneralState.ACTIVO.getKey());
+		List<Alumno> listaAlumno = query.getResultList();
+		if (listaAlumno != null && listaAlumno.size() > 0) {
+			resultado = listaAlumno.get(0);
+		}
+		return resultado;	
+	}
+	@Override	 
+	public Alumno findAlumno(String idAlumno) throws Exception {
+		Alumno resultado = new Alumno();
+		Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        jpaql.append(" select o from Alumno o left join fetch o.postulante pos left join fetch o.escuela   ");
+        jpaql.append(" left join fetch o.planEstudio  left join fetch o.itemByCicloActual left join fetch o.itemByCategoriaAlumno left join fetch o.anhoSemestreIngreso left join fetch o.anhoSemestreEgreso left join fetch o.itemByTurnoActual  ");
+        jpaql.append(" left join fetch pos.persona per left join fetch pos.escuelaByOpcion1  left join fetch pos.escuelaByOpcion2 left join fetch pos.escuelaByIngreso left join fetch pos.itemByModalidad left join fetch pos.itemByTipoPreparacion  left join fetch pos.itemByTurnoAtencion left join fetch pos.anhoSemestre");
+        jpaql.append(" left join fetch per.tipoPersona left join fetch per.itemByTipoDocIdentidad  left join fetch per.itemByEstadoCivil ");
+        jpaql.append(" left join fetch per.itemByTipoVia  left join fetch per.itemByZona left join fetch per.procedencia  left join fetch per.itemByIdioma ");
+        jpaql.append(" left join fetch per.itemByNivelEducativo  left join fetch per.nacionalidad left join fetch per.ubigeoByNacimiento  left join fetch per.ubigeoByActual ");
+        jpaql.append(" left join fetch per.entidadUniversitaria ");
+        
+        jpaql.append(" where o.idAlumno = :idAlumno ");
+        parametros.put("idAlumno", idAlumno);
+        
+        Query query = createQuery(jpaql.toString(), parametros);
+        List<Alumno> listaTemp = query.getResultList();
+        if (!CollectionUtil.isEmpty(listaTemp)) {
+        	resultado = listaTemp.get(0);
+        }
+		return resultado;
+	}
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.AlumnoDaoLocal#listarAlumno(pe.com.edu.siaa.core.model.jpa.seguridad.Alumno)
+     */  
+    @Override	 
+    public List<Alumno> listarAlumno(AlumnoDTO alumno) {
+        Query query = generarQueryListaAlumno(alumno, false);
+        query.setFirstResult(alumno.getStartRow());
+        query.setMaxResults(alumno.getOffset());
+        return query.getResultList();
+    }   
+   
+    /**
+     * Generar query lista Alumno.
+     *
+     * @param AlumnoDTO el alumno
+     * @param esContador el es contador
+     * @return the query
+     */
+    private Query generarQueryListaAlumno(AlumnoDTO alumno, boolean esContador) {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        if (esContador) {
+            jpaql.append(" select count(o.idAlumno) from Alumno o where 1=1 ");
+        } else {
+            jpaql.append(" select o from Alumno o left join fetch o.postulante pos left join fetch o.escuela   ");
+            jpaql.append(" left join fetch pos.persona  left join fetch o.planEstudio left join fetch o.itemByCicloActual where 1=1 ");
+        }
+		if (!StringUtils.isNullOrEmpty(alumno.getSearch())) {
+				jpaql.append(" and (TRANSLATE(UPPER(o.postulante.persona.nombre || ' ' || o.postulante.persona.apellidoPaterno || ' ' || o.postulante.persona.apellidoMaterno ), :discriminaTildeMAC, :discriminaTildeMAT) like UPPER(translate(:search, :discriminaTildeMIC, :discriminaTildeMIT)) or (upper(o.codigoCarnet) like :search) )");
+				parametros.putAll(obtenerParametroDiscriminarTilde());	
+	          parametros.put("search", "%" + alumno.getSearch().toUpperCase() + "%");
+	    } else {
+			if (!StringUtils.isNullOrEmpty(alumno.getCodigoCarnet())) {
+				jpaql.append(" and upper(o.codigoCarnet) like :codigoCarnet ");
+				parametros.put("codigoCarnet", "%" + alumno.getCodigoCarnet().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmptyNumeric(alumno.getCreditoAcumulado())) {
+				jpaql.append(" and o.creditoAcumulado = :creditoAcumulado ");
+				parametros.put("creditoAcumulado", alumno.getCreditoAcumulado());
+			}
+			if (!StringUtils.isNullOrEmpty(alumno.getEstadoAlumno())) {
+				jpaql.append(" and upper(o.estadoAlumno) like :estadoAlumno ");
+				parametros.put("estadoAlumno", "%" + alumno.getEstadoAlumno().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(alumno.getFechaCreacion())) {
+				jpaql.append(" and o.fechaCreacion = :fechaCreacion ");
+				parametros.put("fechaCreacion", alumno.getFechaCreacion());
+			}
+			if (!StringUtils.isNullOrEmpty(alumno.getUsuarioCreacion())) {
+				jpaql.append(" and upper(o.usuarioCreacion) like :usuarioCreacion ");
+				parametros.put("usuarioCreacion", "%" + alumno.getUsuarioCreacion().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(alumno.getFechaModificacion())) {
+				jpaql.append(" and o.fechaModificacion = :fechaModificacion ");
+				parametros.put("fechaModificacion", alumno.getFechaModificacion());
+			}
+			if (!StringUtils.isNullOrEmpty(alumno.getUsuarioModificacion())) {
+				jpaql.append(" and upper(o.usuarioModificacion) like :usuarioModificacion ");
+				parametros.put("usuarioModificacion", "%" + alumno.getUsuarioModificacion().toUpperCase() + "%");
+			}
+		}
+        if (!esContador) {
+            jpaql.append(" ORDER BY 1 ");
+        }
+        Query query = createQuery(jpaql.toString(), parametros);
+        return query;
+    }
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.AlumnoDaoLocal#contarListar{entity.getClassName()}(pe.com.edu.siaa.core.model.jpa.seguridad.AlumnoDTO)
+     */
+	@Override
+    public int contarListarAlumno(AlumnoDTO alumno) {
+        int resultado = 0;
+        try {
+            //StringBuilder jpaql = new StringBuilder();
+            Query query = generarQueryListaAlumno(alumno, true);
+            resultado = ((Long) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            resultado = 0;
+        }
+        return resultado;
+    }
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.AlumnoDaoLocal#generarIdAlumno()
+     */
+	 @Override
+    public String generarIdAlumno() {
+        String resultado = "1";
+        Query query = createQuery("select max(o.idAlumno) from Alumno o", null);
+        List<Object> listLong =  query.getResultList();
+        if (listLong != null && listLong.size() > 0 && listLong.get(0) != null)  {
+            Long ultimoIdGenerado = Long.valueOf(listLong.get(0).toString());
+            if (!StringUtils.isNullOrEmpty(ultimoIdGenerado)) {
+                resultado = resultado + ultimoIdGenerado;
+            }
+        }
+        return resultado;
+    }
+   
+}

@@ -1,0 +1,223 @@
+package pe.com.edu.siaa.core.ejb.dao.admision.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.persistence.Query;
+
+import pe.com.edu.siaa.core.ejb.dao.admision.local.CronogramaDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericAcademicoDAOImpl;
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.model.dto.admision.CronogramaDTO;
+import pe.com.edu.siaa.core.model.jpa.admision.Cronograma;
+import pe.com.edu.siaa.core.model.type.CronogramaType;
+import pe.com.edu.siaa.core.model.util.ObjectUtil;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+
+/**
+ * La Class CronogramaDaoImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 19:53:30 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+public class CronogramaDaoImpl extends  GenericAcademicoDAOImpl<String, Cronograma> implements CronogramaDaoLocal  {
+
+	
+	@Override
+	public  Map<String,CronogramaDTO> listarCronogramaMap(List<String> listaIdAnhoSemestre,CronogramaType cronogramaType,Long idEntidadUniversitaria) throws Exception {
+		Map<String,CronogramaDTO> resultado = new HashMap<String, CronogramaDTO>();
+		Map<String, Object> parametros = new HashMap<String, Object>();
+		StringBuilder jpaql = new StringBuilder();
+		boolean ejecutarQuery = false;
+		jpaql.append("from Cronograma o where 1 = 1 ");
+		if (listaIdAnhoSemestre != null && listaIdAnhoSemestre.size() > 0) {
+			ejecutarQuery = true;
+			jpaql.append(" and o.anhoSemestre.idAnhoSemestre in (:listaIdAnhoSemestre) ");
+			parametros.put("listaIdAnhoSemestre", listaIdAnhoSemestre);
+			if (StringUtils.isNotNullOrBlank(idEntidadUniversitaria)) {
+				ejecutarQuery = true;
+				jpaql.append(" and o.entidadUniversitaria.idEntidadUniversitaria =:idEntidadUniversitaria ");
+				parametros.put("idEntidadUniversitaria", idEntidadUniversitaria);
+			}
+			if (StringUtils.isNotNullOrBlank(cronogramaType)) {
+				ejecutarQuery = true;
+				jpaql.append(" and o.codigoCronograma =:codigoCronograma ");
+				parametros.put("codigoCronograma", cronogramaType.getKey());
+			}
+		}
+		jpaql.append(" order by o.tipoCronograma");
+		if (ejecutarQuery) {
+			Query query = createQuery(jpaql.toString(), parametros);
+			List<Cronograma> listaTemp =  query.getResultList();
+			for (Cronograma cronograma : listaTemp) {
+				if (!resultado.containsKey(cronograma.getAnhoSemestre().getIdAnhoSemestre())) {
+					resultado.put(cronograma.getAnhoSemestre().getIdAnhoSemestre(), TransferDataObjectUtil.transferObjetoEntityDTO(cronograma, CronogramaDTO.class) );
+				} 				
+			}
+		}
+		return resultado;
+	}
+	
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.CronogramaDaoLocal#listarCronograma(pe.com.edu.siaa.core.model.jpa.seguridad.Cronograma)
+     */  
+    @Override	 
+    public List<Cronograma> listarCronograma(CronogramaDTO cronograma) {
+        Query query = generarQueryListaCronograma(cronograma, false);
+        query.setFirstResult(cronograma.getStartRow());
+        query.setMaxResults(cronograma.getOffset());
+        return query.getResultList();
+    }   
+   
+    @Override
+	public Cronograma obtenerCronogramaBySemestre(String idAnhoSemestre, Long tipoCronograma,Long codigoCronograma, Long idEntidadUniversitaria) throws Exception {
+		Cronograma resultado = null;
+		Map<String, Object> parametros = new HashMap<String, Object>();
+		StringBuilder jpaql = new StringBuilder();
+		jpaql.append(" from Cronograma o where o.codigoCronograma =:codigoCronograma and o.anhoSemestre.idAnhoSemestre=:idSemestre ");
+		if (StringUtils.isNotNullOrBlank(tipoCronograma)) {
+			jpaql.append(" and o.tipoCronograma=:tipoCronograma ");
+			parametros.put("tipoCronograma", tipoCronograma);
+		}
+		jpaql.append(" and o.entidadUniversitaria.idEntidadUniversitaria=:idEntidadUniversitaria ");
+		parametros.put("idSemestre", idAnhoSemestre);
+		parametros.put("codigoCronograma", codigoCronograma);
+		parametros.put("idEntidadUniversitaria", idEntidadUniversitaria);
+		Query query = createQuery(jpaql.toString(),parametros);
+		List<Cronograma> listaCronograma = query.getResultList();
+		if (listaCronograma != null && listaCronograma.size() > 0) {
+			resultado = listaCronograma.get(0);
+		}
+		return resultado;
+	}
+    /**
+     * Generar query lista Cronograma.
+     *
+     * @param CronogramaDTO el cronograma
+     * @param esContador el es contador
+     * @return the query
+     */
+    private Query generarQueryListaCronograma(CronogramaDTO cronograma, boolean esContador) {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        if (esContador) {
+            jpaql.append(" select count(o.idCronograma) from Cronograma o where 1=1 ");
+        } else {
+            jpaql.append(" select o from Cronograma o where 1=1 ");           
+        }
+        jpaql.append(" and o.anhoSemestre.idAnhoSemestre = :idAnhoSemestre ");
+        parametros.put("idAnhoSemestre", cronograma.getId() + "");
+        
+        jpaql.append(" and o.entidadUniversitaria.idEntidadUniversitaria = :idEntidadUniversitaria ");
+        parametros.put("idEntidadUniversitaria", ObjectUtil.objectToLong(cronograma.getIdEntidadSelect()));
+        
+		if (!StringUtils.isNullOrEmpty(cronograma.getSearch())) {
+	          jpaql.append(" and upper(o.descripcion) like :search ");
+	          parametros.put("search", "%" + cronograma.getSearch().toUpperCase() + "%");
+	    } else {
+			if (!StringUtils.isNullOrEmptyNumeric(cronograma.getTipoCronograma())) {
+				jpaql.append(" and o.tipoCronograma = :tipoCronograma ");
+				parametros.put("tipoCronograma", cronograma.getTipoCronograma());
+			}
+			if (!StringUtils.isNullOrEmpty(cronograma.getDescripcion())) {
+				jpaql.append(" and upper(o.descripcion) like :descripcion ");
+				parametros.put("descripcion", "%" + cronograma.getDescripcion().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmptyNumeric(cronograma.getCodigoCronograma())) {
+				jpaql.append(" and o.codigoCronograma = :codigoCronograma ");
+				parametros.put("codigoCronograma", cronograma.getCodigoCronograma());
+			}
+			if (!StringUtils.isNullOrEmpty(cronograma.getFechaInicio())) {
+				jpaql.append(" and o.fechaInicio = :fechaInicio ");
+				parametros.put("fechaInicio", cronograma.getFechaInicio());
+			}
+			if (!StringUtils.isNullOrEmpty(cronograma.getFechaFin())) {
+				jpaql.append(" and o.fechaFin = :fechaFin ");
+				parametros.put("fechaFin", cronograma.getFechaFin());
+			}
+			if (!StringUtils.isNullOrEmpty(cronograma.getEstado())) {
+				jpaql.append(" and upper(o.estado) like :estado ");
+				parametros.put("estado", "%" + cronograma.getEstado().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(cronograma.getUsuarioCreacion())) {
+				jpaql.append(" and upper(o.usuarioCreacion) like :usuarioCreacion ");
+				parametros.put("usuarioCreacion", "%" + cronograma.getUsuarioCreacion().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(cronograma.getFechaCreacion())) {
+				jpaql.append(" and o.fechaCreacion = :fechaCreacion ");
+				parametros.put("fechaCreacion", cronograma.getFechaCreacion());
+			}
+			if (!StringUtils.isNullOrEmpty(cronograma.getUsuarioModificacion())) {
+				jpaql.append(" and upper(o.usuarioModificacion) like :usuarioModificacion ");
+				parametros.put("usuarioModificacion", "%" + cronograma.getUsuarioModificacion().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(cronograma.getFechaModificacion())) {
+				jpaql.append(" and o.fechaModificacion = :fechaModificacion ");
+				parametros.put("fechaModificacion", cronograma.getFechaModificacion());
+			}
+		}
+        if (!esContador) {
+        	jpaql.append(" order by o.tipoCronograma");
+        }
+        Query query = createQuery(jpaql.toString(), parametros);
+        return query;
+    }
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.CronogramaDaoLocal#contarListar{entity.getClassName()}(pe.com.edu.siaa.core.model.jpa.seguridad.CronogramaDTO)
+     */
+	@Override
+    public int contarListarCronograma(CronogramaDTO cronograma) {
+        int resultado = 0;
+        try {
+            //StringBuilder jpaql = new StringBuilder();
+            Query query = generarQueryListaCronograma(cronograma, true);
+            resultado = ((Long) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            resultado = 0;
+        }
+        return resultado;
+    }
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.CronogramaDaoLocal#generarIdCronograma()
+     */
+	 @Override
+    public String generarIdCronograma() {
+        String resultado = "1";
+        Query query = createQuery("select max(o.idCronograma) from Cronograma o", null);
+        List<Object> listLong =  query.getResultList();
+        if (listLong != null && listLong.size() > 0 && listLong.get(0) != null)  {
+            Long ultimoIdGenerado = Long.valueOf(listLong.get(0).toString());
+            if (!StringUtils.isNullOrEmpty(ultimoIdGenerado)) {
+                resultado = resultado + ultimoIdGenerado;
+            }
+        }
+        return resultado;
+    }
+	 
+	 @Override
+		public String generarCodigoCronograma(String idAnhoSemestre) throws Exception {
+			String resultado = idAnhoSemestre + "00001";
+			 Query query = createQuery("select max(o.idCronograma) from Cronograma o where o.anhoSemestre.idAnhoSemestre =:idAnhoSemestre ",null);
+			 query.setParameter("idAnhoSemestre", idAnhoSemestre);
+			 List<String> listaCodigo = query.getResultList();
+			 if (listaCodigo != null && listaCodigo.size() > 0) {
+				 String ultimoCodigoGenerado = listaCodigo.get(0);
+				 if (StringUtils.isNotNullOrBlank(ultimoCodigoGenerado)) {
+					 long ultimoCodigo = Long.valueOf(ultimoCodigoGenerado.trim());
+					 ultimoCodigo++;
+					 resultado =  "" + ultimoCodigo;
+				 }
+			 }
+			return resultado;
+		}
+   
+}

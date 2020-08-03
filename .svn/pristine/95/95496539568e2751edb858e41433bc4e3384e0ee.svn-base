@@ -1,0 +1,1605 @@
+/*
+ * 
+ */
+package pe.com.edu.siaa.core.ejb.factory;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.swing.JOptionPane;
+
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import pe.com.edu.siaa.core.ejb.service.util.FechaUtil;
+import pe.com.edu.siaa.core.model.dto.pago.CatalogoCuentaDTO;
+import pe.com.edu.siaa.core.model.jpa.admision.AnhoSemestre;
+import pe.com.edu.siaa.core.model.jpa.admision.Escuela;
+import pe.com.edu.siaa.core.model.jpa.common.Item;
+import pe.com.edu.siaa.core.model.jpa.matricula.Alumno;
+import pe.com.edu.siaa.core.model.jpa.pago.CatalogoCuenta;
+import pe.com.edu.siaa.core.model.jpa.pago.Clasificacion;
+import pe.com.edu.siaa.core.model.jpa.pago.ControlPago;
+import pe.com.edu.siaa.core.model.jpa.pago.CuotaConcepto;
+import pe.com.edu.siaa.core.model.jpa.pago.DetControlPago;
+import pe.com.edu.siaa.core.model.jpa.pago.DetPlanPagos;
+import pe.com.edu.siaa.core.model.jpa.pago.Fraccionamiento;
+import pe.com.edu.siaa.core.model.jpa.pago.PlanPagos;
+import pe.com.edu.siaa.core.model.type.FlagConceptoPagoFraccionadoType;
+import pe.com.edu.siaa.core.model.type.FlagConceptoPagoPermaneteType;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+
+
+
+/**
+ * <ul>
+ * <li>Copyright 2012 BUILD SOFT S.A.C - BS. Todos los derechos reservados.</li>
+ * </ul>
+ * 
+ * La Class GenerarInsertPago.
+ *
+ * @author ndavilal.
+ * @version 1.0 , 08/04/2014
+ * @since SIAA 2.0
+ */
+public class GenerarInsertPagoNew   {
+
+/** La lista. */
+private List<ControPagoVO> listaControlPago = new ArrayList<ControPagoVO>();
+
+/** La sql. */
+private StringBuilder sql = new StringBuilder();
+
+/** La logError. */
+private StringBuilder logError = new StringBuilder();
+private StringBuilder logErrorControlPago = new StringBuilder();
+private StringBuilder logErrorExcepcionPagoAlumno = new StringBuilder();
+private StringBuilder logErrorConceptoSemestre = new StringBuilder();
+
+
+private static Map<String,CatalogoCuentaDTO> catalogoCuentaMap = new HashMap<String, CatalogoCuentaDTO>();
+
+private static Map<String,String> pensionFraccionadoMap = new HashMap<String,String>();
+private static Map<String,Integer> pensionFraccionadoNroMap = new HashMap<String,Integer>();
+private static Map<String,String> pensionFraccionadoEquiValenciaMap = new HashMap<String,String>();
+private static Map<Integer,String> semestreHojaMap = new HashMap<Integer,String>();
+private static Map<String,Escuela> escuelaMap = new HashMap<String, Escuela>();
+private static  Map<String,String> escuelaEquivalenciaMap = new HashMap<String, String>();
+private static  Map<Long,Long> catalogoExistenteMap = new HashMap<Long, Long>();
+
+static {
+	catalogoCuentaMap.put("0 MATRICULA", new CatalogoCuentaDTO(1L));
+	catalogoCuentaMap.put("1 PENSION", new CatalogoCuentaDTO(3L));
+	
+	catalogoCuentaMap.put("verano", new CatalogoCuentaDTO(6L));
+	catalogoCuentaMap.put("creditos", new CatalogoCuentaDTO(7L));
+	
+	
+	pensionFraccionadoMap.put("1RA", "1 PENSION");
+	pensionFraccionadoMap.put("2DA", "1 PENSION");
+	pensionFraccionadoMap.put("3RA", "1 PENSION");
+	pensionFraccionadoMap.put("4TO", "1 PENSION");
+	pensionFraccionadoMap.put("5TA", "1 PENSION");
+	
+	pensionFraccionadoNroMap.put("1RA", 1);
+	pensionFraccionadoNroMap.put("2DA", 2);
+	pensionFraccionadoNroMap.put("3RA", 3);
+	pensionFraccionadoNroMap.put("4TO", 4);
+	pensionFraccionadoNroMap.put("5TA", 5);
+	
+	pensionFraccionadoEquiValenciaMap.put("4TA", "4TO");
+	pensionFraccionadoEquiValenciaMap.put("4TA", "4TO");
+	pensionFraccionadoEquiValenciaMap.put("5TO", "5TA");
+	pensionFraccionadoEquiValenciaMap.put("3ER", "3RA");
+	pensionFraccionadoEquiValenciaMap.put("1ERA", "1RA");
+	pensionFraccionadoEquiValenciaMap.put("1 MATRICULA", "1 MATRICULA");
+	
+	pensionFraccionadoEquiValenciaMap.put("3ERA", "3RA");
+	pensionFraccionadoEquiValenciaMap.put("3ERA", "3RA");
+	pensionFraccionadoEquiValenciaMap.put("2 DA", "2DA");
+	
+	pensionFraccionadoEquiValenciaMap.put("0MATRICULA", "0 MATRICULA");
+	
+	pensionFraccionadoEquiValenciaMap.put("INCOPORACION", "0 MATRICULA");
+	
+	pensionFraccionadoEquiValenciaMap.put("0VERANO", "verano");
+	pensionFraccionadoEquiValenciaMap.put("CREDITOS", "creditos");
+	pensionFraccionadoEquiValenciaMap.put("VERANO", "verano");
+	pensionFraccionadoEquiValenciaMap.put("x cred", "creditos");
+	pensionFraccionadoEquiValenciaMap.put("xcred", "creditos");
+
+	
+	semestreHojaMap.put(0, "20162");
+	semestreHojaMap.put(1, "20161");
+	semestreHojaMap.put(2, "20152");
+	semestreHojaMap.put(3, "20151");
+	
+	Escuela escuela = new Escuela();escuela.setIdEscuela("002");
+	escuelaMap.put("002", escuela);
+	escuela = new Escuela();escuela.setIdEscuela("001");
+	escuelaMap.put("001", escuela);
+	escuela = new Escuela();escuela.setIdEscuela("003");
+	escuelaMap.put("003", escuela);
+	escuela = new Escuela();escuela.setIdEscuela("004");
+	escuelaMap.put("004", escuela);
+	escuela = new Escuela();
+	
+	escuelaEquivalenciaMap.put("DERECHO", "003");
+	escuelaEquivalenciaMap.put("DERE", "003");
+	escuelaEquivalenciaMap.put("ADMIN", "001");
+	escuelaEquivalenciaMap.put("CONT", "002");
+	escuelaEquivalenciaMap.put("ING", "004");
+	
+	escuelaEquivalenciaMap.put("0001", "001");
+	escuelaEquivalenciaMap.put("0002", "002");
+	escuelaEquivalenciaMap.put("0003", "003");
+	escuelaEquivalenciaMap.put("0004", "004");
+	
+	escuelaEquivalenciaMap.put("ADMIN", "001");
+	escuelaEquivalenciaMap.put("ADM", "001");
+	escuelaEquivalenciaMap.put("ADMINISTRACION", "001");
+	escuelaEquivalenciaMap.put("ADMNISTRACION", "001");
+	escuelaEquivalenciaMap.put("CONTABILIDAD", "002");
+	escuelaEquivalenciaMap.put("Contabilidad", "002");
+	escuelaEquivalenciaMap.put("DERECHO", "003");
+	escuelaEquivalenciaMap.put("I", "004");
+	escuelaEquivalenciaMap.put("INGENIERIA", "004");
+	escuelaEquivalenciaMap.put("INGENIERIA", "004");
+	escuelaEquivalenciaMap.put("SISTEMAS", "004");
+	
+	escuelaEquivalenciaMap.put("NOCHE", "002");
+	
+	catalogoExistenteMap.put(1L, 1L);
+	catalogoExistenteMap.put(2L, 2L);
+	catalogoExistenteMap.put(3L, 3L);
+	
+	/**
+	 * 1;"Administración de Negocios"
+2;"Ciencias Contables y Financieras"
+3;"Derecho y Ciencias Políticas"
+4;"Ingeniería de Sistemas"
+
+	 * */
+}
+
+/**
+ * Instancia un nuevo generar diccionario datos.
+ */
+public GenerarInsertPagoNew() {
+	
+}
+
+/**
+ * El metodo principal.
+ *
+ * @param args los argumentos
+ * @throws Exception the exception
+ */
+public static void main(String[] args) throws Exception {
+	GenerarInsertPagoNew generarInsertPago =  new GenerarInsertPagoNew();
+	String rutaArchivo = "F:\\pag\\CONTROL_DE_PAGO_2015_-_2016_(7).xlsx";
+	try {
+		generarInsertPago.generarInsert(rutaArchivo,0,semestreHojaMap.get(0));
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+	try {
+		generarInsertPago.generarInsert(rutaArchivo,1,semestreHojaMap.get(1));
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+	try {
+		generarInsertPago.generarInsert(rutaArchivo,2,semestreHojaMap.get(2));
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+	try {
+		generarInsertPago.generarInsert(rutaArchivo,3,semestreHojaMap.get(3));
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+	rutaArchivo = "F:\\pag\\CONTROL_DE_PAGOS_2017_-_I_(20).xlsx";
+	try {
+		semestreHojaMap.put(0, "20171");
+		generarInsertPago.generarInsert(rutaArchivo,0,"20171");
+	} catch (Exception e) {
+		e.printStackTrace();
+	}	
+	JOptionPane.showMessageDialog(null, "Termino la migracion genero los archivos sql :  " + new Date());
+}
+
+/**
+ * Obtener monto.
+ *
+ * @param monto el monto
+ * @return the big decimal
+ */
+private BigDecimal obtenerMonto(String monto) {
+	try {
+		return new BigDecimal(monto.trim());
+	} catch (Exception e) {
+		return BigDecimal.valueOf(0);
+	}
+}
+
+
+
+private BigDecimal sumaPensionUniversitaria(Map<String,BigDecimal> montoConcetoSemestreMap) {
+	BigDecimal resultado = new BigDecimal("0");
+	for (Map.Entry<String,String> objPens : pensionFraccionadoMap.entrySet()) {
+		if (montoConcetoSemestreMap.containsKey(objPens.getKey())) {
+			resultado = resultado.add(montoConcetoSemestreMap.get(objPens.getKey()));
+		}
+	}
+	return resultado;
+}
+private boolean isPensionUniversitaria(Map<String,BigDecimal> montoConcetoSemestreMap, String keyConcepto) {
+	boolean resultado = false;
+	for (Map.Entry<String,String> objPens : pensionFraccionadoMap.entrySet()) {
+		if (montoConcetoSemestreMap.containsKey(objPens.getKey()) && objPens.getValue().equalsIgnoreCase(keyConcepto)) {
+			resultado = true;
+			break;
+		}
+	}
+	return resultado;
+}
+/**
+ * Generar insert.
+ */
+public void generarInsert(String rutaArchivo,Integer hoja,String semestre ) {
+	listaControlPago = new ArrayList<ControPagoVO>();
+	sql = new StringBuilder();
+	logError = new StringBuilder();
+	logErrorControlPago = new StringBuilder();
+	logErrorExcepcionPagoAlumno = new StringBuilder();
+			
+	Map<String,Clasificacion> clasificacionMap = new HashMap<String, Clasificacion>();
+	Clasificacion clasificacion = new Clasificacion();
+	clasificacion.setIdClasificacion(1L);
+	clasificacion.setDescripcion("Pago Alumno");
+	clasificacion.setAbreviatura("Pago Alum");
+	clasificacion.setItemByTipoClasificacion(new Item(1L));
+	clasificacionMap.put("1", clasificacion);
+	Map<String,CatalogoCuenta> catalogoCuentaMap = new HashMap<String, CatalogoCuenta>();
+	Map<String,CatalogoCuenta> catalogoCuentaTempMap = new HashMap<String, CatalogoCuenta>();
+
+	CatalogoCuenta value = new CatalogoCuenta();value.setIdCatalogoCuenta(1L);value.setCuenta("Inscripcion");value.setNroCuenta("001");
+	value.setClasificacion(clasificacionMap.get("1"));
+	//catalogoCuentaMap.put("1", value);
+	//catalogoCuentaTempMap.put("INSCRIPCION", value);
+	
+	//catalogoCuentaMontoTentativoMap.put("1", BigDecimal.valueOf(200.00));
+		
+	value = new CatalogoCuenta();value.setIdCatalogoCuenta(2L);value.setCuenta("Matricula");value.setNroCuenta("002");
+	value.setClasificacion(clasificacionMap.get("1"));catalogoCuentaMap.put("2", value);catalogoCuentaTempMap.put("0 MATRICULA", value);
+	//catalogoCuentaMontoTentativoMap.put("2", BigDecimal.valueOf(150.00));
+		
+	value = new CatalogoCuenta();value.setIdCatalogoCuenta(3L);value.setCuenta("Pension Universitaria");value.setNroCuenta("003");
+	value.setClasificacion(clasificacionMap.get("1"));catalogoCuentaMap.put("3", value);catalogoCuentaTempMap.put("1 PENSION", value);
+	//catalogoCuentaMontoTentativoMap.put("3", BigDecimal.valueOf(1250.00));
+	
+	value = new CatalogoCuenta();value.setIdCatalogoCuenta(4L);value.setCuenta("Convalidacion");value.setNroCuenta("004");
+	value.setClasificacion(clasificacionMap.get("1"));catalogoCuentaMap.put("4", value);catalogoCuentaTempMap.put("convalidacion", value);
+	
+	value = new CatalogoCuenta();value.setIdCatalogoCuenta(5L);value.setCuenta("traslado");value.setNroCuenta("005");
+	value.setClasificacion(clasificacionMap.get("1"));catalogoCuentaMap.put("5", value);catalogoCuentaTempMap.put("traslado", value);
+	
+	value = new CatalogoCuenta();value.setIdCatalogoCuenta(6L);value.setCuenta("verano");value.setNroCuenta("006");
+	value.setClasificacion(clasificacionMap.get("1"));catalogoCuentaMap.put("6", value);catalogoCuentaTempMap.put("verano", value);
+	
+	
+	value = new CatalogoCuenta();value.setIdCatalogoCuenta(7L);value.setCuenta("creditos");value.setNroCuenta("007");
+	value.setClasificacion(clasificacionMap.get("1"));catalogoCuentaMap.put("7", value);catalogoCuentaTempMap.put("creditos", value);
+	
+
+			
+	//catalogoCuentaMontoTentativoMap.put("3", BigDecimal.valueOf(1250.00));
+			
+	
+	Map<String,AnhoSemestre> semestreMap = new HashMap<String, AnhoSemestre>();
+	
+	
+	Map<String,CuotaConcepto> cuotaConceptoMap = new HashMap<String, CuotaConcepto>();
+	Map<String,PlanPagos> planPagosMap = new HashMap<String, PlanPagos>();
+	Map<String,DetPlanPagos> detPlanPagosMap = new HashMap<String, DetPlanPagos>();
+	Map<String,Fraccionamiento> fracionarMap = new HashMap<String, Fraccionamiento>();
+	
+	Map<String,ControlPago> controlPagoMap = new HashMap<String, ControlPago>();
+	Map<String,DetControlPago> detControlPagoMap = new HashMap<String, DetControlPago>();
+	Map<String,List<DetControlPago>> detControlPagoListMap = new HashMap<String, List<DetControlPago>>();
+	
+	List<XSSFRow> cellDataListControlPago = new ArrayList<XSSFRow>();
+	List<XSSFRow> cellDataListExcepcionAlumno = new ArrayList<XSSFRow>();
+	List<XSSFRow> cellDataListConceptoPorAlumno = new ArrayList<XSSFRow>();
+	try {
+		//voy a cambiar el codigo para que lea el excel las hojas que yo quiero
+		//String rutaArchivo = "F:\\pag\\CONTROL_DE_PAGO_2015_-_2016_(7).xlsx";
+		FileInputStream fileInputStream = new FileInputStream(rutaArchivo);
+		XSSFWorkbook workBook = new XSSFWorkbook(fileInputStream);
+		cellDataListControlPago = obtenerDatosDelExcel(workBook,hoja);
+		//cellDataListExcepcionAlumno = obtenerDatosDelExcel(workBook,1);
+		//cellDataListConceptoPorAlumno = obtenerDatosDelExcel(workBook,2);
+	} catch (Exception e) {
+		e.printStackTrace();
+	}	
+	int cantidadErrorGenerado = 0;
+	//procesamiento
+	//orden de las celdas de la hoja de control de pagos
+	listaControlPago = pasearDatosPagoVO(cellDataListControlPago,hoja);
+	Map<String,ExcepcionAlumnoPagoVO> listaExcepcionAlumnoMap = pasearDatosExepcionAlumoVO(cellDataListExcepcionAlumno);
+	Map<String,ConceptoPorEscuelaSemestreVO> listaConceptoPorEscuelaSemestreMap = pasearDatosConceptoPorEscuelaSemestreVO(cellDataListConceptoPorAlumno);
+	Map<String,BigDecimal> montoConcetoSemestreMap = new HashMap<String,BigDecimal>();
+	
+	Map<String,List<String>> alumnoEscuelaMap = new HashMap<String,List<String>>();
+	for (ControPagoVO objPago : listaControlPago) {
+		String keyExcepcionAlumno = objPago.getSemestre() + objPago.getCodAlumno() + objPago.getKeyConcepto();
+		if (StringUtils.isNullOrEmptyNumeriCero(objPago.getCuota())) {
+			if (!listaExcepcionAlumnoMap.containsKey(keyExcepcionAlumno)) {
+				ExcepcionAlumnoPagoVO excepcionAlumnoPagoVO = new ExcepcionAlumnoPagoVO();
+				excepcionAlumnoPagoVO.setCodigoAlumno(objPago.getCodAlumno());
+				excepcionAlumnoPagoVO.setSemestre(objPago.getSemestre());
+				excepcionAlumnoPagoVO.setConcepto(objPago.getKeyConcepto());
+				excepcionAlumnoPagoVO.setMonto(objPago.getCuota());
+				listaExcepcionAlumnoMap.put(keyExcepcionAlumno, excepcionAlumnoPagoVO);
+			}
+		}
+	}
+	
+	for (ControPagoVO objPago : listaControlPago) {
+		if (StringUtils.isNullOrEmptyNumeriCero(objPago.getCuota())) {
+			cantidadErrorGenerado++;
+			logError.append("ERROR(" + cantidadErrorGenerado+ ") cuota==>" + objPago.toString()  + "\n");
+		} else {
+			String keyConcepto = objPago.getKeyConcepto();
+			if (!montoConcetoSemestreMap.containsKey(keyConcepto)) {
+				montoConcetoSemestreMap.put(keyConcepto, new BigDecimal(objPago.getCuota()));
+			}
+		}
+		String keyEscuelaALumno = objPago.getCodAlumno();
+		if (!alumnoEscuelaMap.containsKey(keyEscuelaALumno)) {
+			List<String> valueList = new ArrayList<String>();
+			String keyCarrera = escuelaEquivalenciaMap.get(objPago.getCarrera().trim());
+			valueList.add(keyCarrera);
+			alumnoEscuelaMap.put(keyEscuelaALumno, valueList);
+		} else {
+			List<String> valueList = alumnoEscuelaMap.get(keyEscuelaALumno);
+			String keyCarrera = escuelaEquivalenciaMap.get(objPago.getCarrera().trim());
+			if (!valueList.contains(keyCarrera)){
+				valueList.add(keyCarrera);
+			}
+		}
+		
+	}
+	for (Map.Entry<String, List<String>> dataEscuela : alumnoEscuelaMap.entrySet()) {
+		if (dataEscuela.getValue().size() > 1) {
+			cantidadErrorGenerado++;
+			logError.append("ERROR(" + cantidadErrorGenerado + ").ESCUELA_MAS codigoALumno==> " + dataEscuela.getKey() +" ==> " + dataEscuela.getValue().toString() + "\n");
+		}
+		
+	}
+	
+	for (Map.Entry<String, Escuela> objEscuelaMap : escuelaMap.entrySet()) {
+		for (Map.Entry<String, CatalogoCuenta> objMap : catalogoCuentaTempMap.entrySet()) {
+			boolean isContieneConcepto = false;
+			if (montoConcetoSemestreMap.containsKey(objMap.getKey())) {
+				isContieneConcepto = true;
+			} else {
+				isContieneConcepto = isPensionUniversitaria(montoConcetoSemestreMap,objMap.getKey());
+			}
+			if (isContieneConcepto) {
+				String keyConcepto =  semestre + objEscuelaMap.getValue().getIdEscuela() + objMap.getKey();
+				ConceptoPorEscuelaSemestreVO valueConcepto = new ConceptoPorEscuelaSemestreVO(); 
+				valueConcepto.setCarrera(objEscuelaMap.getValue().getIdEscuela() );
+				valueConcepto.setSemestre(semestre);
+				valueConcepto.setConcepto(objMap.getValue().getIdCatalogoCuenta() + "");
+				if (objMap.getValue().getIdCatalogoCuenta().equals(3L)) {
+					valueConcepto.setNroFraccion("5");
+					valueConcepto.setMonto(sumaPensionUniversitaria(montoConcetoSemestreMap) + "");
+				} else {
+					valueConcepto.setNroFraccion("0");
+					valueConcepto.setMonto(montoConcetoSemestreMap.get(objMap.getKey()) + "");
+				}
+				listaConceptoPorEscuelaSemestreMap.put(keyConcepto, valueConcepto);
+			}
+			
+		}
+	}
+	
+	CollectionUtil.ordenador(false, listaControlPago, "codAlumno");
+	char c = '"';
+	int generarCodigo = 1;
+	
+	for (ControPagoVO objPago : listaControlPago) {
+		if (objPago.getSemestre() != null) {
+			AnhoSemestre anhoSemestre = new AnhoSemestre();
+			//anhoSemestre.setIdAnhoSemestre(obtenerIdSemestre(objPago.getSemestre().trim()));
+			anhoSemestre.setIdAnhoSemestre(objPago.getSemestre().trim());
+			semestreMap.put(objPago.getSemestre().trim(),anhoSemestre) ;
+		}
+		if (StringUtils.isNotNullOrBlank(objPago.getCodAlumno()) && StringUtils.isNotNullOrBlank(objPago.getSemestre())) {
+			String key = objPago.getCodAlumno() + objPago.getSemestre().trim() ;
+			if (!planPagosMap.containsKey(key)) {
+				PlanPagos planPagos = new PlanPagos();
+				Alumno alumno = new Alumno();
+				alumno.setCodigoCarnet(objPago.getCodAlumno().trim());
+				planPagos.setAlumno(alumno);
+				planPagos.setAnhoSemestre(semestreMap.get(objPago.getSemestre().trim()));
+				planPagos.setFechaCreacion(new Date());
+				planPagos.setUsuarioCreacion("migracion");
+				planPagos.setIdPlanPagos(objPago.getCodAlumno() + planPagos.getAnhoSemestre().getIdAnhoSemestre());
+				planPagosMap.put(key, planPagos);
+			}
+		} else {
+			cantidadErrorGenerado++;
+			logError.append("ERROR(" + cantidadErrorGenerado + ") Generar PlanPagos " + objPago.toString() + "\n");
+		}
+	}
+	generarCodigo = 1;
+	//llenando cuota concepto
+	Map<String,AnhoSemestre> semestreResulMap = new HashMap<String, AnhoSemestre>();
+	for (Map.Entry<String, AnhoSemestre> valueMap : semestreMap.entrySet()) {
+		semestreResulMap.put(valueMap.getValue().getIdAnhoSemestre(), valueMap.getValue());
+	}
+	Map<String,Integer> cuotaConceptoGenerarCodigoMap = new HashMap<String, Integer>();
+	for (Map.Entry<String, AnhoSemestre> semestreValueMap : semestreResulMap.entrySet()) {
+		for (Map.Entry<String, Escuela> valueEscMap  : escuelaMap.entrySet()) {
+			for (Map.Entry<String, CatalogoCuenta> valueCataMap : catalogoCuentaTempMap.entrySet()) {
+				String keyCuotaConceptoExcel = semestreValueMap.getKey() +  valueEscMap.getKey() + valueCataMap.getKey()  ;
+				if (listaConceptoPorEscuelaSemestreMap.containsKey(keyCuotaConceptoExcel)) {
+					ConceptoPorEscuelaSemestreVO conceptoPorEscuelaSemestreVO = listaConceptoPorEscuelaSemestreMap.get(keyCuotaConceptoExcel) ;
+					CuotaConcepto cuotaConcepto = new CuotaConcepto();
+					cuotaConcepto.setAnhoSemestre(semestreValueMap.getValue());
+					cuotaConcepto.setCatalogoCuenta(valueCataMap.getValue());
+					cuotaConcepto.setEscuela(valueEscMap.getValue());
+					cuotaConcepto.setFechaCreacion(new Date());
+					cuotaConcepto.setFechaTentativa(new Date());
+					//cuotaConcepto.setMonto(catalogoCuentaMontoTentativoMap.get(valueCataMap.getValue().getIdCatalogoCuenta() + ""));
+					cuotaConcepto.setMonto(new BigDecimal(conceptoPorEscuelaSemestreVO.getMonto()));
+					cuotaConcepto.setPermanente(FlagConceptoPagoPermaneteType.SI.getKey());
+					
+					if (conceptoPorEscuelaSemestreVO.getNroFraccion() != null && !conceptoPorEscuelaSemestreVO.getNroFraccion().equals("")) {
+						Double nroMaxFraccionamiento = new Double(conceptoPorEscuelaSemestreVO.getNroFraccion());
+						cuotaConcepto.setNroMinFraccionamiento(1);
+						cuotaConcepto.setNroMaxFraccionamiento(nroMaxFraccionamiento.intValue());
+					}
+					
+					Integer codigoGenerado = cuotaConceptoGenerarCodigoMap.get(semestreValueMap.getValue().getIdAnhoSemestre());
+					if (codigoGenerado == null) {
+						codigoGenerado = Integer.parseInt(semestreValueMap.getValue().getIdAnhoSemestre() + "001");
+					} else {
+						codigoGenerado++;
+					}
+					cuotaConceptoGenerarCodigoMap.put(semestreValueMap.getValue().getIdAnhoSemestre(), codigoGenerado);
+					cuotaConcepto.setIdCuotaConcepto("" + codigoGenerado);	
+					String key = semestreValueMap.getValue().getIdAnhoSemestre() + valueEscMap.getValue().getIdEscuela() + valueCataMap.getValue().getIdCatalogoCuenta();
+					cuotaConceptoMap.put(key, cuotaConcepto);
+				} else {
+					System.out.println(" Error El concepto que desea generar no esta en el excel " + keyCuotaConceptoExcel + " ==> " +  valueCataMap.getValue().getCuenta());
+				}
+				
+			}
+		}
+	}
+	//generando detalle de plan pagos
+	generarCodigo = 1;
+	Map<String,BigDecimal> detPlanPagosoGenerarCodigoMap = new HashMap<String, BigDecimal>();
+	Map<String,BigDecimal> fraccionarGenerarCodigoMap = new HashMap<String, BigDecimal>();
+	for (ControPagoVO objPago : listaControlPago) {
+		if (StringUtils.isNullOrEmptyNumeriCero(objPago.getMonto()) || !StringUtils.isNotNullOrBlank(objPago.getKeyConcepto()) ) {//TODO:VER MAS CONCEPTOS
+			continue;
+		}
+		if (StringUtils.isNotNullOrBlank(objPago.getCodAlumno()) && StringUtils.isNotNullOrBlank(objPago.getSemestre()) && objPago.getCarrera() != null) {
+			String keyPlan = objPago.getCodAlumno() + objPago.getSemestre().trim() ;
+			String keySemestre = semestreMap.get(objPago.getSemestre().trim()).getIdAnhoSemestre();
+			String keyEscuela = "";
+			if (escuelaEquivalenciaMap.containsKey(objPago.getCarrera().trim())) {
+				keyEscuela = escuelaEquivalenciaMap.get(objPago.getCarrera().trim());
+			} else {
+				cantidadErrorGenerado++;
+				logError.append("ERROR(" + cantidadErrorGenerado+ ") No se Encontro Escuela : " + objPago.toString() + " \n");
+			}
+			String key = objPago.getCodAlumno() + keySemestre + keyEscuela;
+			boolean isFraccionado = pensionFraccionadoMap.containsKey(objPago.getKeyConcepto());
+			
+			if (!isFraccionado) {
+				if (catalogoCuentaTempMap.get(objPago.getKeyConcepto()) == null) {
+					System.out.println("ayuda");
+				}
+				String keyConceptoPago = catalogoCuentaTempMap.get(objPago.getKeyConcepto()).getIdCatalogoCuenta() + "";
+				key = key + keyConceptoPago;
+				String keyCuotaConcepto = keySemestre + keyEscuela + catalogoCuentaMap.get(keyConceptoPago).getIdCatalogoCuenta();
+				if (!detPlanPagosMap.containsKey(key)) {
+					DetPlanPagos detPlanPagos = new DetPlanPagos();
+					if (cuotaConceptoMap.get(keyCuotaConcepto) == null) {
+						//System.out.println("ayuda");
+						cantidadErrorGenerado++;
+						logError.append("ERROR(" + cantidadErrorGenerado+ ").HELP.ESFRACCIONADO(" + isFraccionado + ") NULL PLAN PAGOS keyCuotaConcepto ==> " + keyCuotaConcepto + ": " + objPago.toString() + " \n");
+					}
+					detPlanPagos.setCuotaConcepto(cuotaConceptoMap.get(keyCuotaConcepto));
+					detPlanPagos.setFechaVencimiento(new Date());
+					
+					String keyExcepcionAlumno = keySemestre + objPago.getCodAlumno() + catalogoCuentaMap.get(keyConceptoPago).getCuenta().toUpperCase();
+					ExcepcionAlumnoPagoVO  excepcionAlumnoPagoVO = listaExcepcionAlumnoMap.get(keyExcepcionAlumno);
+					
+					//se detecto excepcion de conceptos
+					if (excepcionAlumnoPagoVO != null && excepcionAlumnoPagoVO.getMonto() != null && !excepcionAlumnoPagoVO.getMonto().equals("") && excepcionAlumnoPagoVO.getFlagConvenioFinalPaga().equals("NO")) {
+						detPlanPagos.setCuota(new BigDecimal(excepcionAlumnoPagoVO.getMonto()));
+						detPlanPagos.setFlagFraccionado(FlagConceptoPagoFraccionadoType.NO.getKey());
+					} else {
+						detPlanPagos.setCuota(detPlanPagos.getCuotaConcepto().getMonto());
+						detPlanPagos.setFlagFraccionado(FlagConceptoPagoFraccionadoType.NO.getKey());
+					}
+					
+					detPlanPagos.setPlanPagos(planPagosMap.get(keyPlan));
+					BigDecimal codigoGenerado = detPlanPagosoGenerarCodigoMap.get(detPlanPagos.getPlanPagos().getIdPlanPagos());
+					if (codigoGenerado == null) {
+						codigoGenerado = new BigDecimal(detPlanPagos.getPlanPagos().getIdPlanPagos() + "001");
+					} else {
+						codigoGenerado = codigoGenerado.add(BigDecimal.ONE);
+					}
+					detPlanPagosoGenerarCodigoMap.put(detPlanPagos.getPlanPagos().getIdPlanPagos(), codigoGenerado);
+					detPlanPagos.setIdDetPlanPagos(codigoGenerado.toString());
+					detPlanPagosMap.put(key, detPlanPagos);
+				}
+			}			
+			key = objPago.getCodAlumno() + keySemestre + keyEscuela;
+			//generando fraccionamiento
+			if (isFraccionado) { //concepto primera cutoa
+				String keyConcepto = "3";
+				key = key + keyConcepto;
+				String keyCuotaConcepto = keySemestre + keyEscuela + catalogoCuentaMap.get(keyConcepto).getIdCatalogoCuenta();
+				if (!detPlanPagosMap.containsKey(key)) {
+					DetPlanPagos detPlanPagos = new DetPlanPagos();
+					if (cuotaConceptoMap.get(keyCuotaConcepto) == null) {
+						cantidadErrorGenerado++;
+						logError.append("ERROR(" + cantidadErrorGenerado+ ").HELP.ESFRACCIONADO(" + isFraccionado + ") NULL PLAN PAGOS keyCuotaConcepto ==> " + keyCuotaConcepto + ": " + objPago.toString() + " \n");
+					}
+					detPlanPagos.setCuotaConcepto(cuotaConceptoMap.get(keyCuotaConcepto));
+					detPlanPagos.setFechaVencimiento(new Date());
+					
+					String keyExcepcionAlumno = keySemestre + objPago.getCodAlumno() + catalogoCuentaMap.get(keyConcepto).getCuenta().toUpperCase();
+					ExcepcionAlumnoPagoVO  excepcionAlumnoPagoVO = listaExcepcionAlumnoMap.get(keyExcepcionAlumno);
+					double numeroFraccionamiento = 5;
+					//se detecto excepcion de conceptos
+					if (excepcionAlumnoPagoVO != null && excepcionAlumnoPagoVO.getMonto() != null && !excepcionAlumnoPagoVO.getMonto().equals("") && excepcionAlumnoPagoVO.getFlagConvenioFinalPaga().equals("NO")) {
+						detPlanPagos.setCuota(new BigDecimal(excepcionAlumnoPagoVO.getMonto()));
+						detPlanPagos.setFlagFraccionado(FlagConceptoPagoFraccionadoType.SI.getKey());
+						if (excepcionAlumnoPagoVO.getNroFraccion() != null && !excepcionAlumnoPagoVO.getNroFraccion().equals("")) {
+							numeroFraccionamiento = Double.parseDouble(excepcionAlumnoPagoVO.getNroFraccion());
+						}
+					} else {
+						detPlanPagos.setCuota(detPlanPagos.getCuotaConcepto().getMonto());//TODO:ver si es real
+						detPlanPagos.setFlagFraccionado(FlagConceptoPagoFraccionadoType.SI.getKey());
+					}
+					
+					detPlanPagos.setMontoResta(new BigDecimal("0.0"));
+					detPlanPagos.setPlanPagos(planPagosMap.get(keyPlan));
+					BigDecimal codigoGenerado = detPlanPagosoGenerarCodigoMap.get(detPlanPagos.getPlanPagos().getIdPlanPagos());
+					if (codigoGenerado == null) {
+						codigoGenerado = new BigDecimal(detPlanPagos.getPlanPagos().getIdPlanPagos() + "001");
+					} else {
+						codigoGenerado = codigoGenerado.add(BigDecimal.ONE);
+					}
+					detPlanPagosoGenerarCodigoMap.put(detPlanPagos.getPlanPagos().getIdPlanPagos(), codigoGenerado);
+					detPlanPagos.setIdDetPlanPagos(codigoGenerado + "");
+					detPlanPagosMap.put(key, detPlanPagos);
+					
+					for (int j = 1; j <= numeroFraccionamiento; j++) {
+						String keyFraccionado = key + keyCuotaConcepto + j;
+						Fraccionamiento fraccionamiento = new Fraccionamiento();
+						if (detPlanPagos.getCuota().longValue() > 0) {
+							fraccionamiento.setCuotaFracionada(detPlanPagos.getCuota().divide(new BigDecimal(numeroFraccionamiento)));
+						} else {
+							fraccionamiento.setCuotaFracionada(detPlanPagos.getCuota());
+						}
+						fraccionamiento.setDetPlanPagos(detPlanPagos);
+						fraccionamiento.setNro("" + j);
+						BigDecimal codigoGeneradoFrac = fraccionarGenerarCodigoMap.get(detPlanPagos.getIdDetPlanPagos());
+						if (codigoGeneradoFrac == null) {
+							codigoGeneradoFrac = new BigDecimal(detPlanPagos.getIdDetPlanPagos() + "01");
+						} else {
+							codigoGeneradoFrac = codigoGeneradoFrac.add(BigDecimal.ONE);
+						}						
+						fraccionarGenerarCodigoMap.put(detPlanPagos.getIdDetPlanPagos(), codigoGeneradoFrac);
+						fraccionamiento.setIdFraccionamiento(codigoGeneradoFrac + "");
+						fracionarMap.put(keyFraccionado, fraccionamiento);
+					}
+				} 
+				key = objPago.getCodAlumno() + keySemestre + keyEscuela;
+			}
+		}
+	}
+	//generando control de pago
+	generarCodigo  = 1;
+	Map<String,BigDecimal> controlPagoGenerarCodigoMap = new HashMap<String, BigDecimal>();
+	for (ControPagoVO objPago : listaControlPago) {
+		if (StringUtils.isNullOrEmptyNumeriCero(objPago.getMonto()) || !StringUtils.isNotNullOrBlank(objPago.getKeyConcepto()) ) {//TODO:VER MAS CONCEPTOS
+			continue;
+		}
+		if (StringUtils.isNotNullOrBlank(objPago.getCodAlumno()) && StringUtils.isNotNullOrBlank(objPago.getSemestre())) {
+			String key = objPago.getCodAlumno() + objPago.getSemestre().trim() + objPago.getFechaPago() +  objPago.getNroDocSunat();
+			if (!controlPagoMap.containsKey(key)) {
+				ControlPago controlPago = new ControlPago();
+				Alumno alumno = new Alumno();
+				alumno.setCodigoCarnet(objPago.getCodAlumno().trim());
+				controlPago.setAlumno(alumno);
+				controlPago.setAnhoSemestre(semestreMap.get(objPago.getSemestre().trim()));
+				controlPago.setFechaCreacion(new Date());
+				if (!StringUtils.isNullOrEmptyNumeriCero(objPago.getFechaPago() != null)) {
+					controlPago.setFechaPago(new Date(Long.valueOf(objPago.getFechaPago())));//TODDO:CALCULAR
+				} else {
+					controlPago.setFechaPago(new Date());//TODDO:CALCULAR
+				}
+				controlPago.setUsuarioCreacion("sistema");
+				controlPago.setMontoTotal(BigDecimal.valueOf(0.0));
+				controlPago.setNroDoc(objPago.getNroDocSunat());
+				BigDecimal codigoGenerado = controlPagoGenerarCodigoMap.get(controlPago.getAnhoSemestre().getIdAnhoSemestre());
+				if (codigoGenerado == null) {
+					codigoGenerado = new BigDecimal(controlPago.getAnhoSemestre().getIdAnhoSemestre() + "0000001");
+				} else {
+					codigoGenerado = codigoGenerado.add(BigDecimal.ONE);
+				}
+				controlPagoGenerarCodigoMap.put(controlPago.getAnhoSemestre().getIdAnhoSemestre(), codigoGenerado);
+				controlPago.setIdControlPago(codigoGenerado + "");
+				controlPagoMap.put(key, controlPago);
+			}
+		}
+	}
+	//generando detalle control de pago
+	generarCodigo  = 1;
+	Map<String,List<DetControlPago>> detControlPagoConceptoMap = new HashMap<String, List<DetControlPago>>();
+	Map<String,BigDecimal> detControlPagoGenerarCodigoMap = new HashMap<String, BigDecimal>();
+	Map<String,BigDecimal> detControlPagoGenerarKeyMap = new HashMap<String, BigDecimal>();
+	for (ControPagoVO objPago : listaControlPago) {	
+		if (StringUtils.isNullOrEmptyNumeric(objPago.getMonto()) || !StringUtils.isNotNullOrBlank(objPago.getKeyConcepto()) ) {//TODO:VER MAS CONCEPTOS
+			continue;
+		}
+		if (StringUtils.isNotNullOrBlank(objPago.getCodAlumno()) && StringUtils.isNotNullOrBlank(objPago.getSemestre())) {
+			String keyControlPago = objPago.getCodAlumno() + objPago.getSemestre().trim() + objPago.getFechaPago() +  objPago.getNroDocSunat();
+			String key = objPago.getCodAlumno() + objPago.getSemestre().trim() + objPago.getFechaPago() +  objPago.getNroDocSunat();
+			String keySemestre = semestreMap.get(objPago.getSemestre().trim()).getIdAnhoSemestre();
+			String keyEscuela = "";
+			if (escuelaEquivalenciaMap.containsKey(objPago.getCarrera().trim())) {
+				keyEscuela = escuelaEquivalenciaMap.get(objPago.getCarrera().trim());
+			} else {
+				cantidadErrorGenerado++;
+				logError.append("ERROR(" + cantidadErrorGenerado+ ") Control Pagos No se Encontro Escuela : " + objPago.toString() + " \n");
+			}
+			String keyDetPlanPagos = objPago.getCodAlumno() + keySemestre + keyEscuela;
+			boolean isFraccionado = pensionFraccionadoMap.containsKey(objPago.getKeyConcepto());
+			//llenado inscripcion
+			if (!isFraccionado) { //concepto
+				String keyConceptoPago = catalogoCuentaTempMap.get(objPago.getKeyConcepto()).getIdCatalogoCuenta() + "";
+				keyDetPlanPagos = keyDetPlanPagos + keyConceptoPago;
+				key = key + keyConceptoPago;
+				if (!detControlPagoGenerarKeyMap.containsKey(key)) {
+					detControlPagoGenerarKeyMap.put(key, BigDecimal.ONE);
+				}
+				if (detControlPagoMap.containsKey(key)) {
+					//un pago mas
+					if (detControlPagoGenerarKeyMap.containsKey(key)) {
+						BigDecimal keyIncrementa = detControlPagoGenerarKeyMap.get(key);
+						key =  key + keyIncrementa.add(BigDecimal.ONE) + "";
+						detControlPagoGenerarKeyMap.put(key, keyIncrementa.add(BigDecimal.ONE) );
+					}
+					
+				}
+				if (!detControlPagoMap.containsKey(key)) {
+					ControlPago controlPago = controlPagoMap.get(keyControlPago);				
+					DetControlPago detControlPago = new DetControlPago();
+					detControlPago.setControlPago(controlPago);
+					detControlPago.setMonto(obtenerMonto(objPago.getMonto()));
+					if(detPlanPagosMap.get(keyDetPlanPagos) == null) {
+						//System.out.println("Ayuda");
+						cantidadErrorGenerado++;
+						logError.append("ERROR(" + cantidadErrorGenerado+ ").HELP.ESFRACCINADO(" + isFraccionado + ") Control Pagos No se Encontro Escuela : " + objPago.toString() + " \n");
+					}
+					//TODO:MOD_PAGO
+					//detControlPago.setDetPlanPagos(detPlanPagosMap.get(keyDetPlanPagos));
+					BigDecimal  codigoGenerado = detControlPagoGenerarCodigoMap.get(controlPago.getIdControlPago());
+					if (codigoGenerado == null) {
+						codigoGenerado = new BigDecimal(controlPago.getIdControlPago() + "01");
+					} else {
+						codigoGenerado = codigoGenerado.add(BigDecimal.ONE);
+					}
+					detControlPagoGenerarCodigoMap.put(controlPago.getIdControlPago(), codigoGenerado);
+					detControlPago.setIdDetControlPago(codigoGenerado + "");
+					detControlPagoMap.put(key, detControlPago);
+					
+					if (!detControlPagoListMap.containsKey(controlPago.getIdControlPago())) {
+						List<DetControlPago> listaDetControlPago = new ArrayList<DetControlPago>();
+						listaDetControlPago.add(detControlPago);
+						detControlPagoListMap.put(controlPago.getIdControlPago(), listaDetControlPago);
+					} else {
+						List<DetControlPago> listaDetControlPago = detControlPagoListMap.get(controlPago.getIdControlPago());
+						listaDetControlPago.add(detControlPago);
+						detControlPagoListMap.put(controlPago.getIdControlPago(), listaDetControlPago);
+					}
+					//TODO:MOD_PAGO
+					/*if (!detControlPagoConceptoMap.containsKey(detControlPago.getDetPlanPagos().getIdDetPlanPagos())) {
+						List<DetControlPago> listaDetControlPago = new ArrayList<DetControlPago>();
+						listaDetControlPago.add(detControlPago);
+						detControlPagoConceptoMap.put(detControlPago.getDetPlanPagos().getIdDetPlanPagos(), listaDetControlPago);
+					} else {
+						List<DetControlPago> listaDetControlPago = detControlPagoConceptoMap.get(detControlPago.getDetPlanPagos().getIdDetPlanPagos());
+						listaDetControlPago.add(detControlPago);
+						detControlPagoConceptoMap.put(detControlPago.getDetPlanPagos().getIdDetPlanPagos(), listaDetControlPago);
+					}*/
+				} else {
+					System.out.println("det control de pago ya existe == > " + key + " ==> " + objPago.toString());
+					cantidadErrorGenerado++;
+					logError.append("ERROR(" + cantidadErrorGenerado+ ").DUPLICADO.ESFRACCINADO(" + isFraccionado + ") Control Pagos key ==> " + key + " : " + objPago.toString() + " \n");
+				}
+			}
+			key = objPago.getCodAlumno() + objPago.getSemestre().trim()  + objPago.getFechaPago() +  objPago.getNroDocSunat();
+			keyDetPlanPagos = objPago.getCodAlumno() + keySemestre + keyEscuela;
+			//generando fraccionamiento
+			if (isFraccionado) { //concepto primera cutoa
+				String keyConcepto = "3";
+				key = key + keyConcepto;
+				keyDetPlanPagos = keyDetPlanPagos + keyConcepto;
+				String keyCuotaConcepto = keySemestre + keyEscuela + catalogoCuentaMap.get(keyConcepto).getIdCatalogoCuenta();				
+				//si pago primera cuota fraccionado
+				if (StringUtils.isNotNullOrBlank(objPago.getMonto())) {
+					String keyFraccionado = keyDetPlanPagos + keyCuotaConcepto + pensionFraccionadoNroMap.get(objPago.getKeyConcepto());//dinamico
+					key = key + keyConcepto + keyCuotaConcepto + pensionFraccionadoNroMap.get(objPago.getKeyConcepto());//dinamico
+					ControlPago controlPago = controlPagoMap.get(keyControlPago);				
+					DetControlPago detControlPago = new DetControlPago();
+					detControlPago.setControlPago(controlPago);
+					detControlPago.setMonto(obtenerMonto(objPago.getMonto()));
+					//TODO:MOD_PAGO
+					//detControlPago.setFraccionamiento(fracionarMap.get(keyFraccionado));
+					BigDecimal codigoGenerado = detControlPagoGenerarCodigoMap.get(controlPago.getIdControlPago());
+					if (codigoGenerado == null) {
+						codigoGenerado = new BigDecimal(controlPago.getIdControlPago() + "01");
+					} else {
+						codigoGenerado = codigoGenerado.add(BigDecimal.ONE);
+					}
+					detControlPagoGenerarCodigoMap.put(controlPago.getIdControlPago(), codigoGenerado);
+					detControlPago.setIdDetControlPago(codigoGenerado + "");
+					
+					if (!detControlPagoGenerarKeyMap.containsKey(key)) {
+						detControlPagoGenerarKeyMap.put(key, BigDecimal.ONE);
+					}
+					if (detControlPagoMap.containsKey(key)) {
+						//un pago mas
+						if (detControlPagoGenerarKeyMap.containsKey(key)) {
+							BigDecimal keyIncrementa = detControlPagoGenerarKeyMap.get(key);
+							key =  key + keyIncrementa.add(BigDecimal.ONE) + "";
+							detControlPagoGenerarKeyMap.put(key, keyIncrementa.add(BigDecimal.ONE) );
+						}
+					}
+					if (detControlPagoMap.containsKey(key)) {
+						System.out.println("det control de pago ya existe fraccionado == > " + key + " ==> " + objPago.toString());
+						cantidadErrorGenerado++;
+						logError.append("ERROR(" + cantidadErrorGenerado+ ").DUPLICADO.ESFRACCINADO(" + isFraccionado + ") Control Pagos key ==> " + key + " : " + objPago.toString() + " \n");
+					}
+					detControlPagoMap.put(key, detControlPago);
+					
+					if (!detControlPagoListMap.containsKey(controlPago.getIdControlPago())) {
+						List<DetControlPago> listaDetControlPago = new ArrayList<DetControlPago>();
+						listaDetControlPago.add(detControlPago);
+						detControlPagoListMap.put(controlPago.getIdControlPago(), listaDetControlPago);
+					} else {
+						List<DetControlPago> listaDetControlPago = detControlPagoListMap.get(controlPago.getIdControlPago());
+						listaDetControlPago.add(detControlPago);
+						detControlPagoListMap.put(controlPago.getIdControlPago(), listaDetControlPago);
+					}
+					//TODO:MOD_PAGO
+					/*
+					if (!detControlPagoConceptoMap.containsKey(detControlPago.getFraccionamiento().getIdFraccionamiento())) {
+						List<DetControlPago> listaDetControlPago = new ArrayList<DetControlPago>();
+						listaDetControlPago.add(detControlPago);
+						detControlPagoConceptoMap.put(detControlPago.getFraccionamiento().getIdFraccionamiento(), listaDetControlPago);
+					} else {
+						List<DetControlPago> listaDetControlPago = detControlPagoConceptoMap.get(detControlPago.getFraccionamiento().getIdFraccionamiento());
+						listaDetControlPago.add(detControlPago);
+						detControlPagoConceptoMap.put(detControlPago.getFraccionamiento().getIdFraccionamiento(), listaDetControlPago);
+					}*/
+				}
+				key = objPago.getCodAlumno() + objPago.getSemestre().trim()  + objPago.getFechaPago() +  objPago.getNroDocSunat();
+				key = key + keyConcepto;
+									
+			}
+		}
+	}
+	//sumar monto pago
+	List<ControlPago> listaControlPagosTemp = new ArrayList<ControlPago>(controlPagoMap.values());
+	for (ControlPago objCat : listaControlPagosTemp) {
+		BigDecimal montoTotal = new BigDecimal("0");
+		if (detControlPagoListMap.containsKey(objCat.getIdControlPago())) {
+			List<DetControlPago> listaDetControlPago = detControlPagoListMap.get(objCat.getIdControlPago());
+			for (DetControlPago objDet : listaDetControlPago) {
+				if (objCat.getIdControlPago().equals(objDet.getControlPago().getIdControlPago())) {
+					montoTotal = montoTotal.add(objDet.getMonto());	
+				}
+			}
+		}		
+		objCat.setMontoTotal(montoTotal);
+	}
+	detControlPagoListMap = null;
+	List<DetPlanPagos> listaDetPlanPagos = new ArrayList<DetPlanPagos>(detPlanPagosMap.values());
+	for (DetPlanPagos detPlanPagos : listaDetPlanPagos) {
+		BigDecimal montoTotal = new BigDecimal("0");
+		if (detControlPagoConceptoMap.containsKey(detPlanPagos.getIdDetPlanPagos())) {
+			List<DetControlPago> listaDetControlPago = detControlPagoConceptoMap.get(detPlanPagos.getIdDetPlanPagos());
+			for (DetControlPago objDet : listaDetControlPago) {
+				//TODO:MOD_PAGO
+				/*
+				if (detPlanPagos.getIdDetPlanPagos().equals(objDet.getDetPlanPagos().getIdDetPlanPagos())) {
+					montoTotal = montoTotal.add(objDet.getMonto());	
+				}*/
+			}
+		}
+		detPlanPagos.setMontoResta(detPlanPagos.getCuota().subtract(montoTotal));
+	}
+	detPlanPagosMap = null;
+	List<Fraccionamiento> listaFraccionamientos = new ArrayList<Fraccionamiento>(fracionarMap.values());
+	for (Fraccionamiento fraccionamiento : listaFraccionamientos) {
+		BigDecimal montoTotal = new BigDecimal("0");
+		if (detControlPagoConceptoMap.containsKey(fraccionamiento.getIdFraccionamiento())) {
+			List<DetControlPago> listaDetControlPago = detControlPagoConceptoMap.get(fraccionamiento.getIdFraccionamiento());
+			for (DetControlPago objDet : listaDetControlPago) {
+				//TODO:MOD_PAGO
+				/*if (fraccionamiento.getIdFraccionamiento().equals(objDet.getFraccionamiento().getIdFraccionamiento())) {
+					montoTotal = montoTotal.add(objDet.getMonto());	
+				}*/
+			}
+		}
+		fraccionamiento.setMontoFraccionadoResta(fraccionamiento.getCuotaFracionada().subtract(montoTotal));
+	}
+	detControlPagoConceptoMap = null;
+	fracionarMap = null;
+	//generando sql CatalogoCuenta:
+	StringBuilder sqlCatalogoCuenta = new StringBuilder();
+	StringBuilder sqlCuotaConcepto = new StringBuilder();
+	StringBuilder sqlPlanPagos = new StringBuilder();
+	StringBuilder sqlDetPlanPagos = new StringBuilder();
+	StringBuilder sqlFraccionamiento = new StringBuilder();
+	StringBuilder sqlControlPago = new StringBuilder();
+	StringBuilder sqlDetControlPago = new StringBuilder();
+	StringBuilder sqlDetControlPagoFraccionado = new StringBuilder();
+	
+	sql.append("delete from dbo.DetControlPago where idcontrolpago in (select  idcontrolpago from dbo.ControlPago where idanhosemestre = '" + semestre+  "') \n");
+	sql.append("delete from dbo.ControlPago where idanhosemestre = '" + semestre+  "' \n");
+	sql.append("delete from dbo.Fraccionamiento where idDetplanpagos in ( select idDetplanpagos from dbo.DetPlanPagos where idplanpagos in ( select  idplanpagos from dbo.PlanPagos where idanhosemestre = '" + semestre+  "' ) )\n");
+	sql.append("delete from dbo.DetPlanPagos where idplanpagos in (select  idplanpagos from dbo.PlanPagos where idanhosemestre = '" + semestre+  "') \n");
+	sql.append("delete from dbo.PlanPagos  where idanhosemestre = '" + semestre+  "' \n");
+	sql.append("delete from dbo.CuotaConcepto where idanhosemestre = '" + semestre+  "'  \n");
+	//sql.append("delete from CatalogoCuenta\n");
+	//sql.append("delete from Clasificacion\n");
+	
+	String tableName = "dbo.Clasificacion";
+	List<Clasificacion> listaClasificacions = new ArrayList<Clasificacion>(clasificacionMap.values());
+	CollectionUtil.ordenador(true, listaClasificacions, "idClasificacion");
+	sqlCatalogoCuenta.append("--Inicio Insert " + tableName + "\n" );
+	for (Clasificacion objCat : listaClasificacions) {
+		/*sqlCatalogoCuenta.append("insert into " + tableName + " values (");
+		sqlCatalogoCuenta.append(objCat.getIdClasificacion());
+		sqlCatalogoCuenta.append("," + objCat.getItemByTipoClasificacion().getIdItem());
+		sqlCatalogoCuenta.append(",'" + objCat.getDescripcion() + "'");
+		sqlCatalogoCuenta.append(",'" + objCat.getAbreviatura() + "'");
+		sqlCatalogoCuenta.append(")\n");*/
+	}
+	sqlCatalogoCuenta.append("--Fin Insert " + tableName + "\n" );
+	tableName = "dbo.CatalogoCuenta";
+	List<CatalogoCuenta> listaCatalogoCuentas = new ArrayList<CatalogoCuenta>(catalogoCuentaMap.values());
+	CollectionUtil.ordenador(false, listaCatalogoCuentas, "idCatalogoCuenta");
+	sqlCatalogoCuenta.append("--Inicio Insert " + tableName + "\n" );
+	sqlCatalogoCuenta.append("delete from dbo.CatalogoCuenta where idCatalogoCuenta in (");
+	int contador = 0;
+	int cantidadTotal = 0;
+	for (CatalogoCuenta objCat : listaCatalogoCuentas) {
+		if (!catalogoExistenteMap.containsKey(objCat.getIdCatalogoCuenta())) {
+			cantidadTotal++;
+		}
+	}
+	for (CatalogoCuenta objCat : listaCatalogoCuentas) {
+		if (!catalogoExistenteMap.containsKey(objCat.getIdCatalogoCuenta())) {
+			contador++;
+			sqlCatalogoCuenta.append(objCat.getIdCatalogoCuenta());
+			if (!(contador == cantidadTotal) ) {
+				sqlCatalogoCuenta.append(",");
+			}
+		}
+	}
+	sqlCatalogoCuenta.append(" )  \n");
+	for (CatalogoCuenta objCat : listaCatalogoCuentas) {
+		if (!catalogoExistenteMap.containsKey(objCat.getIdCatalogoCuenta())) {
+			sqlCatalogoCuenta.append("insert into " + tableName + " values (");
+			sqlCatalogoCuenta.append(objCat.getIdCatalogoCuenta());
+			sqlCatalogoCuenta.append(",'" + objCat.getCuenta() + "'");
+			sqlCatalogoCuenta.append(",'" + objCat.getNroCuenta() + "'");
+			sqlCatalogoCuenta.append(",NULL");//catalogocuenta padre
+			sqlCatalogoCuenta.append("," + objCat.getClasificacion().getIdClasificacion());
+			sqlCatalogoCuenta.append(",'A'");
+			sqlCatalogoCuenta.append(",current_date");//ver+ valueMap.getValue().getFechaCreacion()
+			sqlCatalogoCuenta.append(",'sistema'");
+			sqlCatalogoCuenta.append(",NULL");
+			sqlCatalogoCuenta.append(",NULL");
+			sqlCatalogoCuenta.append(")\n");
+		}
+	}	
+	sqlCatalogoCuenta.append("--Fin Insert " + tableName + "\n" );
+	crearArchivo("general","sql1CatalogoCuenta", sqlCatalogoCuenta);
+	sqlCatalogoCuenta = null;
+	tableName = "dbo.CuotaConcepto";
+	List<CuotaConcepto> listaCuotaConceptos = new ArrayList<CuotaConcepto>(cuotaConceptoMap.values());
+	CollectionUtil.ordenadorNumeric(false, listaCuotaConceptos, "idCuotaConcepto");
+	sqlCuotaConcepto.append("--Inicio Insert " + tableName + "\n" );
+	for (CuotaConcepto objCat : listaCuotaConceptos) {
+		sqlCuotaConcepto.append("insert into " + tableName + " values (");
+		sqlCuotaConcepto.append("'" + objCat.getIdCuotaConcepto() + "'");
+		sqlCuotaConcepto.append(",'" + objCat.getAnhoSemestre().getIdAnhoSemestre() + "'");
+		sqlCuotaConcepto.append(",'" + objCat.getEscuela().getIdEscuela() + "'");
+		sqlCuotaConcepto.append("," + objCat.getCatalogoCuenta().getIdCatalogoCuenta());
+		sqlCuotaConcepto.append("," + objCat.getNroMinFraccionamiento());
+		sqlCuotaConcepto.append("," + objCat.getNroMaxFraccionamiento());
+		sqlCuotaConcepto.append("," + objCat.getMonto());
+		sqlCuotaConcepto.append(",'" + objCat.getPermanente() + "'");
+		sqlCuotaConcepto.append(",current_date");
+		sqlCuotaConcepto.append(",current_date");
+		sqlCuotaConcepto.append(",'sistema'");
+		sqlCuotaConcepto.append(",NULL");
+		sqlCuotaConcepto.append(",NULL");
+		sqlCuotaConcepto.append(")\n");
+	}
+	sqlCuotaConcepto.append("--Fin Insert " + tableName + "\n" );
+	crearArchivo(semestre,"sql2CuotaConcepto", sqlCuotaConcepto);
+	sqlCuotaConcepto = null;
+	tableName = "dbo.PlanPagos";
+	List<PlanPagos> listaPlanPagos = new ArrayList<PlanPagos>(planPagosMap.values());
+	CollectionUtil.ordenadorNumeric(false, listaPlanPagos, "idPlanPagos");
+	sqlPlanPagos.append("--Inicio Insert " + tableName + "\n" );
+	for (PlanPagos objCat : listaPlanPagos) {
+		sqlPlanPagos.append("insert into " + tableName + " values (");
+		sqlPlanPagos.append("'" + objCat.getIdPlanPagos() + "'");
+		sqlPlanPagos.append(",'" + objCat.getAnhoSemestre().getIdAnhoSemestre() + "'");
+		sqlPlanPagos.append(",(select idAlumno from dbo.Alumno where codigoCarnet='" + objCat.getAlumno().getCodigoCarnet() + "')");//TODO:HACER select a alumno by codigo
+		sqlPlanPagos.append(",current_date");
+		sqlPlanPagos.append(",'sistema'");
+		sqlPlanPagos.append(",NULL");
+		sqlPlanPagos.append(",NULL");
+		sqlPlanPagos.append(")\n");
+	}
+	sqlPlanPagos.append("--Fin Insert " + tableName + "\n" );
+	tableName = "dbo.DetPlanPagos";
+	//List<DetPlanPagos> listaDetPlanPagos = new ArrayList<DetPlanPagos>(detPlanPagosMap.values());
+	CollectionUtil.ordenadorNumeric(false, listaDetPlanPagos, "idDetPlanPagos");
+	crearArchivo(semestre,"sql3PlanPagos", sqlPlanPagos);
+	sqlDetPlanPagos.append("--Inicio Insert " + tableName + "\n" );
+	for (DetPlanPagos objCat : listaDetPlanPagos) {
+		sqlDetPlanPagos.append("insert into " + tableName + " values (");
+		sqlDetPlanPagos.append("'" + objCat.getIdDetPlanPagos() + "'");
+		sqlDetPlanPagos.append(",'" + objCat.getPlanPagos().getIdPlanPagos() + "'");
+		sqlDetPlanPagos.append(",'" + objCat.getCuotaConcepto().getIdCuotaConcepto() + "'");
+		sqlDetPlanPagos.append("," + objCat.getCuota() );
+		sqlDetPlanPagos.append("," + objCat.getMontoResta() );
+		sqlDetPlanPagos.append(",current_date");
+		sqlDetPlanPagos.append(",'" + objCat.getFlagFraccionado() + "'");
+		sqlDetPlanPagos.append(")\n");
+	}
+	sqlDetPlanPagos.append("--Fin Insert " + tableName + "\n" );
+	crearArchivo(semestre,"sql4DetPlanPagos", sqlDetPlanPagos);
+	sqlDetPlanPagos = null;
+	tableName = "dbo.Fraccionamiento";
+	CollectionUtil.ordenadorNumeric(false, listaFraccionamientos, "idFraccionamiento");
+	sqlFraccionamiento.append("--Inicio Insert " + tableName + "\n" );
+	for (Fraccionamiento objCat : listaFraccionamientos) {
+		sqlFraccionamiento.append("insert into " + tableName + " values (");
+		sqlFraccionamiento.append("'" + objCat.getIdFraccionamiento() + "'");
+		sqlFraccionamiento.append(",'" + objCat.getDetPlanPagos().getIdDetPlanPagos() + "'");
+		sqlFraccionamiento.append(",'" + objCat.getNro() + "'");
+		sqlFraccionamiento.append("," + objCat.getCuotaFracionada());
+		sqlFraccionamiento.append("," + objCat.getMontoFraccionadoResta());
+		sqlFraccionamiento.append(",current_date");
+		sqlFraccionamiento.append(",current_date");
+		sqlFraccionamiento.append(",'sistema'");
+		sqlFraccionamiento.append(")\n");
+	}
+	sqlFraccionamiento.append("--Fin Insert " + tableName + "\n" );
+	crearArchivo(semestre,"sql5Fraccionamiento", sqlFraccionamiento);
+	sqlFraccionamiento = null;
+	tableName = "dbo.ControlPago";
+	//List<ControlPago> listaControlPagos = new ArrayList<ControlPago>(controlPagoMap.values());
+	CollectionUtil.ordenadorNumeric(false, listaControlPagosTemp, "idControlPago");
+	sqlControlPago.append("--Inicio Insert " + tableName + "\n" );
+	for (ControlPago objCat : listaControlPagosTemp) {
+		sqlControlPago.append("insert into " + tableName + " values (");
+		sqlControlPago.append("'" + objCat.getIdControlPago() + "'");
+		sqlControlPago.append(",'" + objCat.getAnhoSemestre().getIdAnhoSemestre() + "'");
+		sqlControlPago.append(",(select idAlumno from dbo.Alumno where codigoCarnet='" + objCat.getAlumno().getCodigoCarnet() + "')");//TODO:HACER select a alumno by codigo
+		sqlControlPago.append(",1");//boleta
+		sqlControlPago.append(",522");
+		sqlControlPago.append(",NULL");
+		sqlControlPago.append(",1.00");
+		sqlControlPago.append(",'" + objCat.getNroDoc() + "'");
+		sqlControlPago.append(",NULL");
+		sqlControlPago.append("," + objCat.getMontoTotal());
+		sqlControlPago.append("," + objCat.getMontoTotal());
+		sqlControlPago.append(",to_date('" + FechaUtil.obtenerFechaFormatoSimple(objCat.getFechaPago()) +"','dd/MM/yyyy')");
+		sqlControlPago.append(",current_date");
+		sqlControlPago.append(",'sistema'");
+		
+		sqlControlPago.append(")\n");
+	}
+	sqlControlPago.append("--Fin Insert " + tableName + "\n" );
+	crearArchivo(semestre,"sql6ControlPago", sqlControlPago);
+	sqlControlPago = null;
+	tableName = "dbo.DetControlPago";
+	List<DetControlPago> listaDetControlPagos = new ArrayList<DetControlPago>(detControlPagoMap.values());
+	CollectionUtil.ordenadorNumeric(false, listaDetControlPagos, "idDetControlPago");
+	sqlDetControlPago.append("--Inicio Insert " + tableName + "\n" );
+	for (DetControlPago objCat : listaDetControlPagos) {
+		sqlDetControlPago.append("insert into " + tableName + " values (");
+		sqlDetControlPago.append("'" + objCat.getIdDetControlPago() + "'");
+		sqlDetControlPago.append(",'" + objCat.getControlPago().getIdControlPago() + "'");
+		//TODO:MOD_PAGO
+		/*
+		if (objCat.getDetPlanPagos() != null) {
+			sqlDetControlPago.append(",'" + objCat.getDetPlanPagos().getIdDetPlanPagos() + "'");
+		} else {
+			sqlDetControlPago.append(",NULL");
+		}
+		if (objCat.getFraccionamiento() != null) {
+			sqlDetControlPago.append(",'" + objCat.getFraccionamiento().getIdFraccionamiento() + "'");
+		} else {
+			sqlDetControlPago.append(",NULL");
+		}
+		if (objCat.getDetPlanPagos() != null) {
+			sqlDetControlPago.append(",'" + objCat.getDetPlanPagos().getCuotaConcepto().getCatalogoCuenta().getCuenta() + "'");
+		} else {
+			if (objCat.getFraccionamiento() != null) {
+				sqlDetControlPago.append(",'" + objCat.getFraccionamiento().getDetPlanPagos().getCuotaConcepto().getCatalogoCuenta().getCuenta() + " " + objCat.getFraccionamiento().getNro() + "'");
+			} else {
+				sqlDetControlPago.append(",NULL");
+			}
+		}*/
+		sqlDetControlPago.append("," + objCat.getMonto());
+		sqlDetControlPago.append(",NULL");
+		sqlDetControlPago.append(")\n");
+	}
+	sqlDetControlPago.append("--Fin Insert " + tableName + "\n" );
+	crearArchivo(semestre,"sql7DetControlPago", sqlDetControlPago);
+	sqlDetControlPago = null;
+	//System.out.println("Query generado :\n" + sql.toString());
+	crearArchivo(semestre,"sql0GeneralUpdate", sql);
+	sql = null;
+	crearArchivo(semestre,"logError", logError);
+	logError = null;
+	crearArchivo(semestre,"logErrorControlPago", logErrorControlPago);
+	logErrorControlPago = null;
+	crearArchivo(semestre,"logErrorExcepcionPagoAlumno", logErrorExcepcionPagoAlumno);
+	logErrorExcepcionPagoAlumno = null;
+	crearArchivo(semestre,"logErrorConceptoSemestre", logErrorConceptoSemestre);
+	logErrorConceptoSemestre = null;
+}
+
+/**
+ * Crear archivo.
+ *
+ * @param nombre el nombre
+ * @param data el data
+ */
+public static void crearArchivo(String semestre,String nombre,StringBuilder data) {
+    try {
+    	String rutaTemp =  "f:/pag/" +semestre+ "";
+    	File archivoTemp = new File(rutaTemp);
+    	if (!archivoTemp.exists()) {
+    	  archivoTemp.mkdirs();
+    	}
+    	if (data != null && data.length() > 0) {
+	        String ruta = rutaTemp + "/" + nombre + ".sql";
+	        File archivo = new File(ruta);
+	        BufferedWriter bw;
+	        archivo.delete();
+	        if (archivo.exists()) {
+	             archivo.delete();
+	        }
+	        bw = new BufferedWriter(new FileWriter(archivo));
+	        bw.write(data.toString());
+	        bw.close();
+    	}
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+   
+}
+/**
+ * Pasear datos concepto por escuela semestre vo.
+ *
+ * @param cellDataListConceptoPorAlumno el cell data list concepto por alumno
+ * @return the map
+ */
+private Map<String,ConceptoPorEscuelaSemestreVO> pasearDatosConceptoPorEscuelaSemestreVO(List<XSSFRow> cellDataListConceptoPorAlumno) {
+	Map<String,ConceptoPorEscuelaSemestreVO> resultado = new HashMap<String, ConceptoPorEscuelaSemestreVO>();
+	int contadorError = 0;
+	/*SEMESTRE	CONCEPTO	MONTO	N� DE FRACCI�N	CARRERA	OBSERVACI�N*/ 
+	int index = 0;
+	for (XSSFRow hssfRow : cellDataListConceptoPorAlumno) {
+		index  = 0;
+		XSSFCell hssfCell = null;
+		try {
+			hssfCell = (XSSFCell) hssfRow.getCell(index);
+			index++;
+		} catch (Exception e) {
+			hssfCell = null;
+		}
+		String semestre = "";
+		try {
+			if (hssfCell != null && hssfCell.getNumericCellValue() > 0) {
+				semestre = BigDecimal.valueOf(hssfCell.getNumericCellValue()).intValueExact() + "";
+			}
+		} catch (Exception e) {
+			if (hssfCell != null && hssfCell.getStringCellValue() != null) {
+				semestre = hssfCell.getStringCellValue();
+			}
+		}
+		try {
+			hssfCell = (XSSFCell) hssfRow.getCell(index);
+			index++;
+		} catch (Exception e) {
+			hssfCell = null;
+		}
+		String concepto = hssfCell != null ? hssfCell.toString() : "";
+		try {
+			hssfCell = (XSSFCell) hssfRow.getCell(index);
+			index++;
+		} catch (Exception e) {
+			hssfCell = null;
+		}
+		
+		String monto = hssfCell != null ? hssfCell.toString() : "";
+		
+		try {
+			hssfCell = (XSSFCell) hssfRow.getCell(index);	
+			index++;
+		} catch (Exception e) {
+			hssfCell = null;
+		}
+		String nroFraccion = hssfCell != null ? hssfCell.toString() : "";
+		try {
+			hssfCell = (XSSFCell) hssfRow.getCell(index);	
+			index++;
+		} catch (Exception e) {
+			hssfCell = null;
+		}
+		String carrera = hssfCell != null ? hssfCell.toString() : "";
+		
+		try {
+			hssfCell = (XSSFCell) hssfRow.getCell(index);		
+			index++;
+		} catch (Exception e) {
+			hssfCell = null;
+		}
+		String observacion = hssfCell != null ? hssfCell.toString() : "";
+		//campos
+		try {
+			hssfCell = (XSSFCell) hssfRow.getCell(index);		
+			index++;
+		} catch (Exception e) {
+			hssfCell = null;
+			
+		}
+	
+		if (carrera != null && !carrera.equals("CARRERA")) {
+			if ((observacion != null && !carrera.trim().equals("")) || (carrera != null && !carrera.trim().equals(""))) {
+				//llenado el VO/pojo/clase del ConceptoPorAlumnoVO
+				//lledado usando el constructor de la clase
+				ConceptoPorEscuelaSemestreVO valueC = new ConceptoPorEscuelaSemestreVO(semestre, concepto, monto, nroFraccion, carrera, observacion);
+				String key = valueC.getSemestre() + valueC.getCarrera() +  valueC.getConcepto();
+				if (!resultado.containsKey(key)) {
+					resultado.put(key,valueC);	
+				} else {
+					contadorError++;
+					logErrorConceptoSemestre.append("Error(" + contadorError + "):Concepto Duplicado --> " + valueC + "\n");
+				}
+				
+			}
+		}
+	}
+return resultado;
+	
+}
+
+/**
+ * Pasear datos exepcion alumo vo.
+ *
+ * @param cellDataListExcepcionAlumno el cell data list excepcion alumno
+ * @return the map
+ */
+private Map<String,ExcepcionAlumnoPagoVO> pasearDatosExepcionAlumoVO(List<XSSFRow> cellDataListExcepcionAlumno) {
+	Map<String,ExcepcionAlumnoPagoVO> resultado = new HashMap<String, ExcepcionAlumnoPagoVO>();
+	/*SEMESTRE	CODIGO DEL ALUMNO	APELLIDOS Y NOMBRES	CONCEPTO	MONTO	N� DE FRACCI�N	CARRERA	OBSERVACI�N	CONVENIO AL FINAL PAGA */ 
+	int index = 0;
+	int contadorError = 0;
+	for (XSSFRow hssfRow : cellDataListExcepcionAlumno) {
+		index  = 0;
+		XSSFCell hssfCell = null;
+		try {
+			hssfCell = (XSSFCell) hssfRow.getCell(index);
+			index++;
+		} catch (Exception e) {
+			hssfCell = null;
+		}
+		String semestre = "";
+		try {
+			if (hssfCell != null && hssfCell.getNumericCellValue() > 0) {
+				semestre = BigDecimal.valueOf(hssfCell.getNumericCellValue()).intValueExact() + "";
+			}
+		} catch (Exception e) {
+			if (hssfCell != null && hssfCell.getStringCellValue() != null) {
+				semestre = hssfCell.getStringCellValue();
+			}
+		}
+		try {
+			hssfCell = (XSSFCell) hssfRow.getCell(index);
+			index++;
+		} catch (Exception e) {
+			hssfCell = null;
+		}
+		String codigoAlumno = "";
+		try {
+			if (hssfCell != null && hssfCell.getNumericCellValue() > 0) {
+				codigoAlumno = BigDecimal.valueOf(hssfCell.getNumericCellValue()).intValueExact() + "";
+			}
+		} catch (Exception e) {
+			if (hssfCell != null && hssfCell.getStringCellValue() != null) {
+				codigoAlumno = hssfCell.getStringCellValue();
+			}
+		}
+		try {
+			hssfCell = (XSSFCell) hssfRow.getCell(index);
+			index++;
+		} catch (Exception e) {
+			hssfCell = null;
+		}
+		
+		String apellidosNombres = hssfCell != null ? hssfCell.toString() : "";
+		
+		try {
+			hssfCell = (XSSFCell) hssfRow.getCell(index);	
+			index++;
+		} catch (Exception e) {
+			hssfCell = null;
+		}
+		String concepto = hssfCell != null ? hssfCell.toString() : "";
+		try {
+			hssfCell = (XSSFCell) hssfRow.getCell(index);	
+			index++;
+		} catch (Exception e) {
+			hssfCell = null;
+		}
+		String monto = hssfCell != null ? hssfCell.toString() : "";
+		
+		try {
+			hssfCell = (XSSFCell) hssfRow.getCell(index);		
+			index++;
+		} catch (Exception e) {
+			hssfCell = null;
+		}
+		String nroFraccion = hssfCell != null ? hssfCell.toString() : "";
+		//campos
+		try {
+			hssfCell = (XSSFCell) hssfRow.getCell(index);		
+			index++;
+		} catch (Exception e) {
+			hssfCell = null;
+			
+		}
+		String carrera = hssfCell != null ? hssfCell.toString() : "";
+		
+		try {
+			hssfCell = (XSSFCell) hssfRow.getCell(index);		
+			index++;
+		} catch (Exception e) {
+			hssfCell = null;
+		}
+		String observacion = hssfCell != null ? hssfCell.toString() : "";
+		
+		try {
+			hssfCell = (XSSFCell) hssfRow.getCell(index);		
+			index++;
+		} catch (Exception e) {
+			hssfCell = null;
+		}
+		String flagConvenioFinalPaga = hssfCell != null ? hssfCell.toString() : "";
+		
+		try {
+			hssfCell = (XSSFCell) hssfRow.getCell(index);	
+			index++;
+		} catch (Exception e) {
+			hssfCell = null;
+		}
+		if (carrera != null && !carrera.equals("CARRERA")) {
+			if ((codigoAlumno != null && !monto.trim().equals("")) || (apellidosNombres != null && !apellidosNombres.trim().equals(""))) {
+				//llenado el VO/pojo/clase del ExcepcionAlumnoPagoVO
+				//lledado usando el constructor de la clase
+				ExcepcionAlumnoPagoVO valueC = new ExcepcionAlumnoPagoVO(semestre, codigoAlumno, apellidosNombres, concepto, monto, nroFraccion, carrera, observacion, flagConvenioFinalPaga);
+				String keyExcepcionAlumno = valueC.getSemestre() + valueC.getCodigoAlumno() + valueC.getConcepto();
+				if (!resultado.containsKey(keyExcepcionAlumno)) {
+					resultado.put(keyExcepcionAlumno, valueC);	
+				} else {
+					contadorError++;
+					logErrorExcepcionPagoAlumno.append("Error(" + contadorError + ") :  concepto duplicado --> " + valueC + "\n");
+				}
+				
+			}
+		}
+	}
+return resultado;
+	
+}
+	
+	/**
+	 * Pasear datos pago vo.
+	 *
+	 * @param cellDataListControlPago el cell data list control pago
+	 * @return the list
+	 */
+	private List<ControPagoVO> pasearDatosPagoVO(List<XSSFRow> cellDataListControlPago, Integer hoja) {
+		List<ControPagoVO> resultado = new ArrayList<ControPagoVO>();
+		/*CODIGO DEL ALUMNO	APELLIDOS Y NOMBRES 	                    SEMESTRE	INSCRIPCION	CARRERA	CICLO	MATRICULA	1ra 	2da 	3ra 	4ta 	5ta*/
+       // CODIGO DEL ALUMNO NOMBRES	APELLIDOS PATERNO	PATERNO MATERNO	COMENTARIO	            CARRERA	CICLO	TURNO	    CUOTA	F_VENCIMIENTO	CODIGOP	CONCEPTO	 MONTO	FECHA	TIPO C.P	N° C.P
+		//8=Cuota; 11=Concepto; 12 = Monto
+		String semestre = this.semestreHojaMap.get(hoja);
+		long contadorError = 0;
+		for (XSSFRow hssfRow : cellDataListControlPago) {
+			XSSFCell hssfCell = null;
+			try {
+				hssfCell = (XSSFCell) hssfRow.getCell(0);
+			} catch (Exception e) {
+				hssfCell = null;
+			}
+			String codigoAlumno = "";
+			try {
+				if (hssfCell != null && hssfCell.getNumericCellValue() > 0) {
+					codigoAlumno = BigDecimal.valueOf(hssfCell.getNumericCellValue()).intValueExact() + "";
+				}
+			} catch (Exception e) {
+				if (hssfCell != null && hssfCell.getStringCellValue() != null) {
+					codigoAlumno = hssfCell.getStringCellValue().trim();
+				}
+			}
+			try {
+				hssfCell = (XSSFCell) hssfRow.getCell(1);
+			} catch (Exception e) {
+				hssfCell = null;
+			}
+			String apellidosNombres = hssfCell != null ? hssfCell.toString() : "";
+			
+			try {
+				hssfCell = (XSSFCell) hssfRow.getCell(2);
+			} catch (Exception e) {
+				hssfCell = null;
+			}			
+			String apellidoPaterno = hssfCell != null ? hssfCell.toString() : "";
+			
+			try {
+				hssfCell = (XSSFCell) hssfRow.getCell(3);
+			} catch (Exception e) {
+				hssfCell = null;
+			}
+			String apellidoMaterno = hssfCell != null ? hssfCell.toString() : "";
+			
+			apellidosNombres = apellidosNombres + " " + apellidoPaterno + " " + apellidoMaterno;
+			
+			try {
+				hssfCell = (XSSFCell) hssfRow.getCell(4);
+			} catch (Exception e) {
+				hssfCell = null;
+			}	
+			
+			String comentario = hssfCell != null ? hssfCell.toString() : "";
+			
+			try {
+				hssfCell = (XSSFCell) hssfRow.getCell(5);
+			} catch (Exception e) {
+				hssfCell = null;
+			}	
+			String carrera = hssfCell != null ? hssfCell.toString() : "";
+			try {
+				hssfCell = (XSSFCell) hssfRow.getCell(6);
+			} catch (Exception e) {
+				hssfCell = null;
+			}			
+			String ciclo = hssfCell != null ? hssfCell.toString() : "";
+			
+		
+			try {
+				hssfCell = (XSSFCell) hssfRow.getCell(8);
+			} catch (Exception e) {
+				hssfCell = null;
+			}
+			String cuota = hssfCell != null ? hssfCell.toString() : "";
+			
+			try {
+				hssfCell = (XSSFCell) hssfRow.getCell(11);
+			} catch (Exception e) {
+				hssfCell = null;
+			}
+			String concepto = hssfCell != null ? hssfCell.toString() : "";
+			
+			try {
+				hssfCell = (XSSFCell) hssfRow.getCell(12);
+			} catch (Exception e) {
+				hssfCell = null;
+			}
+			String monto = hssfCell != null ? hssfCell.toString() : "";
+			
+			String keyConcepto = concepto.trim();
+			if (pensionFraccionadoEquiValenciaMap.containsKey(keyConcepto)) {
+				keyConcepto  =  pensionFraccionadoEquiValenciaMap.get(keyConcepto);
+			} else {
+				if (!catalogoCuentaMap.containsKey(keyConcepto)) {
+					if (!pensionFraccionadoMap.containsKey(keyConcepto)) {
+						System.out.println("ayuda ==> " + keyConcepto);
+					}
+				}
+				
+			}
+			try {
+				hssfCell = (XSSFCell) hssfRow.getCell(9);
+				//hssfCell.setCellType(Cell.CELL_TYPE_STRING);
+			} catch (Exception e) {
+				hssfCell = null;
+			}
+			String fechaVencimiento = hssfCell != null ? hssfCell.toString() : "";
+			try {
+				fechaVencimiento  = hssfCell.getDateCellValue().getTime() + "";
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+
+			}
+			try {
+				hssfCell = (XSSFCell) hssfRow.getCell(13);
+				//hssfCell.setCellType(Cell.CELL_TYPE_STRING);
+			} catch (Exception e) {
+				hssfCell = null;
+			}
+			String fechaPago = hssfCell != null ? hssfCell.toString() : "";
+			try {
+				fechaPago  = hssfCell.getDateCellValue().getTime() + "";
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+
+			}
+			
+			try {
+				hssfCell = (XSSFCell) hssfRow.getCell(14);
+			} catch (Exception e) {
+				hssfCell = null;
+			}
+			String tipoDocSunat = hssfCell != null ? hssfCell.toString() : "";
+			
+			try {
+				hssfCell = (XSSFCell) hssfRow.getCell(15);
+				hssfCell.setCellType(Cell.CELL_TYPE_STRING);
+			} catch (Exception e) {
+				hssfCell = null;
+			}
+			String nroDocSunat = hssfCell != null ? hssfCell.toString() : "";
+			
+			
+			
+			if (carrera != null && !carrera.equals("CARRERA")) {
+				//if ((apellidosNombres != null && !carrera.trim().equals("")) || (semestre != null && !semestre.trim().equals(""))) {
+					//llenado el VO/pojo/clase del control de pago
+					ControPagoVO valueC = new ControPagoVO(codigoAlumno, apellidosNombres, semestre, "", carrera, ciclo, "", "", "", "", "","");
+					valueC.setComentario(comentario);
+					valueC.setCuota(cuota);
+					valueC.setMonto(monto);
+					valueC.setKeyConcepto(keyConcepto.trim());
+					
+					valueC.setFechaVencimiento(fechaVencimiento);
+					valueC.setFechaPago(fechaPago);
+					valueC.setTipoDocSunat(tipoDocSunat);
+					valueC.setNroDocSunat(nroDocSunat);
+					
+					if (StringUtils.isNotNullOrBlank(codigoAlumno) && codigoAlumno.length() == 10) {
+						resultado.add(valueC);
+					} else {
+						contadorError++;
+						logErrorControlPago.append("Error(" + contadorError + ") alumno codigo incorrecto --> " + valueC + "\n");
+					}
+				//}
+			}
+		}
+	return resultado;
+		
+	}
+
+/**
+ * Generar id cuota concepto.
+ *
+ * @param cuotaConcepto el cuota concepto
+ * @param codGenerar el cod generar
+ * @return the string
+ * @throws Exception the exception
+ */
+public String generarIdCuotaConcepto(CuotaConcepto cuotaConcepto, int codGenerar) throws Exception {
+	String resultado = cuotaConcepto.getAnhoSemestre().getIdAnhoSemestre() + "001";
+	List<String> listLong =  new ArrayList<String>();
+	listLong.add(codGenerar + "");
+	if (listLong != null && listLong.size() > 0) {
+		String ultimoCodigoGenerado = listLong.get(0);
+		if (StringUtils.isNotNullOrBlank(ultimoCodigoGenerado)) {
+			 long ultimoCodigo = Long.parseLong(ultimoCodigoGenerado.trim());
+			 ultimoCodigo++;
+			resultado = "" + ultimoCodigo;
+		}
+	}
+	return resultado;
+}
+
+/**
+ * Obtener datos del excel.
+ *
+ * @param workBook el work book
+ * @param hoja el hoja
+ * @return the list
+ * @throws Exception the exception
+ */
+private List<XSSFRow> obtenerDatosDelExcel(XSSFWorkbook workBook,int hoja)throws Exception {
+	List<XSSFRow> resultado = new ArrayList<XSSFRow>();
+	XSSFSheet hssfSheet = workBook.getSheetAt(hoja);
+	Iterator<?> rowIterator = (Iterator<?>) hssfSheet.rowIterator();
+	while (rowIterator.hasNext()) {
+		XSSFRow hssfRow = (XSSFRow) rowIterator.next();
+		resultado.add(hssfRow);
+	}	
+	return resultado;
+}
+
+/**
+ * Devolver cadena.
+ *
+ * @param cantidad the cantidad
+ * @param valor the valor
+ * @return the string
+ */
+private String devolverCadena(int cantidad,int valor) {
+	StringBuilder resultado = new StringBuilder();
+	String compeltar = "0";
+	String cadena = "" + valor;
+	cantidad = cantidad - cadena.length();
+	for (int i = 0; i < cantidad; i++) {
+		resultado.append(compeltar);	
+	}
+	resultado.append((valor));
+	return resultado.toString();
+}
+
+
+/**
+ * Obtiene lista.
+ *
+ * @return lista
+ */
+public List<ControPagoVO> getLista() {
+	return listaControlPago;
+}
+
+
+/**
+ * Establece el lista.
+ *
+ * @param lista el new lista
+ */
+public void setLista(List<ControPagoVO> lista) {
+	this.listaControlPago = lista;
+}
+
+}

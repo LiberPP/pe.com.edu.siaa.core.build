@@ -1,0 +1,371 @@
+package pe.com.builderp.core.escalafon.model.jpa;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import pe.com.edu.siaa.core.model.jpa.admision.AnhoSemestre;
+import pe.com.edu.siaa.core.model.jpa.common.Item;
+import pe.com.edu.siaa.core.model.jpa.matricula.Personal;
+import pe.com.edu.siaa.core.model.util.ConfiguracionEntityManagerUtil;
+
+/**
+ * La Class ContratoAcademico.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Sun Dec 31 00:35:58 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Entity
+@Table(name = "ContratoAcademico", schema = ConfiguracionEntityManagerUtil.ESQUEMA_ESCALAFON)
+public class ContratoAcademico implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id contrato academico. */
+    @Id
+    @Column(name = "idContratoAcademico" , length = 32)
+    private String idContratoAcademico;
+   
+    /** El anho semestre. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idAnhoSemestre", referencedColumnName = "idAnhoSemestre")
+    private AnhoSemestre anhoSemestre;
+   
+    /** El personal. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idPersonal", referencedColumnName = "idPersonal")
+    private Personal personal;
+   
+    /** El item by categoria docente. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idCategoriaDocente", referencedColumnName = "idItem")
+    private Item itemByCategoriaDocente;
+   
+    /** El item by dedicacion docente. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idDedicacionDocente", referencedColumnName = "idItem")
+    private Item itemByDedicacionDocente;
+   
+    /** El clase pregrado. */
+    @Column(name = "clasePregrado" , length = 1)
+    private String clasePregrado;
+   
+    /** El clase maestria. */
+    @Column(name = "claseMaestria" , length = 1)
+    private String claseMaestria;
+   
+    /** El clase doctorado. */
+    @Column(name = "claseDoctorado" , length = 1)
+    private String claseDoctorado;
+   
+    /** El hora clase. */
+    @Column(name = "horaClase" , precision = 18 , scale = 2)
+    private BigDecimal horaClase;
+   
+    /** El hora otra actividad. */
+    @Column(name = "horaOtraActividad" , precision = 18 , scale = 2)
+    private BigDecimal horaOtraActividad;
+   
+    /** El fecha creacion. */
+    @Temporal( TemporalType.TIMESTAMP)
+    @Column(name = "fechaCreacion")
+    private Date fechaCreacion;
+   
+    /** El usuario creacion. */
+    @Column(name = "usuarioCreacion" , length = 50)
+    private String usuarioCreacion;
+   
+    /**
+     * Instancia un nuevo contrato academico.
+     */
+    public ContratoAcademico() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo contrato academico.
+     *
+     * @param idContratoAcademico el id contrato academico
+     * @param anhoSemestre el anho semestre
+     * @param personal el personal
+     * @param itemByCategoriaDocente el item by categoria docente
+     * @param itemByDedicacionDocente el item by dedicacion docente
+     * @param clasePregrado el clase pregrado
+     * @param claseMaestria el clase maestria
+     * @param claseDoctorado el clase doctorado
+     * @param horaClase el hora clase
+     * @param horaOtraActividad el hora otra actividad
+     * @param fechaCreacion el fecha creacion
+     * @param usuarioCreacion el usuario creacion
+     */
+    public ContratoAcademico(String idContratoAcademico, AnhoSemestre anhoSemestre,Personal personal,Item itemByCategoriaDocente,Item itemByDedicacionDocente,String clasePregrado, String claseMaestria, String claseDoctorado, BigDecimal horaClase, BigDecimal horaOtraActividad, Date fechaCreacion, String usuarioCreacion ) {
+        super();
+        this.idContratoAcademico = idContratoAcademico;
+        this.anhoSemestre = anhoSemestre;
+        this.personal = personal;
+        this.itemByCategoriaDocente = itemByCategoriaDocente;
+        this.itemByDedicacionDocente = itemByDedicacionDocente;
+        this.clasePregrado = clasePregrado;
+        this.claseMaestria = claseMaestria;
+        this.claseDoctorado = claseDoctorado;
+        this.horaClase = horaClase;
+        this.horaOtraActividad = horaOtraActividad;
+        this.fechaCreacion = fechaCreacion;
+        this.usuarioCreacion = usuarioCreacion;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id contrato academico.
+     *
+     * @return id contrato academico
+     */
+     public String getIdContratoAcademico() {
+        return this.idContratoAcademico;
+    }
+    /**
+     * Establece el id contrato academico.
+     *
+     * @param idContratoAcademico el new id contrato academico
+     */
+    public void setIdContratoAcademico(String idContratoAcademico) {
+        this.idContratoAcademico = idContratoAcademico;
+    }
+    /**
+     * Obtiene anho semestre.
+     *
+     * @return anho semestre
+     */
+     public AnhoSemestre getAnhoSemestre() {
+        return this.anhoSemestre;
+    }
+    /**
+     * Establece el anho semestre.
+     *
+     * @param anhoSemestre el new anho semestre
+     */
+    public void setAnhoSemestre(AnhoSemestre anhoSemestre) {
+        this.anhoSemestre = anhoSemestre;
+    }
+    /**
+     * Obtiene personal.
+     *
+     * @return personal
+     */
+     public Personal getPersonal() {
+        return this.personal;
+    }
+    /**
+     * Establece el personal.
+     *
+     * @param personal el new personal
+     */
+    public void setPersonal(Personal personal) {
+        this.personal = personal;
+    }
+    /**
+     * Obtiene item by categoria docente.
+     *
+     * @return item by categoria docente
+     */
+     public Item getItemByCategoriaDocente() {
+        return this.itemByCategoriaDocente;
+    }
+    /**
+     * Establece el item by categoria docente.
+     *
+     * @param itemByCategoriaDocente el new item by categoria docente
+     */
+    public void setItemByCategoriaDocente(Item itemByCategoriaDocente) {
+        this.itemByCategoriaDocente = itemByCategoriaDocente;
+    }
+    /**
+     * Obtiene item by dedicacion docente.
+     *
+     * @return item by dedicacion docente
+     */
+     public Item getItemByDedicacionDocente() {
+        return this.itemByDedicacionDocente;
+    }
+    /**
+     * Establece el item by dedicacion docente.
+     *
+     * @param itemByDedicacionDocente el new item by dedicacion docente
+     */
+    public void setItemByDedicacionDocente(Item itemByDedicacionDocente) {
+        this.itemByDedicacionDocente = itemByDedicacionDocente;
+    }
+    /**
+     * Obtiene clase pregrado.
+     *
+     * @return clase pregrado
+     */
+     public String getClasePregrado() {
+        return this.clasePregrado;
+    }
+    /**
+     * Establece el clase pregrado.
+     *
+     * @param clasePregrado el new clase pregrado
+     */
+    public void setClasePregrado(String clasePregrado) {
+        this.clasePregrado = clasePregrado;
+    }
+    /**
+     * Obtiene clase maestria.
+     *
+     * @return clase maestria
+     */
+     public String getClaseMaestria() {
+        return this.claseMaestria;
+    }
+    /**
+     * Establece el clase maestria.
+     *
+     * @param claseMaestria el new clase maestria
+     */
+    public void setClaseMaestria(String claseMaestria) {
+        this.claseMaestria = claseMaestria;
+    }
+    /**
+     * Obtiene clase doctorado.
+     *
+     * @return clase doctorado
+     */
+     public String getClaseDoctorado() {
+        return this.claseDoctorado;
+    }
+    /**
+     * Establece el clase doctorado.
+     *
+     * @param claseDoctorado el new clase doctorado
+     */
+    public void setClaseDoctorado(String claseDoctorado) {
+        this.claseDoctorado = claseDoctorado;
+    }
+    /**
+     * Obtiene hora clase.
+     *
+     * @return hora clase
+     */
+     public BigDecimal getHoraClase() {
+        return this.horaClase;
+    }
+    /**
+     * Establece el hora clase.
+     *
+     * @param horaClase el new hora clase
+     */
+    public void setHoraClase(BigDecimal horaClase) {
+        this.horaClase = horaClase;
+    }
+    /**
+     * Obtiene hora otra actividad.
+     *
+     * @return hora otra actividad
+     */
+     public BigDecimal getHoraOtraActividad() {
+        return this.horaOtraActividad;
+    }
+    /**
+     * Establece el hora otra actividad.
+     *
+     * @param horaOtraActividad el new hora otra actividad
+     */
+    public void setHoraOtraActividad(BigDecimal horaOtraActividad) {
+        this.horaOtraActividad = horaOtraActividad;
+    }
+    /**
+     * Obtiene fecha creacion.
+     *
+     * @return fecha creacion
+     */
+     public Date getFechaCreacion() {
+        return this.fechaCreacion;
+    }
+    /**
+     * Establece el fecha creacion.
+     *
+     * @param fechaCreacion el new fecha creacion
+     */
+    public void setFechaCreacion(Date fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
+    }
+    /**
+     * Obtiene usuario creacion.
+     *
+     * @return usuario creacion
+     */
+     public String getUsuarioCreacion() {
+        return this.usuarioCreacion;
+    }
+    /**
+     * Establece el usuario creacion.
+     *
+     * @param usuarioCreacion el new usuario creacion
+     */
+    public void setUsuarioCreacion(String usuarioCreacion) {
+        this.usuarioCreacion = usuarioCreacion;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idContratoAcademico == null) ? 0 : idContratoAcademico.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        ContratoAcademico other = (ContratoAcademico) obj;
+        if (idContratoAcademico == null) {
+            if (other.idContratoAcademico != null) {
+                return false;
+            }
+        } else if (!idContratoAcademico.equals(other.idContratoAcademico)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "ContratoAcademico [idContratoAcademico=" + idContratoAcademico + "]";
+    }
+   
+}

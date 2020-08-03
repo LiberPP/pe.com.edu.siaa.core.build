@@ -1,0 +1,450 @@
+package pe.com.builderp.core.facturacion.ejb.service.compra.impl;
+
+import java.util.List;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+
+import pe.com.builderp.core.facturacion.ejb.dao.compra.local.CompraDaoLocal;
+import pe.com.builderp.core.facturacion.ejb.dao.compra.local.ContactoProveedorDaoLocal;
+import pe.com.builderp.core.facturacion.ejb.dao.compra.local.CuentaBancariaDaoLocal;
+import pe.com.builderp.core.facturacion.ejb.dao.compra.local.CuentaTipoDocumentoDaoLocal;
+import pe.com.builderp.core.facturacion.ejb.dao.compra.local.DetalleCompraDaoLocal;
+import pe.com.builderp.core.facturacion.ejb.dao.compra.local.DetalleOrdenCompraDaoLocal;
+import pe.com.builderp.core.facturacion.ejb.dao.compra.local.OrdenCompraDaoLocal;
+import pe.com.builderp.core.facturacion.ejb.dao.compra.local.ProveedorDaoLocal;
+import pe.com.builderp.core.facturacion.ejb.service.compra.local.CompraServiceLocal;
+import pe.com.builderp.core.facturacion.model.dto.compra.CompraDTO;
+import pe.com.builderp.core.facturacion.model.dto.compra.ContactoProveedorDTO;
+import pe.com.builderp.core.facturacion.model.dto.compra.CuentaBancariaDTO;
+import pe.com.builderp.core.facturacion.model.dto.compra.CuentaTipoDocumentoDTO;
+import pe.com.builderp.core.facturacion.model.dto.compra.DetalleCompraDTO;
+import pe.com.builderp.core.facturacion.model.dto.compra.DetalleOrdenCompraDTO;
+import pe.com.builderp.core.facturacion.model.dto.compra.OrdenCompraDTO;
+import pe.com.builderp.core.facturacion.model.dto.compra.ProveedorDTO;
+import pe.com.builderp.core.facturacion.model.jpa.compra.Compra;
+import pe.com.builderp.core.facturacion.model.jpa.compra.ContactoProveedor;
+import pe.com.builderp.core.facturacion.model.jpa.compra.CuentaBancaria;
+import pe.com.builderp.core.facturacion.model.jpa.compra.CuentaTipoDocumento;
+import pe.com.builderp.core.facturacion.model.jpa.compra.DetalleCompra;
+import pe.com.builderp.core.facturacion.model.jpa.compra.DetalleOrdenCompra;
+import pe.com.builderp.core.facturacion.model.jpa.compra.OrdenCompra;
+import pe.com.builderp.core.facturacion.model.jpa.compra.Proveedor;
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.model.type.AccionType;
+
+
+/**
+ * La Class CompraServiceImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Thu Dec 28 12:32:52 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+ @Stateless
+public class CompraServiceImpl implements CompraServiceLocal{
+	/** El servicio compra dao impl. */
+	@EJB
+	private CompraDaoLocal compraDaoImpl; 
+	
+	/** El servicio contacto proveedor dao impl. */
+	@EJB
+	private ContactoProveedorDaoLocal contactoProveedorDaoImpl; 
+	
+	/** El servicio cuenta bancaria dao impl. */
+	@EJB
+	private CuentaBancariaDaoLocal cuentaBancariaDaoImpl; 
+	
+	/** El servicio cuenta tipo documento dao impl. */
+	@EJB
+	private CuentaTipoDocumentoDaoLocal cuentaTipoDocumentoDaoImpl; 
+	
+	/** El servicio detalle compra dao impl. */
+	@EJB
+	private DetalleCompraDaoLocal detalleCompraDaoImpl; 
+	
+	/** El servicio detalle orden compra dao impl. */
+	@EJB
+	private DetalleOrdenCompraDaoLocal detalleOrdenCompraDaoImpl; 
+	
+	/** El servicio orden compra dao impl. */
+	@EJB
+	private OrdenCompraDaoLocal ordenCompraDaoImpl; 
+	
+	/** El servicio proveedor dao impl. */
+	@EJB
+	private ProveedorDaoLocal proveedorDaoImpl; 
+	
+	@Override
+	public CompraDTO controladorAccionCompra(CompraDTO compra, AccionType accionType) throws Exception {
+		CompraDTO resultado = null;
+		Compra resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				compra.setIdCompra(this.compraDaoImpl.generarIdCompra());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(compra, Compra.class,"entidad@PK@","ordenCompra@PK@","proveedor@PK@","tipoDocSunat@PK@","itemByTipoMoneda@PK@");
+				this.compraDaoImpl.save(resultadoEntity);	
+				resultado = compra;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(compra, Compra.class,"entidad@PK@","ordenCompra@PK@","proveedor@PK@","tipoDocSunat@PK@","itemByTipoMoneda@PK@");
+				this.compraDaoImpl.update(resultadoEntity);
+				resultado = compra;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.compraDaoImpl.find(Compra.class, compra.getIdCompra());
+				this.compraDaoImpl.delete(resultadoEntity);
+				resultado = compra;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.compraDaoImpl.find(Compra.class, compra.getIdCompra());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,CompraDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.compraDaoImpl.findByNombre(compra),CompraDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<CompraDTO> listarCompra(CompraDTO compra) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.compraDaoImpl.listarCompra(compra),CompraDTO.class);
+	}
+	@Override
+	public int contarListarCompra(CompraDTO compra){
+		return  this.compraDaoImpl.contarListarCompra(compra);
+	}
+	@Override
+	public ContactoProveedorDTO controladorAccionContactoProveedor(ContactoProveedorDTO contactoProveedor, AccionType accionType) throws Exception {
+		ContactoProveedorDTO resultado = null;
+		ContactoProveedor resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				contactoProveedor.setIdContactoProveedor(this.contactoProveedorDaoImpl.generarIdContactoProveedor());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(contactoProveedor, ContactoProveedor.class,"proveedor@PK@","itemByContacto@PK@");
+				this.contactoProveedorDaoImpl.save(resultadoEntity);	
+				resultado = contactoProveedor;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(contactoProveedor, ContactoProveedor.class,"proveedor@PK@","itemByContacto@PK@");
+				this.contactoProveedorDaoImpl.update(resultadoEntity);
+				resultado = contactoProveedor;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.contactoProveedorDaoImpl.find(ContactoProveedor.class, contactoProveedor.getIdContactoProveedor());
+				this.contactoProveedorDaoImpl.delete(resultadoEntity);
+				resultado = contactoProveedor;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.contactoProveedorDaoImpl.find(ContactoProveedor.class, contactoProveedor.getIdContactoProveedor());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,ContactoProveedorDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.contactoProveedorDaoImpl.findByNombre(contactoProveedor),ContactoProveedorDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<ContactoProveedorDTO> listarContactoProveedor(ContactoProveedorDTO contactoProveedor) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.contactoProveedorDaoImpl.listarContactoProveedor(contactoProveedor),ContactoProveedorDTO.class);
+	}
+	@Override
+	public int contarListarContactoProveedor(ContactoProveedorDTO contactoProveedor){
+		return  this.contactoProveedorDaoImpl.contarListarContactoProveedor(contactoProveedor);
+	}
+	@Override
+	public CuentaBancariaDTO controladorAccionCuentaBancaria(CuentaBancariaDTO cuentaBancaria, AccionType accionType) throws Exception {
+		CuentaBancariaDTO resultado = null;
+		CuentaBancaria resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				cuentaBancaria.setIdCuentaBancaria(this.cuentaBancariaDaoImpl.generarIdCuentaBancaria());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(cuentaBancaria, CuentaBancaria.class,"itemByBanco@PK@","proveedor@PK@","itemByMoneda@PK@","itemByTipoCuenta@PK@");
+				this.cuentaBancariaDaoImpl.save(resultadoEntity);	
+				resultado = cuentaBancaria;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(cuentaBancaria, CuentaBancaria.class,"itemByBanco@PK@","proveedor@PK@","itemByMoneda@PK@","itemByTipoCuenta@PK@");
+				this.cuentaBancariaDaoImpl.update(resultadoEntity);
+				resultado = cuentaBancaria;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.cuentaBancariaDaoImpl.find(CuentaBancaria.class, cuentaBancaria.getIdCuentaBancaria());
+				this.cuentaBancariaDaoImpl.delete(resultadoEntity);
+				resultado = cuentaBancaria;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.cuentaBancariaDaoImpl.find(CuentaBancaria.class, cuentaBancaria.getIdCuentaBancaria());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,CuentaBancariaDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.cuentaBancariaDaoImpl.findByNombre(cuentaBancaria),CuentaBancariaDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<CuentaBancariaDTO> listarCuentaBancaria(CuentaBancariaDTO cuentaBancaria) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.cuentaBancariaDaoImpl.listarCuentaBancaria(cuentaBancaria),CuentaBancariaDTO.class);
+	}
+	@Override
+	public int contarListarCuentaBancaria(CuentaBancariaDTO cuentaBancaria){
+		return  this.cuentaBancariaDaoImpl.contarListarCuentaBancaria(cuentaBancaria);
+	}
+	@Override
+	public CuentaTipoDocumentoDTO controladorAccionCuentaTipoDocumento(CuentaTipoDocumentoDTO cuentaTipoDocumento, AccionType accionType) throws Exception {
+		CuentaTipoDocumentoDTO resultado = null;
+		CuentaTipoDocumento resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				cuentaTipoDocumento.setIdCuentaTipoDocumento(this.cuentaTipoDocumentoDaoImpl.generarIdCuentaTipoDocumento());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(cuentaTipoDocumento, CuentaTipoDocumento.class,"proveedor@PK@","idPlanContable@PK@","itemByTipoDocumento@PK@","itemByMoneda@PK@");
+				this.cuentaTipoDocumentoDaoImpl.save(resultadoEntity);	
+				resultado = cuentaTipoDocumento;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(cuentaTipoDocumento, CuentaTipoDocumento.class,"proveedor@PK@","idPlanContable@PK@","itemByTipoDocumento@PK@","itemByMoneda@PK@");
+				this.cuentaTipoDocumentoDaoImpl.update(resultadoEntity);
+				resultado = cuentaTipoDocumento;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.cuentaTipoDocumentoDaoImpl.find(CuentaTipoDocumento.class, cuentaTipoDocumento.getIdCuentaTipoDocumento());
+				this.cuentaTipoDocumentoDaoImpl.delete(resultadoEntity);
+				resultado = cuentaTipoDocumento;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.cuentaTipoDocumentoDaoImpl.find(CuentaTipoDocumento.class, cuentaTipoDocumento.getIdCuentaTipoDocumento());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,CuentaTipoDocumentoDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.cuentaTipoDocumentoDaoImpl.findByNombre(cuentaTipoDocumento),CuentaTipoDocumentoDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<CuentaTipoDocumentoDTO> listarCuentaTipoDocumento(CuentaTipoDocumentoDTO cuentaTipoDocumento) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.cuentaTipoDocumentoDaoImpl.listarCuentaTipoDocumento(cuentaTipoDocumento),CuentaTipoDocumentoDTO.class);
+	}
+	@Override
+	public int contarListarCuentaTipoDocumento(CuentaTipoDocumentoDTO cuentaTipoDocumento){
+		return  this.cuentaTipoDocumentoDaoImpl.contarListarCuentaTipoDocumento(cuentaTipoDocumento);
+	}
+	@Override
+	public DetalleCompraDTO controladorAccionDetalleCompra(DetalleCompraDTO detalleCompra, AccionType accionType) throws Exception {
+		DetalleCompraDTO resultado = null;
+		DetalleCompra resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				detalleCompra.setIdDetalleCompra(this.detalleCompraDaoImpl.generarIdDetalleCompra());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(detalleCompra, DetalleCompra.class,"compra@PK@","producto@PK@");
+				this.detalleCompraDaoImpl.save(resultadoEntity);	
+				resultado = detalleCompra;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(detalleCompra, DetalleCompra.class,"compra@PK@","producto@PK@");
+				this.detalleCompraDaoImpl.update(resultadoEntity);
+				resultado = detalleCompra;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.detalleCompraDaoImpl.find(DetalleCompra.class, detalleCompra.getIdDetalleCompra());
+				this.detalleCompraDaoImpl.delete(resultadoEntity);
+				resultado = detalleCompra;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.detalleCompraDaoImpl.find(DetalleCompra.class, detalleCompra.getIdDetalleCompra());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,DetalleCompraDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.detalleCompraDaoImpl.findByNombre(detalleCompra),DetalleCompraDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<DetalleCompraDTO> listarDetalleCompra(DetalleCompraDTO detalleCompra) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.detalleCompraDaoImpl.listarDetalleCompra(detalleCompra),DetalleCompraDTO.class);
+	}
+	@Override
+	public int contarListarDetalleCompra(DetalleCompraDTO detalleCompra){
+		return  this.detalleCompraDaoImpl.contarListarDetalleCompra(detalleCompra);
+	}
+	@Override
+	public DetalleOrdenCompraDTO controladorAccionDetalleOrdenCompra(DetalleOrdenCompraDTO detalleOrdenCompra, AccionType accionType) throws Exception {
+		DetalleOrdenCompraDTO resultado = null;
+		DetalleOrdenCompra resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				detalleOrdenCompra.setIdDetalleOrdenCompra(this.detalleOrdenCompraDaoImpl.generarIdDetalleOrdenCompra());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(detalleOrdenCompra, DetalleOrdenCompra.class,"ordenCompra@PK@","producto@PK@");
+				this.detalleOrdenCompraDaoImpl.save(resultadoEntity);	
+				resultado = detalleOrdenCompra;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(detalleOrdenCompra, DetalleOrdenCompra.class,"ordenCompra@PK@","producto@PK@");
+				this.detalleOrdenCompraDaoImpl.update(resultadoEntity);
+				resultado = detalleOrdenCompra;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.detalleOrdenCompraDaoImpl.find(DetalleOrdenCompra.class, detalleOrdenCompra.getIdDetalleOrdenCompra());
+				this.detalleOrdenCompraDaoImpl.delete(resultadoEntity);
+				resultado = detalleOrdenCompra;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.detalleOrdenCompraDaoImpl.find(DetalleOrdenCompra.class, detalleOrdenCompra.getIdDetalleOrdenCompra());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,DetalleOrdenCompraDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.detalleOrdenCompraDaoImpl.findByNombre(detalleOrdenCompra),DetalleOrdenCompraDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<DetalleOrdenCompraDTO> listarDetalleOrdenCompra(DetalleOrdenCompraDTO detalleOrdenCompra) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.detalleOrdenCompraDaoImpl.listarDetalleOrdenCompra(detalleOrdenCompra),DetalleOrdenCompraDTO.class);
+	}
+	@Override
+	public int contarListarDetalleOrdenCompra(DetalleOrdenCompraDTO detalleOrdenCompra){
+		return  this.detalleOrdenCompraDaoImpl.contarListarDetalleOrdenCompra(detalleOrdenCompra);
+	}
+	@Override
+	public OrdenCompraDTO controladorAccionOrdenCompra(OrdenCompraDTO ordenCompra, AccionType accionType) throws Exception {
+		OrdenCompraDTO resultado = null;
+		OrdenCompra resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				ordenCompra.setIdOrdenCompra(this.ordenCompraDaoImpl.generarIdOrdenCompra());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(ordenCompra, OrdenCompra.class,"entidad@PK@","proveedor@PK@","tipoDocSunat@PK@","itemByTipoMoneda@PK@");
+				this.ordenCompraDaoImpl.save(resultadoEntity);	
+				resultado = ordenCompra;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(ordenCompra, OrdenCompra.class,"entidad@PK@","proveedor@PK@","tipoDocSunat@PK@","itemByTipoMoneda@PK@");
+				this.ordenCompraDaoImpl.update(resultadoEntity);
+				resultado = ordenCompra;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.ordenCompraDaoImpl.find(OrdenCompra.class, ordenCompra.getIdOrdenCompra());
+				this.ordenCompraDaoImpl.delete(resultadoEntity);
+				resultado = ordenCompra;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.ordenCompraDaoImpl.find(OrdenCompra.class, ordenCompra.getIdOrdenCompra());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,OrdenCompraDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.ordenCompraDaoImpl.findByNombre(ordenCompra),OrdenCompraDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<OrdenCompraDTO> listarOrdenCompra(OrdenCompraDTO ordenCompra) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.ordenCompraDaoImpl.listarOrdenCompra(ordenCompra),OrdenCompraDTO.class);
+	}
+	@Override
+	public int contarListarOrdenCompra(OrdenCompraDTO ordenCompra){
+		return  this.ordenCompraDaoImpl.contarListarOrdenCompra(ordenCompra);
+	}
+	@Override
+	public ProveedorDTO controladorAccionProveedor(ProveedorDTO proveedor, AccionType accionType) throws Exception {
+		ProveedorDTO resultado = null;
+		Proveedor resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				proveedor.setIdProveedor(this.proveedorDaoImpl.generarIdProveedor());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(proveedor, Proveedor.class,"entidad@PK@","itemByTipoDocumentoIdentidad@PK@");
+				this.proveedorDaoImpl.save(resultadoEntity);	
+				resultado = proveedor;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(proveedor, Proveedor.class,"entidad@PK@","itemByTipoDocumentoIdentidad@PK@");
+				this.proveedorDaoImpl.update(resultadoEntity);
+				resultado = proveedor;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.proveedorDaoImpl.find(Proveedor.class, proveedor.getIdProveedor());
+				this.proveedorDaoImpl.delete(resultadoEntity);
+				resultado = proveedor;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.proveedorDaoImpl.find(Proveedor.class, proveedor.getIdProveedor());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,ProveedorDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.proveedorDaoImpl.findByNombre(proveedor),ProveedorDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<ProveedorDTO> listarProveedor(ProveedorDTO proveedor) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.proveedorDaoImpl.listarProveedor(proveedor),ProveedorDTO.class,"itemByTipoDocumentoIdentidad");
+	}
+	@Override
+	public int contarListarProveedor(ProveedorDTO proveedor){
+		return  this.proveedorDaoImpl.contarListarProveedor(proveedor);
+	}
+}

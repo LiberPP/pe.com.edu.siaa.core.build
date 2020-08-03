@@ -1,0 +1,120 @@
+package pe.com.edu.siaa.core.ejb.service.rest.pago.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.pago.local.PagoServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.matricula.AlumnoConvenioDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class AlumnoConvenioRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:26 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/alumnoConvenioRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class AlumnoConvenioRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient PagoServiceLocal pagoServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<AlumnoConvenioDTO> crear(AlumnoConvenioDTO alumnoConvenio) throws Exception {
+		return controladorAccion(alumnoConvenio,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<AlumnoConvenioDTO> modificar(AlumnoConvenioDTO alumnoConvenio) throws Exception {
+		return controladorAccion(alumnoConvenio,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<AlumnoConvenioDTO> eliminar(@PathParam("id") String idAlumnoConvenio) throws Exception {
+		AlumnoConvenioDTO alumnoConvenio = new AlumnoConvenioDTO();
+		alumnoConvenio.setIdAlumnoConvenio(idAlumnoConvenio);		
+		return controladorAccion(alumnoConvenio,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<AlumnoConvenioDTO> controladorAccion(AlumnoConvenioDTO alumnoConvenio, AccionType accionType){
+		ResultadoRestVO<AlumnoConvenioDTO> resultado = new ResultadoRestVO<AlumnoConvenioDTO>();
+		 try {
+    		resultado.setObjetoResultado(pagoServiceLocal.controladorAccionAlumnoConvenio(alumnoConvenio,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<AlumnoConvenioDTO> finById(@PathParam("id") String idAlumnoConvenio) throws Exception {
+		AlumnoConvenioDTO alumnoConvenio = new AlumnoConvenioDTO();
+		alumnoConvenio.setIdAlumnoConvenio(idAlumnoConvenio);
+		return controladorAccion(alumnoConvenio,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<AlumnoConvenioDTO> listarAlumnoConvenio(@Context UriInfo info){
+		ResultadoRestVO<AlumnoConvenioDTO> resultado = new ResultadoRestVO<AlumnoConvenioDTO>();
+		AlumnoConvenioDTO alumnoConvenio = transferUriInfo(info);
+		 try {
+    		resultado.setListaResultado(pagoServiceLocal.listarAlumnoConvenio(alumnoConvenio));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<AlumnoConvenioDTO> contarListarAlumnoConvenio(@Context UriInfo info){
+		ResultadoRestVO<AlumnoConvenioDTO> resultado = new ResultadoRestVO<AlumnoConvenioDTO>();
+		AlumnoConvenioDTO alumnoConvenio = transferUriInfo(info);
+		 try {
+    		resultado.setContador(pagoServiceLocal.contarListarAlumnoConvenio(alumnoConvenio));
+    		if (resultado.isData()) {
+    			resultado.setListaResultado(pagoServiceLocal.listarAlumnoConvenio(alumnoConvenio));
+    		}
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<AlumnoConvenioDTO> inicializarAlumnoConvenio(@Context UriInfo info) throws Exception {
+	     AlumnoConvenioDTO alumnoConvenio = transferUriInfo(info);
+		 ResultadoRestVO<AlumnoConvenioDTO> resultado = new ResultadoRestVO<AlumnoConvenioDTO>();
+		 try {
+    		resultado.setObjetoResultado(alumnoConvenio);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private AlumnoConvenioDTO transferUriInfo(@Context UriInfo info) {
+		AlumnoConvenioDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,AlumnoConvenioDTO.class);
+		return resultado;
+	}
+}

@@ -1,0 +1,326 @@
+package pe.com.edu.siaa.core.ejb.service.nota.local;
+
+import java.util.List;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.model.dto.matricula.ResultadoNotaDTO;
+import pe.com.edu.siaa.core.model.dto.nota.AsistenciaDTO;
+import pe.com.edu.siaa.core.model.dto.nota.ConceptoNotaDTO;
+import pe.com.edu.siaa.core.model.dto.nota.CursoNotaDTO;
+import pe.com.edu.siaa.core.model.dto.nota.DefinirCriterioEvaluacionDTO;
+import pe.com.edu.siaa.core.model.dto.nota.DetRegistroNotaDTO;
+import pe.com.edu.siaa.core.model.dto.nota.NotaLetraDTO;
+import pe.com.edu.siaa.core.model.dto.nota.RegistroNotaDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.model.vo.RegistroNotaVO;
+
+/**
+ * La Class NotaServiceLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:23 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface NotaServiceLocal {
+	
+	String generarReporteRegistroNotaByCurso(String idAnhoSemstre, String idDetCargaLectiva,String idEntidad) throws Exception;
+	
+	void registrarAsistencia(List<AsistenciaDTO> listaAsistencia,String userName) throws Exception;
+	
+	List<AsistenciaDTO> obtenerAsistencia(String idDetCargaLectiva,String idAlumno,String userName) throws Exception;
+	
+	String generarReporteMultiple(String tipoReporte, String idEscuela, String idAnhoSemestre,String serviceKey,String authToken) throws Exception;
+	
+	String generarReporteActaEvaluacionFinal(String idSemestre,String idCursoCarga, String idEscuela, Boolean esActaEvaluacionFinalAplazado,String serviceKey,String authToken) throws Exception;
+	
+	String generarReporteRecordNotaBySemestre(String idSemestre,String idAlumno, String usuario) throws Exception;
+	
+	String generarReporteNotaOrdenadoBySemestre(String idAlumno, String usuario) throws Exception;
+	
+	String generarReporteNotaOrdenadoByCiclo(String idAlumno,String serviceKey,String authToken) throws Exception;
+	
+	String generarReporteCertificadoEstudioByRangoCiclo(String idAlumno, Long idCicloInicio, Long idCicloFin,Boolean checkCreditoAprobado,String serviceKey,String authToken) throws Exception;
+	
+	List<RegistroNotaVO>  completarListaNotaDTO(List<RegistroNotaVO> listaNotaDTO,String serviceKey,String authToken)  throws Exception;
+	
+	/**
+	 * Obtener creditos acomulado.
+	 *
+	 * @param alumno el alumno
+	 * @return the int
+	 * @throws Exception the exception
+	 */
+	int obtenerCreditosAcomulado(String idAlumno,String idEscuela) throws Exception;
+
+	/**
+	 * Obtener nota alumno mariculado ordenado by semestre.
+	 *
+	 * @param alumno el alumno
+	 * @param idSemestre el id semestre
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<RegistroNotaVO> obtenerNotaAlumnoMariculadoOrdenadoBySemestre(String idAlumno,String idSemestre) throws Exception;
+	
+	/**
+	 * Obtener nota alumno mariculado by semestre.
+	 *
+	 * @param idSemestre el id semestre
+	 * @param alumno el alumno
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<RegistroNotaVO> obtenerNotaAlumnoMariculadoBySemestre(String idSemestre, String idAlumno) throws Exception;
+	
+	
+	/**
+	 * Obtener nota alumno mariculado ordenado by ciclo.
+	 *
+	 * @param alumno el alumno
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<RegistroNotaVO> obtenerNotaAlumnoMariculadoOrdenadoByCiclo(String idAlumno) throws Exception;
+
+	
+	
+	/**
+	 * Obtener nota certificado estudio ordenado by ciclo.
+	 *
+	 * @param alumno el alumno
+	 * @param idCicloInicio el id ciclo inicio
+	 * @param idCicloFin el id ciclo fin
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<RegistroNotaVO> obtenerNotaCertificadoEstudioOrdenadoByCiclo(String idAlumno,Long idCicloInicio,Long idCicloFin) throws Exception;
+	
+	
+	ResultadoNotaDTO obtenerCursoNotaMap(String idAlumno) throws Exception;
+	
+	/**
+	 * Obtener nota alumno mariculado by curso.
+	 *
+	 * @param idDetCargaLectiva el id det carga lectiva
+	 * @param alumno el alumno
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<DetRegistroNotaDTO> obtenerNotaAlumnoMariculadoByCurso(String idDetCargaLectiva, String idAlumno, Boolean esActaEvaluacionFinalAplazado) throws Exception;
+	
+	/**
+	 * Controlador accion asistencia.
+	 *
+	 * @param asistencia el asistencia
+	 * @param accionType el accion type
+	 * @return the asistencia
+	 * @throws Exception the exception
+	 */
+	AsistenciaDTO controladorAccionAsistencia(AsistenciaDTO asistencia,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar asistencia.
+	 *
+	 * @param asistencia el asistencia
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<AsistenciaDTO> listarAsistencia(AsistenciaDTO asistencia) throws Exception;
+	
+	/**
+	 * contar lista asistencia.
+	 *
+	 * @param asistencia el asistencia
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarAsistencia(AsistenciaDTO asistencia);
+	
+	
+	/**
+	 * Controlador accion nota letra.
+	 *
+	 * @param notaLetra el nota letra
+	 * @param accionType el accion type
+	 * @return the nota letra
+	 * @throws Exception the exception
+	 */
+	NotaLetraDTO controladorAccionNotaLetra(NotaLetraDTO notaLetra,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar nota letra.
+	 *
+	 * @param notaLetra el nota letra
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<NotaLetraDTO> listarNotaLetra(NotaLetraDTO notaLetra) throws Exception;
+	
+	/**
+	 * contar lista nota letra.
+	 *
+	 * @param notaLetra el nota letra
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarNotaLetra(NotaLetraDTO notaLetra);
+	
+	/**
+	 * Controlador accion concepto nota.
+	 *
+	 * @param conceptoNota el concepto nota
+	 * @param accionType el accion type
+	 * @return the concepto nota
+	 * @throws Exception the exception
+	 */
+	ConceptoNotaDTO controladorAccionConceptoNota(ConceptoNotaDTO conceptoNota,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar concepto nota.
+	 *
+	 * @param conceptoNota el concepto nota
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<ConceptoNotaDTO> listarConceptoNota(ConceptoNotaDTO conceptoNota) throws Exception;
+	
+	List<ConceptoNotaDTO> listarConceptoNota(String flagObligatorio,String estado,String idDetCargaLectiva) throws Exception;
+	
+	/**
+	 * contar lista concepto nota.
+	 *
+	 * @param conceptoNota el concepto nota
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarConceptoNota(ConceptoNotaDTO conceptoNota);
+	
+	
+	/**
+	 * Controlador accion curso nota.
+	 *
+	 * @param cursoNota el curso nota
+	 * @param accionType el accion type
+	 * @return the curso nota
+	 * @throws Exception the exception
+	 */
+	CursoNotaDTO controladorAccionCursoNota(CursoNotaDTO cursoNota,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar curso nota.
+	 *
+	 * @param cursoNota el curso nota
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<CursoNotaDTO> listarCursoNota(CursoNotaDTO cursoNota) throws Exception;
+	
+	/**
+	 * contar lista curso nota.
+	 *
+	 * @param cursoNota el curso nota
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarCursoNota(CursoNotaDTO cursoNota);
+	
+	/**
+	 * Registrar nota.
+	 *
+	 * @param listaDetRegistroNota el lista det registro nota
+	 * @param definirCriterioEvaluacionMap el definir criterio evaluacion map
+	 * @throws Exception the exception
+	 */
+	void registrarNota(List<DetRegistroNotaDTO> listaDetRegistroNota,String userName)  throws Exception;
+	/**
+	 * Controlador accion registro nota.
+	 *
+	 * @param registroNota el registro nota
+	 * @param accionType el accion type
+	 * @return the registro nota
+	 * @throws Exception the exception
+	 */
+	RegistroNotaDTO controladorAccionRegistroNota(RegistroNotaDTO registroNota,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar registro nota.
+	 *
+	 * @param registroNota el registro nota
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<RegistroNotaDTO> listarRegistroNota(RegistroNotaDTO registroNota) throws Exception;
+	
+	/**
+	 * contar lista registro nota.
+	 *
+	 * @param registroNota el registro nota
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarRegistroNota(RegistroNotaDTO registroNota);
+	
+	/**
+	 * Controlador accion definir criterio evaluacion.
+	 *
+	 * @param definirCriterioEvaluacion el definir criterio evaluacion
+	 * @param accionType el accion type
+	 * @return the definir criterio evaluacion
+	 * @throws Exception the exception
+	 */
+	DefinirCriterioEvaluacionDTO controladorAccionDefinirCriterioEvaluacion(DefinirCriterioEvaluacionDTO definirCriterioEvaluacion,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar definir criterio evaluacion.
+	 *
+	 * @param definirCriterioEvaluacion el definir criterio evaluacion
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<DefinirCriterioEvaluacionDTO> listarDefinirCriterioEvaluacion(DefinirCriterioEvaluacionDTO definirCriterioEvaluacion) throws Exception;
+	
+	/**
+	 * contar lista definir criterio evaluacion.
+	 *
+	 * @param definirCriterioEvaluacion el definir criterio evaluacion
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarDefinirCriterioEvaluacion(DefinirCriterioEvaluacionDTO definirCriterioEvaluacion);
+	
+	
+	/**
+	 * Controlador accion det registro nota.
+	 *
+	 * @param detRegistroNota el det registro nota
+	 * @param accionType el accion type
+	 * @return the det registro nota
+	 * @throws Exception the exception
+	 */
+	DetRegistroNotaDTO controladorAccionDetRegistroNota(DetRegistroNotaDTO detRegistroNota,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar det registro nota.
+	 *
+	 * @param detRegistroNota el det registro nota
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<DetRegistroNotaDTO> listarDetRegistroNota(DetRegistroNotaDTO detRegistroNota) throws Exception;
+	
+	/**
+	 * contar lista det registro nota.
+	 *
+	 * @param detRegistroNota el det registro nota
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarDetRegistroNota(DetRegistroNotaDTO detRegistroNota);
+	
+}

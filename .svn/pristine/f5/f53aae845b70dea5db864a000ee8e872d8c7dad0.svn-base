@@ -1,0 +1,154 @@
+package pe.com.edu.siaa.core.ejb.dao.matricula.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.persistence.Query;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericAcademicoDAOImpl;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.CargaLectivaDaoLocal;
+import pe.com.edu.siaa.core.model.dto.matricula.CargaLectivaDTO;
+import pe.com.edu.siaa.core.model.jpa.matricula.CargaLectiva;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+
+/**
+ * La Class CargaLectivaDaoImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 19:53:48 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+public class CargaLectivaDaoImpl extends  GenericAcademicoDAOImpl<String, CargaLectiva> implements CargaLectivaDaoLocal  {
+
+	
+	//TODO:VER PARAMETRO
+	@Override
+	public List<CargaLectiva> listarCargaLectivaFiltro(CargaLectivaDTO cargaLectiva) throws Exception {
+		Map<String, Object> parametros = new HashMap<String, Object>();
+		boolean ejecutarQuery = false;
+		StringBuilder jpaql = new StringBuilder();
+		jpaql.append("from CargaLectiva cl where 1 = 1 ");
+		if (cargaLectiva != null) {
+			if (StringUtils.isNotNullOrBlank(cargaLectiva.getEscuela().getIdEscuela())) {
+				ejecutarQuery = true;
+				jpaql.append(" and cl.escuela.idEscuela = :idEscuela ");
+				parametros.put("idEscuela", cargaLectiva.getEscuela().getIdEscuela());
+			}
+			if (StringUtils.isNotNullOrBlank(cargaLectiva.getAnhoSemestre().getIdAnhoSemestre())) {
+				ejecutarQuery = true;
+				jpaql.append(" and cl.anhoSemestre.idAnhoSemestre = :idAnhoSemestre ");
+				parametros.put("idAnhoSemestre", cargaLectiva.getAnhoSemestre().getIdAnhoSemestre());
+			}
+			
+			jpaql.append(" and cl.entidadUniversitaria.idEntidadUniversitaria = :idEntidadUniversitaria ");
+			parametros.put("idEntidadUniversitaria", cargaLectiva.getEntidadUniversitaria().getIdEntidadUniversitaria());
+		}
+		jpaql.append(" order by cl.escuela.idEscuela ");
+		if (ejecutarQuery) {		
+			Query query = createQuery(jpaql.toString(), parametros);
+			return query.getResultList();
+		} 
+		return null;
+	}
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.CargaLectivaDaoLocal#listarCargaLectiva(pe.com.edu.siaa.core.model.jpa.seguridad.CargaLectiva)
+     */  
+    @Override	 
+    public List<CargaLectiva> listarCargaLectiva(CargaLectivaDTO cargaLectiva) {
+        Query query = generarQueryListaCargaLectiva(cargaLectiva, false);
+        query.setFirstResult(cargaLectiva.getStartRow());
+        query.setMaxResults(cargaLectiva.getOffset());
+        return query.getResultList();
+    }   
+   
+    /**
+     * Generar query lista CargaLectiva.
+     *
+     * @param CargaLectivaDTO el cargaLectiva
+     * @param esContador el es contador
+     * @return the query
+     */
+    private Query generarQueryListaCargaLectiva(CargaLectivaDTO cargaLectiva, boolean esContador) {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        if (esContador) {
+            jpaql.append(" select count(o.idCargaLectiva) from CargaLectiva o where 1=1 ");
+        } else {
+            jpaql.append(" select o from CargaLectiva o where 1=1 ");           
+        }
+		if (!StringUtils.isNullOrEmpty(cargaLectiva.getSearch())) {
+	          jpaql.append(" and upper(o.idCargaLectiva) like :search ");
+	          parametros.put("search", "%" + cargaLectiva.getSearch().toUpperCase() + "%");
+	    } else {
+			if (!StringUtils.isNullOrEmpty(cargaLectiva.getNombre())) {
+				jpaql.append(" and upper(o.nombre) like :nombre ");
+				parametros.put("nombre", "%" + cargaLectiva.getNombre().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(cargaLectiva.getUsuarioCreacion())) {
+				jpaql.append(" and upper(o.usuarioCreacion) like :usuarioCreacion ");
+				parametros.put("usuarioCreacion", "%" + cargaLectiva.getUsuarioCreacion().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(cargaLectiva.getFechaCreacion())) {
+				jpaql.append(" and o.fechaCreacion = :fechaCreacion ");
+				parametros.put("fechaCreacion", cargaLectiva.getFechaCreacion());
+			}
+			if (!StringUtils.isNullOrEmpty(cargaLectiva.getUsuarioModificacion())) {
+				jpaql.append(" and upper(o.usuarioModificacion) like :usuarioModificacion ");
+				parametros.put("usuarioModificacion", "%" + cargaLectiva.getUsuarioModificacion().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(cargaLectiva.getFechaModificacion())) {
+				jpaql.append(" and o.fechaModificacion = :fechaModificacion ");
+				parametros.put("fechaModificacion", cargaLectiva.getFechaModificacion());
+			}
+			if (!StringUtils.isNullOrEmpty(cargaLectiva.getObservacion())) {
+				jpaql.append(" and upper(o.observacion) like :observacion ");
+				parametros.put("observacion", "%" + cargaLectiva.getObservacion().toUpperCase() + "%");
+			}
+		}
+        if (!esContador) {
+            //jpaql.append(" ORDER BY 1 ");
+        }
+        Query query = createQuery(jpaql.toString(), parametros);
+        return query;
+    }
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.CargaLectivaDaoLocal#contarListar{entity.getClassName()}(pe.com.edu.siaa.core.model.jpa.seguridad.CargaLectivaDTO)
+     */
+	@Override
+    public int contarListarCargaLectiva(CargaLectivaDTO cargaLectiva) {
+        int resultado = 0;
+        try {
+            //StringBuilder jpaql = new StringBuilder();
+            Query query = generarQueryListaCargaLectiva(cargaLectiva, true);
+            resultado = ((Long) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            resultado = 0;
+        }
+        return resultado;
+    }
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.CargaLectivaDaoLocal#generarIdCargaLectiva()
+     */
+	 @Override
+    public String generarIdCargaLectiva() {
+        String resultado = "1";
+        Query query = createQuery("select max(o.idCargaLectiva) from CargaLectiva o", null);
+        List<Object> listLong =  query.getResultList();
+        if (listLong != null && listLong.size() > 0 && listLong.get(0) != null)  {
+            Long ultimoIdGenerado = Long.valueOf(listLong.get(0).toString());
+            if (!StringUtils.isNullOrEmpty(ultimoIdGenerado)) {
+                resultado = resultado + ultimoIdGenerado;
+            }
+        }
+        return resultado;
+    }
+   
+}

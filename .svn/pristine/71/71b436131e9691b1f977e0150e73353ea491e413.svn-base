@@ -1,0 +1,360 @@
+package pe.com.edu.siaa.core.model.dto.pago;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import pe.com.edu.siaa.core.model.dto.BasePaginator;
+import pe.com.edu.siaa.core.model.dto.common.ItemDTO;
+import pe.com.edu.siaa.core.model.dto.matricula.AlumnoConvenioDTO;
+
+/**
+ * La Class ConvenioDTO.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 1.0, Tue Apr 18 09:56:53 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+public class ConvenioDTO extends BasePaginator implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id convenio. */
+    private Long idConvenio;
+   
+    /** El item by clasificacion convenio. */
+    private ItemDTO itemByClasificacionConvenio;
+   
+    /** El descripcion. */
+    private String descripcion;
+   
+    /** El item by tipo documento. */
+    private ItemDTO itemByTipoDocumento;
+   
+    /** El nro doc. */
+    private String nroDoc;
+   
+    /** El fecha inicio. */
+    private Date fechaInicio;
+   
+    /** El fecha fin. */
+    private Date fechaFin;
+   
+    /** El estado. */
+    private String estado;
+   
+    /** El fecha creacion. */
+    private Date fechaCreacion;
+   
+    /** El usuario creacion. */
+    private String usuarioCreacion;
+   
+    /** El fecha modificacion. */
+    private Date fechaModificacion;
+   
+    /** El usuario modificacion. */
+    private String usuarioModificacion;
+   
+    /** El convenio alumno convenio list. */
+    private List<AlumnoConvenioDTO> convenioAlumnoConvenioList = new ArrayList<AlumnoConvenioDTO>();
+   
+    /**
+     * Instancia un nuevo convenioDTO.
+     */
+    public ConvenioDTO() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo convenioDTO.
+     *
+     * @param idConvenio el id convenio
+     * @param itemByClasificacionConvenio el item by clasificacion convenio
+     * @param descripcion el descripcion
+     * @param itemByTipoDocumento el item by tipo documento
+     * @param nroDoc el nro doc
+     * @param fechaInicio el fecha inicio
+     * @param fechaFin el fecha fin
+     * @param estado el estado
+     * @param fechaCreacion el fecha creacion
+     * @param usuarioCreacion el usuario creacion
+     * @param fechaModificacion el fecha modificacion
+     * @param usuarioModificacion el usuario modificacion
+     */
+    public ConvenioDTO(Long idConvenio, ItemDTO itemByClasificacionConvenio,String descripcion, ItemDTO itemByTipoDocumento,String nroDoc, Date fechaInicio, Date fechaFin, String estado, Date fechaCreacion, String usuarioCreacion, Date fechaModificacion, String usuarioModificacion ) {
+        super();
+        this.idConvenio = idConvenio;
+        this.itemByClasificacionConvenio = itemByClasificacionConvenio;
+        this.descripcion = descripcion;
+        this.itemByTipoDocumento = itemByTipoDocumento;
+        this.nroDoc = nroDoc;
+        this.fechaInicio = fechaInicio;
+        this.fechaFin = fechaFin;
+        this.estado = estado;
+        this.fechaCreacion = fechaCreacion;
+        this.usuarioCreacion = usuarioCreacion;
+        this.fechaModificacion = fechaModificacion;
+        this.usuarioModificacion = usuarioModificacion;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id convenio.
+     *
+     * @return id convenio
+     */
+     public Long getIdConvenio() {
+        return this.idConvenio;
+    }
+    /**
+     * Establece el id convenio.
+     *
+     * @param idConvenio el new id convenio
+     */
+    public void setIdConvenio(Long idConvenio) {
+        this.idConvenio = idConvenio;
+    }
+    /**
+     * Obtiene item by clasificacion convenio.
+     *
+     * @return item by clasificacion convenio
+     */
+     public ItemDTO getItemByClasificacionConvenio() {
+        return this.itemByClasificacionConvenio;
+    }
+    /**
+     * Establece el item by clasificacion convenio.
+     *
+     * @param itemByClasificacionConvenio el new item by clasificacion convenio
+     */
+    public void setItemByClasificacionConvenio(ItemDTO itemByClasificacionConvenio) {
+        this.itemByClasificacionConvenio = itemByClasificacionConvenio;
+    }
+    /**
+     * Obtiene descripcion.
+     *
+     * @return descripcion
+     */
+     public String getDescripcion() {
+        return this.descripcion;
+    }
+    /**
+     * Establece el descripcion.
+     *
+     * @param descripcion el new descripcion
+     */
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+    /**
+     * Obtiene item by tipo documento.
+     *
+     * @return item by tipo documento
+     */
+     public ItemDTO getItemByTipoDocumento() {
+        return this.itemByTipoDocumento;
+    }
+    /**
+     * Establece el item by tipo documento.
+     *
+     * @param itemByTipoDocumento el new item by tipo documento
+     */
+    public void setItemByTipoDocumento(ItemDTO itemByTipoDocumento) {
+        this.itemByTipoDocumento = itemByTipoDocumento;
+    }
+    /**
+     * Obtiene nro doc.
+     *
+     * @return nro doc
+     */
+     public String getNroDoc() {
+        return this.nroDoc;
+    }
+    /**
+     * Establece el nro doc.
+     *
+     * @param nroDoc el new nro doc
+     */
+    public void setNroDoc(String nroDoc) {
+        this.nroDoc = nroDoc;
+    }
+    /**
+     * Obtiene fecha inicio.
+     *
+     * @return fecha inicio
+     */
+     public Date getFechaInicio() {
+        return this.fechaInicio;
+    }
+    /**
+     * Establece el fecha inicio.
+     *
+     * @param fechaInicio el new fecha inicio
+     */
+    public void setFechaInicio(Date fechaInicio) {
+        this.fechaInicio = fechaInicio;
+    }
+    /**
+     * Obtiene fecha fin.
+     *
+     * @return fecha fin
+     */
+     public Date getFechaFin() {
+        return this.fechaFin;
+    }
+    /**
+     * Establece el fecha fin.
+     *
+     * @param fechaFin el new fecha fin
+     */
+    public void setFechaFin(Date fechaFin) {
+        this.fechaFin = fechaFin;
+    }
+    /**
+     * Obtiene estado.
+     *
+     * @return estado
+     */
+     public String getEstado() {
+        return this.estado;
+    }
+    /**
+     * Establece el estado.
+     *
+     * @param estado el new estado
+     */
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+    /**
+     * Obtiene fecha creacion.
+     *
+     * @return fecha creacion
+     */
+     public Date getFechaCreacion() {
+        return this.fechaCreacion;
+    }
+    /**
+     * Establece el fecha creacion.
+     *
+     * @param fechaCreacion el new fecha creacion
+     */
+    public void setFechaCreacion(Date fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
+    }
+    /**
+     * Obtiene usuario creacion.
+     *
+     * @return usuario creacion
+     */
+     public String getUsuarioCreacion() {
+        return this.usuarioCreacion;
+    }
+    /**
+     * Establece el usuario creacion.
+     *
+     * @param usuarioCreacion el new usuario creacion
+     */
+    public void setUsuarioCreacion(String usuarioCreacion) {
+        this.usuarioCreacion = usuarioCreacion;
+    }
+    /**
+     * Obtiene fecha modificacion.
+     *
+     * @return fecha modificacion
+     */
+     public Date getFechaModificacion() {
+        return this.fechaModificacion;
+    }
+    /**
+     * Establece el fecha modificacion.
+     *
+     * @param fechaModificacion el new fecha modificacion
+     */
+    public void setFechaModificacion(Date fechaModificacion) {
+        this.fechaModificacion = fechaModificacion;
+    }
+    /**
+     * Obtiene usuario modificacion.
+     *
+     * @return usuario modificacion
+     */
+     public String getUsuarioModificacion() {
+        return this.usuarioModificacion;
+    }
+    /**
+     * Establece el usuario modificacion.
+     *
+     * @param usuarioModificacion el new usuario modificacion
+     */
+    public void setUsuarioModificacion(String usuarioModificacion) {
+        this.usuarioModificacion = usuarioModificacion;
+    }
+    /**
+     * Establece el convenio alumno convenio list.
+     *
+     * @param convenioAlumnoConvenioList el new convenio alumno convenio list
+     */
+    public List<AlumnoConvenioDTO> getConvenioAlumnoConvenioList(){
+        return this.convenioAlumnoConvenioList;
+    }
+    /**
+     * Establece el convenio list.
+     *
+     * @param convenioList el new convenio list
+     */
+    public void setConvenioAlumnoConvenioList(List<AlumnoConvenioDTO> convenioAlumnoConvenioList) {
+        this.convenioAlumnoConvenioList = convenioAlumnoConvenioList;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idConvenio == null) ? 0 : idConvenio.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        ConvenioDTO other = (ConvenioDTO) obj;
+        if (idConvenio == null) {
+            if (other.idConvenio != null) {
+                return false;
+            }
+        } else if (!idConvenio.equals(other.idConvenio)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "ConvenioDTO [idConvenio=" + idConvenio + "]";
+    }
+   
+}

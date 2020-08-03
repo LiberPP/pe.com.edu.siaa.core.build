@@ -1,0 +1,128 @@
+package pe.com.edu.siaa.core.ejb.dao.matricula.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.persistence.Query;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericAcademicoDAOImpl;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.DetPlanEstudioDaoLocal;
+import pe.com.edu.siaa.core.model.dto.matricula.DetPlanEstudioDTO;
+import pe.com.edu.siaa.core.model.jpa.matricula.DetPlanEstudio;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+
+/**
+ * La Class DetPlanEstudioDaoImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 19:53:37 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+public class DetPlanEstudioDaoImpl extends  GenericAcademicoDAOImpl<String, DetPlanEstudio> implements DetPlanEstudioDaoLocal  {
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.DetPlanEstudioDaoLocal#listarDetPlanEstudio(pe.com.edu.siaa.core.model.jpa.seguridad.DetPlanEstudio)
+     */  
+    @Override	 
+    public List<DetPlanEstudio> listarDetPlanEstudio(DetPlanEstudioDTO detPlanEstudio) {
+        Query query = generarQueryListaDetPlanEstudio(detPlanEstudio, false);
+        query.setFirstResult(detPlanEstudio.getStartRow());
+        query.setMaxResults(detPlanEstudio.getOffset());
+        return query.getResultList();
+    }   
+   
+    /**
+     * Generar query lista DetPlanEstudio.
+     *
+     * @param DetPlanEstudioDTO el detPlanEstudio
+     * @param esContador el es contador
+     * @return the query
+     */
+    private Query generarQueryListaDetPlanEstudio(DetPlanEstudioDTO detPlanEstudio, boolean esContador) {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        if (esContador) {
+            jpaql.append(" select count(o.idDetPlanEstudio) from DetPlanEstudio o where 1=1 ");
+        } else {
+            jpaql.append(" select o from DetPlanEstudio o where 1=1 ");           
+        }
+		if (!StringUtils.isNullOrEmpty(detPlanEstudio.getSearch())) {
+	          jpaql.append(" and upper(o.idDetPlanEstudio) like :search ");
+	          parametros.put("search", "%" + detPlanEstudio.getSearch().toUpperCase() + "%");
+	    } else {
+			if (!StringUtils.isNullOrEmpty(detPlanEstudio.getDescripcionCurso())) {
+				jpaql.append(" and upper(o.descripcionCurso) like :descripcionCurso ");
+				parametros.put("descripcionCurso", "%" + detPlanEstudio.getDescripcionCurso().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(detPlanEstudio.getCodigoAsignatura())) {
+				jpaql.append(" and upper(o.codigoAsignatura) like :codigoAsignatura ");
+				parametros.put("codigoAsignatura", "%" + detPlanEstudio.getCodigoAsignatura().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmptyNumeric(detPlanEstudio.getHoraTeorica())) {
+				jpaql.append(" and o.horaTeorica = :horaTeorica ");
+				parametros.put("horaTeorica", detPlanEstudio.getHoraTeorica());
+			}
+			if (!StringUtils.isNullOrEmptyNumeric(detPlanEstudio.getHoraPractica())) {
+				jpaql.append(" and o.horaPractica = :horaPractica ");
+				parametros.put("horaPractica", detPlanEstudio.getHoraPractica());
+			}
+			if (!StringUtils.isNullOrEmptyNumeric(detPlanEstudio.getCredito())) {
+				jpaql.append(" and o.credito = :credito ");
+				parametros.put("credito", detPlanEstudio.getCredito());
+			}
+			if (!StringUtils.isNullOrEmpty(detPlanEstudio.getTipoAsignatura())) {
+				jpaql.append(" and upper(o.tipoAsignatura) like :tipoAsignatura ");
+				parametros.put("tipoAsignatura", "%" + detPlanEstudio.getTipoAsignatura().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(detPlanEstudio.getSumaCredito())) {
+				jpaql.append(" and upper(o.sumaCredito) like :sumaCredito ");
+				parametros.put("sumaCredito", "%" + detPlanEstudio.getSumaCredito().toUpperCase() + "%");
+			}
+		}
+        if (!esContador) {
+            //jpaql.append(" ORDER BY 1 ");
+        }
+        Query query = createQuery(jpaql.toString(), parametros);
+        return query;
+    }
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.DetPlanEstudioDaoLocal#contarListar{entity.getClassName()}(pe.com.edu.siaa.core.model.jpa.seguridad.DetPlanEstudioDTO)
+     */
+	@Override
+    public int contarListarDetPlanEstudio(DetPlanEstudioDTO detPlanEstudio) {
+        int resultado = 0;
+        try {
+            //StringBuilder jpaql = new StringBuilder();
+            Query query = generarQueryListaDetPlanEstudio(detPlanEstudio, true);
+            resultado = ((Long) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            resultado = 0;
+        }
+        return resultado;
+    }
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.DetPlanEstudioDaoLocal#generarIdDetPlanEstudio()
+     */
+	 @Override
+    public String generarIdDetPlanEstudio() {
+        String resultado = "1";
+        Query query = createQuery("select max(o.idDetPlanEstudio) from DetPlanEstudio o", null);
+        List<Object> listLong =  query.getResultList();
+        if (listLong != null && listLong.size() > 0 && listLong.get(0) != null)  {
+            Long ultimoIdGenerado = Long.valueOf(listLong.get(0).toString());
+            if (!StringUtils.isNullOrEmpty(ultimoIdGenerado)) {
+                resultado = resultado + ultimoIdGenerado;
+            }
+        }
+        return resultado;
+    }
+   
+}

@@ -1,0 +1,48 @@
+package pe.com.edu.siaa.core.ejb.dao.matricula.local;
+
+import java.util.List;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.dto.matricula.AulaDTO;
+import pe.com.edu.siaa.core.model.jpa.matricula.Aula;
+
+/**
+ * La Class AulaDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 11:25:12 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface AulaDaoLocal  extends GenericDAOLocal<Long,Aula> {
+	/**
+	 * Listar aula.
+	 *
+	 * @param aula el aulaDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<Aula> listarAula(AulaDTO aula) throws Exception;
+	
+	/**
+	 * contar lista aula.
+	 *
+	 * @param aula el aula
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarAula(AulaDTO aula);
+	/**
+	 * Generar id aula.
+	 *
+	 * @return the Long
+	 * @throws Exception the exception
+	 */
+	Long generarIdAula() throws Exception;
+}

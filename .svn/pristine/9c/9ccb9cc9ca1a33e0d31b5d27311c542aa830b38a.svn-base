@@ -1,0 +1,209 @@
+package pe.com.edu.siaa.core.ejb.service.encuesta.local;
+
+import java.util.List;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.model.dto.encuesta.CuestionarioDTO;
+import pe.com.edu.siaa.core.model.dto.encuesta.EncuestaCampoDTO;
+import pe.com.edu.siaa.core.model.dto.encuesta.EncuestaCampoDetDTO;
+import pe.com.edu.siaa.core.model.dto.encuesta.EncuestaDTO;
+import pe.com.edu.siaa.core.model.dto.encuesta.OpcionAlternativaDTO;
+import pe.com.edu.siaa.core.model.dto.encuesta.TemaDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+
+/**
+ * La Class EncuestaServiceLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Fri Sep 08 16:33:12 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface EncuestaServiceLocal{
+	
+	/**
+	 * Listar encuesta campo.
+	 *
+	 * @param encuestaCampo el encuesta campo
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	EncuestaDTO obtenerEncuesta(String idEncuesta, long rangoGenerado) throws Exception;
+	
+	void updateCuestionario(List<CuestionarioDTO> listaCuestionario) throws Exception;
+	
+	/**
+	 * Controlador accion encuesta campo det.
+	 *
+	 * @param encuestaCampoDet el encuesta campo det
+	 * @param accionType el accion type
+	 * @return the encuesta campo det
+	 * @throws Exception the exception
+	 */
+	EncuestaCampoDetDTO controladorAccionEncuestaCampoDet(EncuestaCampoDetDTO encuestaCampoDet,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar encuesta campo det.
+	 *
+	 * @param encuestaCampoDet el encuesta campo det
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<EncuestaCampoDetDTO> listarEncuestaCampoDet(EncuestaCampoDetDTO encuestaCampoDet) throws Exception;
+	
+	/**
+	 * contar lista encuesta campo det.
+	 *
+	 * @param encuestaCampoDet el encuesta campo det
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarEncuestaCampoDet(EncuestaCampoDetDTO encuestaCampoDet);
+	
+	/**
+	 * Controlador accion encuesta campo.
+	 *
+	 * @param encuestaCampo el encuesta campo
+	 * @param accionType el accion type
+	 * @return the encuesta campo
+	 * @throws Exception the exception
+	 */
+	EncuestaCampoDTO controladorAccionEncuestaCampo(EncuestaCampoDTO encuestaCampo,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar encuesta campo.
+	 *
+	 * @param encuestaCampo el encuesta campo
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<EncuestaCampoDTO> listarEncuestaCampo(EncuestaCampoDTO encuestaCampo) throws Exception;
+	
+	/**
+	 * contar lista encuesta campo.
+	 *
+	 * @param encuestaCampo el encuesta campo
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarEncuestaCampo(EncuestaCampoDTO encuestaCampo);
+	
+	
+	/**
+	 * Controlador accion encuesta.
+	 *
+	 * @param encuesta el encuesta
+	 * @param accionType el accion type
+	 * @return the encuesta
+	 * @throws Exception the exception
+	 */
+	EncuestaDTO controladorAccionEncuesta(EncuestaDTO encuesta,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar encuesta.
+	 *
+	 * @param encuesta el encuesta
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<EncuestaDTO> listarEncuesta(EncuestaDTO encuesta) throws Exception;
+	
+	/**
+	 * contar lista encuesta.
+	 *
+	 * @param encuesta el encuesta
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarEncuesta(EncuestaDTO encuesta);
+	
+	/**
+	 * Controlador accion cuestionario.
+	 *
+	 * @param cuestionario el cuestionario
+	 * @param accionType el accion type
+	 * @return the cuestionario
+	 * @throws Exception the exception
+	 */
+	CuestionarioDTO controladorAccionCuestionario(CuestionarioDTO cuestionario,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar cuestionario.
+	 *
+	 * @param cuestionario el cuestionario
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<CuestionarioDTO> listarCuestionario(CuestionarioDTO cuestionario) throws Exception;
+	
+	/**
+	 * contar lista cuestionario.
+	 *
+	 * @param cuestionario el cuestionario
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarCuestionario(CuestionarioDTO cuestionario);
+	
+	/**
+	 * Controlador accion tema.
+	 *
+	 * @param tema el tema
+	 * @param accionType el accion type
+	 * @return the tema
+	 * @throws Exception the exception
+	 */
+	TemaDTO controladorAccionTema(TemaDTO tema,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar tema.
+	 *
+	 * @param tema el tema
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<TemaDTO> listarTema(TemaDTO tema) throws Exception;
+	
+	/**
+	 * contar lista tema.
+	 *
+	 * @param tema el tema
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarTema(TemaDTO tema);
+	
+	/**
+	 * Controlador accion opcion alternativa.
+	 *
+	 * @param opcionAlternativa el opcion alternativa
+	 * @param accionType el accion type
+	 * @return the opcion alternativa
+	 * @throws Exception the exception
+	 */
+	OpcionAlternativaDTO controladorAccionOpcionAlternativa(OpcionAlternativaDTO opcionAlternativa,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar opcion alternativa.
+	 *
+	 * @param opcionAlternativa el opcion alternativa
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<OpcionAlternativaDTO> listarOpcionAlternativa(OpcionAlternativaDTO opcionAlternativa) throws Exception;
+	
+	/**
+	 * contar lista opcion alternativa.
+	 *
+	 * @param opcionAlternativa el opcion alternativa
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarOpcionAlternativa(OpcionAlternativaDTO opcionAlternativa);
+	
+}

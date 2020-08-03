@@ -1,0 +1,186 @@
+package pe.com.edu.siaa.core.model.jpa.nota;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+import pe.com.edu.siaa.core.model.util.ConfiguracionEntityManagerUtil;
+
+/**
+ * La Class CursoNota.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 09:56:55 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Entity
+@Table(name = "CursoNota", schema = ConfiguracionEntityManagerUtil.ESQUEMA_ACADEMICO)
+public class CursoNota implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id curso nota. */
+    @Id
+    @Column(name = "idCursoNota" , length = 15)
+    private String idCursoNota;
+   
+    /** El det registro nota. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idDetRegistroNota", referencedColumnName = "idDetRegistronota")
+    private DetRegistroNota detRegistroNota;
+   
+    /** El concepto nota. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idConceptoNota", referencedColumnName = "idConceptoNota")
+    private ConceptoNota conceptoNota;
+   
+    /** El nota. */
+    @Column(name = "nota" , precision = 18 , scale = 2)
+    private BigDecimal nota;
+   
+    /**
+     * Instancia un nuevo curso nota.
+     */
+    public CursoNota() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo curso nota.
+     *
+     * @param idCursoNota el id curso nota
+     * @param detRegistroNota el det registro nota
+     * @param conceptoNota el concepto nota
+     * @param nota el nota
+     */
+    public CursoNota(String idCursoNota, DetRegistroNota detRegistroNota,ConceptoNota conceptoNota,BigDecimal nota ) {
+        super();
+        this.idCursoNota = idCursoNota;
+        this.detRegistroNota = detRegistroNota;
+        this.conceptoNota = conceptoNota;
+        this.nota = nota;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id curso nota.
+     *
+     * @return id curso nota
+     */
+     public String getIdCursoNota() {
+        return this.idCursoNota;
+    }
+    /**
+     * Establece el id curso nota.
+     *
+     * @param idCursoNota el new id curso nota
+     */
+    public void setIdCursoNota(String idCursoNota) {
+        this.idCursoNota = idCursoNota;
+    }
+    /**
+     * Obtiene det registro nota.
+     *
+     * @return det registro nota
+     */
+     public DetRegistroNota getDetRegistroNota() {
+        return this.detRegistroNota;
+    }
+    /**
+     * Establece el det registro nota.
+     *
+     * @param detRegistroNota el new det registro nota
+     */
+    public void setDetRegistroNota(DetRegistroNota detRegistroNota) {
+        this.detRegistroNota = detRegistroNota;
+    }
+    /**
+     * Obtiene concepto nota.
+     *
+     * @return concepto nota
+     */
+     public ConceptoNota getConceptoNota() {
+        return this.conceptoNota;
+    }
+    /**
+     * Establece el concepto nota.
+     *
+     * @param conceptoNota el new concepto nota
+     */
+    public void setConceptoNota(ConceptoNota conceptoNota) {
+        this.conceptoNota = conceptoNota;
+    }
+    /**
+     * Obtiene nota.
+     *
+     * @return nota
+     */
+     public BigDecimal getNota() {
+        return this.nota;
+    }
+    /**
+     * Establece el nota.
+     *
+     * @param nota el new nota
+     */
+    public void setNota(BigDecimal nota) {
+        this.nota = nota;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idCursoNota == null) ? 0 : idCursoNota.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        CursoNota other = (CursoNota) obj;
+        if (idCursoNota == null) {
+            if (other.idCursoNota != null) {
+                return false;
+            }
+        } else if (!idCursoNota.equals(other.idCursoNota)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "CursoNota [idCursoNota=" + idCursoNota + "]";
+    }
+   
+}

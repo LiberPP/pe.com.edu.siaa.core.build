@@ -1,0 +1,233 @@
+package pe.com.edu.siaa.core.ejb.dao.matricula.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.persistence.Query;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericAcademicoDAOImpl;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.PersonalDaoLocal;
+import pe.com.edu.siaa.core.ejb.factory.CollectionUtil;
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.util.log.Logger;
+import pe.com.edu.siaa.core.ejb.util.txt.Utilidades;
+import pe.com.edu.siaa.core.model.dto.matricula.PersonalDTO;
+import pe.com.edu.siaa.core.model.estate.EstadoGeneralState;
+import pe.com.edu.siaa.core.model.jpa.matricula.Personal;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+
+/**
+ * La Class PersonalDaoImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 19:53:34 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+public class PersonalDaoImpl extends  GenericAcademicoDAOImpl<String, Personal> implements PersonalDaoLocal  {
+	
+	private Logger log = Logger.getLogger(PersonalDaoImpl.class);
+	
+	@Override
+	public PersonalDTO obtenerPersonalDirectivo(PersonalDTO personal) throws Exception {
+		PersonalDTO resultado = null;
+		try {
+			StringBuilder jpaqlOrganoDirectivo = new StringBuilder();
+			jpaqlOrganoDirectivo.append(" SELECT");
+			jpaqlOrganoDirectivo.append(" Personal.idPersonal " + Utilidades.obtenerContatenar() + ",OrganoDirectivo.gradoAbreviatura as GradoAbr,");
+			jpaqlOrganoDirectivo.append(" OrganoDirectivo.firma as Firmas,TipoPersona.descripcion ");
+			jpaqlOrganoDirectivo.append(" FROM");
+			jpaqlOrganoDirectivo.append("  dbo.OrganoDirectivo OrganoDirectivo INNER JOIN dbo.Personal Personal ON OrganoDirectivo.idPersonal = Personal.idPersonal");
+			jpaqlOrganoDirectivo.append(" INNER JOIN dbo.Persona Persona ON Personal.idPersonal = Persona.idPersona");
+			jpaqlOrganoDirectivo.append(" INNER JOIN dbo.TipoPersona TipoPersona ON OrganoDirectivo.idTipoPersona = TipoPersona.idTipoPersona");
+			jpaqlOrganoDirectivo.append(" WHERE");
+			jpaqlOrganoDirectivo.append("   OrganoDirectivo.Estado = :estado ");
+			jpaqlOrganoDirectivo.append(" and OrganoDirectivo.idTipoPersona = :idTipoPersonaOrganoDirectivo");
+			
+			Query query = createNativeQuery(jpaqlOrganoDirectivo.toString(),null);
+			query.setParameter("estado", EstadoGeneralState.ACTIVO.getKey() + "");
+			query.setParameter("idTipoPersonaOrganoDirectivo", personal.getOrganoTipoPersona());
+			query.setMaxResults(1);
+			List<Object[]> listaPersonalTemp = query.getResultList();
+			
+			if (listaPersonalTemp.size() > 0) {
+				StringBuilder jpaql = new StringBuilder();
+				jpaql.append("from Personal p left join fetch p.persona per ");
+				jpaql.append(" left join fetch per.tipoPersona tper ");
+				jpaql.append(" where p.idPersonal=:idPersonal  ");
+				query = createQuery(jpaql.toString(),null);
+				query.setParameter("idPersonal", listaPersonalTemp.get(0)[0]);
+				List<Personal> listaPersonal = query.getResultList();
+				if (listaPersonal != null && listaPersonal.size() > 0) {
+					resultado = TransferDataObjectUtil.transferObjetoEntityDTO(listaPersonal.get(0), PersonalDTO.class, "persona:{tipoPersona}");
+					resultado.setOrganoAbr(listaPersonalTemp.get(0)[1] + "");
+					resultado.setOrganoFirma(listaPersonalTemp.get(0)[2] + "");
+					resultado.getPersona().getTipoPersona().setDescripcion(listaPersonalTemp.get(0)[3] + "");
+				}
+			}
+		} catch (Exception e) {
+			log.error(e);
+		}
+		
+		return resultado;
+	}
+	
+	@Override
+	public Personal findPersonalByPersona(String idPersona) throws Exception {
+		Personal resultado = null;
+		Map<String, Object> parametros = new HashMap<String, Object>();
+		parametros.put("idPersona", idPersona);
+		Query query = createQuery("from Personal p left join fetch p.persona per left join fetch per.entidadUniversitaria  where per.idPersona =:idPersona ",parametros);
+		List<Personal> listaPersonal = query.getResultList();
+		if (listaPersonal != null && listaPersonal.size() > 0) {
+			resultado = listaPersonal.get(0);
+		}
+		return resultado;
+	}
+	
+	@Override	 
+	public Personal findPersonal(String idPersonal) throws Exception {
+		Personal resultado = new Personal();
+		Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        jpaql.append(" select o from Personal o left join fetch o.itemByCondicionLaboral left join fetch o.profesion left join fetch o.itemByCategoriaDocente  left join fetch o.itemByGradoInstruccion left join fetch o.itemByDedicacionDocente left join fetch o.itemByTipoTrabajador  ");
+        jpaql.append(" left join fetch o.itemByTipoOcupacionUniversitaria  left join fetch o.regimenPensionario left join fetch o.cargo left join fetch o.itemByTipoContrato  left join fetch o.itemByTipoCentroFormacionProfesional ");
+        jpaql.append(" left join fetch o.persona per ");
+        jpaql.append(" left join fetch per.tipoPersona left join fetch per.itemByTipoDocIdentidad  left join fetch per.itemByEstadoCivil ");
+        jpaql.append(" left join fetch per.itemByTipoVia  left join fetch per.itemByZona left join fetch per.procedencia  left join fetch per.itemByIdioma ");
+        jpaql.append(" left join fetch per.itemByNivelEducativo  left join fetch per.nacionalidad left join fetch per.ubigeoByNacimiento  left join fetch per.ubigeoByActual ");
+        jpaql.append(" left join fetch per.entidadUniversitaria ");
+        
+        jpaql.append(" where o.idPersonal = :idPersonal ");
+        parametros.put("idPersonal", idPersonal);
+        
+        Query query = createQuery(jpaql.toString(), parametros);
+        List<Personal> listaTemp = query.getResultList();
+        if (!CollectionUtil.isEmpty(listaTemp)) {
+        	resultado = listaTemp.get(0);
+        }
+		return resultado;
+	}
+	
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.PersonalDaoLocal#listarPersonal(pe.com.edu.siaa.core.model.jpa.seguridad.Personal)
+     */  
+    @Override	 
+    public List<Personal> listarPersonal(PersonalDTO personal) {
+        Query query = generarQueryListaPersonal(personal, false);
+        query.setFirstResult(personal.getStartRow());
+        query.setMaxResults(personal.getOffset());
+        return query.getResultList();
+    }   
+   
+    /**
+     * Generar query lista Personal.
+     *
+     * @param PersonalDTO el personal
+     * @param esContador el es contador
+     * @return the query
+     */
+    private Query generarQueryListaPersonal(PersonalDTO personal, boolean esContador) {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        if (esContador) {
+            jpaql.append(" select count(o.idPersonal) from Personal o where 1=1 ");
+        } else {
+            jpaql.append(" select o from Personal o  left join fetch o.persona where 1=1 ");           
+        }
+		if (!StringUtils.isNullOrEmpty(personal.getSearch())) {
+			jpaql.append(" and (TRANSLATE(UPPER(o.persona.nombre || ' ' || o.persona.apellidoPaterno || ' ' || o.persona.apellidoMaterno ), :discriminaTildeMAC, :discriminaTildeMAT) like UPPER(translate(:search, :discriminaTildeMIC, :discriminaTildeMIT)) or (upper(o.codigoPersonal) like :search) )");
+			parametros.putAll(obtenerParametroDiscriminarTilde());	
+	          parametros.put("search", "%" + personal.getSearch().toUpperCase() + "%");
+	    } else {
+			if (!StringUtils.isNullOrEmpty(personal.getCodigoPersonal())) {
+				jpaql.append(" and upper(o.codigoPersonal) like :codigoPersonal ");
+				parametros.put("codigoPersonal", "%" + personal.getCodigoPersonal().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(personal.getFechaIngreso())) {
+				jpaql.append(" and o.fechaIngreso = :fechaIngreso ");
+				parametros.put("fechaIngreso", personal.getFechaIngreso());
+			}
+			if (!StringUtils.isNullOrEmpty(personal.getFechaSalida())) {
+				jpaql.append(" and o.fechaSalida = :fechaSalida ");
+				parametros.put("fechaSalida", personal.getFechaSalida());
+			}
+			if (!StringUtils.isNullOrEmpty(personal.getEstado())) {
+				jpaql.append(" and upper(o.estado) like :estado ");
+				parametros.put("estado", "%" + personal.getEstado().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(personal.getFechaInscripcion())) {
+				jpaql.append(" and o.fechaInscripcion = :fechaInscripcion ");
+				parametros.put("fechaInscripcion", personal.getFechaInscripcion());
+			}
+			if (!StringUtils.isNullOrEmpty(personal.getFlagDiscapacidad())) {
+				jpaql.append(" and upper(o.flagDiscapacidad) like :flagDiscapacidad ");
+				parametros.put("flagDiscapacidad", "%" + personal.getFlagDiscapacidad().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(personal.getFlagSindicalizado())) {
+				jpaql.append(" and upper(o.flagSindicalizado) like :flagSindicalizado ");
+				parametros.put("flagSindicalizado", "%" + personal.getFlagSindicalizado().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(personal.getAfiliadoEPS())) {
+				jpaql.append(" and upper(o.afiliadoEPS) like :afiliadoEPS ");
+				parametros.put("afiliadoEPS", "%" + personal.getAfiliadoEPS().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(personal.getSeguroMedico())) {
+				jpaql.append(" and upper(o.seguroMedico) like :seguroMedico ");
+				parametros.put("seguroMedico", "%" + personal.getSeguroMedico().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(personal.getMadreResponsabilidadFamiliar())) {
+				jpaql.append(" and upper(o.madreResponsabilidadFamiliar) like :madreResponsabilidadFamiliar ");
+				parametros.put("madreResponsabilidadFamiliar", "%" + personal.getMadreResponsabilidadFamiliar().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(personal.getSujetoHorarioNocturno())) {
+				jpaql.append(" and upper(o.sujetoHorarioNocturno) like :sujetoHorarioNocturno ");
+				parametros.put("sujetoHorarioNocturno", "%" + personal.getSujetoHorarioNocturno().toUpperCase() + "%");
+			}
+		}
+        if (!esContador) {
+            //jpaql.append(" ORDER BY 1 ");
+        }
+        Query query = createQuery(jpaql.toString(), parametros);
+        return query;
+    }
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.PersonalDaoLocal#contarListar{entity.getClassName()}(pe.com.edu.siaa.core.model.jpa.seguridad.PersonalDTO)
+     */
+	@Override
+    public int contarListarPersonal(PersonalDTO personal) {
+        int resultado = 0;
+        try {
+            //StringBuilder jpaql = new StringBuilder();
+            Query query = generarQueryListaPersonal(personal, true);
+            resultado = ((Long) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            resultado = 0;
+        }
+        return resultado;
+    }
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.PersonalDaoLocal#generarIdPersonal()
+     */
+	 @Override
+    public String generarIdPersonal() {
+        String resultado = "1";
+        Query query = createQuery("select max(o.idPersonal) from Personal o", null);
+        List<Object> listLong =  query.getResultList();
+        if (listLong != null && listLong.size() > 0 && listLong.get(0) != null)  {
+            Long ultimoIdGenerado = Long.valueOf(listLong.get(0).toString());
+            if (!StringUtils.isNullOrEmpty(ultimoIdGenerado)) {
+                resultado = resultado + ultimoIdGenerado;
+            }
+        }
+        return resultado;
+    }
+   
+}

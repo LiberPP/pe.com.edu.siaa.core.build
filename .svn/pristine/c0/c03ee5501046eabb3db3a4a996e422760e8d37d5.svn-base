@@ -1,0 +1,117 @@
+package pe.com.edu.siaa.core.ejb.service.rest.admision.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.admision.local.AdmisionServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.admision.PostulanteDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class PostulanteRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:34 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/postulanteRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class PostulanteRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient AdmisionServiceLocal admisionServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<PostulanteDTO> crear(PostulanteDTO postulante) throws Exception {
+		return controladorAccion(postulante,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<PostulanteDTO> modificar(PostulanteDTO postulante) throws Exception {
+		return controladorAccion(postulante,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<PostulanteDTO> eliminar(@PathParam("id") String idPostulante) throws Exception {
+		PostulanteDTO postulante = new PostulanteDTO();
+		postulante.setIdPostulante(idPostulante);		
+		return controladorAccion(postulante,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<PostulanteDTO> controladorAccion(PostulanteDTO postulante, AccionType accionType){
+		ResultadoRestVO<PostulanteDTO> resultado = new ResultadoRestVO<PostulanteDTO>();
+		 try {
+    		resultado.setObjetoResultado(admisionServiceLocal.controladorAccionPostulante(postulante,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<PostulanteDTO> finById(@PathParam("id") String idPostulante) throws Exception {
+		PostulanteDTO postulante = new PostulanteDTO();
+		postulante.setIdPostulante(idPostulante);
+		return controladorAccion(postulante,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<PostulanteDTO> listarPostulante(@Context UriInfo info){
+		ResultadoRestVO<PostulanteDTO> resultado = new ResultadoRestVO<PostulanteDTO>();
+		PostulanteDTO postulante = transferUriInfo(info);
+		 try {
+    		resultado.setListaResultado(admisionServiceLocal.listarPostulante(postulante));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<Integer> contarListarPostulante(@Context UriInfo info){
+		ResultadoRestVO<Integer> resultado = new ResultadoRestVO<Integer>();
+		PostulanteDTO postulante = transferUriInfo(info);
+		 try {
+    		resultado.setObjetoResultado(admisionServiceLocal.contarListarPostulante(postulante));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<PostulanteDTO> inicializarPostulante(@Context UriInfo info) throws Exception {
+	     PostulanteDTO postulante = transferUriInfo(info);
+		 ResultadoRestVO<PostulanteDTO> resultado = new ResultadoRestVO<PostulanteDTO>();
+		 try {
+    		resultado.setObjetoResultado(postulante);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private PostulanteDTO transferUriInfo(@Context UriInfo info) {
+		PostulanteDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,PostulanteDTO.class);
+		return resultado;
+	}
+}

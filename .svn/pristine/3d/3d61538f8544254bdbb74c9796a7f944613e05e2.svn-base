@@ -1,0 +1,230 @@
+package pe.com.edu.siaa.core.model.jpa.matricula;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import pe.com.edu.siaa.core.model.jpa.seguridad.Entidad;
+import pe.com.edu.siaa.core.model.util.ConfiguracionEntityManagerUtil;
+
+/**
+ * La Class Pabellon.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 09:56:56 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Entity
+@Table(name = "Pabellon", schema = ConfiguracionEntityManagerUtil.ESQUEMA_ACADEMICO)
+public class Pabellon implements Serializable {
+	 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id pabellon. */
+    @Id
+    @Column(name = "idPabellon" , precision = 18 , scale = 0)
+    private Long idPabellon;
+   
+    /** El entidad. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idEntidad", referencedColumnName = "idEntidad")
+    private Entidad entidad;
+   
+    /** El descripcion. */
+    @Column(name = "descripcion" , length = 150)
+    private String descripcion;
+   
+    /** El abreviatura. */
+    @Column(name = "abreviatura" , length = 50)
+    private String abreviatura;
+   
+    /** El estado. */
+    @Column(name = "estado" , length = 1)
+    private String estado;
+   
+    /** El pabellon aula list. */
+    @OneToMany(mappedBy = "pabellon", fetch = FetchType.LAZY)
+    private List<Aula> pabellonAulaList = new ArrayList<Aula>();
+    
+    /**
+     * Instancia un nuevo pabellon.
+     */
+    public Pabellon() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo pabellon.
+     *
+     * @param idPabellon el id pabellon
+     * @param entidad el entidad
+     * @param descripcion el descripcion
+     * @param abreviatura el abreviatura
+     * @param estado el estado
+     */
+    public Pabellon(Long idPabellon, Entidad entidad,String descripcion, String abreviatura, String estado ) {
+        super();
+        this.idPabellon = idPabellon;
+        this.entidad = entidad;
+        this.descripcion = descripcion;
+        this.abreviatura = abreviatura;
+        this.estado = estado;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id pabellon.
+     *
+     * @return id pabellon
+     */
+     public Long getIdPabellon() {
+        return this.idPabellon;
+    }
+    /**
+     * Establece el id pabellon.
+     *
+     * @param idPabellon el new id pabellon
+     */
+    public void setIdPabellon(Long idPabellon) {
+        this.idPabellon = idPabellon;
+    }
+    /**
+     * Obtiene entidad.
+     *
+     * @return entidad
+     */
+     public Entidad getEntidad() {
+        return this.entidad;
+    }
+    /**
+     * Establece el entidad.
+     *
+     * @param entidad el new entidad
+     */
+    public void setEntidad(Entidad entidad) {
+        this.entidad = entidad;
+    }
+    /**
+     * Obtiene descripcion.
+     *
+     * @return descripcion
+     */
+     public String getDescripcion() {
+        return this.descripcion;
+    }
+    /**
+     * Establece el descripcion.
+     *
+     * @param descripcion el new descripcion
+     */
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+    /**
+     * Obtiene abreviatura.
+     *
+     * @return abreviatura
+     */
+     public String getAbreviatura() {
+        return this.abreviatura;
+    }
+    /**
+     * Establece el abreviatura.
+     *
+     * @param abreviatura el new abreviatura
+     */
+    public void setAbreviatura(String abreviatura) {
+        this.abreviatura = abreviatura;
+    }
+    /**
+     * Obtiene estado.
+     *
+     * @return estado
+     */
+     public String getEstado() {
+        return this.estado;
+    }
+    /**
+     * Establece el estado.
+     *
+     * @param estado el new estado
+     */
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+    /**
+     * Establece el pabellon aula list.
+     *
+     * @param pabellonAulaList el new pabellon aula list
+     */
+    public List<Aula> getPabellonAulaList(){
+        return this.pabellonAulaList;
+    }
+    /**
+     * Establece el pabellon list.
+     *
+     * @param pabellonList el new pabellon list
+     */
+    public void setPabellonAulaList(List<Aula> pabellonAulaList) {
+        this.pabellonAulaList = pabellonAulaList;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idPabellon == null) ? 0 : idPabellon.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Pabellon other = (Pabellon) obj;
+        if (idPabellon == null) {
+            if (other.idPabellon != null) {
+                return false;
+            }
+        } else if (!idPabellon.equals(other.idPabellon)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Pabellon [idPabellon=" + idPabellon + "]";
+    }
+   
+}

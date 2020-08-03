@@ -1,0 +1,504 @@
+package pe.com.edu.siaa.core.model.dto.matricula;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import pe.com.edu.siaa.core.model.dto.BasePaginator;
+import pe.com.edu.siaa.core.model.dto.common.ItemDTO;
+import pe.com.edu.siaa.core.model.type.TipoAsinaturaType;
+
+/**
+ * La Class DetPlanEstudioDTO.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 1.0, Tue Apr 18 09:56:51 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+public class DetPlanEstudioDTO extends BasePaginator implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id det plan estudio. */
+    private String idDetPlanEstudio;
+   
+    /** El plan estudio. */
+    private PlanEstudioDTO planEstudio;
+   
+    /** El descripcion curso. */
+    private String descripcionCurso;
+   
+    /** El item by ciclo. */
+    private ItemDTO itemByCiclo;
+   
+    /** El codigo asignatura. */
+    private String codigoAsignatura;
+   
+    /** El hora teorica. */
+    private Integer horaTeorica;
+   
+    /** El hora practica. */
+    private Integer horaPractica;
+   
+    /** El credito. */
+    private Integer credito;
+   
+    /** El tipo asignatura. */
+    private String tipoAsignatura;
+   
+    /** El suma credito. */
+    private String sumaCredito;
+   
+    /** El det plan estudio convalidacion plan estudio list. */
+    private List<ConvalidacionPlanEstudioDTO> detPlanEstudioConvalidacionPlanEstudioList = new ArrayList<ConvalidacionPlanEstudioDTO>();
+   
+    /** El det plan estudio convalidar convalidacion plan estudio list. */
+    private List<ConvalidacionPlanEstudioDTO> detPlanEstudioConvalidarConvalidacionPlanEstudioList = new ArrayList<ConvalidacionPlanEstudioDTO>();
+   
+    /** El det plan estudio det carga lectiva list. */
+    private List<DetCargaLectivaDTO> detPlanEstudioDetCargaLectivaList = new ArrayList<DetCargaLectivaDTO>();
+   
+    /** El det plan estudio det traslado list. */
+    private List<DetTrasladoDTO> detPlanEstudioDetTrasladoList = new ArrayList<DetTrasladoDTO>();
+   
+    /** El det plan estudio pre requisito list. */
+    private List<PreRequisitoDTO> detPlanEstudioPreRequisitoList = new ArrayList<PreRequisitoDTO>();
+   
+    /** El det plan estudio requisito pre requisito list. */
+    private List<PreRequisitoDTO> detPlanEstudioRequisitoPreRequisitoList = new ArrayList<PreRequisitoDTO>();
+   
+    
+    /** La lista prequisitos. */
+	private List<DetPlanEstudioDTO> listaPrequisitos = new ArrayList<DetPlanEstudioDTO>();
+	
+	/** La lista det plan estudio temp. */
+	private List<DetPlanEstudioDTO> listaDetPlanEstudioTemp = new ArrayList<DetPlanEstudioDTO>();
+	
+	/** El flag tiene pre requisito. */
+	private boolean tienePreRequisito;
+	
+	/** La cantidad pre requisito. */
+	private Integer cantidadPreRequisito = 0;
+	
+	/** La descripcion tipo asignatura. */
+	private String descripcionTipoAsignatura;
+	
+    /**
+     * Instancia un nuevo det plan estudioDTO.
+     */
+    public DetPlanEstudioDTO() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo det plan estudioDTO.
+     *
+     * @param idDetPlanEstudio el id det plan estudio
+     * @param planEstudio el plan estudio
+     * @param descripcionCurso el descripcion curso
+     * @param itemByCiclo el item by ciclo
+     * @param codigoAsignatura el codigo asignatura
+     * @param horaTeorica el hora teorica
+     * @param horaPractica el hora practica
+     * @param credito el credito
+     * @param tipoAsignatura el tipo asignatura
+     * @param sumaCredito el suma credito
+     */
+    public DetPlanEstudioDTO(String idDetPlanEstudio, PlanEstudioDTO planEstudio,String descripcionCurso, ItemDTO itemByCiclo,String codigoAsignatura, Integer horaTeorica, Integer horaPractica, Integer credito, String tipoAsignatura, String sumaCredito ) {
+        super();
+        this.idDetPlanEstudio = idDetPlanEstudio;
+        this.planEstudio = planEstudio;
+        this.descripcionCurso = descripcionCurso;
+        this.itemByCiclo = itemByCiclo;
+        this.codigoAsignatura = codigoAsignatura;
+        this.horaTeorica = horaTeorica;
+        this.horaPractica = horaPractica;
+        this.credito = credito;
+        this.tipoAsignatura = tipoAsignatura;
+        this.sumaCredito = sumaCredito;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id det plan estudio.
+     *
+     * @return id det plan estudio
+     */
+     public String getIdDetPlanEstudio() {
+        return this.idDetPlanEstudio;
+    }
+    /**
+     * Establece el id det plan estudio.
+     *
+     * @param idDetPlanEstudio el new id det plan estudio
+     */
+    public void setIdDetPlanEstudio(String idDetPlanEstudio) {
+        this.idDetPlanEstudio = idDetPlanEstudio;
+    }
+    /**
+     * Obtiene plan estudio.
+     *
+     * @return plan estudio
+     */
+     public PlanEstudioDTO getPlanEstudio() {
+        return this.planEstudio;
+    }
+    /**
+     * Establece el plan estudio.
+     *
+     * @param planEstudio el new plan estudio
+     */
+    public void setPlanEstudio(PlanEstudioDTO planEstudio) {
+        this.planEstudio = planEstudio;
+    }
+    /**
+     * Obtiene descripcion curso.
+     *
+     * @return descripcion curso
+     */
+     public String getDescripcionCurso() {
+        return this.descripcionCurso;
+    }
+    /**
+     * Establece el descripcion curso.
+     *
+     * @param descripcionCurso el new descripcion curso
+     */
+    public void setDescripcionCurso(String descripcionCurso) {
+        this.descripcionCurso = descripcionCurso;
+    }
+    /**
+     * Obtiene item by ciclo.
+     *
+     * @return item by ciclo
+     */
+     public ItemDTO getItemByCiclo() {
+        return this.itemByCiclo;
+    }
+    /**
+     * Establece el item by ciclo.
+     *
+     * @param itemByCiclo el new item by ciclo
+     */
+    public void setItemByCiclo(ItemDTO itemByCiclo) {
+        this.itemByCiclo = itemByCiclo;
+    }
+    /**
+     * Obtiene codigo asignatura.
+     *
+     * @return codigo asignatura
+     */
+     public String getCodigoAsignatura() {
+        return this.codigoAsignatura;
+    }
+    /**
+     * Establece el codigo asignatura.
+     *
+     * @param codigoAsignatura el new codigo asignatura
+     */
+    public void setCodigoAsignatura(String codigoAsignatura) {
+        this.codigoAsignatura = codigoAsignatura;
+    }
+    /**
+     * Obtiene hora teorica.
+     *
+     * @return hora teorica
+     */
+     public Integer getHoraTeorica() {
+        return this.horaTeorica;
+    }
+    /**
+     * Establece el hora teorica.
+     *
+     * @param horaTeorica el new hora teorica
+     */
+    public void setHoraTeorica(Integer horaTeorica) {
+        this.horaTeorica = horaTeorica;
+    }
+    /**
+     * Obtiene hora practica.
+     *
+     * @return hora practica
+     */
+     public Integer getHoraPractica() {
+        return this.horaPractica;
+    }
+    /**
+     * Establece el hora practica.
+     *
+     * @param horaPractica el new hora practica
+     */
+    public void setHoraPractica(Integer horaPractica) {
+        this.horaPractica = horaPractica;
+    }
+    /**
+     * Obtiene credito.
+     *
+     * @return credito
+     */
+     public Integer getCredito() {
+        return this.credito;
+    }
+    /**
+     * Establece el credito.
+     *
+     * @param credito el new credito
+     */
+    public void setCredito(Integer credito) {
+        this.credito = credito;
+    }
+    /**
+     * Obtiene tipo asignatura.
+     *
+     * @return tipo asignatura
+     */
+     public String getTipoAsignatura() {
+        return this.tipoAsignatura;
+    }
+    /**
+     * Establece el tipo asignatura.
+     *
+     * @param tipoAsignatura el new tipo asignatura
+     */
+    public void setTipoAsignatura(String tipoAsignatura) {
+        this.tipoAsignatura = tipoAsignatura;
+    }
+    /**
+     * Obtiene suma credito.
+     *
+     * @return suma credito
+     */
+     public String getSumaCredito() {
+        return this.sumaCredito;
+    }
+    /**
+     * Establece el suma credito.
+     *
+     * @param sumaCredito el new suma credito
+     */
+    public void setSumaCredito(String sumaCredito) {
+        this.sumaCredito = sumaCredito;
+    }
+    /**
+     * Establece el det plan estudio convalidacion plan estudio list.
+     *
+     * @param detPlanEstudioConvalidacionPlanEstudioList el new det plan estudio convalidacion plan estudio list
+     */
+    public List<ConvalidacionPlanEstudioDTO> getDetPlanEstudioConvalidacionPlanEstudioList(){
+        return this.detPlanEstudioConvalidacionPlanEstudioList;
+    }
+    /**
+     * Establece el det plan estudio list.
+     *
+     * @param detPlanEstudioList el new det plan estudio list
+     */
+    public void setDetPlanEstudioConvalidacionPlanEstudioList(List<ConvalidacionPlanEstudioDTO> detPlanEstudioConvalidacionPlanEstudioList) {
+        this.detPlanEstudioConvalidacionPlanEstudioList = detPlanEstudioConvalidacionPlanEstudioList;
+    }   
+    /**
+     * Establece el det plan estudio convalidar convalidacion plan estudio list.
+     *
+     * @param detPlanEstudioConvalidarConvalidacionPlanEstudioList el new det plan estudio convalidar convalidacion plan estudio list
+     */
+    public List<ConvalidacionPlanEstudioDTO> getDetPlanEstudioConvalidarConvalidacionPlanEstudioList(){
+        return this.detPlanEstudioConvalidarConvalidacionPlanEstudioList;
+    }
+    /**
+     * Establece el det plan estudio convalidar list.
+     *
+     * @param detPlanEstudioConvalidarList el new det plan estudio convalidar list
+     */
+    public void setDetPlanEstudioConvalidarConvalidacionPlanEstudioList(List<ConvalidacionPlanEstudioDTO> detPlanEstudioConvalidarConvalidacionPlanEstudioList) {
+        this.detPlanEstudioConvalidarConvalidacionPlanEstudioList = detPlanEstudioConvalidarConvalidacionPlanEstudioList;
+    }   
+    /**
+     * Establece el det plan estudio det carga lectiva list.
+     *
+     * @param detPlanEstudioDetCargaLectivaList el new det plan estudio det carga lectiva list
+     */
+    public List<DetCargaLectivaDTO> getDetPlanEstudioDetCargaLectivaList(){
+        return this.detPlanEstudioDetCargaLectivaList;
+    }
+    /**
+     * Establece el det plan estudio list.
+     *
+     * @param detPlanEstudioList el new det plan estudio list
+     */
+    public void setDetPlanEstudioDetCargaLectivaList(List<DetCargaLectivaDTO> detPlanEstudioDetCargaLectivaList) {
+        this.detPlanEstudioDetCargaLectivaList = detPlanEstudioDetCargaLectivaList;
+    }   
+    /**
+     * Establece el det plan estudio det traslado list.
+     *
+     * @param detPlanEstudioDetTrasladoList el new det plan estudio det traslado list
+     */
+    public List<DetTrasladoDTO> getDetPlanEstudioDetTrasladoList(){
+        return this.detPlanEstudioDetTrasladoList;
+    }
+    /**
+     * Establece el det plan estudio list.
+     *
+     * @param detPlanEstudioList el new det plan estudio list
+     */
+    public void setDetPlanEstudioDetTrasladoList(List<DetTrasladoDTO> detPlanEstudioDetTrasladoList) {
+        this.detPlanEstudioDetTrasladoList = detPlanEstudioDetTrasladoList;
+    }   
+    /**
+     * Establece el det plan estudio pre requisito list.
+     *
+     * @param detPlanEstudioPreRequisitoList el new det plan estudio pre requisito list
+     */
+    public List<PreRequisitoDTO> getDetPlanEstudioPreRequisitoList(){
+        return this.detPlanEstudioPreRequisitoList;
+    }
+    /**
+     * Establece el det plan estudio list.
+     *
+     * @param detPlanEstudioList el new det plan estudio list
+     */
+    public void setDetPlanEstudioPreRequisitoList(List<PreRequisitoDTO> detPlanEstudioPreRequisitoList) {
+        this.detPlanEstudioPreRequisitoList = detPlanEstudioPreRequisitoList;
+    }   
+    /**
+     * Establece el det plan estudio requisito pre requisito list.
+     *
+     * @param detPlanEstudioRequisitoPreRequisitoList el new det plan estudio requisito pre requisito list
+     */
+    public List<PreRequisitoDTO> getDetPlanEstudioRequisitoPreRequisitoList(){
+        return this.detPlanEstudioRequisitoPreRequisitoList;
+    }
+    /**
+     * Establece el det plan estudio requisito list.
+     *
+     * @param detPlanEstudioRequisitoList el new det plan estudio requisito list
+     */
+    public void setDetPlanEstudioRequisitoPreRequisitoList(List<PreRequisitoDTO> detPlanEstudioRequisitoPreRequisitoList) {
+        this.detPlanEstudioRequisitoPreRequisitoList = detPlanEstudioRequisitoPreRequisitoList;
+    }   
+    
+    
+    public List<DetPlanEstudioDTO> getListaPrequisitos() {
+		return listaPrequisitos;
+	}
+
+	/**
+	 * Establece el lista prequisitos.
+	 *
+	 * @param listaPrequisitos el new lista prequisitos
+	 */
+	public void setListaPrequisitos(List<DetPlanEstudioDTO> listaPrequisitos) {
+		this.listaPrequisitos = listaPrequisitos;
+	}
+
+	/**
+	 * Comprueba si es tiene pre requisito.
+	 *
+	 * @return true, si es tiene pre requisito
+	 */
+	public boolean isTienePreRequisito() {
+		return tienePreRequisito;
+	}
+
+	/**
+	 * Establece el tiene pre requisito.
+	 *
+	 * @param tienePreRequisito el new tiene pre requisito
+	 */
+	public void setTienePreRequisito(boolean tienePreRequisito) {
+		this.tienePreRequisito = tienePreRequisito;
+	}
+
+	/**
+	 * Obtiene cantidad pre requisito.
+	 *
+	 * @return cantidad pre requisito
+	 */
+	public Integer getCantidadPreRequisito() {
+		return cantidadPreRequisito;
+	}
+
+	/**
+	 * Establece el cantidad pre requisito.
+	 *
+	 * @param cantidadPreRequisito el new cantidad pre requisito
+	 */
+	public void setCantidadPreRequisito(Integer cantidadPreRequisito) {
+		this.cantidadPreRequisito = cantidadPreRequisito;
+	}
+
+	/**
+	 * Obtiene lista det plan estudio temp.
+	 *
+	 * @return lista det plan estudio temp
+	 */
+	public List<DetPlanEstudioDTO> getListaDetPlanEstudioTemp() {
+		return listaDetPlanEstudioTemp;
+	}
+
+	/**
+	 * Establece el lista det plan estudio temp.
+	 *
+	 * @param listaDetPlanEstudioTemp el new lista det plan estudio temp
+	 */
+	public void setListaDetPlanEstudioTemp(
+			List<DetPlanEstudioDTO> listaDetPlanEstudioTemp) {
+		this.listaDetPlanEstudioTemp = listaDetPlanEstudioTemp;
+	}
+	
+	public String getDescripcionTipoAsignatura() {
+		if (tipoAsignatura != null && TipoAsinaturaType.get(tipoAsignatura) != null) {
+			descripcionTipoAsignatura = TipoAsinaturaType.get(tipoAsignatura).getValue();
+		}
+		return descripcionTipoAsignatura;
+	}
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idDetPlanEstudio == null) ? 0 : idDetPlanEstudio.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        DetPlanEstudioDTO other = (DetPlanEstudioDTO) obj;
+        if (idDetPlanEstudio == null) {
+            if (other.idDetPlanEstudio != null) {
+                return false;
+            }
+        } else if (!idDetPlanEstudio.equals(other.idDetPlanEstudio)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "DetPlanEstudioDTO [idDetPlanEstudio=" + idDetPlanEstudio + "]";
+    }
+   
+}

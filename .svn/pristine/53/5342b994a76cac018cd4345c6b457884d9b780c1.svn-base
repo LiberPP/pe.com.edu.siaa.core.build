@@ -1,0 +1,199 @@
+package pe.com.edu.siaa.core.ejb.service.rest.pago.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.pago.local.PagoServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.ejb.service.util.FechaUtil;
+import pe.com.edu.siaa.core.ejb.util.date.FechaDateUtil;
+import pe.com.edu.siaa.core.model.dto.pago.ConceptoPagoDTO;
+import pe.com.edu.siaa.core.model.dto.pago.DetPlanPagosDTO;
+import pe.com.edu.siaa.core.model.dto.pago.FraccionamientoDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.model.type.FlagConceptoPagoFraccionadoType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class DetPlanPagosRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:25 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/detPlanPagosRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class DetPlanPagosRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient PagoServiceLocal pagoServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<DetPlanPagosDTO> crear(DetPlanPagosDTO detPlanPagos) throws Exception {
+		return controladorAccion(detPlanPagos,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<DetPlanPagosDTO> modificar(DetPlanPagosDTO detPlanPagos) throws Exception {
+		return controladorAccion(detPlanPagos,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<DetPlanPagosDTO> eliminar(@PathParam("id") String idDetPlanPagos) throws Exception {
+		ResultadoRestVO<DetPlanPagosDTO> resultado = new ResultadoRestVO<DetPlanPagosDTO>();
+		 try {
+			 DetPlanPagosDTO detPlanPagos = new DetPlanPagosDTO();
+			 detPlanPagos.setIdDetPlanPagos(idDetPlanPagos);	
+			 resultado.setObjetoResultado(pagoServiceLocal.eliminarDetPlanPagos(detPlanPagos));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private ResultadoRestVO<DetPlanPagosDTO> controladorAccion(DetPlanPagosDTO detPlanPagos, AccionType accionType){
+		ResultadoRestVO<DetPlanPagosDTO> resultado = new ResultadoRestVO<DetPlanPagosDTO>();
+		 try {
+    		//resultado.setObjetoResultado(pagoServiceLocal.eliminarDetPlanPagos(detPlanPagos));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<DetPlanPagosDTO> finById(@PathParam("id") String idDetPlanPagos) throws Exception {
+		DetPlanPagosDTO detPlanPagos = new DetPlanPagosDTO();
+		detPlanPagos.setIdDetPlanPagos(idDetPlanPagos);
+		return controladorAccion(detPlanPagos,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+	@Path("/listarConceptoPagoAlumnoSemestre/{idAlumno}/{idAnhoSemestre}/{flagFaltaMontoResta}")
+	public ResultadoRestVO<ConceptoPagoDTO> listarConceptoPagoAlumnoSemestre(@PathParam("idAlumno") String idAlumno,@PathParam("idAnhoSemestre") String idAnhoSemestre,@PathParam("flagFaltaMontoResta") boolean flagFaltaMontoResta) throws Exception {
+		ResultadoRestVO<ConceptoPagoDTO> resultado = new ResultadoRestVO<ConceptoPagoDTO>();
+		 try {
+    		resultado.setListaResultado(listarConceptoPagoAlumnoSemestre(pagoServiceLocal.listarConceptoPagoAlumnoSemestre(idAlumno, idAnhoSemestre, flagFaltaMontoResta)));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	public List<ConceptoPagoDTO> listarConceptoPagoAlumnoSemestre(List<DetPlanPagosDTO> listaDetPlanPagos) throws Exception {
+		List<ConceptoPagoDTO> listaConceptoPagoDTO = new ArrayList<ConceptoPagoDTO>();
+		for (DetPlanPagosDTO conceptoAlumnoPago : listaDetPlanPagos) {
+			if (conceptoAlumnoPago.getFlagFraccionado().equals(FlagConceptoPagoFraccionadoType.NO.getKey())) {
+				ConceptoPagoDTO conceptoPagoDTO = new ConceptoPagoDTO();
+				conceptoPagoDTO.setIdCuotaConcepto(conceptoAlumnoPago.getCuotaConcepto().getIdCuotaConcepto());
+				conceptoPagoDTO.setId(conceptoAlumnoPago.getIdDetPlanPagos());
+				conceptoPagoDTO.setIdPlanContable(conceptoAlumnoPago.getCuotaConcepto().getCatalogoCuenta().getProducto().getPlanContableVenta().getIdPlanContable());
+				conceptoPagoDTO.setClasificacion(conceptoAlumnoPago.getCuotaConcepto().getCatalogoCuenta().getClasificacion().getDescripcion());
+				conceptoPagoDTO.setDescripcion(conceptoAlumnoPago.getCuotaConcepto().getCatalogoCuenta().getCuenta() + " - (" + conceptoAlumnoPago.getCuotaConcepto().getAnhoSemestre().getNombreAnhoSemestre()  + ")"  );
+				conceptoPagoDTO.setFechaVencimiento(conceptoAlumnoPago.getFechaVencimiento());
+				if (conceptoAlumnoPago.getMontoResta() != null) {
+					conceptoPagoDTO.setMonto(conceptoAlumnoPago.getMontoResta());
+				} else {
+					conceptoPagoDTO.setMonto(conceptoAlumnoPago.getCuota());
+				}
+				conceptoPagoDTO.setMontoTotal(conceptoPagoDTO.getMonto());
+				conceptoPagoDTO.setMontoResta(null);
+				conceptoPagoDTO.setFlagFraccionadoDescripcion(conceptoAlumnoPago.getFlagFraccionadoDescripcion());
+				conceptoPagoDTO.setEsFraccionado(false);
+				if (conceptoAlumnoPago.getFechaVencimiento() != null) {
+					conceptoPagoDTO.setNumeroDiasRetrazo(FechaDateUtil.restaFechas(conceptoAlumnoPago.getFechaVencimiento(), FechaUtil.obtenerFecha()));
+				}
+				listaConceptoPagoDTO.add(conceptoPagoDTO);
+			} else if (conceptoAlumnoPago.getFlagFraccionado().equals(FlagConceptoPagoFraccionadoType.SI.getKey())) {
+				for (FraccionamientoDTO fracConceoto : conceptoAlumnoPago.getListaFraccionamientos()) {
+					ConceptoPagoDTO conceptoPagoDTO = new ConceptoPagoDTO();
+					conceptoPagoDTO.setIdCuotaConcepto(conceptoAlumnoPago.getCuotaConcepto().getIdCuotaConcepto());
+					conceptoPagoDTO.setId(fracConceoto.getIdFraccionamiento());
+					conceptoPagoDTO.setIdPadre(conceptoAlumnoPago.getIdDetPlanPagos());
+					conceptoPagoDTO.setIdPlanContable(conceptoAlumnoPago.getCuotaConcepto().getCatalogoCuenta().getProducto().getPlanContableVenta().getIdPlanContable());
+					conceptoPagoDTO.setClasificacion(conceptoAlumnoPago.getCuotaConcepto().getCatalogoCuenta().getClasificacion().getDescripcion());
+					conceptoPagoDTO.setDescripcion(conceptoAlumnoPago.getCuotaConcepto().getCatalogoCuenta().getCuenta() + " " + fracConceoto.getNro() + " - (" + conceptoAlumnoPago.getCuotaConcepto().getAnhoSemestre().getNombreAnhoSemestre()  + ")" );
+					conceptoPagoDTO.setNroCuota(fracConceoto.getNro());
+					conceptoPagoDTO.setFechaVencimiento(fracConceoto.getFechaVencimiento());
+					if (fracConceoto.getMontoFraccionadoResta() != null) {
+						conceptoPagoDTO.setMonto(fracConceoto.getMontoFraccionadoResta());
+					} else {
+						conceptoPagoDTO.setMonto(fracConceoto.getCuotaFracionada());
+					}
+					conceptoPagoDTO.setMontoResta(null);
+					conceptoPagoDTO.setFlagFraccionadoDescripcion(conceptoAlumnoPago.getFlagFraccionadoDescripcion());
+					conceptoPagoDTO.setEsFraccionado(true);
+					if (fracConceoto.getFechaVencimiento() != null) {
+						conceptoPagoDTO.setNumeroDiasRetrazo(FechaDateUtil.restaFechas(fracConceoto.getFechaVencimiento(), FechaUtil.obtenerFecha()));
+					}
+					conceptoPagoDTO.setMontoTotal(conceptoPagoDTO.getMonto());
+					listaConceptoPagoDTO.add(conceptoPagoDTO);
+				}
+			}
+		}
+		return listaConceptoPagoDTO;
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<DetPlanPagosDTO> listarDetPlanPagos(@Context UriInfo info){
+		ResultadoRestVO<DetPlanPagosDTO> resultado = new ResultadoRestVO<DetPlanPagosDTO>();
+		DetPlanPagosDTO detPlanPagos = transferUriInfo(info);
+		 try {
+    		resultado.setListaResultado(pagoServiceLocal.listarDetPlanPagos(detPlanPagos));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<DetPlanPagosDTO> contarListarDetPlanPagos(@Context UriInfo info){
+		ResultadoRestVO<DetPlanPagosDTO> resultado = new ResultadoRestVO<DetPlanPagosDTO>();
+		DetPlanPagosDTO detPlanPagos = transferUriInfo(info);
+		 try {
+    		resultado.setContador(pagoServiceLocal.contarListarDetPlanPagos(detPlanPagos));
+    		if (resultado.isData()) {
+    			resultado.setListaResultado(pagoServiceLocal.listarDetPlanPagos(detPlanPagos));
+    		}
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<DetPlanPagosDTO> inicializarDetPlanPagos(@Context UriInfo info) throws Exception {
+	     DetPlanPagosDTO detPlanPagos = transferUriInfo(info);
+		 ResultadoRestVO<DetPlanPagosDTO> resultado = new ResultadoRestVO<DetPlanPagosDTO>();
+		 try {
+    		resultado.setObjetoResultado(detPlanPagos);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private DetPlanPagosDTO transferUriInfo(@Context UriInfo info) {
+		DetPlanPagosDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,DetPlanPagosDTO.class);
+		return resultado;
+	}
+}

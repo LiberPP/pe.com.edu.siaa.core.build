@@ -1,0 +1,120 @@
+package pe.com.edu.siaa.core.ejb.service.rest.admision.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.admision.local.AdmisionServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.admision.ProcedenciaDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class ProcedenciaRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:34 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/procedenciaRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class ProcedenciaRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient AdmisionServiceLocal admisionServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<ProcedenciaDTO> crear(ProcedenciaDTO procedencia) throws Exception {
+		return controladorAccion(procedencia,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<ProcedenciaDTO> modificar(ProcedenciaDTO procedencia) throws Exception {
+		return controladorAccion(procedencia,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<ProcedenciaDTO> eliminar(@PathParam("id") String idProcedencia) throws Exception {
+		ProcedenciaDTO procedencia = new ProcedenciaDTO();
+		procedencia.setIdProcedencia(idProcedencia);		
+		return controladorAccion(procedencia,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<ProcedenciaDTO> controladorAccion(ProcedenciaDTO procedencia, AccionType accionType){
+		ResultadoRestVO<ProcedenciaDTO> resultado = new ResultadoRestVO<ProcedenciaDTO>();
+		 try {
+    		resultado.setObjetoResultado(admisionServiceLocal.controladorAccionProcedencia(procedencia,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<ProcedenciaDTO> finById(@PathParam("id") String idProcedencia) throws Exception {
+		ProcedenciaDTO procedencia = new ProcedenciaDTO();
+		procedencia.setIdProcedencia(idProcedencia);
+		return controladorAccion(procedencia,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<ProcedenciaDTO> listarProcedencia(@Context UriInfo info){
+		ResultadoRestVO<ProcedenciaDTO> resultado = new ResultadoRestVO<ProcedenciaDTO>();
+		ProcedenciaDTO procedencia = transferUriInfo(info);
+		 try {
+    		resultado.setListaResultado(admisionServiceLocal.listarProcedencia(procedencia));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<ProcedenciaDTO> contarListarProcedencia(@Context UriInfo info){
+		ResultadoRestVO<ProcedenciaDTO> resultado = new ResultadoRestVO<ProcedenciaDTO>();
+		ProcedenciaDTO procedencia = transferUriInfo(info);
+		 try {
+    		resultado.setContador(admisionServiceLocal.contarListarProcedencia(procedencia));
+    		if (resultado.isData()) {
+    			resultado.setListaResultado(admisionServiceLocal.listarProcedencia(procedencia));
+    		}
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<ProcedenciaDTO> inicializarProcedencia(@Context UriInfo info) throws Exception {
+	     ProcedenciaDTO procedencia = transferUriInfo(info);
+		 ResultadoRestVO<ProcedenciaDTO> resultado = new ResultadoRestVO<ProcedenciaDTO>();
+		 try {
+    		resultado.setObjetoResultado(procedencia);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private ProcedenciaDTO transferUriInfo(@Context UriInfo info) {
+		ProcedenciaDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,ProcedenciaDTO.class);
+		return resultado;
+	}
+}

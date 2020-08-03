@@ -1,0 +1,189 @@
+package pe.com.edu.siaa.core.model.dto.matricula;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import pe.com.edu.siaa.core.model.dto.BasePaginator;
+
+/**
+ * La Class RegimenPensionarioDTO.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 1.0, Tue Apr 18 09:56:47 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+public class RegimenPensionarioDTO extends BasePaginator implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id regimen pensionario. */
+    private Integer idRegimenPensionario;
+   
+    /** El descripcion. */
+    private String descripcion;
+   
+    /** El abreviatura. */
+    private String abreviatura;
+   
+    /** El tipo. */
+    private String tipo;
+   
+    /** El regimen pensionario personal list. */
+    private List<PersonalDTO> regimenPensionarioPersonalList = new ArrayList<PersonalDTO>();
+   
+    /**
+     * Instancia un nuevo regimen pensionarioDTO.
+     */
+    public RegimenPensionarioDTO() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo regimen pensionarioDTO.
+     *
+     * @param idRegimenPensionario el id regimen pensionario
+     * @param descripcion el descripcion
+     * @param abreviatura el abreviatura
+     * @param tipo el tipo
+     */
+    public RegimenPensionarioDTO(Integer idRegimenPensionario, String descripcion, String abreviatura, String tipo ) {
+        super();
+        this.idRegimenPensionario = idRegimenPensionario;
+        this.descripcion = descripcion;
+        this.abreviatura = abreviatura;
+        this.tipo = tipo;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id regimen pensionario.
+     *
+     * @return id regimen pensionario
+     */
+     public Integer getIdRegimenPensionario() {
+        return this.idRegimenPensionario;
+    }
+    /**
+     * Establece el id regimen pensionario.
+     *
+     * @param idRegimenPensionario el new id regimen pensionario
+     */
+    public void setIdRegimenPensionario(Integer idRegimenPensionario) {
+        this.idRegimenPensionario = idRegimenPensionario;
+    }
+    /**
+     * Obtiene descripcion.
+     *
+     * @return descripcion
+     */
+     public String getDescripcion() {
+        return this.descripcion;
+    }
+    /**
+     * Establece el descripcion.
+     *
+     * @param descripcion el new descripcion
+     */
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+    /**
+     * Obtiene abreviatura.
+     *
+     * @return abreviatura
+     */
+     public String getAbreviatura() {
+        return this.abreviatura;
+    }
+    /**
+     * Establece el abreviatura.
+     *
+     * @param abreviatura el new abreviatura
+     */
+    public void setAbreviatura(String abreviatura) {
+        this.abreviatura = abreviatura;
+    }
+    /**
+     * Obtiene tipo.
+     *
+     * @return tipo
+     */
+     public String getTipo() {
+        return this.tipo;
+    }
+    /**
+     * Establece el tipo.
+     *
+     * @param tipo el new tipo
+     */
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+    /**
+     * Establece el regimen pensionario personal list.
+     *
+     * @param regimenPensionarioPersonalList el new regimen pensionario personal list
+     */
+    public List<PersonalDTO> getRegimenPensionarioPersonalList(){
+        return this.regimenPensionarioPersonalList;
+    }
+    /**
+     * Establece el regimen pensionario list.
+     *
+     * @param regimenPensionarioList el new regimen pensionario list
+     */
+    public void setRegimenPensionarioPersonalList(List<PersonalDTO> regimenPensionarioPersonalList) {
+        this.regimenPensionarioPersonalList = regimenPensionarioPersonalList;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idRegimenPensionario == null) ? 0 : idRegimenPensionario.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        RegimenPensionarioDTO other = (RegimenPensionarioDTO) obj;
+        if (idRegimenPensionario == null) {
+            if (other.idRegimenPensionario != null) {
+                return false;
+            }
+        } else if (!idRegimenPensionario.equals(other.idRegimenPensionario)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "RegimenPensionarioDTO [idRegimenPensionario=" + idRegimenPensionario + "]";
+    }
+   
+}

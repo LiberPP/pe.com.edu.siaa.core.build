@@ -1,0 +1,69 @@
+package pe.com.edu.siaa.core.ejb.dao.matricula.local;
+
+import java.util.List;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.dto.matricula.HorarioDTO;
+import pe.com.edu.siaa.core.model.jpa.matricula.Horario;
+
+/**
+ * La Class HorarioDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 11:25:13 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface HorarioDaoLocal  extends GenericDAOLocal<String,Horario> {
+	
+	List<String> obtenerIdDetCargaLectiva(HorarioDTO horario);
+	
+	/**
+	 * Listar carga lectiva.
+	 *
+	 * @param horario el carga lectiva
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<Horario> listarHorarioFiltro(HorarioDTO horario) throws Exception;
+	
+	/**
+	 * Listar horario.
+	 *
+	 * @param listaIdDetCargaLectiva el lista id det carga lectiva
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<Horario> listarHorario(List<String> listaIdDetCargaLectiva) throws Exception;
+	
+	/**
+	 * Listar horario.
+	 *
+	 * @param horario el horarioDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<Horario> listarHorario(HorarioDTO horario) throws Exception;
+	
+	/**
+	 * contar lista horario.
+	 *
+	 * @param horario el horario
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarHorario(HorarioDTO horario);
+	/**
+	 * Generar id horario.
+	 *
+	 * @return the String
+	 * @throws Exception the exception
+	 */
+	String generarIdHorario() throws Exception;
+}

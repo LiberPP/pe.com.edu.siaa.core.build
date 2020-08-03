@@ -1,0 +1,104 @@
+package pe.com.edu.siaa.core.model.type;
+
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * <ul>
+ * <li>Copyright 2012 BUILD SOFT S.A.C - BS. Todos los derechos reservados.</li>
+ * </ul>
+ * 
+ * La Enum CronogramaType.
+ *
+ * @author ndavilal.
+ * @version 1.0 , 24/09/2012
+ * @since SIAA 2.0
+ */
+public enum CronogramaType {
+
+	//Los datos se encuentrar registrados en item//TODO:VER ESTO
+    /** La ADMISIOM. */
+	
+	ADMISIOM(1L,"Admisión"),
+	
+ 	/** La MATRICULA_NORMAL. */
+	 MATRICULA_NORMAL(2L,"Matricula normal"),
+ 	
+ 	/** La MATRICULA_EXTEMPORANEA. */
+ 	MATRICULA_EXTEMPORANEA(3L,"Matricula Extemporanea"),
+ 	
+ 	/** La CIERRE_CARGA_LECVTIVA. */
+	 CIERRE_CARGA_LECVTIVA(4L,"Cierre Carga Lectiva"),
+ 	
+ 	/** EL CIERRE_NOTAS. */
+	 CIERRE_NOTAS(5L,"Cierre notas"),
+	 
+	 /** EL FECHA_APLAZADO. */
+	 FECHA_APLAZADO(6L,"Fecha Aplazado"),
+	 
+	 /** EL LLENAR_FICHA_INSCRIPCIPCION. */
+	 LLENAR_FICHA_INSCRIPCIPCION(7L,"Llenar ficha de Inscripción"),
+	 
+	 /** EL RECEPCION_FICHAS. */
+	 RECEPCION_FICHAS(8L,"Recepciï¿½n de fichas"),
+	 
+	 /** EL ENTREVISTA_PERSONAL_CON_DIRECTIVO. */
+	 ENTREVISTA_PERSONAL_CON_DIRECTIVO(9L,"Entrevista personal con el Directivo responsable de su Sede");
+	 
+	/** La Constante looKup. */
+	private static final Map<Long, CronogramaType> LOO_KUP_MAP = new HashMap<Long, CronogramaType>();
+	
+	
+	static {
+		for (CronogramaType s : EnumSet.allOf(CronogramaType.class)) {
+			LOO_KUP_MAP.put(s.getKey(), s);
+		}
+	}
+
+	/** El key. */
+	private Long key;
+	
+	/** El value. */
+	private String value;
+
+	/**
+	 * Instancia un nuevo tipo asinatura type.
+	 *
+	 * @param key el key
+	 * @param value el value
+	 */
+	private CronogramaType(Long key, String value) {
+		this.key = key;
+		this.value = value;
+	}
+	
+	/**
+	 * Gets the.
+	 *
+	 * @param key el key
+	 * @return the tipo asinatura type
+	 */
+	public static CronogramaType get(Long key) {
+		return LOO_KUP_MAP.get(key);
+	}
+
+	/**
+	 * Obtiene key.
+	 *
+	 * @return key
+	 */
+	public Long getKey() {
+		return key;
+	}
+
+	/**
+	 * Obtiene nombre.
+	 *
+	 * @return nombre
+	 */
+	public String getValue() {
+		return value;
+	}
+
+}

@@ -1,0 +1,117 @@
+package pe.com.edu.siaa.core.ejb.dao.matricula.local;
+
+import java.util.List;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.dto.matricula.MatriculaDTO;
+import pe.com.edu.siaa.core.model.jpa.admision.AnhoSemestre;
+import pe.com.edu.siaa.core.model.jpa.common.Item;
+import pe.com.edu.siaa.core.model.jpa.matricula.Matricula;
+
+/**
+ * La Class MatriculaDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 11:25:17 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface MatriculaDaoLocal  extends GenericDAOLocal<String,Matricula> {
+	
+	/**
+	 * Obtener ciclo matriculado by alumno.
+	 *
+	 * @param alumno el alumno
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<Item> obtenerCicloMatriculadoByAlumno(String idAlumno) throws Exception;
+	
+	/**
+	 * Obtener ciclo matriculado by alumno.
+	 *
+	 * @param alumno el alumno
+	 * @param idCicloInicio el id ciclo inicio
+	 * @param idCicloFin el id ciclo fin
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<Item> obtenerCicloMatriculadoByAlumno(String idAlumno,Long idCicloInicio,Long idCicloFin) throws Exception;
+	
+	/**
+	 * Obtener semestre mariculado ordenado by semestre.
+	 *
+	 * @param String el idAlumno
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<AnhoSemestre> obtenerSemestreMariculadoOrdenadoBySemestre(String idAlumno) throws Exception;
+	
+	/**
+	 * Obtener ciclo alumno en base credito aculado.
+	 *
+	 * @param alumno el alumno
+	 * @return the item
+	 * @throws Exception the exception
+	 */
+	List<Object[]> obtenerCicloAlumnoEnBaseCreditoAculado(String idPlanEstudio) throws Exception;
+	
+	//TODO:aqui
+	/**
+	  * Generar codigo matricula idSemestre + idAlumno ejemplo 20051200510017, 20051200510018.
+	  *
+	  * @param matricula el det carga lectiva
+	  * @return the string
+	  * @throws Exception the exception
+	*/
+	String generarCodigoMatricula(String idAnhoSemestre,String idAlumno) throws Exception;
+		
+	/**
+	 * Obtener matricula.
+	 *
+	 * @param matricula el matricula
+	 * @return the matricula
+	 * @throws Exception the exception
+	 */
+	Matricula obtenerMatricula(String idAlumno, String idAnhoSemestre)throws Exception;
+	
+	/**
+	 * Obtener limite credito.
+	 *
+	 * @param alumno el alumno
+	 * @param idCiclo el id ciclo
+	 * @return the int
+	 * @throws Exception the exception
+	 */
+	int obtenerLimiteCredito(String idAlumno,String idPlanEstudio,Long idCiclo) throws Exception;
+	/**
+	 * Listar matricula.
+	 *
+	 * @param matricula el matriculaDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<Matricula> listarMatricula(MatriculaDTO matricula) throws Exception;
+	
+	/**
+	 * contar lista matricula.
+	 *
+	 * @param matricula el matricula
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarMatricula(MatriculaDTO matricula);
+	/**
+	 * Generar id matricula.
+	 *
+	 * @return the String
+	 * @throws Exception the exception
+	 */
+	String generarIdMatricula() throws Exception;
+}

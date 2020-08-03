@@ -1,0 +1,242 @@
+package pe.com.edu.siaa.core.model.dto.matricula;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import pe.com.edu.siaa.core.model.dto.BasePaginator;
+import pe.com.edu.siaa.core.model.dto.nota.DetRegistroNotaDTO;
+
+/**
+ * La Class DetMatriculaDTO.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 1.0, Tue Apr 18 09:56:48 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+public class DetMatriculaDTO extends BasePaginator implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id det matricula. */
+    private String idDetMatricula;
+   
+    /** El matricula. */
+    private MatriculaDTO matricula;
+   
+    /** El det carga lectiva. */
+    private DetCargaLectivaDTO detCargaLectiva;
+   
+    /** El descripcion curso. */
+    private String descripcionCurso;
+   
+    /** El credito. */
+    private Integer credito;
+   
+    /** El estado. */
+    private String estado;
+   
+    /** El det matricula det registro nota list. */
+    private List<DetRegistroNotaDTO> detMatriculaDetRegistroNotaList = new ArrayList<DetRegistroNotaDTO>();
+   
+    /**
+     * Instancia un nuevo det matriculaDTO.
+     */
+    public DetMatriculaDTO() {
+    }
+    
+    /**
+	 * Instancia un nuevo det matricula.
+	 *
+	 * @param idDetMatricula el id det matricula
+	 */
+	public DetMatriculaDTO(String idDetMatricula) {
+		this.idDetMatricula = idDetMatricula;
+	}
+
+   
+   
+    /**
+     * Instancia un nuevo det matriculaDTO.
+     *
+     * @param idDetMatricula el id det matricula
+     * @param matricula el matricula
+     * @param detCargaLectiva el det carga lectiva
+     * @param descripcionCurso el descripcion curso
+     * @param credito el credito
+     * @param estado el estado
+     */
+    public DetMatriculaDTO(String idDetMatricula, MatriculaDTO matricula,DetCargaLectivaDTO detCargaLectiva,String descripcionCurso, Integer credito, String estado ) {
+        super();
+        this.idDetMatricula = idDetMatricula;
+        this.matricula = matricula;
+        this.detCargaLectiva = detCargaLectiva;
+        this.descripcionCurso = descripcionCurso;
+        this.credito = credito;
+        this.estado = estado;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id det matricula.
+     *
+     * @return id det matricula
+     */
+     public String getIdDetMatricula() {
+        return this.idDetMatricula;
+    }
+    /**
+     * Establece el id det matricula.
+     *
+     * @param idDetMatricula el new id det matricula
+     */
+    public void setIdDetMatricula(String idDetMatricula) {
+        this.idDetMatricula = idDetMatricula;
+    }
+    /**
+     * Obtiene matricula.
+     *
+     * @return matricula
+     */
+     public MatriculaDTO getMatricula() {
+        return this.matricula;
+    }
+    /**
+     * Establece el matricula.
+     *
+     * @param matricula el new matricula
+     */
+    public void setMatricula(MatriculaDTO matricula) {
+        this.matricula = matricula;
+    }
+    /**
+     * Obtiene det carga lectiva.
+     *
+     * @return det carga lectiva
+     */
+     public DetCargaLectivaDTO getDetCargaLectiva() {
+        return this.detCargaLectiva;
+    }
+    /**
+     * Establece el det carga lectiva.
+     *
+     * @param detCargaLectiva el new det carga lectiva
+     */
+    public void setDetCargaLectiva(DetCargaLectivaDTO detCargaLectiva) {
+        this.detCargaLectiva = detCargaLectiva;
+    }
+    /**
+     * Obtiene descripcion curso.
+     *
+     * @return descripcion curso
+     */
+     public String getDescripcionCurso() {
+        return this.descripcionCurso;
+    }
+    /**
+     * Establece el descripcion curso.
+     *
+     * @param descripcionCurso el new descripcion curso
+     */
+    public void setDescripcionCurso(String descripcionCurso) {
+        this.descripcionCurso = descripcionCurso;
+    }
+    /**
+     * Obtiene credito.
+     *
+     * @return credito
+     */
+     public Integer getCredito() {
+        return this.credito;
+    }
+    /**
+     * Establece el credito.
+     *
+     * @param credito el new credito
+     */
+    public void setCredito(Integer credito) {
+        this.credito = credito;
+    }
+    /**
+     * Obtiene estado.
+     *
+     * @return estado
+     */
+     public String getEstado() {
+        return this.estado;
+    }
+    /**
+     * Establece el estado.
+     *
+     * @param estado el new estado
+     */
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+    /**
+     * Establece el det matricula det registro nota list.
+     *
+     * @param detMatriculaDetRegistroNotaList el new det matricula det registro nota list
+     */
+    public List<DetRegistroNotaDTO> getDetMatriculaDetRegistroNotaList(){
+        return this.detMatriculaDetRegistroNotaList;
+    }
+    /**
+     * Establece el det matricula list.
+     *
+     * @param detMatriculaList el new det matricula list
+     */
+    public void setDetMatriculaDetRegistroNotaList(List<DetRegistroNotaDTO> detMatriculaDetRegistroNotaList) {
+        this.detMatriculaDetRegistroNotaList = detMatriculaDetRegistroNotaList;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idDetMatricula == null) ? 0 : idDetMatricula.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        DetMatriculaDTO other = (DetMatriculaDTO) obj;
+        if (idDetMatricula == null) {
+            if (other.idDetMatricula != null) {
+                return false;
+            }
+        } else if (!idDetMatricula.equals(other.idDetMatricula)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "DetMatriculaDTO [idDetMatricula=" + idDetMatricula + "]";
+    }
+   
+}

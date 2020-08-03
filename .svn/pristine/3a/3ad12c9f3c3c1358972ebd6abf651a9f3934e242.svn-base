@@ -1,0 +1,378 @@
+package pe.com.edu.siaa.core.model.dto.matricula;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import pe.com.edu.siaa.core.model.dto.BasePaginator;
+import pe.com.edu.siaa.core.model.dto.common.ItemDTO;
+import pe.com.edu.siaa.core.model.type.DragHorarioType;
+
+/**
+ * La Class HorarioDTO.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 1.0, Tue Apr 18 09:56:55 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+public class HorarioDTO extends BasePaginator implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id horario. */
+    private String idHorario;
+   
+    /** El det carga lectiva. */
+    private DetCargaLectivaDTO detCargaLectiva;
+   
+    /** El personal by docente. */
+    private PersonalDTO personalByDocente;
+   
+    /** El item by dia. */
+    private ItemDTO itemByDia;
+   
+    /** El hora inicio. */
+    private String horaInicio;
+   
+    /** El hora fin. */
+    private String horaFin;
+   
+    
+    /** La lista horario. */
+	private List<HorarioDTO> listaHorario = new ArrayList<HorarioDTO>(); 
+
+	/** La variable drag type. */
+	private String dragType;
+	
+	/** El flag es ocupado. */
+	private boolean esOcupado;
+	
+	/** El flag es pendiente. */
+	private boolean esPendiente;
+	
+	private boolean esMover = true;
+	
+	/** El flag style cruce horario. */
+	private String styleCruceHorario;
+	
+	/** El flag style horario docente. */
+	private String styleHorarioDocente;
+	
+	private List<String> listaIdDocente = new ArrayList<String>();
+	private List<String> listaIdDocentePractica = new ArrayList<String>();
+	
+	
+    /**
+     * Instancia un nuevo horarioDTO.
+     */
+    public HorarioDTO() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo horarioDTO.
+     *
+     * @param idHorario el id horario
+     * @param detCargaLectiva el det carga lectiva
+     * @param personalByDocente el personal by docente
+     * @param itemByDia el item by dia
+     * @param horaInicio el hora inicio
+     * @param horaFin el hora fin
+     */
+    public HorarioDTO(String idHorario, DetCargaLectivaDTO detCargaLectiva,PersonalDTO personalByDocente,ItemDTO itemByDia,String horaInicio, String horaFin ) {
+        super();
+        this.idHorario = idHorario;
+        this.detCargaLectiva = detCargaLectiva;
+        this.personalByDocente = personalByDocente;
+        this.itemByDia = itemByDia;
+        this.horaInicio = horaInicio;
+        this.horaFin = horaFin;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id horario.
+     *
+     * @return id horario
+     */
+     public String getIdHorario() {
+        return this.idHorario;
+    }
+    /**
+     * Establece el id horario.
+     *
+     * @param idHorario el new id horario
+     */
+    public void setIdHorario(String idHorario) {
+        this.idHorario = idHorario;
+    }
+    /**
+     * Obtiene det carga lectiva.
+     *
+     * @return det carga lectiva
+     */
+     public DetCargaLectivaDTO getDetCargaLectiva() {
+        return this.detCargaLectiva;
+    }
+    /**
+     * Establece el det carga lectiva.
+     *
+     * @param detCargaLectiva el new det carga lectiva
+     */
+    public void setDetCargaLectiva(DetCargaLectivaDTO detCargaLectiva) {
+        this.detCargaLectiva = detCargaLectiva;
+    }
+    /**
+     * Obtiene personal by docente.
+     *
+     * @return personal by docente
+     */
+     public PersonalDTO getPersonalByDocente() {
+        return this.personalByDocente;
+    }
+    /**
+     * Establece el personal by docente.
+     *
+     * @param personalByDocente el new personal by docente
+     */
+    public void setPersonalByDocente(PersonalDTO personalByDocente) {
+        this.personalByDocente = personalByDocente;
+    }
+    /**
+     * Obtiene item by dia.
+     *
+     * @return item by dia
+     */
+     public ItemDTO getItemByDia() {
+        return this.itemByDia;
+    }
+    /**
+     * Establece el item by dia.
+     *
+     * @param itemByDia el new item by dia
+     */
+    public void setItemByDia(ItemDTO itemByDia) {
+        this.itemByDia = itemByDia;
+    }
+    /**
+     * Obtiene hora inicio.
+     *
+     * @return hora inicio
+     */
+     public String getHoraInicio() {
+        return this.horaInicio;
+    }
+    /**
+     * Establece el hora inicio.
+     *
+     * @param horaInicio el new hora inicio
+     */
+    public void setHoraInicio(String horaInicio) {
+        this.horaInicio = horaInicio;
+    }
+    /**
+     * Obtiene hora fin.
+     *
+     * @return hora fin
+     */
+     public String getHoraFin() {
+        return this.horaFin;
+    }
+     
+     /**
+ 	 * Obtiene lista horario.
+ 	 *
+ 	 * @return lista horario
+ 	 */
+ 	public List<HorarioDTO> getListaHorario() {
+ 		return listaHorario;
+ 	}
+
+ 	/**
+ 	 * Establece el lista horario.
+ 	 *
+ 	 * @param listaHorario el new lista horario
+ 	 */
+ 	public void setListaHorario(List<HorarioDTO> listaHorario) {
+ 		this.listaHorario = listaHorario;
+ 	}
+
+ 	/**
+ 	 * Obtiene drag type.
+ 	 *
+ 	 * @return drag type
+ 	 */
+ 	public String getDragType() {
+ 		return dragType;
+ 	}
+
+ 	/**
+ 	 * Establece el drag type.
+ 	 *
+ 	 * @param dragType el new drag type
+ 	 */
+ 	public void setDragType(String dragType) {
+ 		this.dragType = dragType;
+ 	}
+
+ 	/**
+ 	 * Comprueba si es es ocupado.
+ 	 *
+ 	 * @return true, si es es ocupado
+ 	 */
+ 	public boolean isEsOcupado() {
+ 		if (dragType != null) {
+ 			esOcupado = DragHorarioType.OCUPADO.getKey().equals(dragType);
+ 		}
+ 		return esOcupado;
+ 	}
+
+ 	/**
+ 	 * Establece el es ocupado.
+ 	 *
+ 	 * @param esOcupado el new es ocupado
+ 	 */
+ 	public void setEsOcupado(boolean esOcupado) {
+ 		this.esOcupado = esOcupado;
+ 	}
+
+ 	/**
+ 	 * Comprueba si es es pendiente.
+ 	 *
+ 	 * @return true, si es es pendiente
+ 	 */
+ 	public boolean isEsPendiente() {
+ 		if (dragType != null) {
+ 			esPendiente = DragHorarioType.PENDIENTE.getKey().equals(dragType);
+ 		}
+ 		return esPendiente;
+ 	}
+
+ 	/**
+ 	 * Establece el es pendiente.
+ 	 *
+ 	 * @param esPendiente el new es pendiente
+ 	 */
+ 	public void setEsPendiente(boolean esPendiente) {
+ 		this.esPendiente = esPendiente;
+ 	}
+
+ 	/**
+ 	 * Obtiene style cruce horario.
+ 	 *
+ 	 * @return style cruce horario
+ 	 */
+ 	public String getStyleCruceHorario() {
+ 		return styleCruceHorario;
+ 	}
+
+ 	/**
+ 	 * Establece el style cruce horario.
+ 	 *
+ 	 * @param styleCruceHorario el new style cruce horario
+ 	 */
+ 	public void setStyleCruceHorario(String styleCruceHorario) {
+ 		this.styleCruceHorario = styleCruceHorario;
+ 	}
+
+ 	/**
+ 	 * Obtiene style horario docente.
+ 	 *
+ 	 * @return style horario docente
+ 	 */
+ 	public String getStyleHorarioDocente() {
+ 		return styleHorarioDocente;
+ 	}
+
+ 	/**
+ 	 * Establece el style horario docente.
+ 	 *
+ 	 * @param styleHorarioDocente el new style horario docente
+ 	 */
+ 	public void setStyleHorarioDocente(String styleHorarioDocente) {
+ 		this.styleHorarioDocente = styleHorarioDocente;
+ 	}
+
+ 	public List<String> getListaIdDocente() {
+ 		return listaIdDocente;
+ 	}
+
+ 	public void setListaIdDocente(List<String> listaIdDocente) {
+ 		this.listaIdDocente = listaIdDocente;
+ 	}
+
+ 	public List<String> getListaIdDocentePractica() {
+ 		return listaIdDocentePractica;
+ 	}
+
+ 	public void setListaIdDocentePractica(List<String> listaIdDocentePractica) {
+ 		this.listaIdDocentePractica = listaIdDocentePractica;
+ 	}
+ 	
+ 	public boolean isEsMover() {
+ 		return esMover;
+ 	}
+
+ 	public void setEsMover(boolean esMover) {
+ 		this.esMover = esMover;
+ 	}
+ 	
+    /**
+     * Establece el hora fin.
+     *
+     * @param horaFin el new hora fin
+     */
+    public void setHoraFin(String horaFin) {
+        this.horaFin = horaFin;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idHorario == null) ? 0 : idHorario.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        HorarioDTO other = (HorarioDTO) obj;
+        if (idHorario == null) {
+            if (other.idHorario != null) {
+                return false;
+            }
+        } else if (!idHorario.equals(other.idHorario)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "HorarioDTO [idHorario=" + idHorario + "]";
+    }
+   
+}

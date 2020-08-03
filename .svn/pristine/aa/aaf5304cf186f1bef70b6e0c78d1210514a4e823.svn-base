@@ -1,0 +1,120 @@
+package pe.com.builderp.core.escalafon.ejb.service.rest.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.builderp.core.escalafon.ejb.service.local.EscalafonServiceLocal;
+import pe.com.builderp.core.escalafon.model.dto.ProyectoInvestigacionDTO;
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class ProyectoInvestigacionRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Sun Dec 31 00:35:59 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/proyectoInvestigacionRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class ProyectoInvestigacionRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient EscalafonServiceLocal escalafonServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<ProyectoInvestigacionDTO> crear(ProyectoInvestigacionDTO proyectoInvestigacion) throws Exception {
+		return controladorAccion(proyectoInvestigacion,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<ProyectoInvestigacionDTO> modificar(ProyectoInvestigacionDTO proyectoInvestigacion) throws Exception {
+		return controladorAccion(proyectoInvestigacion,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<ProyectoInvestigacionDTO> eliminar(@PathParam("id") String idProyectoInvestigacion) throws Exception {
+		ProyectoInvestigacionDTO proyectoInvestigacion = new ProyectoInvestigacionDTO();
+		proyectoInvestigacion.setIdProyectoInvestigacion(idProyectoInvestigacion);		
+		return controladorAccion(proyectoInvestigacion,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<ProyectoInvestigacionDTO> controladorAccion(ProyectoInvestigacionDTO proyectoInvestigacion, AccionType accionType){
+		ResultadoRestVO<ProyectoInvestigacionDTO> resultado = new ResultadoRestVO<ProyectoInvestigacionDTO>();
+		 try {
+    		resultado.setObjetoResultado(escalafonServiceLocal.controladorAccionProyectoInvestigacion(proyectoInvestigacion,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<ProyectoInvestigacionDTO> finById(@PathParam("id") String idProyectoInvestigacion) throws Exception {
+		ProyectoInvestigacionDTO proyectoInvestigacion = new ProyectoInvestigacionDTO();
+		proyectoInvestigacion.setIdProyectoInvestigacion(idProyectoInvestigacion);
+		return controladorAccion(proyectoInvestigacion,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<ProyectoInvestigacionDTO> listarProyectoInvestigacion(@Context UriInfo info){
+		ResultadoRestVO<ProyectoInvestigacionDTO> resultado = new ResultadoRestVO<ProyectoInvestigacionDTO>();
+		ProyectoInvestigacionDTO proyectoInvestigacion = transferUriInfo(info);
+		 try {
+			resultado.setListaResultado(escalafonServiceLocal.listarProyectoInvestigacion(proyectoInvestigacion));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<ProyectoInvestigacionDTO> contarProyectoInvestigacion(@Context UriInfo info){
+		ResultadoRestVO<ProyectoInvestigacionDTO> resultado = new ResultadoRestVO<ProyectoInvestigacionDTO>();
+		ProyectoInvestigacionDTO proyectoInvestigacion = transferUriInfo(info);
+		 try {
+			 resultado.setContador(escalafonServiceLocal.contarListarProyectoInvestigacion(proyectoInvestigacion));
+			 if (resultado.isData()) {
+				resultado.setListaResultado(escalafonServiceLocal.listarProyectoInvestigacion(proyectoInvestigacion));
+			 }
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<ProyectoInvestigacionDTO> inicializarProyectoInvestigacion(@Context UriInfo info) throws Exception {
+	     ProyectoInvestigacionDTO proyectoInvestigacion = transferUriInfo(info);
+		 ResultadoRestVO<ProyectoInvestigacionDTO> resultado = new ResultadoRestVO<ProyectoInvestigacionDTO>();
+		 try {
+    		resultado.setObjetoResultado(proyectoInvestigacion);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private ProyectoInvestigacionDTO transferUriInfo(@Context UriInfo info) {
+		ProyectoInvestigacionDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,ProyectoInvestigacionDTO.class);
+		return resultado;
+	}
+}

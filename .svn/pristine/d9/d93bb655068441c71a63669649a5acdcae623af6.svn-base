@@ -1,0 +1,349 @@
+package pe.com.edu.siaa.core.model.jpa.nota;
+
+import java.io.Serializable;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import pe.com.edu.siaa.core.model.jpa.common.Item;
+import pe.com.edu.siaa.core.model.jpa.matricula.Alumno;
+import pe.com.edu.siaa.core.model.jpa.matricula.DetCargaLectiva;
+import pe.com.edu.siaa.core.model.util.ConfiguracionEntityManagerUtil;
+
+/**
+ * La Class Asistencia.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 09:56:47 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Entity
+@Table(name = "Asistencia", schema = ConfiguracionEntityManagerUtil.ESQUEMA_ACADEMICO)
+public class Asistencia implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id asistencia. */
+    @Id
+    @Column(name = "idAsistencia" , length = 14)
+    private String idAsistencia;
+   
+    /** El alumno. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idAlumno", referencedColumnName = "idAlumno")
+    private Alumno alumno;
+   
+    /** El det carga lectiva. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idDetCargaLectiva", referencedColumnName = "idDetCargaLectiva")
+    private DetCargaLectiva detCargaLectiva;
+   
+    /** El item by dia. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idDia", referencedColumnName = "idItem")
+    private Item itemByDia;
+   
+    /** El estado. */
+    @Column(name = "estado" , length = 1)
+    private String estado;
+   
+    /** El justificacion. */
+    @Column(name = "justificacion" , length = 200)
+    private String justificacion;
+   
+    /** El fecha horario. */
+    @Temporal( TemporalType.TIMESTAMP)
+    @Column(name = "fechaHorario")
+    private Date fechaHorario;
+   
+    /** El fecha creacion. */
+    @Temporal( TemporalType.TIMESTAMP)
+    @Column(name = "fechaCreacion")
+    private Date fechaCreacion;
+   
+    /** El usuario creacion. */
+    @Column(name = "usuarioCreacion" , length = 50)
+    private String usuarioCreacion;
+   
+    /** El fecha modificacion. */
+    @Temporal( TemporalType.TIMESTAMP)
+    @Column(name = "fechaModificacion")
+    private Date fechaModificacion;
+   
+    /** El usuario modificacion. */
+    @Column(name = "usuarioModificacion" , length = 50)
+    private String usuarioModificacion;
+   
+    /**
+     * Instancia un nuevo asistencia.
+     */
+    public Asistencia() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo asistencia.
+     *
+     * @param idAsistencia el id asistencia
+     * @param alumno el alumno
+     * @param detCargaLectiva el det carga lectiva
+     * @param itemByDia el item by dia
+     * @param estado el estado
+     * @param justificacion el justificacion
+     * @param fechaHorario el fecha horario
+     * @param fechaCreacion el fecha creacion
+     * @param usuarioCreacion el usuario creacion
+     * @param fechaModificacion el fecha modificacion
+     * @param usuarioModificacion el usuario modificacion
+     */
+    public Asistencia(String idAsistencia, Alumno alumno,DetCargaLectiva detCargaLectiva,Item itemByDia,String estado, String justificacion, Date fechaHorario, Date fechaCreacion, String usuarioCreacion, Date fechaModificacion, String usuarioModificacion ) {
+        super();
+        this.idAsistencia = idAsistencia;
+        this.alumno = alumno;
+        this.detCargaLectiva = detCargaLectiva;
+        this.itemByDia = itemByDia;
+        this.estado = estado;
+        this.justificacion = justificacion;
+        this.fechaHorario = fechaHorario;
+        this.fechaCreacion = fechaCreacion;
+        this.usuarioCreacion = usuarioCreacion;
+        this.fechaModificacion = fechaModificacion;
+        this.usuarioModificacion = usuarioModificacion;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id asistencia.
+     *
+     * @return id asistencia
+     */
+     public String getIdAsistencia() {
+        return this.idAsistencia;
+    }
+    /**
+     * Establece el id asistencia.
+     *
+     * @param idAsistencia el new id asistencia
+     */
+    public void setIdAsistencia(String idAsistencia) {
+        this.idAsistencia = idAsistencia;
+    }
+    /**
+     * Obtiene alumno.
+     *
+     * @return alumno
+     */
+     public Alumno getAlumno() {
+        return this.alumno;
+    }
+    /**
+     * Establece el alumno.
+     *
+     * @param alumno el new alumno
+     */
+    public void setAlumno(Alumno alumno) {
+        this.alumno = alumno;
+    }
+    /**
+     * Obtiene det carga lectiva.
+     *
+     * @return det carga lectiva
+     */
+     public DetCargaLectiva getDetCargaLectiva() {
+        return this.detCargaLectiva;
+    }
+    /**
+     * Establece el det carga lectiva.
+     *
+     * @param detCargaLectiva el new det carga lectiva
+     */
+    public void setDetCargaLectiva(DetCargaLectiva detCargaLectiva) {
+        this.detCargaLectiva = detCargaLectiva;
+    }
+    /**
+     * Obtiene item by dia.
+     *
+     * @return item by dia
+     */
+     public Item getItemByDia() {
+        return this.itemByDia;
+    }
+    /**
+     * Establece el item by dia.
+     *
+     * @param itemByDia el new item by dia
+     */
+    public void setItemByDia(Item itemByDia) {
+        this.itemByDia = itemByDia;
+    }
+    /**
+     * Obtiene estado.
+     *
+     * @return estado
+     */
+     public String getEstado() {
+        return this.estado;
+    }
+    /**
+     * Establece el estado.
+     *
+     * @param estado el new estado
+     */
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+    /**
+     * Obtiene justificacion.
+     *
+     * @return justificacion
+     */
+     public String getJustificacion() {
+        return this.justificacion;
+    }
+    /**
+     * Establece el justificacion.
+     *
+     * @param justificacion el new justificacion
+     */
+    public void setJustificacion(String justificacion) {
+        this.justificacion = justificacion;
+    }
+    /**
+     * Obtiene fecha horario.
+     *
+     * @return fecha horario
+     */
+     public Date getFechaHorario() {
+        return this.fechaHorario;
+    }
+    /**
+     * Establece el fecha horario.
+     *
+     * @param fechaHorario el new fecha horario
+     */
+    public void setFechaHorario(Date fechaHorario) {
+        this.fechaHorario = fechaHorario;
+    }
+    /**
+     * Obtiene fecha creacion.
+     *
+     * @return fecha creacion
+     */
+     public Date getFechaCreacion() {
+        return this.fechaCreacion;
+    }
+    /**
+     * Establece el fecha creacion.
+     *
+     * @param fechaCreacion el new fecha creacion
+     */
+    public void setFechaCreacion(Date fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
+    }
+    /**
+     * Obtiene usuario creacion.
+     *
+     * @return usuario creacion
+     */
+     public String getUsuarioCreacion() {
+        return this.usuarioCreacion;
+    }
+    /**
+     * Establece el usuario creacion.
+     *
+     * @param usuarioCreacion el new usuario creacion
+     */
+    public void setUsuarioCreacion(String usuarioCreacion) {
+        this.usuarioCreacion = usuarioCreacion;
+    }
+    /**
+     * Obtiene fecha modificacion.
+     *
+     * @return fecha modificacion
+     */
+     public Date getFechaModificacion() {
+        return this.fechaModificacion;
+    }
+    /**
+     * Establece el fecha modificacion.
+     *
+     * @param fechaModificacion el new fecha modificacion
+     */
+    public void setFechaModificacion(Date fechaModificacion) {
+        this.fechaModificacion = fechaModificacion;
+    }
+    /**
+     * Obtiene usuario modificacion.
+     *
+     * @return usuario modificacion
+     */
+     public String getUsuarioModificacion() {
+        return this.usuarioModificacion;
+    }
+    /**
+     * Establece el usuario modificacion.
+     *
+     * @param usuarioModificacion el new usuario modificacion
+     */
+    public void setUsuarioModificacion(String usuarioModificacion) {
+        this.usuarioModificacion = usuarioModificacion;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idAsistencia == null) ? 0 : idAsistencia.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Asistencia other = (Asistencia) obj;
+        if (idAsistencia == null) {
+            if (other.idAsistencia != null) {
+                return false;
+            }
+        } else if (!idAsistencia.equals(other.idAsistencia)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Asistencia [idAsistencia=" + idAsistencia + "]";
+    }
+   
+}

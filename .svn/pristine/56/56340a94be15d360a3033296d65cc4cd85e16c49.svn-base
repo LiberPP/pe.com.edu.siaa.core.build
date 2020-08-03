@@ -1,0 +1,157 @@
+package pe.com.edu.siaa.core.ejb.dao.admision.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.persistence.Query;
+
+import pe.com.edu.siaa.core.ejb.dao.admision.local.PostulanteDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericAcademicoDAOImpl;
+import pe.com.edu.siaa.core.model.dto.admision.PostulanteDTO;
+import pe.com.edu.siaa.core.model.jpa.admision.Postulante;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+
+/**
+ * La Class PostulanteDaoImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 19:53:41 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+public class PostulanteDaoImpl extends  GenericAcademicoDAOImpl<String, Postulante> implements PostulanteDaoLocal  {
+
+	
+	@Override
+	public String generarCodigoPostulanteBySemestre(String idAnhoSemestre) throws Exception {
+		String resultado = idAnhoSemestre.trim() + "00001";
+		 Query query = createQuery("select max(p.codigoPostulante) from Postulante p where p.anhoSemestre.idAnhoSemestre =:idAnhoSemestre",null);
+		 query.setParameter("idAnhoSemestre", idAnhoSemestre);
+		 List<String> listaCodigo = query.getResultList();
+		 if (listaCodigo != null && listaCodigo.size() > 0) {
+			 String ultimoCodigoGenerado = listaCodigo.get(0);
+			 if (StringUtils.isNotNullOrBlank(ultimoCodigoGenerado)) {
+				 long ultimoCodigo = Long.parseLong(ultimoCodigoGenerado.trim());
+				 ultimoCodigo++;
+				 resultado = "" + ultimoCodigo;
+				 resultado = StringUtils.completeLeft(resultado, '0', 5);
+			 }
+		 }
+		return resultado;
+	}
+	
+	@Override
+	public String generarCodigoPostulante(String idPersona) throws Exception {
+		String resultado = idPersona.trim() + "001";
+		 Query query = createQuery("select max(p.idPostulante) from Postulante p where p.persona.idPersona=:idPersona",null);
+		 query.setParameter("idPersona", idPersona);
+		 List<String> listaCodigo = query.getResultList();
+		 if (listaCodigo != null && listaCodigo.size() > 0) {
+			 String ultimoCodigoGenerado = listaCodigo.get(0);
+			 if (StringUtils.isNotNullOrBlank(ultimoCodigoGenerado)) {
+				 long ultimoCodigo = Long.parseLong(ultimoCodigoGenerado.trim());
+				 ultimoCodigo++;
+				 resultado = "" + ultimoCodigo;
+				 resultado = StringUtils.completeLeft(resultado, '0', 3);
+			 }
+		 }
+		return resultado;
+	}
+	
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.PostulanteDaoLocal#listarPostulante(pe.com.edu.siaa.core.model.jpa.seguridad.Postulante)
+     */  
+    @Override	 
+    public List<Postulante> listarPostulante(PostulanteDTO postulante) {
+        Query query = generarQueryListaPostulante(postulante, false);
+        query.setFirstResult(postulante.getStartRow());
+        query.setMaxResults(postulante.getOffset());
+        return query.getResultList();
+    }   
+   
+    /**
+     * Generar query lista Postulante.
+     *
+     * @param PostulanteDTO el postulante
+     * @param esContador el es contador
+     * @return the query
+     */
+    private Query generarQueryListaPostulante(PostulanteDTO postulante, boolean esContador) {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        if (esContador) {
+            jpaql.append(" select count(o.idPostulante) from Postulante o where 1=1 ");
+        } else {
+            jpaql.append(" select o from Postulante o where 1=1 ");           
+        }
+		if (!StringUtils.isNullOrEmpty(postulante.getSearch())) {
+	          jpaql.append(" and upper(o.idPostulante) like :search ");
+	          parametros.put("search", "%" + postulante.getSearch().toUpperCase() + "%");
+	    } else {
+			if (!StringUtils.isNullOrEmpty(postulante.getCodigoPostulante())) {
+				jpaql.append(" and upper(o.codigoPostulante) like :codigoPostulante ");
+				parametros.put("codigoPostulante", "%" + postulante.getCodigoPostulante().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmptyNumeric(postulante.getPuntaje())) {
+				jpaql.append(" and o.puntaje = :puntaje ");
+				parametros.put("puntaje", postulante.getPuntaje());
+			}
+			if (!StringUtils.isNullOrEmpty(postulante.getFlagIngreso())) {
+				jpaql.append(" and upper(o.flagIngreso) like :flagIngreso ");
+				parametros.put("flagIngreso", "%" + postulante.getFlagIngreso().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(postulante.getEstado())) {
+				jpaql.append(" and upper(o.estado) like :estado ");
+				parametros.put("estado", "%" + postulante.getEstado().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(postulante.getFechaCreacion())) {
+				jpaql.append(" and o.fechaCreacion = :fechaCreacion ");
+				parametros.put("fechaCreacion", postulante.getFechaCreacion());
+			}
+		}
+        if (!esContador) {
+            //jpaql.append(" ORDER BY 1 ");
+        }
+        Query query = createQuery(jpaql.toString(), parametros);
+        return query;
+    }
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.PostulanteDaoLocal#contarListar{entity.getClassName()}(pe.com.edu.siaa.core.model.jpa.seguridad.PostulanteDTO)
+     */
+	@Override
+    public int contarListarPostulante(PostulanteDTO postulante) {
+        int resultado = 0;
+        try {
+            //StringBuilder jpaql = new StringBuilder();
+            Query query = generarQueryListaPostulante(postulante, true);
+            resultado = ((Long) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            resultado = 0;
+        }
+        return resultado;
+    }
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.PostulanteDaoLocal#generarIdPostulante()
+     */
+	 @Override
+    public String generarIdPostulante() {
+        String resultado = "1";
+        Query query = createQuery("select max(o.idPostulante) from Postulante o", null);
+        List<Object> listLong =  query.getResultList();
+        if (listLong != null && listLong.size() > 0 && listLong.get(0) != null)  {
+            Long ultimoIdGenerado = Long.valueOf(listLong.get(0).toString());
+            if (!StringUtils.isNullOrEmpty(ultimoIdGenerado)) {
+                resultado = resultado + ultimoIdGenerado;
+            }
+        }
+        return resultado;
+    }
+   
+}

@@ -1,0 +1,71 @@
+package pe.com.edu.siaa.core.ejb.dao.nota.local;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.dto.nota.CursoNotaDTO;
+import pe.com.edu.siaa.core.model.jpa.nota.CursoNota;
+
+/**
+ * La Class CursoNotaDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 11:25:13 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface CursoNotaDaoLocal  extends GenericDAOLocal<String,CursoNota> {
+	
+	/**
+	 * Obtener curso nota map.
+	 *
+	 * @param listaIdDetRegistroNota el lista id det registro nota
+	 * @return the map
+	 * @throws Exception the exception
+	 */
+	Map<String,List<CursoNotaDTO>> obtenerCursoNotaMap(List<String> listaIdDetRegistroNota) throws Exception;
+	
+	List<CursoNota> obtenerCursoNotaList(List<String> listaIdDetRegistroNota) throws Exception;
+	
+	/**
+	 * Listar curso nota.
+	 *
+	 * @param cursoNota el curso notaDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<CursoNota> listarCursoNota(CursoNotaDTO cursoNota) throws Exception;
+	
+	/**
+	 * contar lista curso nota.
+	 *
+	 * @param cursoNota el curso nota
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarCursoNota(CursoNotaDTO cursoNota);
+	/**
+	 * Generar id cursoNota.
+	 *
+	 * @return the String
+	 * @throws Exception the exception
+	 */
+	String generarIdCursoNota() throws Exception;
+	
+	//TODO:aqui
+	/**
+		 * Generar codigo cursoNota idSemestre + idAlumno ejemplo 20051200510017, 20051200510018.
+		 *
+		 * @param cursoNota el det carga lectiva
+		 * @return the string
+		 * @throws Exception the exception
+	 */
+	String generarCodigoCursoNota(CursoNotaDTO cursoNota) throws Exception;
+}

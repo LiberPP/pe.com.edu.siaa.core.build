@@ -1,0 +1,112 @@
+package pe.com.edu.siaa.core.ejb.dao.matricula.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.persistence.Query;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericAcademicoDAOImpl;
+import pe.com.edu.siaa.core.ejb.dao.matricula.local.PabellonDaoLocal;
+import pe.com.edu.siaa.core.model.dto.matricula.PabellonDTO;
+import pe.com.edu.siaa.core.model.jpa.matricula.Pabellon;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+
+/**
+ * La Class PabellonDaoImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 19:53:45 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+public class PabellonDaoImpl extends  GenericAcademicoDAOImpl<Long, Pabellon> implements PabellonDaoLocal  {
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.PabellonDaoLocal#listarPabellon(pe.com.edu.siaa.core.model.jpa.seguridad.Pabellon)
+     */  
+    @Override	 
+    public List<Pabellon> listarPabellon(PabellonDTO pabellon) {
+        Query query = generarQueryListaPabellon(pabellon, false);
+        query.setFirstResult(pabellon.getStartRow());
+        query.setMaxResults(pabellon.getOffset());
+        return query.getResultList();
+    }   
+   
+    /**
+     * Generar query lista Pabellon.
+     *
+     * @param PabellonDTO el pabellon
+     * @param esContador el es contador
+     * @return the query
+     */
+    private Query generarQueryListaPabellon(PabellonDTO pabellon, boolean esContador) {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        if (esContador) {
+            jpaql.append(" select count(o.idPabellon) from Pabellon o where 1=1 ");
+        } else {
+            jpaql.append(" select o from Pabellon o where 1=1 ");           
+        }
+		if (!StringUtils.isNullOrEmpty(pabellon.getSearch())) {
+	          jpaql.append(" and upper(o.idPabellon) like :search ");
+	          parametros.put("search", "%" + pabellon.getSearch().toUpperCase() + "%");
+	    } else {
+			if (!StringUtils.isNullOrEmpty(pabellon.getDescripcion())) {
+				jpaql.append(" and upper(o.descripcion) like :descripcion ");
+				parametros.put("descripcion", "%" + pabellon.getDescripcion().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(pabellon.getAbreviatura())) {
+				jpaql.append(" and upper(o.abreviatura) like :abreviatura ");
+				parametros.put("abreviatura", "%" + pabellon.getAbreviatura().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(pabellon.getEstado())) {
+				jpaql.append(" and upper(o.estado) like :estado ");
+				parametros.put("estado", "%" + pabellon.getEstado().toUpperCase() + "%");
+			}
+		}
+        if (!esContador) {
+            //jpaql.append(" ORDER BY 1 ");
+        }
+        Query query = createQuery(jpaql.toString(), parametros);
+        return query;
+    }
+
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.PabellonDaoLocal#contarListar{entity.getClassName()}(pe.com.edu.siaa.core.model.jpa.seguridad.PabellonDTO)
+     */
+	@Override
+    public int contarListarPabellon(PabellonDTO pabellon) {
+        int resultado = 0;
+        try {
+            //StringBuilder jpaql = new StringBuilder();
+            Query query = generarQueryListaPabellon(pabellon, true);
+            resultado = ((Long) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            resultado = 0;
+        }
+        return resultado;
+    }
+    /* (non-Javadoc)
+     * @see pe.com.edu.siaa.core.ejb.dao.seguridad.local.PabellonDaoLocal#generarIdPabellon()
+     */
+	 @Override
+    public Long generarIdPabellon() {
+        Long resultado = 1L;
+        Query query = createQuery("select max(o.idPabellon) from Pabellon o", null);
+        List<Object> listLong =  query.getResultList();
+        if (listLong != null && listLong.size() > 0 && listLong.get(0) != null)  {
+            Long ultimoIdGenerado = Long.valueOf(listLong.get(0).toString());
+            if (!StringUtils.isNullOrEmpty(ultimoIdGenerado)) {
+                resultado = resultado + ultimoIdGenerado;
+            }
+        }
+        return resultado;
+    }
+   
+}

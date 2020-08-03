@@ -1,0 +1,274 @@
+package pe.com.edu.siaa.core.model.jpa.matricula;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import pe.com.edu.siaa.core.model.jpa.admision.Escuela;
+import pe.com.edu.siaa.core.model.util.ConfiguracionEntityManagerUtil;
+
+/**
+ * La Class PlanEstudio.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 09:57:00 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Entity
+@Table(name = "PlanEstudio", schema = ConfiguracionEntityManagerUtil.ESQUEMA_ACADEMICO)
+public class PlanEstudio implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id plan estudio. */
+    @Id
+    @Column(name = "idPlanEstudio" , length = 7)
+    private String idPlanEstudio;
+   
+    /** El anho. */
+    @Column(name = "anho" , length = 4)
+    private String anho;
+   
+    /** El escuela. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idEscuela", referencedColumnName = "idEscuela")
+    private Escuela escuela;
+   
+    /** El estado. */
+    @Column(name = "estado" , length = 1)
+    private String estado;
+   
+    /** El fecha creacion. */
+    @Temporal( TemporalType.TIMESTAMP)
+    @Column(name = "fechaCreacion")
+    private Date fechaCreacion;
+   
+    /** El plan estudio alumno list. */
+    @OneToMany(mappedBy = "planEstudio", fetch = FetchType.LAZY)
+    private List<Alumno> planEstudioAlumnoList = new ArrayList<Alumno>();
+    
+    /** El plan estudio asigna plan estudio list. */
+    @OneToMany(mappedBy = "planEstudio", fetch = FetchType.LAZY)
+    private List<AsignaPlanEstudio> planEstudioAsignaPlanEstudioList = new ArrayList<AsignaPlanEstudio>();
+    
+    /** El plan estudio det plan estudio list. */
+    @OneToMany(mappedBy = "planEstudio", fetch = FetchType.LAZY)
+    private List<DetPlanEstudio> planEstudioDetPlanEstudioList = new ArrayList<DetPlanEstudio>();
+    
+    /**
+     * Instancia un nuevo plan estudio.
+     */
+    public PlanEstudio() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo plan estudio.
+     *
+     * @param idPlanEstudio el id plan estudio
+     * @param anho el anho
+     * @param escuela el escuela
+     * @param estado el estado
+     * @param fechaCreacion el fecha creacion
+     */
+    public PlanEstudio(String idPlanEstudio, String anho, Escuela escuela,String estado, Date fechaCreacion ) {
+        super();
+        this.idPlanEstudio = idPlanEstudio;
+        this.anho = anho;
+        this.escuela = escuela;
+        this.estado = estado;
+        this.fechaCreacion = fechaCreacion;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id plan estudio.
+     *
+     * @return id plan estudio
+     */
+     public String getIdPlanEstudio() {
+        return this.idPlanEstudio;
+    }
+    /**
+     * Establece el id plan estudio.
+     *
+     * @param idPlanEstudio el new id plan estudio
+     */
+    public void setIdPlanEstudio(String idPlanEstudio) {
+        this.idPlanEstudio = idPlanEstudio;
+    }
+    /**
+     * Obtiene anho.
+     *
+     * @return anho
+     */
+     public String getAnho() {
+        return this.anho;
+    }
+    /**
+     * Establece el anho.
+     *
+     * @param anho el new anho
+     */
+    public void setAnho(String anho) {
+        this.anho = anho;
+    }
+    /**
+     * Obtiene escuela.
+     *
+     * @return escuela
+     */
+     public Escuela getEscuela() {
+        return this.escuela;
+    }
+    /**
+     * Establece el escuela.
+     *
+     * @param escuela el new escuela
+     */
+    public void setEscuela(Escuela escuela) {
+        this.escuela = escuela;
+    }
+    /**
+     * Obtiene estado.
+     *
+     * @return estado
+     */
+     public String getEstado() {
+        return this.estado;
+    }
+    /**
+     * Establece el estado.
+     *
+     * @param estado el new estado
+     */
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+    /**
+     * Obtiene fecha creacion.
+     *
+     * @return fecha creacion
+     */
+     public Date getFechaCreacion() {
+        return this.fechaCreacion;
+    }
+    /**
+     * Establece el fecha creacion.
+     *
+     * @param fechaCreacion el new fecha creacion
+     */
+    public void setFechaCreacion(Date fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
+    }
+    /**
+     * Establece el plan estudio alumno list.
+     *
+     * @param planEstudioAlumnoList el new plan estudio alumno list
+     */
+    public List<Alumno> getPlanEstudioAlumnoList(){
+        return this.planEstudioAlumnoList;
+    }
+    /**
+     * Establece el plan estudio list.
+     *
+     * @param planEstudioList el new plan estudio list
+     */
+    public void setPlanEstudioAlumnoList(List<Alumno> planEstudioAlumnoList) {
+        this.planEstudioAlumnoList = planEstudioAlumnoList;
+    }   
+    /**
+     * Establece el plan estudio asigna plan estudio list.
+     *
+     * @param planEstudioAsignaPlanEstudioList el new plan estudio asigna plan estudio list
+     */
+    public List<AsignaPlanEstudio> getPlanEstudioAsignaPlanEstudioList(){
+        return this.planEstudioAsignaPlanEstudioList;
+    }
+    /**
+     * Establece el plan estudio list.
+     *
+     * @param planEstudioList el new plan estudio list
+     */
+    public void setPlanEstudioAsignaPlanEstudioList(List<AsignaPlanEstudio> planEstudioAsignaPlanEstudioList) {
+        this.planEstudioAsignaPlanEstudioList = planEstudioAsignaPlanEstudioList;
+    }   
+    /**
+     * Establece el plan estudio det plan estudio list.
+     *
+     * @param planEstudioDetPlanEstudioList el new plan estudio det plan estudio list
+     */
+    public List<DetPlanEstudio> getPlanEstudioDetPlanEstudioList(){
+        return this.planEstudioDetPlanEstudioList;
+    }
+    /**
+     * Establece el plan estudio list.
+     *
+     * @param planEstudioList el new plan estudio list
+     */
+    public void setPlanEstudioDetPlanEstudioList(List<DetPlanEstudio> planEstudioDetPlanEstudioList) {
+        this.planEstudioDetPlanEstudioList = planEstudioDetPlanEstudioList;
+    }   
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idPlanEstudio == null) ? 0 : idPlanEstudio.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        PlanEstudio other = (PlanEstudio) obj;
+        if (idPlanEstudio == null) {
+            if (other.idPlanEstudio != null) {
+                return false;
+            }
+        } else if (!idPlanEstudio.equals(other.idPlanEstudio)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "PlanEstudio [idPlanEstudio=" + idPlanEstudio + "]";
+    }
+   
+}

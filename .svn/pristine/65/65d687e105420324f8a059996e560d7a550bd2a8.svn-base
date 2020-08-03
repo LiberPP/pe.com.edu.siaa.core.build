@@ -1,0 +1,104 @@
+package pe.com.builderp.core.escalafon.ejb.dao.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.persistence.Query;
+
+import pe.com.builderp.core.escalafon.ejb.dao.local.FormacionProfesionalDaoLocal;
+import pe.com.builderp.core.escalafon.model.dto.FormacionProfesionalDTO;
+import pe.com.builderp.core.escalafon.model.jpa.FormacionProfesional;
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericEscalafonDAOImpl;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+
+/**
+ * La Class FormacionProfesionalDaoImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Sun Dec 31 00:35:59 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+public class FormacionProfesionalDaoImpl extends  GenericEscalafonDAOImpl<String, FormacionProfesional> implements FormacionProfesionalDaoLocal  {
+
+    /* (non-Javadoc)
+     * @see pe.com.builderp.core.escalafon.ejb.dao.local.FormacionProfesionalDaoLocal#listarFormacionProfesional(pe.com.builderp.core.escalafon.model.jpa.FormacionProfesional)
+     */  
+    @Override	 
+    public List<FormacionProfesional> listarFormacionProfesional(FormacionProfesionalDTO formacionProfesional) {
+        Query query = generarQueryListaFormacionProfesional(formacionProfesional, false);
+        query.setFirstResult(formacionProfesional.getStartRow());
+        query.setMaxResults(formacionProfesional.getOffset());
+        return query.getResultList();
+    }   
+   
+    /**
+     * Generar query lista FormacionProfesional.
+     *
+     * @param FormacionProfesionalDTO el formacionProfesional
+     * @param esContador el es contador
+     * @return the query
+     */
+    private Query generarQueryListaFormacionProfesional(FormacionProfesionalDTO formacionProfesional, boolean esContador) {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        if (esContador) {
+            jpaql.append(" select count(o.idFormacionProfesional) from FormacionProfesional o where 1=1 ");
+        } else {
+            jpaql.append(" select o from FormacionProfesional o where 1=1 ");           
+        }
+		if (!StringUtils.isNullOrEmpty(formacionProfesional.getSearch())) {
+	          jpaql.append(" and upper(o.idFormacionProfesional) like :search ");
+	          parametros.put("search", "%" + formacionProfesional.getSearch().toUpperCase() + "%");
+	    } else {
+			if (!StringUtils.isNullOrEmptyNumeric(formacionProfesional.getNroOrden())) {
+				jpaql.append(" and o.nroOrden = :nroOrden ");
+				parametros.put("nroOrden", formacionProfesional.getNroOrden());
+			}
+		}
+        if (!esContador) {
+            //jpaql.append(" ORDER BY 1 ");
+        }
+        Query query = createQuery(jpaql.toString(), parametros);
+        return query;
+    }
+
+    /* (non-Javadoc)
+     * @see pe.com.builderp.core.escalafon.ejb.dao.local.FormacionProfesionalDaoLocal#contarListar{entity.getClassName()}(pe.com.builderp.core.escalafon.model.jpa.FormacionProfesionalDTO)
+     */
+	@Override
+    public int contarListarFormacionProfesional(FormacionProfesionalDTO formacionProfesional) {
+        int resultado = 0;
+        try {
+            //StringBuilder jpaql = new StringBuilder();
+            Query query = generarQueryListaFormacionProfesional(formacionProfesional, true);
+            resultado = ((Long) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            resultado = 0;
+        }
+        return resultado;
+    }
+    /* (non-Javadoc)
+     * @see pe.com.builderp.core.escalafon.ejb.dao.local.FormacionProfesionalDaoLocal#generarIdFormacionProfesional()
+     */
+	 @Override
+    public String generarIdFormacionProfesional() {
+        String resultado = "1";
+        Query query = createQuery("select max(o.idFormacionProfesional) from FormacionProfesional o", null);
+        List<Object> listLong =  query.getResultList();
+        if (listLong != null && listLong.size() > 0 && listLong.get(0) != null)  {
+            Long ultimoIdGenerado = Long.valueOf(listLong.get(0).toString());
+            if (!StringUtils.isNullOrEmpty(ultimoIdGenerado)) {
+                resultado = resultado + ultimoIdGenerado;
+            }
+        }
+        return resultado;
+    }
+   
+}

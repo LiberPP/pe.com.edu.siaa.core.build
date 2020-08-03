@@ -1,0 +1,132 @@
+package pe.com.edu.siaa.core.ejb.dao.nota.local;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.dto.matricula.ResultadoNotaDTO;
+import pe.com.edu.siaa.core.model.dto.nota.DetRegistroNotaDTO;
+import pe.com.edu.siaa.core.model.jpa.nota.DetRegistroNota;
+import pe.com.edu.siaa.core.model.vo.RegistroNotaVO;
+
+/**
+ * La Class DetRegistroNotaDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 11:25:22 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface DetRegistroNotaDaoLocal  extends GenericDAOLocal<String,DetRegistroNota> {
+	
+	
+	/**
+	 * Obtener nota alumno mariculado.
+	 *
+	 * @param listaIdMatricula el lista id matricula
+	 * @return the map
+	 * @throws Exception the exception
+	 */
+	Map<String,List<DetRegistroNota>> obtenerNotaAlumnoMariculado(List<String> listaIdMatricula) throws Exception;
+	
+	/**
+	 * Obtener nota alumno certificado estudio by ciclo map.
+	 *
+	 * @param listaIdCiclo el lista id ciclo
+	 * @param alumno el alumno
+	 * @return the map
+	 * @throws Exception the exception
+	 */
+	Map<Long,List<RegistroNotaVO>> obtenerNotaAlumnoCertificadoEstudioByCicloMap(List<Long> listaIdCiclo, String idAlumno) throws Exception;
+	
+	
+	/**
+	 * Obtener nota alumno mariculado by ciclo map.
+	 *
+	 * @param listaIdCiclo el lista id ciclo
+	 * @param alumno el alumno
+	 * @return the map
+	 * @throws Exception the exception
+	 */
+	Map<Long,List<RegistroNotaVO>> obtenerNotaAlumnoMariculadoByCicloMap(List<Long> listaIdCiclo, String idAlumno) throws Exception;
+
+	
+	/**
+	 * Obtener nota alumno mariculado by semestre map.
+	 *
+	 * @param listaIdSemestre el lista id semestre
+	 * @param alumno el alumno
+	 * @return the map
+	 * @throws Exception the exception
+	 */
+	Map<String,List<RegistroNotaVO>> obtenerNotaAlumnoMariculadoBySemestreMap(List<String> listaIdSemestre, String idAlumno) throws Exception;
+	
+	
+	/**
+	 * Obtener creditos acomulado.
+	 *
+	 * @param alumno el alumno
+	 * @return the int
+	 * @throws Exception the exception
+	 */
+	int obtenerCreditosAcomulado(String idAlumno,String idEscuela) throws Exception;
+	
+	/**
+	 * Obtener curso nota map.
+	 *
+	 * @param alumno el alumno
+	 * @return the resultado nota dto
+	 * @throws Exception the exception
+	 */
+	ResultadoNotaDTO obtenerCursoNotaMap(String idAlumno) throws Exception;
+	
+	/**
+	 * Obtener nota alumno mariculado by curso.
+	 *
+	 * @param idDetCargaLectiva el id det carga lectiva
+	 * @param alumno el alumno
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<DetRegistroNotaDTO> obtenerNotaAlumnoMariculadoByCurso(String idDetCargaLectiva,String idAlumno,Boolean esActaEvaluacionFinalAplazado) throws Exception;
+	
+	/**
+	 * Listar det registro nota.
+	 *
+	 * @param detRegistroNota el det registro notaDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<DetRegistroNota> listarDetRegistroNota(String idRegistroNota) throws Exception;
+	
+	/**
+	 * Listar det registro nota.
+	 *
+	 * @param detRegistroNota el det registro notaDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<DetRegistroNota> listarDetRegistroNota(DetRegistroNotaDTO detRegistroNota) throws Exception;
+	
+	/**
+	 * contar lista det registro nota.
+	 *
+	 * @param detRegistroNota el det registro nota
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarDetRegistroNota(DetRegistroNotaDTO detRegistroNota);
+	/**
+	 * Generar id detRegistroNota.
+	 *
+	 * @return the String
+	 * @throws Exception the exception
+	 */
+	String generarIdDetRegistroNota() throws Exception;
+}

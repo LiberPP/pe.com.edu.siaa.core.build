@@ -1,0 +1,145 @@
+package pe.com.edu.siaa.core.ejb.dao.encuesta.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.persistence.Query;
+
+import pe.com.edu.siaa.core.ejb.dao.encuesta.local.CuestionarioDaoLocal;
+import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericAcademicoDAOImpl;
+import pe.com.edu.siaa.core.ejb.util.jms.UUIDUtil;
+import pe.com.edu.siaa.core.ejb.util.log.Logger;
+import pe.com.edu.siaa.core.model.dto.encuesta.CuestionarioDTO;
+import pe.com.edu.siaa.core.model.jpa.encuesta.Cuestionario;
+import pe.com.edu.siaa.core.model.util.StringUtils;
+
+/**
+ * La Class CuestionarioDaoImpl.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Fri Sep 08 19:44:51 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+public class CuestionarioDaoImpl extends  GenericAcademicoDAOImpl<String, Cuestionario> implements CuestionarioDaoLocal  {
+	private Logger log = Logger.getLogger(CuestionarioDaoImpl.class);
+    /* (non-Javadoc)
+     * @see pe.com.conta.core.ejb.dao.encuesta.local.CuestionarioDaoLocal#listarCuestionario(pe.com.conta.core.model.jpa.encuesta.Cuestionario)
+     */
+    @Override
+    public List<Cuestionario> listarCuestionario(CuestionarioDTO cuestionario) throws Exception {
+        Query query = generarQueryListaCuestionario(cuestionario, false);
+        query.setFirstResult(cuestionario.getStartRow());
+        query.setMaxResults(cuestionario.getOffset());
+        return query.getResultList();
+    }   
+    @Override
+    public String updateOrdenCuestionario(Map<String, Object> parametrosMap) throws Exception {
+    	String resultado = "";
+    	String idEncuesta = (String)parametrosMap.get("idEncuesta");
+    	String idCuestionarioSource = (String)parametrosMap.get("idCuestionarioSource");
+    	Long numeroOrdenSource = (Long)parametrosMap.get("numeroOrdenSource");
+    	Long numeroOrdenTarget = (Long)parametrosMap.get("numeroOrdenTarget");
+    	String operador = "-";
+    	if (numeroOrdenSource > numeroOrdenTarget ) {
+    		operador = "+";
+    	}
+    	StringBuilder update  = new StringBuilder(" update Cuestionario o set o.numeroOrden = o.numeroOrden " + operador + " 1 where o.encuesta.idEncuesta =:idEncuesta ");
+    	if (operador.equals("+")) {
+    		update.append(" and o.numeroOrden >= :numeroOrdenTarget and  o.numeroOrden < :numeroOrdenSource  " );	
+    	} else {
+    		update.append(" and o.numeroOrden >:numeroOrdenSource and  o.numeroOrden <= :numeroOrdenTarget  " );
+    	}		
+		Map<String, Object> parametros = new HashMap<String, Object>();
+		parametros.put("idEncuesta", idEncuesta);
+		parametros.put("numeroOrdenSource", numeroOrdenSource);
+		parametros.put("numeroOrdenTarget", numeroOrdenTarget);
+		
+		log.info("updateOrdenCuestionario.update == > " + update);
+		log.info("updateOrdenCuestionario.parametros == > " + parametros);
+		
+		Query query = createQuery(update.toString(), parametros);
+		query.executeUpdate();
+		
+		update  = new StringBuilder(" update Cuestionario set numeroOrden =:numeroOrden where idCuestionario =:idCuestionarioSource ");
+		parametros = new HashMap<String, Object>();
+		parametros.put("idCuestionarioSource", idCuestionarioSource);
+		parametros.put("numeroOrden", numeroOrdenTarget);
+		
+		log.info("updateOrdenCuestionario.2.update == > " + update);
+		log.info("updateOrdenCuestionario.2.parametros == > " + parametros);
+		
+		query = createQuery(update.toString(), parametros);
+		 
+		query.executeUpdate();
+		
+    	return resultado;
+    }
+    /**
+     * Generar query lista Cuestionario.
+     *
+     * @param CuestionarioDTO el cuestionario
+     * @param esContador el es contador
+     * @return the query
+     */
+    private Query generarQueryListaCuestionario(CuestionarioDTO cuestionario, boolean esContador) throws Exception {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        if (esContador) {
+            jpaql.append(" select count(o.idCuestionario) from Cuestionario o where 1=1 ");
+        } else {
+            jpaql.append(" select o from Cuestionario o where 1=1 ");           
+        }
+        jpaql.append(" and o.encuesta.idEncuesta = :idEncuesta ");
+		parametros.put("idEncuesta", cuestionario.getId() + "");
+		if (!StringUtils.isNullOrEmpty(cuestionario.getSearch())) {
+	          jpaql.append(" and upper(o.descripcion) like :search ");
+	          parametros.put("search", "%" + cuestionario.getSearch().toUpperCase() + "%");
+	    } else {
+			if (!StringUtils.isNullOrEmpty(cuestionario.getDescripcion())) {
+				jpaql.append(" and upper(o.descripcion) like :descripcion ");
+				parametros.put("descripcion", "%" + cuestionario.getDescripcion().toUpperCase() + "%");
+			}
+			if (!StringUtils.isNullOrEmpty(cuestionario.getEstado())) {
+				jpaql.append(" and upper(o.estado) like :estado ");
+				parametros.put("estado", "%" + cuestionario.getEstado().toUpperCase() + "%");
+			}
+		}
+        if (!esContador) {
+            jpaql.append(" ORDER BY o.numeroOrden ");
+        	
+        }
+        Query query = createQuery(jpaql.toString(), parametros);
+        return query;
+    }
+
+    /* (non-Javadoc)
+     * @see pe.com.conta.core.ejb.dao.encuesta.local.CuestionarioDaoLocal#contarListar{entity.getClassName()}(pe.com.conta.core.model.jpa.encuesta.CuestionarioDTO)
+     */
+    @Override
+    public int contarListarCuestionario(CuestionarioDTO cuestionario) {
+        int resultado = 0;
+        try {
+            //StringBuilder jpaql = new StringBuilder();
+            Query query = generarQueryListaCuestionario(cuestionario, true);
+            resultado = ((Long) query.getSingleResult()).intValue();
+        } catch (Exception e) {
+            resultado = 0;
+        }
+        return resultado;
+    }
+    /* (non-Javadoc)
+     * @see pe.com.conta.core.ejb.dao.encuesta.local.CuestionarioDaoLocal#generarIdCuestionario()
+     */
+    @Override
+    public String generarIdCuestionario() throws Exception {
+        return UUIDUtil.generarElementUUID();
+    }
+   
+}

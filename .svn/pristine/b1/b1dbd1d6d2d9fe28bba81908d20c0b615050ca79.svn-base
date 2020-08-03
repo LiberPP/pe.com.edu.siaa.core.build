@@ -1,0 +1,117 @@
+package pe.com.edu.siaa.core.ejb.service.rest.nota.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.nota.local.NotaServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.nota.CursoNotaDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class CursoNotaRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:36 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/cursoNotaRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class CursoNotaRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient NotaServiceLocal notaServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<CursoNotaDTO> crear(CursoNotaDTO cursoNota) throws Exception {
+		return controladorAccion(cursoNota,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<CursoNotaDTO> modificar(CursoNotaDTO cursoNota) throws Exception {
+		return controladorAccion(cursoNota,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<CursoNotaDTO> eliminar(@PathParam("id") String idCursoNota) throws Exception {
+		CursoNotaDTO cursoNota = new CursoNotaDTO();
+		cursoNota.setIdCursoNota(idCursoNota);		
+		return controladorAccion(cursoNota,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<CursoNotaDTO> controladorAccion(CursoNotaDTO cursoNota, AccionType accionType){
+		ResultadoRestVO<CursoNotaDTO> resultado = new ResultadoRestVO<CursoNotaDTO>();
+		 try {
+    		resultado.setObjetoResultado(notaServiceLocal.controladorAccionCursoNota(cursoNota,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<CursoNotaDTO> finById(@PathParam("id") String idCursoNota) throws Exception {
+		CursoNotaDTO cursoNota = new CursoNotaDTO();
+		cursoNota.setIdCursoNota(idCursoNota);
+		return controladorAccion(cursoNota,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<CursoNotaDTO> listarCursoNota(@Context UriInfo info){
+		ResultadoRestVO<CursoNotaDTO> resultado = new ResultadoRestVO<CursoNotaDTO>();
+		CursoNotaDTO cursoNota = transferUriInfo(info);
+		 try {
+    		resultado.setListaResultado(notaServiceLocal.listarCursoNota(cursoNota));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<Integer> contarListarCursoNota(@Context UriInfo info){
+		ResultadoRestVO<Integer> resultado = new ResultadoRestVO<Integer>();
+		CursoNotaDTO cursoNota = transferUriInfo(info);
+		 try {
+    		resultado.setObjetoResultado(notaServiceLocal.contarListarCursoNota(cursoNota));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<CursoNotaDTO> inicializarCursoNota(@Context UriInfo info) throws Exception {
+	     CursoNotaDTO cursoNota = transferUriInfo(info);
+		 ResultadoRestVO<CursoNotaDTO> resultado = new ResultadoRestVO<CursoNotaDTO>();
+		 try {
+    		resultado.setObjetoResultado(cursoNota);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private CursoNotaDTO transferUriInfo(@Context UriInfo info) {
+		CursoNotaDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,CursoNotaDTO.class);
+		return resultado;
+	}
+}

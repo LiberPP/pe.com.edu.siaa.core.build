@@ -1,0 +1,120 @@
+package pe.com.edu.siaa.core.ejb.service.rest.admision.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.admision.local.AdmisionServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.admision.EscuelaDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class EscuelaRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 13:43:29 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/escuelaRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class EscuelaRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient AdmisionServiceLocal admisionServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<EscuelaDTO> crear(EscuelaDTO escuela) throws Exception {
+		return controladorAccion(escuela,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<EscuelaDTO> modificar(EscuelaDTO escuela) throws Exception {
+		return controladorAccion(escuela,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<EscuelaDTO> eliminar(@PathParam("id") String idEscuela) throws Exception {
+		EscuelaDTO escuela = new EscuelaDTO();
+		escuela.setIdEscuela(idEscuela);		
+		return controladorAccion(escuela,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<EscuelaDTO> controladorAccion(EscuelaDTO escuela, AccionType accionType){
+		ResultadoRestVO<EscuelaDTO> resultado = new ResultadoRestVO<EscuelaDTO>();
+		 try {
+    		resultado.setObjetoResultado(admisionServiceLocal.controladorAccionEscuela(escuela,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<EscuelaDTO> finById(@PathParam("id") String idEscuela) throws Exception {
+		EscuelaDTO escuela = new EscuelaDTO();
+		escuela.setIdEscuela(idEscuela);
+		return controladorAccion(escuela,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<EscuelaDTO> listarEscuela(@Context UriInfo info){
+		ResultadoRestVO<EscuelaDTO> resultado = new ResultadoRestVO<EscuelaDTO>();
+		EscuelaDTO escuela = transferUriInfo(info);
+		 try {
+    		resultado.setListaResultado(admisionServiceLocal.listarEscuela(escuela));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<EscuelaDTO> contarListarEscuela(@Context UriInfo info){
+		ResultadoRestVO<EscuelaDTO> resultado = new ResultadoRestVO<EscuelaDTO>();
+		EscuelaDTO escuela = transferUriInfo(info);
+		 try {
+			 resultado.setContador(admisionServiceLocal.contarListarEscuela(escuela));
+			 if (resultado.isData()) {
+				 resultado.setListaResultado(admisionServiceLocal.listarEscuela(escuela));
+			 }
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<EscuelaDTO> inicializarEscuela(@Context UriInfo info) throws Exception {
+	     EscuelaDTO escuela = transferUriInfo(info);
+		 ResultadoRestVO<EscuelaDTO> resultado = new ResultadoRestVO<EscuelaDTO>();
+		 try {
+    		resultado.setObjetoResultado(escuela);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private EscuelaDTO transferUriInfo(@Context UriInfo info) {
+		EscuelaDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,EscuelaDTO.class);
+		return resultado;
+	}
+}

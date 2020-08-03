@@ -1,0 +1,48 @@
+package pe.com.edu.siaa.core.ejb.dao.encuesta.local;
+
+import java.util.List;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.dto.encuesta.OpcionAlternativaDTO;
+import pe.com.edu.siaa.core.model.jpa.encuesta.OpcionAlternativa;
+
+/**
+ * La Class OpcionAlternativaDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Fri Sep 08 16:22:19 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface OpcionAlternativaDaoLocal  extends GenericDAOLocal<Long,OpcionAlternativa> {
+	/**
+	 * Listar opcion alternativa.
+	 *
+	 * @param opcionAlternativa el opcion alternativaDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<OpcionAlternativa> listarOpcionAlternativa(OpcionAlternativaDTO opcionAlternativa) throws Exception;
+	
+	/**
+	 * contar lista opcion alternativa.
+	 *
+	 * @param opcionAlternativa el opcion alternativa
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarOpcionAlternativa(OpcionAlternativaDTO opcionAlternativa);
+	/**
+	 * Generar id opcionAlternativa.
+	 *
+	 * @return the Long
+	 * @throws Exception the exception
+	 */
+	Long generarIdOpcionAlternativa() throws Exception;
+}

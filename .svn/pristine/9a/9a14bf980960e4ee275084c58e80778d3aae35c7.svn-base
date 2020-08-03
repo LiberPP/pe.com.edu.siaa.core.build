@@ -1,0 +1,89 @@
+package pe.com.edu.siaa.core.ejb.dao.matricula.local;
+
+import java.util.List;
+
+import javax.ejb.Local;
+
+import pe.com.edu.siaa.core.ejb.dao.generic.local.GenericDAOLocal;
+import pe.com.edu.siaa.core.model.dto.matricula.AlumnoDTO;
+import pe.com.edu.siaa.core.model.jpa.matricula.Alumno;
+
+/**
+ * La Class AlumnoDaoLocal.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Apr 18 11:25:08 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Local
+public interface AlumnoDaoLocal  extends GenericDAOLocal<String,Alumno> {
+	
+	/**
+	 * Generar codigo Alumno idSemestre + corre(00001) ejemplo  .2005100001, 2005100002.
+	 *
+	 * @param alumno el alumno
+	 * @return the string
+	 * @throws Exception the exception
+	 */
+	String generarCodigoAlumno(String idAnhoSemestre) throws Exception;
+	
+	
+	/**
+	 * Generar codigo carnet idSemestre + corre (0001) ejemplo 2005100001.
+	 *
+	 * @param alumno el alumno
+	 * @return the string
+	 * @throws Exception the exception
+	 */
+	String generarCodigoCarnet(String idAnhoSemestre,String codigoEscuela,String idEscuela) throws Exception;
+
+	/**
+	 * Actualizar alumno.
+	 *
+	 * @param alumno el alumno
+	 * @throws Exception the exception
+	 */
+	void actualizarAlumno(AlumnoDTO alumno) throws Exception;
+	
+	/**
+	 * Find alumno by persona.
+	 *
+	 * @param persona el persona
+	 * @return the alumno
+	 * @throws Exception the exception
+	 */
+	Alumno findAlumnoByPersona(String idPersona) throws Exception;
+	
+	
+	Alumno findAlumno(String  idAlumno) throws Exception;
+	
+	
+	/**
+	 * Listar alumno.
+	 *
+	 * @param alumno el alumnoDTO
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<Alumno> listarAlumno(AlumnoDTO alumno) throws Exception;
+	
+	/**
+	 * contar lista alumno.
+	 *
+	 * @param alumno el alumno
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarAlumno(AlumnoDTO alumno);
+	/**
+	 * Generar id alumno.
+	 *
+	 * @return the String
+	 * @throws Exception the exception
+	 */
+	String generarIdAlumno() throws Exception;
+}

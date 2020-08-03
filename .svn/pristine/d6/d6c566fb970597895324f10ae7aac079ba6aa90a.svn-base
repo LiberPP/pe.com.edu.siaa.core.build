@@ -1,0 +1,120 @@
+package pe.com.edu.siaa.core.ejb.service.rest.admision.impl;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.admision.local.AdmisionServiceLocal;
+import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
+import pe.com.edu.siaa.core.model.dto.admision.EstablecimientoDTO;
+import pe.com.edu.siaa.core.model.type.AccionType;
+import pe.com.edu.siaa.core.vo.ResultadoRestVO;
+
+
+/**
+ * La Class EstablecimientoRestController.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Tue Nov 14 11:33:10 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Stateless
+@Path("/establecimientoRestController")
+@Consumes(MediaType.APPLICATION_JSON )
+@Produces(MediaType.APPLICATION_JSON)
+public class EstablecimientoRestController extends GenericServiceRestImpl {
+ 
+	@EJB
+	private transient AdmisionServiceLocal admisionServiceLocal;
+	
+	@POST
+	public ResultadoRestVO<EstablecimientoDTO> crear(EstablecimientoDTO establecimiento) throws Exception {
+		return controladorAccion(establecimiento,AccionType.CREAR);
+	}
+	@PUT
+	public ResultadoRestVO<EstablecimientoDTO> modificar(EstablecimientoDTO establecimiento) throws Exception {
+		return controladorAccion(establecimiento,AccionType.MODIFICAR);
+	}
+	@DELETE
+	@Path("/{id}")
+	public ResultadoRestVO<EstablecimientoDTO> eliminar(@PathParam("id") Long idEstablecimiento) throws Exception {
+		EstablecimientoDTO establecimiento = new EstablecimientoDTO();
+		establecimiento.setIdEstablecimiento(idEstablecimiento);		
+		return controladorAccion(establecimiento,AccionType.ELIMINAR);
+	}
+	private ResultadoRestVO<EstablecimientoDTO> controladorAccion(EstablecimientoDTO establecimiento, AccionType accionType){
+		ResultadoRestVO<EstablecimientoDTO> resultado = new ResultadoRestVO<EstablecimientoDTO>();
+		 try {
+    		resultado.setObjetoResultado(admisionServiceLocal.controladorAccionEstablecimiento(establecimiento,accionType));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+	@Path("/get/{id}")
+	public ResultadoRestVO<EstablecimientoDTO> finById(@PathParam("id") Long idEstablecimiento) throws Exception {
+		EstablecimientoDTO establecimiento = new EstablecimientoDTO();
+		establecimiento.setIdEstablecimiento(idEstablecimiento);
+		return controladorAccion(establecimiento,AccionType.FIND_BY_ID);
+	}
+	
+	@GET
+    @Path("/listar")
+	public ResultadoRestVO<EstablecimientoDTO> listarEstablecimiento(@Context UriInfo info){
+		ResultadoRestVO<EstablecimientoDTO> resultado = new ResultadoRestVO<EstablecimientoDTO>();
+		EstablecimientoDTO establecimiento = transferUriInfo(info);
+		 try {
+			resultado.setListaResultado(admisionServiceLocal.listarEstablecimiento(establecimiento));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/contar")
+	public ResultadoRestVO<EstablecimientoDTO> contarEstablecimiento(@Context UriInfo info){
+		ResultadoRestVO<EstablecimientoDTO> resultado = new ResultadoRestVO<EstablecimientoDTO>();
+		EstablecimientoDTO establecimiento = transferUriInfo(info);
+		 try {
+			 resultado.setContador(admisionServiceLocal.contarListarEstablecimiento(establecimiento));
+			 if (resultado.isData()) {
+				resultado.setListaResultado(admisionServiceLocal.listarEstablecimiento(establecimiento));
+			 }
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	@GET
+    @Path("/")
+	public ResultadoRestVO<EstablecimientoDTO> inicializarEstablecimiento(@Context UriInfo info) throws Exception {
+	     EstablecimientoDTO establecimiento = transferUriInfo(info);
+		 ResultadoRestVO<EstablecimientoDTO> resultado = new ResultadoRestVO<EstablecimientoDTO>();
+		 try {
+    		resultado.setObjetoResultado(establecimiento);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	private EstablecimientoDTO transferUriInfo(@Context UriInfo info) {
+		EstablecimientoDTO resultado = TransferDataObjectUtil.transferObjetoEntityGetRestDTO(info,EstablecimientoDTO.class);
+		return resultado;
+	}
+}

@@ -1,0 +1,234 @@
+package pe.com.builderp.core.escalafon.model.jpa;
+
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+import pe.com.edu.siaa.core.model.jpa.admision.Universidad;
+import pe.com.edu.siaa.core.model.jpa.common.Item;
+import pe.com.edu.siaa.core.model.jpa.matricula.Personal;
+import pe.com.edu.siaa.core.model.util.ConfiguracionEntityManagerUtil;
+
+/**
+ * La Class FormacionProfesional.
+ * <ul>
+ * <li>Copyright 2017 ndavilal -
+ * ndavilal. Todos los derechos reservados.</li>
+ * </ul>
+ *
+ * @author ndavilal
+ * @version 2.1, Sun Dec 31 00:35:59 COT 2017
+ * @since SIAA-CORE 2.1
+ */
+@Entity
+@Table(name = "FormacionProfesional", schema = ConfiguracionEntityManagerUtil.ESQUEMA_ESCALAFON)
+public class FormacionProfesional implements Serializable {
+ 
+    /** La Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+   
+    /** El id formacion profesional. */
+    @Id
+    @Column(name = "idFormacionProfesional" , length = 32)
+    private String idFormacionProfesional;
+   
+    /** El personal. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idPersonal", referencedColumnName = "idPersonal")
+    private Personal personal;
+   
+    /** El item by grado academico. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idGradoAcademico", referencedColumnName = "idItem")
+    private Item itemByGradoAcademico;
+   
+    /** El item by grado academico otorga. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idGradoAcademicoOtorga", referencedColumnName = "idItem")
+    private Item itemByGradoAcademicoOtorga;
+   
+    /** El universidad. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idUniversidadOtorgaGrado", referencedColumnName = "idUniversidad")
+    private Universidad universidad;
+   
+    /** El nro orden. */
+    @Column(name = "nroOrden" , length = 18)
+    private Long nroOrden;
+   
+    /**
+     * Instancia un nuevo formacion profesional.
+     */
+    public FormacionProfesional() {
+    }
+   
+   
+    /**
+     * Instancia un nuevo formacion profesional.
+     *
+     * @param idFormacionProfesional el id formacion profesional
+     * @param personal el personal
+     * @param itemByGradoAcademico el item by grado academico
+     * @param itemByGradoAcademicoOtorga el item by grado academico otorga
+     * @param universidad el universidad
+     * @param nroOrden el nro orden
+     */
+    public FormacionProfesional(String idFormacionProfesional, Personal personal,Item itemByGradoAcademico,Item itemByGradoAcademicoOtorga,Universidad universidad,Long nroOrden ) {
+        super();
+        this.idFormacionProfesional = idFormacionProfesional;
+        this.personal = personal;
+        this.itemByGradoAcademico = itemByGradoAcademico;
+        this.itemByGradoAcademicoOtorga = itemByGradoAcademicoOtorga;
+        this.universidad = universidad;
+        this.nroOrden = nroOrden;
+    }
+   
+    //get y set
+    /**
+     * Obtiene id formacion profesional.
+     *
+     * @return id formacion profesional
+     */
+     public String getIdFormacionProfesional() {
+        return this.idFormacionProfesional;
+    }
+    /**
+     * Establece el id formacion profesional.
+     *
+     * @param idFormacionProfesional el new id formacion profesional
+     */
+    public void setIdFormacionProfesional(String idFormacionProfesional) {
+        this.idFormacionProfesional = idFormacionProfesional;
+    }
+    /**
+     * Obtiene personal.
+     *
+     * @return personal
+     */
+     public Personal getPersonal() {
+        return this.personal;
+    }
+    /**
+     * Establece el personal.
+     *
+     * @param personal el new personal
+     */
+    public void setPersonal(Personal personal) {
+        this.personal = personal;
+    }
+    /**
+     * Obtiene item by grado academico.
+     *
+     * @return item by grado academico
+     */
+     public Item getItemByGradoAcademico() {
+        return this.itemByGradoAcademico;
+    }
+    /**
+     * Establece el item by grado academico.
+     *
+     * @param itemByGradoAcademico el new item by grado academico
+     */
+    public void setItemByGradoAcademico(Item itemByGradoAcademico) {
+        this.itemByGradoAcademico = itemByGradoAcademico;
+    }
+    /**
+     * Obtiene item by grado academico otorga.
+     *
+     * @return item by grado academico otorga
+     */
+     public Item getItemByGradoAcademicoOtorga() {
+        return this.itemByGradoAcademicoOtorga;
+    }
+    /**
+     * Establece el item by grado academico otorga.
+     *
+     * @param itemByGradoAcademicoOtorga el new item by grado academico otorga
+     */
+    public void setItemByGradoAcademicoOtorga(Item itemByGradoAcademicoOtorga) {
+        this.itemByGradoAcademicoOtorga = itemByGradoAcademicoOtorga;
+    }
+    /**
+     * Obtiene universidad.
+     *
+     * @return universidad
+     */
+     public Universidad getUniversidad() {
+        return this.universidad;
+    }
+    /**
+     * Establece el universidad.
+     *
+     * @param universidad el new universidad
+     */
+    public void setUniversidad(Universidad universidad) {
+        this.universidad = universidad;
+    }
+    /**
+     * Obtiene nro orden.
+     *
+     * @return nro orden
+     */
+     public Long getNroOrden() {
+        return this.nroOrden;
+    }
+    /**
+     * Establece el nro orden.
+     *
+     * @param nroOrden el new nro orden
+     */
+    public void setNroOrden(Long nroOrden) {
+        this.nroOrden = nroOrden;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((idFormacionProfesional == null) ? 0 : idFormacionProfesional.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        FormacionProfesional other = (FormacionProfesional) obj;
+        if (idFormacionProfesional == null) {
+            if (other.idFormacionProfesional != null) {
+                return false;
+            }
+        } else if (!idFormacionProfesional.equals(other.idFormacionProfesional)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "FormacionProfesional [idFormacionProfesional=" + idFormacionProfesional + "]";
+    }
+   
+}
