@@ -1,6 +1,9 @@
 package pe.com.builderp.core.model.vo.cooperativa;
-
+ 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Date;
 
 import pe.com.edu.siaa.core.model.dto.BasePaginator;
@@ -40,6 +43,9 @@ public class VerificacionFisicaDTO extends BasePaginator implements Serializable
     
     private String hora;
     
+    
+    private List<ImagenAdjuntoDTO> listaImgaenAdjunto = new ArrayList<ImagenAdjuntoDTO>();
+    
     /**
      * Instancia un nuevo categoria.
      */
@@ -62,6 +68,15 @@ public class VerificacionFisicaDTO extends BasePaginator implements Serializable
 	}
 	
 	
+	
+
+	public List<ImagenAdjuntoDTO> getListaImgaenAdjunto() {
+		return listaImgaenAdjunto;
+	}
+
+	public void setListaImgaenAdjunto(List<ImagenAdjuntoDTO> listaImgaenAdjunto) {
+		this.listaImgaenAdjunto = listaImgaenAdjunto;
+	}
 
 	public String getHora() {
 		return hora;

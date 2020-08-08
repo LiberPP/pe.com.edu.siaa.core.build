@@ -33,6 +33,8 @@ public interface CommonServiceLocal {
 	void subirImagen(FileVO fileVO)  throws Exception;
 	
 	String obtenerImagenEncodeBase64(FileVO fileVO)  throws Exception;
+	
+	List<FileVO> obtenerListaImagenEncodeBase64(FileVO[] fileVO)  throws Exception;
 	/**
 	 * Controlador accion parametro.
 	 *

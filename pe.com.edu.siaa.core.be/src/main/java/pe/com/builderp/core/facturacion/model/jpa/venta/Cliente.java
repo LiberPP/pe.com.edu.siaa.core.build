@@ -116,6 +116,11 @@ public class Cliente implements Serializable {
     @Column(name = "estado" , length = 1)
     private String estado;
     
+    /** El estado. */
+    @Column(name = "foto" , length = 50)
+    private String foto;
+    
+    
     /** El item by categoria cliente. */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idEstadoCivil", referencedColumnName = "idItem")
@@ -177,7 +182,7 @@ public class Cliente implements Serializable {
      */
     public Cliente(String genero,Date fechaNacimiento,Item itemByEstadoCivil,String idCliente, Entidad entidad,String tipoCliente, String nombre, 
     		String apellidoPaterno, String apellidoMaterno, Item itemByTipoDocumentoIdentidad,String nroDoc, String email, String telefono,
-    		String celular, String paginaWeb, String direccion, String userName, String userPassword, BigDecimal limiteCreito,
+    		String celular, String paginaWeb, String direccion, String userName,String foto, String userPassword, BigDecimal limiteCreito,
     		Item itemByCategoriaCliente,String estado,Usuario usuario ) {
         super();
         this.idCliente = idCliente;
@@ -202,6 +207,7 @@ public class Cliente implements Serializable {
         this.fechaNacimiento=fechaNacimiento;
         this.genero=genero;
         this.usuario=usuario;
+        this.foto=foto;
     }
    
     //get y set
@@ -215,7 +221,17 @@ public class Cliente implements Serializable {
      public String getIdCliente() {
         return this.idCliente;
     }
-    public Usuario getUsuario() {
+    public String getFoto() {
+		return foto;
+	}
+
+
+	public void setFoto(String foto) {
+		this.foto = foto;
+	}
+
+
+	public Usuario getUsuario() {
 		return usuario;
 	}
 

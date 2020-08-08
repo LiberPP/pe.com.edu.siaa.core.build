@@ -58,6 +58,11 @@ public class ReferenciaPersonal implements Serializable {
     /** El celular. */
     @Column(name = "celular" , length = 50)
     private String celular;
+
+    /** El celular. */
+    @Column(name = "parentesco" , length = 100)
+    private String parentesco;
+    
     
     /** El ubigeo by nacimiento. */
     @ManyToOne(fetch = FetchType.LAZY)
@@ -72,7 +77,7 @@ public class ReferenciaPersonal implements Serializable {
 
 	public ReferenciaPersonal(String idReferenciaPersonal, String nombre, String apellidoPaterno,
 			String apellidoMaterno, String nroDoc, String telefono, String celular,
-			EvaluacionCredito evaluacionCredito) {
+			EvaluacionCredito evaluacionCredito,String parentesco) {
 		super();
 		this.idReferenciaPersonal = idReferenciaPersonal;
 		this.nombre = nombre;
@@ -82,6 +87,16 @@ public class ReferenciaPersonal implements Serializable {
 		this.telefono = telefono;
 		this.celular = celular;
 		this.evaluacionCredito = evaluacionCredito;
+		this.parentesco=parentesco;
+	}
+	
+
+	public String getParentesco() {
+		return parentesco;
+	}
+
+	public void setParentesco(String parentesco) {
+		this.parentesco = parentesco;
 	}
 
 	public String getIdReferenciaPersonal() {

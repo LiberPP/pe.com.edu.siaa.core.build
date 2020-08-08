@@ -281,4 +281,31 @@ public class FileUploadRestController extends GenericServiceRestImpl {
 		}
 		return resultado;
 	}
+	
+	@POST
+	@Path("/obtenerListaImagenEncodeBase64")
+	public ResultadoRestVO<FileVO> obtenerListaImagenEncodeBase64(FileVO[] fileVo) throws Exception {
+		ResultadoRestVO<FileVO> resultado = new ResultadoRestVO<FileVO>();
+		 try {  
+			 resultado.setListaResultado(commonServiceLocal.obtenerListaImagenEncodeBase64(fileVo));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	
+	@POST
+	@Path("/subirImagenesAdjunto")
+	public ResultadoRestVO<FileVO> subirImagenesAdjunto(FileVO[] listaFileVO) throws Exception {
+		ResultadoRestVO<FileVO> resultado = new ResultadoRestVO<FileVO>();
+		 try {
+			 for(FileVO fileVO:listaFileVO) {
+				 fileVO.setRuta(ConstanteConfigUtil.RUTA_RECURSOS_FOTO_ALUMN + ConstanteConfigUtil.SEPARADOR_FILE + fileVO.getName() + "." + fileVO.getExtension());
+				 commonServiceLocal.subirImagen(fileVO); 
+			 }
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
 }

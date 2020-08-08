@@ -63,6 +63,7 @@ import pe.com.builderp.core.facturacion.model.vo.venta.RegistroVentaVO;
 import pe.com.edu.siaa.core.ejb.dao.seguridad.local.UsuarioDaoLocal;
 import pe.com.edu.siaa.core.ejb.factory.CollectionUtil;
 import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.common.local.CommonServiceLocal;
 import pe.com.edu.siaa.core.ejb.service.local.GenerarReporteServiceLocal;
 import pe.com.edu.siaa.core.ejb.service.seguridad.local.SeguridadServiceLocal;
 import pe.com.edu.siaa.core.ejb.service.util.FechaUtil;
@@ -88,11 +89,13 @@ import pe.com.edu.siaa.core.model.type.RespuestaNaturalType;
 import pe.com.edu.siaa.core.model.type.TipoMovimientoType;
 import pe.com.edu.siaa.core.model.type.TipoProductoType;
 import pe.com.edu.siaa.core.model.type.TipoReporteGenerarType;
+import pe.com.edu.siaa.core.model.util.ConstanteConfigUtil;
 import pe.com.edu.siaa.core.model.util.NumerosUtil;
 import pe.com.edu.siaa.core.model.util.ObjectUtil;
 import pe.com.edu.siaa.core.model.util.StringUtils;
 import pe.com.edu.siaa.core.model.vo.ExcelHederDataVO;
 import pe.com.edu.siaa.core.model.vo.ExcelHederTitleVO;
+import pe.com.edu.siaa.core.model.vo.FileVO;
 import pe.com.edu.siaa.core.model.vo.ParametroReporteVO;
 import pe.com.edu.siaa.core.ui.paginator.IDataProvider;
 import pe.com.edu.siaa.core.ui.paginator.LazyLoadingList;
@@ -184,6 +187,10 @@ public class VentaServiceImpl implements VentaServiceLocal {
 	
 	@EJB
 	private UsuarioDaoLocal usuarioServiceImpl; 
+	
+	@EJB
+	private transient CommonServiceLocal commonServiceLocal;
+	
 	
 	@Override
 	public String generarReporteProductoCodigoBarra(ProductoDTO productoFiltro) throws Exception {
@@ -529,7 +536,18 @@ public class VentaServiceImpl implements VentaServiceLocal {
 	}
 	@Override
 	public List<ClienteDTO> listarCliente(ClienteDTO cliente) throws Exception {
-		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.clienteDaoImpl.listarCliente(cliente),ClienteDTO.class,"usuario","itemByTipoDocumentoIdentidad","itemByCategoriaCliente","itemByEstadoCivil");
+		List<Cliente> listaTemp = this.clienteDaoImpl.listarCliente(cliente);
+		List<ClienteDTO> listaCli = new ArrayList<ClienteDTO>(); 
+		for (Cliente clie : listaTemp) {
+			ClienteDTO clienteDTO = TransferDataObjectUtil.transferObjetoEntityDTO(clie, ClienteDTO.class,"usuario","itemByTipoDocumentoIdentidad","itemByCategoriaCliente","itemByEstadoCivil");
+			FileVO fileVO = new FileVO();
+			fileVO.setRuta(ConstanteConfigUtil.RUTA_RECURSOS_FOTO_ALUMN + ConstanteConfigUtil.SEPARADOR_FILE + "086" +  clienteDTO.getFoto());
+			clienteDTO.setFoto(commonServiceLocal.obtenerImagenEncodeBase64(fileVO));
+			listaCli.add(clienteDTO);
+		}	
+		listaTemp = null;
+		return listaCli;
+		//return TransferDataObjectUtil.transferObjetoEntityDTOList(this.clienteDaoImpl.listarCliente(cliente),ClienteDTO.class,"usuario","itemByTipoDocumentoIdentidad","itemByCategoriaCliente","itemByEstadoCivil");
 	}
 	@Override
 	public int contarListarCliente(ClienteDTO cliente){

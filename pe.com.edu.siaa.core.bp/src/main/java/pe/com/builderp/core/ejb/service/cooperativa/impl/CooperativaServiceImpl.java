@@ -14,12 +14,14 @@ import ch.qos.logback.core.net.server.Client;
 import pe.com.builderp.core.ejb.dao.cooperativa.local.AvalDaoLocal;
 import pe.com.builderp.core.ejb.dao.cooperativa.local.CajaDaoLocal;
 import pe.com.builderp.core.ejb.dao.cooperativa.local.CobranzaDaoLocal;
+import pe.com.builderp.core.ejb.dao.cooperativa.local.CompromisoPagoDaoLocal;
 import pe.com.builderp.core.ejb.dao.cooperativa.local.CreditoDaoLocal;
 import pe.com.builderp.core.ejb.dao.cooperativa.local.DetCobranzaDaoLocal;
 import pe.com.builderp.core.ejb.dao.cooperativa.local.DocumentoRequeridoDaoLocal;
 import pe.com.builderp.core.ejb.dao.cooperativa.local.EgresoDaoLocal;
 import pe.com.builderp.core.ejb.dao.cooperativa.local.EvaluacionCreditoDaoLocal;
 import pe.com.builderp.core.ejb.dao.cooperativa.local.FraccionamientoDaoLocal;
+import pe.com.builderp.core.ejb.dao.cooperativa.local.ImagenAdjuntoDaoLocal;
 import pe.com.builderp.core.ejb.dao.cooperativa.local.InformacionLaboralDaoLocal;
 import pe.com.builderp.core.ejb.dao.cooperativa.local.IngresoDaoLocal;
 import pe.com.builderp.core.ejb.dao.cooperativa.local.PrestamoInternoDaoLocal;
@@ -31,12 +33,14 @@ import pe.com.builderp.core.facturacion.model.dto.venta.ClienteDTO;
 import pe.com.builderp.core.model.jpa.cooperativa.Aval;
 import pe.com.builderp.core.model.jpa.cooperativa.Caja;
 import pe.com.builderp.core.model.jpa.cooperativa.Cobranza;
+import pe.com.builderp.core.model.jpa.cooperativa.CompromisoPago;
 import pe.com.builderp.core.model.jpa.cooperativa.Credito;
 import pe.com.builderp.core.model.jpa.cooperativa.DetCobranza;
 import pe.com.builderp.core.model.jpa.cooperativa.DocumentoRequerido;
 import pe.com.builderp.core.model.jpa.cooperativa.Egreso;
 import pe.com.builderp.core.model.jpa.cooperativa.EvaluacionCredito;
 import pe.com.builderp.core.model.jpa.cooperativa.Fraccionamiento;
+import pe.com.builderp.core.model.jpa.cooperativa.ImagenAdjunto;
 import pe.com.builderp.core.model.jpa.cooperativa.InformacionLaboral;
 import pe.com.builderp.core.model.jpa.cooperativa.Ingreso;
 import pe.com.builderp.core.model.jpa.cooperativa.PrestamoInterno;
@@ -45,6 +49,7 @@ import pe.com.builderp.core.model.jpa.cooperativa.VerificacionFisica;
 import pe.com.builderp.core.model.vo.cooperativa.AvalDTO;
 import pe.com.builderp.core.model.vo.cooperativa.CajaDTO;
 import pe.com.builderp.core.model.vo.cooperativa.CobranzaDTO;
+import pe.com.builderp.core.model.vo.cooperativa.CompromisoPagoDTO;
 import pe.com.builderp.core.model.vo.cooperativa.ConceptoCobranzaDTO;
 import pe.com.builderp.core.model.vo.cooperativa.CreditoDTO;
 import pe.com.builderp.core.model.vo.cooperativa.DetCobranzaDTO;
@@ -52,6 +57,7 @@ import pe.com.builderp.core.model.vo.cooperativa.DocumentoRequeridoDTO;
 import pe.com.builderp.core.model.vo.cooperativa.EgresoDTO;
 import pe.com.builderp.core.model.vo.cooperativa.EvaluacionCreditoDTO;
 import pe.com.builderp.core.model.vo.cooperativa.FraccionamientoDTO;
+import pe.com.builderp.core.model.vo.cooperativa.ImagenAdjuntoDTO;
 import pe.com.builderp.core.model.vo.cooperativa.InformacionLaboralDTO;
 import pe.com.builderp.core.model.vo.cooperativa.IngresoDTO;
 import pe.com.builderp.core.model.vo.cooperativa.IngresoVoDTO;
@@ -61,6 +67,7 @@ import pe.com.builderp.core.model.vo.cooperativa.VerificacionFisicaDTO;
 import pe.com.edu.siaa.core.ejb.dao.seguridad.local.UsuarioDaoLocal;
 import pe.com.edu.siaa.core.ejb.factory.CollectionUtil;
 import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.common.local.CommonServiceLocal;
 import pe.com.edu.siaa.core.ejb.service.local.GenerarReporteServiceLocal;
 import pe.com.edu.siaa.core.ejb.service.util.FechaUtil;
 import pe.com.edu.siaa.core.ejb.util.cache.AppAuthenticator;
@@ -76,8 +83,10 @@ import pe.com.edu.siaa.core.model.type.AccionType;
 import pe.com.edu.siaa.core.model.type.FlagConceptoPagoFraccionadoType;
 import pe.com.edu.siaa.core.model.type.NombreReporteType;
 import pe.com.edu.siaa.core.model.type.TipoReporteGenerarType;
+import pe.com.edu.siaa.core.model.util.ConstanteConfigUtil;
 import pe.com.edu.siaa.core.model.util.NumerosUtil;
 import pe.com.edu.siaa.core.model.util.StringUtils;
+import pe.com.edu.siaa.core.model.vo.FileVO;
 import pe.com.edu.siaa.core.model.vo.ParametroReporteVO;
 import pe.com.edu.siaa.core.model.vo.SelectItemVO;
 
@@ -157,6 +166,16 @@ public class CooperativaServiceImpl implements CooperativaServiceLocal {
 	
 	@EJB
 	private AvalDaoLocal avalDaoImpl;
+	
+	@EJB
+	private transient CommonServiceLocal commonServiceLocal;
+	
+	
+	@EJB
+	private transient CompromisoPagoDaoLocal compromisoPagoDaoImpl;
+	
+	@EJB
+	private ImagenAdjuntoDaoLocal imagenAdjuntoDaoImpl; 
 	 
 	@Override
 	public DocumentoRequeridoDTO controladorAccionDocumentoRequerido(DocumentoRequeridoDTO documentoRequerido,
@@ -357,10 +376,22 @@ public class CooperativaServiceImpl implements CooperativaServiceLocal {
 			verificacionFisicaDTO.getEvaluacionCredito().setCliente(TransferDataObjectUtil.transferObjetoEntityDTO(verificacionFisicaDTO2.getEvaluacionCredito().getCliente(), ClienteDTO.class ,"itemByEstadoCivil","itemByCategoriaCliente","itemByTipoDocumentoIdentidad"));
 			List<DocumentoRequeridoDTO> listaDocumentoRequerido = listarDocumentoRequerido(verificacionFisicaDTO2.getEvaluacionCredito().getIdEvaluacionCredito());
 			verificacionFisicaDTO.getEvaluacionCredito().setListaDocumentoRequeridoPer(listaDocumentoRequerido);
+			
+			ImagenAdjuntoDTO img= new ImagenAdjuntoDTO();
+			img.setId(verificacionFisicaDTO.getIdVerificacionFisica());
+			List<ImagenAdjuntoDTO>listaImgaenAdjunto=listarImagenAdjunto(img);
+			verificacionFisicaDTO.setListaImgaenAdjunto(listaImgaenAdjunto);
+			
 			resultado.add(verificacionFisicaDTO);
 		}
 		listaTemo = null;
 		return resultado;
+	}
+	
+	@Override
+	public List<ImagenAdjuntoDTO> listarImagenAdjunto(ImagenAdjuntoDTO imagenAdjunto) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.imagenAdjuntoDaoImpl.listarImagenAdjunto(imagenAdjunto),ImagenAdjuntoDTO.class,"cliente");
+
 	}
 
 	@Override
@@ -386,6 +417,10 @@ public class CooperativaServiceImpl implements CooperativaServiceLocal {
 			creditoDTO.getVerificacionFisica().setEvaluacionCredito(TransferDataObjectUtil.transferObjetoEntityDTO(creditoDTO2.getVerificacionFisica().getEvaluacionCredito(), EvaluacionCreditoDTO.class, "cliente"));
 			creditoDTO.getVerificacionFisica().getEvaluacionCredito().setCliente(TransferDataObjectUtil.transferObjetoEntityDTO(creditoDTO2.getVerificacionFisica().getEvaluacionCredito().getCliente(), ClienteDTO.class ,"itemByEstadoCivil","itemByCategoriaCliente","itemByTipoDocumentoIdentidad"));
 
+			FileVO fileVO = new FileVO();
+			fileVO.setRuta(ConstanteConfigUtil.RUTA_RECURSOS_FOTO_ALUMN + ConstanteConfigUtil.SEPARADOR_FILE + "086" +  creditoDTO.getVerificacionFisica().getEvaluacionCredito().getCliente().getFoto());
+			creditoDTO.getVerificacionFisica().getEvaluacionCredito().getCliente().setFoto(commonServiceLocal.obtenerImagenEncodeBase64(fileVO));
+			
 			resultado.add(creditoDTO);
 		}
 	
@@ -561,6 +596,7 @@ public class CooperativaServiceImpl implements CooperativaServiceLocal {
 	public void registrarVerificacionFisica(VerificacionFisicaDTO verificacionFisica) throws Exception { 
 		VerificacionFisica verificacionFisicaPersist = null; 
 		boolean isCrearOtros = false; 
+		AccionType accionType =null;
 		if (!StringUtils.isNotNullOrBlank(verificacionFisica.getIdVerificacionFisica())) {
 			if(StringUtils.isNullOrEmpty(verificacionFisica.getFechaVerificacion())) {
 				verificacionFisica.setFechaVerificacion(FechaUtil.obtenerFecha());
@@ -572,19 +608,40 @@ public class CooperativaServiceImpl implements CooperativaServiceLocal {
 			verificacionFisicaPersist = TransferDataObjectUtil.transferObjetoEntity(verificacionFisica, VerificacionFisica.class,"verificador","evaluacionCredito");
 			this.verificacionFisicaDaoImpl.save(verificacionFisicaPersist);
 			isCrearOtros=true;
+			accionType=AccionType.CREAR;
 			
 		}else {
 			verificacionFisica.setHora(FechaUtil.obtenerHoraMinutos()); 
 			verificacionFisicaPersist = TransferDataObjectUtil.transferObjetoEntity(verificacionFisica, VerificacionFisica.class,"verificador","evaluacionCredito");
 			this.verificacionFisicaDaoImpl.update(verificacionFisicaPersist);	
 			isCrearOtros=true;
+			accionType=AccionType.MODIFICAR;
 		}
 		
 		if(isCrearOtros) {
+			if (!CollectionUtil.isEmpty(verificacionFisica.getListaImgaenAdjunto())) {						
+				crearImagenAdjunto(verificacionFisicaPersist,verificacionFisica.getListaImgaenAdjunto(),accionType);
+			}
 			/*if(!CollectionUtil.isEmpty(verificacionFisica.getInformacionLaboralList())) {
 				
 			}*/
 		}	
+	}
+	
+	private void crearImagenAdjunto(VerificacionFisica verificacionFisica,List<ImagenAdjuntoDTO> listaImagenAdjunto,AccionType accionType) throws Exception {
+		//List<ItemDTO> listaTipoDocumentoRequerido = SelectItemServiceCacheUtil.getInstance().converItemDTO(listaTipoDocumentoRequeridoTemp);
+		if (AccionType.MODIFICAR.getKey().equals(accionType.getKey())) {
+			//ya que tiene uuid
+			imagenAdjuntoDaoImpl.eliminarImagenAdjunto(verificacionFisica.getIdVerificacionFisica());
+		}				 
+		for (ImagenAdjuntoDTO objItem : listaImagenAdjunto) { 
+			    ImagenAdjunto resultadoEntity = null; 
+			    objItem.setIdImagenAdjunto(this.imagenAdjuntoDaoImpl.generarIdImagenAdjunto());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(objItem, ImagenAdjunto.class,"verificacionFisica@PK@");
+				resultadoEntity.setVerificacionFisica(verificacionFisica);
+				this.imagenAdjuntoDaoImpl.save(resultadoEntity);
+				imagenAdjuntoDaoImpl.save(resultadoEntity);		
+		}
 	}
  
 	private void registrarFraccionamiento(String userName,FraccionamientoDTO fraccionamiento, Credito credito) throws Exception {
@@ -1423,5 +1480,55 @@ public class CooperativaServiceImpl implements CooperativaServiceLocal {
 		resultado = TransferDataObjectUtil.transferObjetoEntityDTO(aval,AvalDTO.class,"persona");
 		aval = null;
 		return resultado;
+	}
+
+	@Override
+	public CompromisoPagoDTO controladorAccionCompromisoPago(CompromisoPagoDTO compromisoPago, AccionType accionType)
+			throws Exception {
+		CompromisoPagoDTO resultado = null;
+		CompromisoPago resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				compromisoPago.setIdCompromisoPago(compromisoPagoDaoImpl.generarIdCompromisoPago());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(compromisoPago, CompromisoPago.class,"cliente@PK@"); 
+				this.compromisoPagoDaoImpl.save(resultadoEntity);	
+				resultado = compromisoPago;
+				break;				
+			case MODIFICAR:
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(compromisoPago, CompromisoPago.class,"cliente@PK@"); 
+				this.compromisoPagoDaoImpl.update(resultadoEntity);
+				resultado = compromisoPago;	 
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.compromisoPagoDaoImpl.find(CompromisoPago.class, compromisoPago.getIdCompromisoPago());
+				this.compromisoPagoDaoImpl.delete(resultadoEntity);
+				resultado = compromisoPago;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.compromisoPagoDaoImpl.find(CompromisoPago.class, compromisoPago.getIdCompromisoPago());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,CompromisoPagoDTO.class);
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.detalleVentaDaoImpl.findByNombre(detalleVenta),DetalleVentaDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+
+	@Override
+	public List<CompromisoPagoDTO> listarCompromisoPago(CompromisoPagoDTO compromisoPago) throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.compromisoPagoDaoImpl.listarCompromisoPago(compromisoPago),CompromisoPagoDTO.class,"cliente");
+	}
+
+	@Override
+	public int contarListarCompromisoPago(CompromisoPagoDTO compromisoPago) {
+		return this.compromisoPagoDaoImpl.contarListarCompromisoPago(compromisoPago);
 	}
 }

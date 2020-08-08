@@ -84,6 +84,20 @@ public class CommonServiceImpl implements CommonServiceLocal{
 	public String obtenerImagenEncodeBase64(FileVO fileVO)  throws Exception {
 		return Base64ImageUtils.encoder(fileVO.getRuta());
 	}
+	
+	@Override
+	public List<FileVO> obtenerListaImagenEncodeBase64(FileVO[] fileVO)  throws Exception {
+		List<FileVO> fileV= new ArrayList<FileVO>();
+		for(FileVO listaFile :fileVO) { 
+			listaFile.setRuta(ConstanteConfigUtil.RUTA_RECURSOS_FOTO_ALUMN + ConstanteConfigUtil.SEPARADOR_FILE + "086" +  listaFile.getName());
+			listaFile.setDataBase64( Base64ImageUtils.encoder(listaFile.getRuta()));
+			listaFile.setDataBase64Convert("data:image/jpg;base64,");
+			fileV.add(listaFile);
+		}
+		fileVO=null;
+		return fileV;
+	}
+	
 	@Override
 	public ParametroDTO controladorAccionParametro(ParametroDTO parametro, AccionType accionType) throws Exception {
 		ParametroDTO resultado = null;

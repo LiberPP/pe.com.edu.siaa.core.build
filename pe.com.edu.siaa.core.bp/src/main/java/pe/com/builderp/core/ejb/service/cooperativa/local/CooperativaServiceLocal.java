@@ -8,11 +8,13 @@ import javax.ejb.Local;
 import pe.com.builderp.core.model.vo.cooperativa.AvalDTO;
 import pe.com.builderp.core.model.vo.cooperativa.CajaDTO;
 import pe.com.builderp.core.model.vo.cooperativa.CobranzaDTO;
+import pe.com.builderp.core.model.vo.cooperativa.CompromisoPagoDTO;
 import pe.com.builderp.core.model.vo.cooperativa.CreditoDTO;
 import pe.com.builderp.core.model.vo.cooperativa.DetCobranzaDTO;
 import pe.com.builderp.core.model.vo.cooperativa.DocumentoRequeridoDTO;
 import pe.com.builderp.core.model.vo.cooperativa.EgresoDTO;
 import pe.com.builderp.core.model.vo.cooperativa.EvaluacionCreditoDTO;
+import pe.com.builderp.core.model.vo.cooperativa.ImagenAdjuntoDTO;
 import pe.com.builderp.core.model.vo.cooperativa.InformacionLaboralDTO;
 import pe.com.builderp.core.model.vo.cooperativa.IngresoDTO;
 import pe.com.builderp.core.model.vo.cooperativa.IngresoVoDTO;
@@ -151,7 +153,6 @@ public interface CooperativaServiceLocal{
 	
 	
 	VerificacionFisicaDTO controladorAccionVerificacionFisica(VerificacionFisicaDTO VerificacionFisica,AccionType accionType) throws Exception; 
-	
 	/**
 	 * Listar VerificacionFisica.
 	 *
@@ -160,7 +161,6 @@ public interface CooperativaServiceLocal{
 	 * @throws Exception the exception
 	 */
 	List<VerificacionFisicaDTO> listarVerificacionFisica(VerificacionFisicaDTO VerificacionFisica) throws Exception;
-	
 	/**
 	 * contar lista VerificacionFisica.
 	 *
@@ -170,8 +170,7 @@ public interface CooperativaServiceLocal{
 	 */
 	int contarListarVerificacionFisica(VerificacionFisicaDTO VerificacionFisica);
 	
-	//
-	
+ 
 	CreditoDTO controladorAccionCredito(CreditoDTO Credito,AccionType accionType) throws Exception; 
 	
 	/**
@@ -265,4 +264,29 @@ public interface CooperativaServiceLocal{
 	CreditoDTO eliminarDetPlanPagos(CreditoDTO credito) throws Exception;
 	
 	AvalDTO avalBy(String idEvaluacionCredito) throws Exception;
+	
+	//
+	
+	CompromisoPagoDTO controladorAccionCompromisoPago(CompromisoPagoDTO compromisoPago,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar DocumentoRequerido.
+	 *
+	 * @param DocumentoRequerido el DocumentoRequerido
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<CompromisoPagoDTO> listarCompromisoPago(CompromisoPagoDTO compromisoPago) throws Exception;
+	
+	/**
+	 * contar lista DocumentoRequerido.
+	 *
+	 * @param DocumentoRequerido el DocumentoRequerido
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarCompromisoPago(CompromisoPagoDTO compromisoPago);
+	
+	List<ImagenAdjuntoDTO> listarImagenAdjunto(ImagenAdjuntoDTO imagenAdjunto) throws Exception;
+	
 }
