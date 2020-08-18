@@ -52,7 +52,7 @@ public class EvaluacionCreditoDTO extends BasePaginator implements Serializable 
     private List<InformacionLaboralDTO> informacionLaboralList = new ArrayList<InformacionLaboralDTO>();
     
     /** El compra detalle compra list. */
-    private List<AvalDTO> avalList = new ArrayList<AvalDTO>();
+    private List<AvalDatosDTO> avalDatosList = new ArrayList<AvalDatosDTO>();
  
 	    /** El postulante documento requerido list. */
 	private List<SelectItemVO> listaDocumentoRequerido = new ArrayList<SelectItemVO>();
@@ -86,12 +86,14 @@ public class EvaluacionCreditoDTO extends BasePaginator implements Serializable 
 	
 	
 	
-	public List<AvalDTO> getAvalList() {
-		return avalList;
+
+
+	public List<AvalDatosDTO> getAvalDatosList() {
+		return avalDatosList;
 	}
 
-	public void setAvalList(List<AvalDTO> avalList) {
-		this.avalList = avalList;
+	public void setAvalDatosList(List<AvalDatosDTO> avalDatosList) {
+		this.avalDatosList = avalDatosList;
 	}
 
 	public List<DocumentoRequeridoDTO> getListaDocumentoRequeridoPer() {

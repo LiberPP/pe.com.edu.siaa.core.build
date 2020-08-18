@@ -8,9 +8,9 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table; 
+import javax.persistence.Table;
 
-import pe.com.builderp.core.facturacion.model.jpa.venta.Cliente; 
+import pe.com.builderp.core.facturacion.model.jpa.venta.Aval; 
 import pe.com.edu.siaa.core.model.util.ConfiguracionEntityManagerUtil;
 
 /**
@@ -25,16 +25,16 @@ import pe.com.edu.siaa.core.model.util.ConfiguracionEntityManagerUtil;
  * @since SIAA-CORE 2.1
  */
 @Entity
-@Table(name = "Aval", schema = ConfiguracionEntityManagerUtil.ESQUEMA_COOPERATIVA)
-public class Aval implements Serializable {
+@Table(name = "AvalDatos", schema = ConfiguracionEntityManagerUtil.ESQUEMA_COOPERATIVA)
+public class AvalDatos implements Serializable {
  
     /** La Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
    
     /** El id proforma. */
     @Id
-    @Column(name = "idAval" , length = 32)
-    private String idAval;
+    @Column(name = "idAvalDatos" , length = 32)
+    private String idAvalDatos;
     
     /** El tipo usuario. */ 
     @Column(name = "tipoaval" , precision = 18 , scale = 0)
@@ -46,8 +46,8 @@ public class Aval implements Serializable {
     
     /** El tipo usuario. */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idPersona", referencedColumnName = "idCliente")
-    private Cliente persona;
+    @JoinColumn(name = "idAval", referencedColumnName = "idAval")
+    private Aval aval;
     
     /** El tipo usuario. */
     @ManyToOne(fetch = FetchType.LAZY)
@@ -59,43 +59,34 @@ public class Aval implements Serializable {
     /**
      * Instancia un nuevo proforma.
      */
-    public Aval() {
+    public AvalDatos() {
     }
 
 
 
-	public Aval(String idAval, Long itemTipoAval, String descripcion, Cliente persona,EvaluacionCredito evaluacionCredito) {
+	public AvalDatos(String idAvalDatos, Long itemTipoAval, String descripcion, Aval aval,
+			EvaluacionCredito evaluacionCredito) {
 		super();
-		this.idAval = idAval;
+		this.idAvalDatos = idAvalDatos;
 		this.itemTipoAval = itemTipoAval;
 		this.descripcion = descripcion;
-		this.persona = persona;
-		this.evaluacionCredito=evaluacionCredito;
-	}
-
-
-	public EvaluacionCredito getEvaluacionCredito() {
-		return evaluacionCredito;
-	}
-
-
-
-	public void setEvaluacionCredito(EvaluacionCredito evaluacionCredito) {
+		this.aval = aval;
 		this.evaluacionCredito = evaluacionCredito;
 	}
 
 
 
-	public String getIdAval() {
-		return idAval;
+	public String getIdAvalDatos() {
+		return idAvalDatos;
 	}
 
 
 
-	public void setIdAval(String idAval) {
-		this.idAval = idAval;
+	public void setIdAvalDatos(String idAvalDatos) {
+		this.idAvalDatos = idAvalDatos;
 	}
-	
+
+
 
 	public Long getItemTipoAval() {
 		return itemTipoAval;
@@ -121,14 +112,26 @@ public class Aval implements Serializable {
 
 
 
-	public Cliente getPersona() {
-		return persona;
+	public Aval getAval() {
+		return aval;
 	}
 
 
 
-	public void setPersona(Cliente persona) {
-		this.persona = persona;
+	public void setAval(Aval aval) {
+		this.aval = aval;
+	}
+
+
+
+	public EvaluacionCredito getEvaluacionCredito() {
+		return evaluacionCredito;
+	}
+
+
+
+	public void setEvaluacionCredito(EvaluacionCredito evaluacionCredito) {
+		this.evaluacionCredito = evaluacionCredito;
 	}
 
 
@@ -137,7 +140,7 @@ public class Aval implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((idAval == null) ? 0 : idAval.hashCode());
+		result = prime * result + ((idAvalDatos == null) ? 0 : idAvalDatos.hashCode());
 		return result;
 	}
 
@@ -151,11 +154,11 @@ public class Aval implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Aval other = (Aval) obj;
-		if (idAval == null) {
-			if (other.idAval != null)
+		AvalDatos other = (AvalDatos) obj;
+		if (idAvalDatos == null) {
+			if (other.idAvalDatos != null)
 				return false;
-		} else if (!idAval.equals(other.idAval))
+		} else if (!idAvalDatos.equals(other.idAvalDatos))
 			return false;
 		return true;
 	}
@@ -164,9 +167,10 @@ public class Aval implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Aval [idAval=" + idAval + "]";
+		return "AvalDatos [idAvalDatos=" + idAvalDatos + "]";
 	}
 
 
-	
+
+    
 }

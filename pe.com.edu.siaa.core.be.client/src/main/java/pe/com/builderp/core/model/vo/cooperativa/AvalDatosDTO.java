@@ -1,7 +1,8 @@
 package pe.com.builderp.core.model.vo.cooperativa;
 
-import java.io.Serializable; 
+import java.io.Serializable;
 
+import pe.com.builderp.core.facturacion.model.dto.venta.AvalDTO;
 import pe.com.builderp.core.facturacion.model.dto.venta.ClienteDTO;
 import pe.com.edu.siaa.core.model.dto.BasePaginator; 
 
@@ -16,13 +17,13 @@ import pe.com.edu.siaa.core.model.dto.BasePaginator;
  * @version 1.0, Fri Dec 22 11:07:03 COT 2017
  * @since SIAA-CORE 2.1
  */
-public class AvalDTO extends BasePaginator implements Serializable {
+public class AvalDatosDTO extends BasePaginator implements Serializable {
  
     /** La Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
    
     /** El id proforma. */
-    private String idAval;
+    private String idAvalDatos;
   
    
     private Long itemTipoAval;
@@ -31,7 +32,7 @@ public class AvalDTO extends BasePaginator implements Serializable {
     private String descripcion;
  
    
-    private ClienteDTO persona;
+    private AvalDTO aval;
     
     private EvaluacionCreditoDTO evaluacionCredito;
     
@@ -39,37 +40,28 @@ public class AvalDTO extends BasePaginator implements Serializable {
     /**
      * Instancia un nuevo proformaDTO.
      */
-    public AvalDTO() {
+    public AvalDatosDTO() {
     }
 
 
-	public AvalDTO(String idAval, Long itemTipoAval, String descripcion, ClienteDTO persona,EvaluacionCreditoDTO evaluacionCredito) {
+	public AvalDatosDTO(String idAvalDatos, Long itemTipoAval, String descripcion, AvalDTO aval,
+			EvaluacionCreditoDTO evaluacionCredito) {
 		super();
-		this.idAval = idAval;
+		this.idAvalDatos = idAvalDatos;
 		this.itemTipoAval = itemTipoAval;
 		this.descripcion = descripcion;
-		this.persona = persona;
-		this.evaluacionCredito=evaluacionCredito;
-	}
-
-
-	public EvaluacionCreditoDTO getEvaluacionCredito() {
-		return evaluacionCredito;
-	}
-
-
-	public void setEvaluacionCredito(EvaluacionCreditoDTO evaluacionCredito) {
+		this.aval = aval;
 		this.evaluacionCredito = evaluacionCredito;
 	}
 
 
-	public String getIdAval() {
-		return idAval;
+	public String getIdAvalDatos() {
+		return idAvalDatos;
 	}
 
 
-	public void setIdAval(String idAval) {
-		this.idAval = idAval;
+	public void setIdAvalDatos(String idAvalDatos) {
+		this.idAvalDatos = idAvalDatos;
 	}
 
 
@@ -93,13 +85,23 @@ public class AvalDTO extends BasePaginator implements Serializable {
 	}
 
 
-	public ClienteDTO getPersona() {
-		return persona;
+	public AvalDTO getAval() {
+		return aval;
 	}
 
 
-	public void setPersona(ClienteDTO persona) {
-		this.persona = persona;
+	public void setAval(AvalDTO aval) {
+		this.aval = aval;
+	}
+
+
+	public EvaluacionCreditoDTO getEvaluacionCredito() {
+		return evaluacionCredito;
+	}
+
+
+	public void setEvaluacionCredito(EvaluacionCreditoDTO evaluacionCredito) {
+		this.evaluacionCredito = evaluacionCredito;
 	}
 
 
@@ -107,7 +109,7 @@ public class AvalDTO extends BasePaginator implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((idAval == null) ? 0 : idAval.hashCode());
+		result = prime * result + ((idAvalDatos == null) ? 0 : idAvalDatos.hashCode());
 		return result;
 	}
 
@@ -120,11 +122,11 @@ public class AvalDTO extends BasePaginator implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		AvalDTO other = (AvalDTO) obj;
-		if (idAval == null) {
-			if (other.idAval != null)
+		AvalDatosDTO other = (AvalDatosDTO) obj;
+		if (idAvalDatos == null) {
+			if (other.idAvalDatos != null)
 				return false;
-		} else if (!idAval.equals(other.idAval))
+		} else if (!idAvalDatos.equals(other.idAvalDatos))
 			return false;
 		return true;
 	}
@@ -132,8 +134,8 @@ public class AvalDTO extends BasePaginator implements Serializable {
 
 	@Override
 	public String toString() {
-		return "AvalDTO [idAval=" + idAval + "]";
+		return "AvalDatosDTO [idAvalDatos=" + idAvalDatos + "]";
 	}
 
-	
+    
 }

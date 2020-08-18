@@ -17,7 +17,7 @@ import javax.ws.rs.core.UriInfo;
  
 
 import pe.com.builderp.core.ejb.service.cooperativa.local.CooperativaServiceLocal;
-import pe.com.builderp.core.model.vo.cooperativa.AvalDTO;
+import pe.com.builderp.core.model.vo.cooperativa.AvalDatosDTO;
 import pe.com.builderp.core.model.vo.cooperativa.EvaluacionCreditoDTO;
 import pe.com.builderp.core.model.vo.cooperativa.InformacionLaboralDTO;
 import pe.com.builderp.core.model.vo.cooperativa.ReferenciaPersonalDTO; 
@@ -169,9 +169,22 @@ public class EvaluacionCreditoRestController extends GenericServiceRestImpl {
 	}
 	
 	@GET
+    @Path("/informacionLaboralAvalDatos/{idAvalDatos}")
+	public ResultadoRestVO<InformacionLaboralDTO> informacionLaboralAvalDatos(@Context UriInfo info,@PathParam("idAvalDatos") String idAvalDatos){
+		ResultadoRestVO<InformacionLaboralDTO> resultado = new ResultadoRestVO<InformacionLaboralDTO>();
+		//ReferenciaPersonalDTO referencia = transferUriInfoReferencia(info);
+		 try {
+			resultado.setObjetoResultado(cooperativaServiceLocal.informacionLaboralAvalDatos(idAvalDatos));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	
+	@GET
     @Path("/getaval/{idEvaluacionCredito}")
-	public ResultadoRestVO<AvalDTO> getaval(@Context UriInfo info,@PathParam("idEvaluacionCredito") String idEvaluacionCredito){
-		ResultadoRestVO<AvalDTO> resultado = new ResultadoRestVO<AvalDTO>();
+	public ResultadoRestVO<AvalDatosDTO> getaval(@Context UriInfo info,@PathParam("idEvaluacionCredito") String idEvaluacionCredito){
+		ResultadoRestVO<AvalDatosDTO> resultado = new ResultadoRestVO<AvalDatosDTO>();
 		//ReferenciaPersonalDTO referencia = transferUriInfoReferencia(info);
 		 try {
 			resultado.setObjetoResultado(cooperativaServiceLocal.avalBy(idEvaluacionCredito));

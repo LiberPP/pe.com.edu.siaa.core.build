@@ -2,6 +2,7 @@ package pe.com.edu.siaa.core.model.dto.seguridad;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,11 +67,18 @@ public class UsuarioDTO extends BasePaginator implements Serializable {
     /** la foto. */
     private String foto;
     
+    
+    private String nroDoc;
+    
+    private String direccion;
+    
+    private String genero;
    
+    private Date fechaNacimiento;
+    
     //Datos adicionales
     private Map<String,Boolean> privilegiosMap = new HashMap<String, Boolean>();
     private List<MenuDTO> listaMenu = new ArrayList<MenuDTO>();
-    
     /** El user password. */
     private String userPasswordEncriptado;
     
@@ -83,24 +91,8 @@ public class UsuarioDTO extends BasePaginator implements Serializable {
     public UsuarioDTO() {
     }
    
-   
-    /**
-     * Instancia un nuevo usuarioDTO.
-     *
-     * @param idUsuario el id usuario
-     * @param nombre el nombre
-     * @param apellidoPaterno el apellido paterno
-     * @param apellidoMaterno el apellido materno
-     * @param email el email
-     * @param telefono el telefono
-     * @param celular el celular
-     * @param userName el user name
-     * @param userPassword el user password
-     * @param tipoUsuario el tipo usuario
-     * @param codigoExterno el codigo externo
-     * @param estado el estado
-     */
-    public UsuarioDTO(String idUsuario, String nombre, String apellidoPaterno, String apellidoMaterno, String email, String telefono, String celular, String userName, String userPassword, TipoUsuarioDTO tipoUsuario,String codigoExterno, String estado, String foto ) {
+ 
+    public UsuarioDTO(Date fechaNacimiento,String nroDoc,String direccion,String genero,String idUsuario, String nombre, String apellidoPaterno, String apellidoMaterno, String email, String telefono, String celular, String userName, String userPassword, TipoUsuarioDTO tipoUsuario,String codigoExterno, String estado, String foto ) {
         super();
         this.idUsuario = idUsuario;
         this.nombre = nombre;
@@ -115,9 +107,15 @@ public class UsuarioDTO extends BasePaginator implements Serializable {
         this.codigoExterno = codigoExterno;
         this.estado = estado;
         this.foto = foto;
+        this.nroDoc=nroDoc;
+        this.direccion=direccion;
+        this.genero=genero;
+        this.fechaNacimiento=fechaNacimiento;
     }
    
     //get y set
+    
+    
     /**
      * Obtiene id usuario.
      *
@@ -126,7 +124,47 @@ public class UsuarioDTO extends BasePaginator implements Serializable {
      public String getIdUsuario() {
         return this.idUsuario;
     }
-    /**
+    public Date getFechaNacimiento() {
+		return fechaNacimiento;
+	}
+
+
+	public void setFechaNacimiento(Date fechaNacimiento) {
+		this.fechaNacimiento = fechaNacimiento;
+	}
+
+
+	public String getNroDoc() {
+		return nroDoc;
+	}
+
+
+	public void setNroDoc(String nroDoc) {
+		this.nroDoc = nroDoc;
+	}
+
+
+	public String getDireccion() {
+		return direccion;
+	}
+
+
+	public void setDireccion(String direccion) {
+		this.direccion = direccion;
+	}
+
+
+	public String getGenero() {
+		return genero;
+	}
+
+
+	public void setGenero(String genero) {
+		this.genero = genero;
+	}
+
+
+	/**
      * Establece el id usuario.
      *
      * @param idUsuario el new id usuario

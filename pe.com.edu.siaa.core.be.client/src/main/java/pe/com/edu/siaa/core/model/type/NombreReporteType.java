@@ -148,6 +148,7 @@ public enum NombreReporteType {
  	/** El JR_REP_REPORTE_ACTA_EVALUACION_FINAL. */
  	JR_REP_REPORTE_IMPRIMIR_HORARIO("jrRepImprimirHorario.jasper","ReporteImprimirHorario","jrRepImprimirHorario",""),
  	
+ 	JR_REP_CIERRE_CAJA("jrRepCierreFinanzas.jasper","RepCierreCajaFinanzas","jrRepCierreFinanzas",""),
  	
  	/**JR_REP_SERVICIO_COMPLEMENTARIO_ALUMNO. */
  	JR_REP_SERVICIO_COMPLEMENTARIO_ALUMNO("jrReporteServicioComplementarioAlumno.jasper","ReporteServicioComplementarioAlumno","jrReporteServicioComplementarioAlumno",""),

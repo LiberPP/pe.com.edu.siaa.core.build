@@ -114,7 +114,7 @@ public class CajaDaoImpl extends  GenericFacturacionDAOImpl<String, Caja> implem
 			 parametros.put("horacierre", FechaUtil.obtenerHoraMinutos());
 			 parametros.put("fecha", caja.getFechaActual());
 			 parametros.put("userName", caja.getAdmin());
-			 Query query = createNativeQuery("UPDATE factu.caja SET usuariomodificacion=:userName, estado='C', fechamodificacion=:fecha,  montototal=:montoTotal,montociere=:montoTotal,horacierre=:horacierre where montociere is null ",parametros);
+			 Query query = createNativeQuery("UPDATE cooperativa.caja SET usuariomodificacion=:userName, estado='C', fechamodificacion=:fecha,  montototal=:montoTotal,montociere=:montoTotal,horacierre=:horacierre where montociere is null ",parametros);
 			 query.executeUpdate();
 			
 		}

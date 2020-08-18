@@ -179,9 +179,12 @@ public class SeguridadServiceImpl implements SeguridadServiceLocal{
 	public EntidadDTO controladorAccionEntidad(EntidadDTO entidad, AccionType accionType) throws Exception {
 		EntidadDTO resultado = null;
 		Entidad resultadoEntity = null;
+		String userName = AppAuthenticator.getInstance().getUserName(entidad.getAuthToken());
 		switch (accionType) {
 			case CREAR:
 				entidad.setIdEntidad(this.entidadDaoImpl.generarIdEntidad());
+				entidad.setFechaCreacion(FechaUtil.obtenerFecha());
+				entidad.setUsuarioCreacion(userName);
 				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(entidad, Entidad.class,"itemByTipoVia@PK@","itemByZona@PK@");
 				this.entidadDaoImpl.save(resultadoEntity);	
 				resultado = entidad;

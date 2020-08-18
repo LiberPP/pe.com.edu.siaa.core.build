@@ -35,7 +35,18 @@ public class DocumentoRequeridoDaoImpl extends  GenericFacturacionDAOImpl<String
         //query.setFirstResult(documentoRequerido.getStartRow());
         //query.setMaxResults(documentoRequerido.getOffset());
         return query.getResultList();
-    }   
+    } 
+    
+    @Override	 
+    public List<DocumentoRequerido> listarDocumentoRequeridoVerificacionFisica(String idAvalDatos) {
+        Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        jpaql.append(" select o from DocumentoRequerido o  left join fetch o.itemByDocumento left join fetch o.avalDatos where 1=1 and o.avalDatos.idAvalDatos=:idAvalDatos ");
+        parametros.put("idAvalDatos", idAvalDatos);
+        Query query = createQuery(jpaql.toString(), parametros); 
+        return query.getResultList();
+    } 
+    
     @Override	 
     public boolean eliminarDocumentoRequerido(String idEvaluacionCredito) throws Exception {
     	boolean resultado = false;
@@ -43,6 +54,18 @@ public class DocumentoRequeridoDaoImpl extends  GenericFacturacionDAOImpl<String
         StringBuilder jpaql = new StringBuilder();
         jpaql.append(" delete from DocumentoRequerido o where  o.evaluacionCredito.idEvaluacionCredito=:idEvaluacionCredito ");
         parametros.put("idEvaluacionCredito", idEvaluacionCredito);
+        Query query = createQuery(jpaql.toString(), parametros);
+        query.executeUpdate();
+        return resultado;
+    }
+    
+    @Override	 
+    public boolean eliminarDocumentoRequeridoAvalDatos(String idAvalDatos) throws Exception {
+    	boolean resultado = false;
+    	Map<String, Object> parametros = new HashMap<String, Object>();
+        StringBuilder jpaql = new StringBuilder();
+        jpaql.append(" delete from DocumentoRequerido o where  o.avalDatos.idAvalDatos=:idAvalDatos ");
+        parametros.put("idAvalDatos", idAvalDatos);
         Query query = createQuery(jpaql.toString(), parametros);
         query.executeUpdate();
         return resultado;

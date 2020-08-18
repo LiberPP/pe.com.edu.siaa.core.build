@@ -7,10 +7,10 @@ import java.util.Map;
 import javax.ejb.Stateless;
 import javax.persistence.Query;
 
-import pe.com.builderp.core.ejb.dao.cooperativa.local.AvalDaoLocal;
-import pe.com.builderp.core.model.jpa.cooperativa.Aval;
+import pe.com.builderp.core.ejb.dao.cooperativa.local.AvalDatosDaoLocal;
+import pe.com.builderp.core.model.jpa.cooperativa.AvalDatos;
 import pe.com.builderp.core.model.jpa.cooperativa.InformacionLaboral;
-import pe.com.builderp.core.model.vo.cooperativa.AvalDTO;
+import pe.com.builderp.core.model.vo.cooperativa.AvalDatosDTO;
 import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericFacturacionDAOImpl;
 import pe.com.edu.siaa.core.ejb.factory.CollectionUtil;
 import pe.com.edu.siaa.core.ejb.util.jms.UUIDUtil; 
@@ -28,13 +28,13 @@ import pe.com.edu.siaa.core.model.util.StringUtils;
  * @since SIAA-CORE 2.1
  */
 @Stateless
-public class AvalDaoImpl extends  GenericFacturacionDAOImpl<String, Aval> implements AvalDaoLocal  {
+public class AvalDatosDaoImpl extends  GenericFacturacionDAOImpl<String, AvalDatos> implements AvalDatosDaoLocal  {
 
     /* (non-Javadoc)
      * @see pe.com.builderp.core.facturacion.ejb.dao.venta.local.ProformaDaoLocal#listarProforma(pe.com.builderp.core.facturacion.model.jpa.venta.Proforma)
      */  
     @Override	 
-    public List<Aval> listarAval(AvalDTO Aval) {
+    public List<AvalDatos> listarAval(AvalDatosDTO Aval) {
         Query query = generarQueryListaAval(Aval, false);
         query.setFirstResult(Aval.getStartRow());
         query.setMaxResults(Aval.getOffset());
@@ -44,17 +44,17 @@ public class AvalDaoImpl extends  GenericFacturacionDAOImpl<String, Aval> implem
     /**
      * Generar query lista Aval.
      *
-     * @param AvalDTO el Aval
+     * @param AvalDatosDTO el Aval
      * @param esContador el es contador
      * @return the query
      */
-    private Query generarQueryListaAval(AvalDTO Aval, boolean esContador) {
+    private Query generarQueryListaAval(AvalDatosDTO Aval, boolean esContador) {
         Map<String, Object> parametros = new HashMap<String, Object>();
         StringBuilder jpaql = new StringBuilder();
         if (esContador) {
-            jpaql.append(" select count(o.idAval) from Aval o where 1=1 ");
+            jpaql.append(" select count(o.idAvalDatos) from AvalDatos o where 1=1 ");
         } else {
-            jpaql.append(" select o from Aval o where 1=1 ");           
+            jpaql.append(" select o from AvalDatos o where 1=1 ");           
         }
         if (!StringUtils.isNullOrEmpty(Aval.getId())) {
 			jpaql.append(" and o.montoCiere is null "); 
@@ -75,7 +75,7 @@ public class AvalDaoImpl extends  GenericFacturacionDAOImpl<String, Aval> implem
      * @see pe.com.builderp.core.facturacion.ejb.dao.venta.local.AvalDaoLocal#contarListar{entity.getClassName()}(pe.com.builderp.core.facturacion.model.jpa.venta.AvalDTO)
      */
 	@Override
-    public int contarListarAval(AvalDTO Aval) {
+    public int contarListarAval(AvalDatosDTO Aval) {
         int resultado = 0;
         try {
             //StringBuilder jpaql = new StringBuilder();
@@ -90,21 +90,21 @@ public class AvalDaoImpl extends  GenericFacturacionDAOImpl<String, Aval> implem
      * @see pe.com.builderp.core.facturacion.ejb.dao.venta.local.AvalDaoLocal#generarIdAval()
      */
 	 @Override
-    public String generarIdAval() { 
+    public String generarIdAvalDatos() { 
 		return UUIDUtil.generarElementUUID();
     }
  
 	 
 	@Override	 
-	public Aval findByAval(String idEvaluacionCredito) throws Exception {
-		Aval resultado = new Aval();
+	public AvalDatos findByAval(String idEvaluacionCredito) throws Exception {
+		AvalDatos resultado = new AvalDatos();
 		Map<String, Object> parametros = new HashMap<String, Object>();
         StringBuilder jpaql = new StringBuilder();
-        jpaql.append(" select o from Aval o ");        
+        jpaql.append(" select o from AvalDatos o ");        
         jpaql.append(" where o.evaluacionCredito.idEvaluacionCredito = :idEvaluacionCredito ");
         parametros.put("idEvaluacionCredito", idEvaluacionCredito);
         Query query = createQuery(jpaql.toString(), parametros);
-        List<Aval> listaTemp = query.getResultList();
+        List<AvalDatos> listaTemp = query.getResultList();
         if (!CollectionUtil.isEmpty(listaTemp)) {
         	resultado = listaTemp.get(0);
         }

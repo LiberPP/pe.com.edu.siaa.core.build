@@ -47,4 +47,6 @@ public interface InformacionLaboralDaoLocal  extends GenericDAOLocal<String,Info
 	String generarIdInformacionLaboral() throws Exception;
 	
 	InformacionLaboral findByInformacionLaboralID(String idEvaluacionCredito) throws Exception;
+	
+	InformacionLaboral findByinformacionLaboralAvalDatos(String idAvalDatos) throws Exception;
 }

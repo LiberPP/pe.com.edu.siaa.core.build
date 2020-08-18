@@ -61,6 +61,13 @@ public class InformacionLaboral implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idEvaluacionCredito", referencedColumnName = "idEvaluacionCredito")
     private EvaluacionCredito evaluacionCredito;
+    
+    
+    /** El ubigeo by nacimiento. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idAvalDatos", referencedColumnName = "idAvalDatos")
+    private AvalDatos avalDatos;
+    
     /**
      * Instancia un nuevo categoria.
      */
@@ -69,7 +76,7 @@ public class InformacionLaboral implements Serializable {
 
 
 	public InformacionLaboral(String idInformacionLaboral, Entidad entidad, BigDecimal salario, String tiempolabor,
-			Item itemByCargo,EvaluacionCredito evaluacionCredito) {
+			Item itemByCargo,EvaluacionCredito evaluacionCredito,AvalDatos avalDatos) {
 		super();
 		this.idInformacionLaboral = idInformacionLaboral;
 		this.entidad = entidad;
@@ -77,8 +84,20 @@ public class InformacionLaboral implements Serializable {
 		this.tiempolabor = tiempolabor;
 		this.itemByCargo = itemByCargo;
 		this.evaluacionCredito=evaluacionCredito;
+		this.avalDatos=avalDatos;
 	}
 	
+	
+
+
+	public AvalDatos getAvalDatos() {
+		return avalDatos;
+	}
+
+
+	public void setAvalDatos(AvalDatos avalDatos) {
+		this.avalDatos = avalDatos;
+	}
 
 
 	public EvaluacionCredito getEvaluacionCredito() {

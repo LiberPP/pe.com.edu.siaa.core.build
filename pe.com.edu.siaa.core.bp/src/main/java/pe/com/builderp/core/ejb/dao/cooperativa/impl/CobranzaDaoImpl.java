@@ -360,7 +360,7 @@ public class CobranzaDaoImpl extends  GenericAcademicoDAOImpl<String, Cobranza> 
 	        try {
 	            Map<String, Object> parametros = new HashMap<String, Object>();
 	            StringBuilder jpaql = new StringBuilder();
-	            jpaql.append(" select sum(montototal) from factu.cobransa where 1=1");
+	            jpaql.append(" select sum(montototal) from cooperativa.cobranza where 1=1");
 				if (!StringUtils.isNullOrEmptyNumeric(userName)) {
 					jpaql.append(" and usuariocreacion = :userName ");
 					parametros.put("userName", userName);

@@ -12,6 +12,7 @@ import pe.com.builderp.core.model.jpa.cooperativa.InformacionLaboral;
 import pe.com.builderp.core.model.vo.cooperativa.InformacionLaboralDTO;
 import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericFacturacionDAOImpl;
 import pe.com.edu.siaa.core.ejb.factory.CollectionUtil;
+import pe.com.edu.siaa.core.ejb.util.jms.UUIDUtil;
 import pe.com.edu.siaa.core.model.util.StringUtils;
 
 /**
@@ -85,7 +86,8 @@ public class InformacionLaboralDaoImpl extends  GenericFacturacionDAOImpl<String
      */
 	 @Override
     public String generarIdInformacionLaboral() {
-        String resultado = "1";
+		 return UUIDUtil.generarElementUUID();
+		 /* String resultado = "1";
         Query query = createQuery("select max(o.idInformacionLaboral) from InformacionLaboral o", null);
         List<Object> listLong =  query.getResultList();
         if (listLong != null && listLong.size() > 0 && listLong.get(0) != null)  {
@@ -94,7 +96,7 @@ public class InformacionLaboralDaoImpl extends  GenericFacturacionDAOImpl<String
                 resultado = resultado + ultimoIdGenerado;
             }
         }
-        return resultado;
+        return resultado;*/
     }
    
 	 
@@ -106,6 +108,23 @@ public class InformacionLaboralDaoImpl extends  GenericFacturacionDAOImpl<String
 	        jpaql.append(" select o from InformacionLaboral o ");        
 	        jpaql.append(" where o.evaluacionCredito.idEvaluacionCredito = :idEvaluacionCredito ");
 	        parametros.put("idEvaluacionCredito", idEvaluacionCredito);
+	        Query query = createQuery(jpaql.toString(), parametros);
+	        List<InformacionLaboral> listaTemp = query.getResultList();
+	        if (!CollectionUtil.isEmpty(listaTemp)) {
+	        	resultado = listaTemp.get(0);
+	        }
+			return resultado;
+		}
+		
+		
+		@Override	 
+		public InformacionLaboral findByinformacionLaboralAvalDatos(String idAvalDatos) throws Exception {
+			InformacionLaboral resultado = new InformacionLaboral();
+			Map<String, Object> parametros = new HashMap<String, Object>();
+	        StringBuilder jpaql = new StringBuilder();
+	        jpaql.append(" select o from InformacionLaboral o ");        
+	        jpaql.append(" where o.avalDatos.idAvalDatos = :idAvalDatos ");
+	        parametros.put("idAvalDatos", idAvalDatos);
 	        Query query = createQuery(jpaql.toString(), parametros);
 	        List<InformacionLaboral> listaTemp = query.getResultList();
 	        if (!CollectionUtil.isEmpty(listaTemp)) {

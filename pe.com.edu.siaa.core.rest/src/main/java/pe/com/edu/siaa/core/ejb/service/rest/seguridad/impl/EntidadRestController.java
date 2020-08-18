@@ -11,10 +11,12 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
 import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.seguridad.jwt.rsa.util.AppHTTPHeaderNames;
 import pe.com.edu.siaa.core.ejb.service.rest.impl.GenericServiceRestImpl;
 import pe.com.edu.siaa.core.ejb.service.seguridad.local.SeguridadServiceLocal;
 import pe.com.edu.siaa.core.model.dto.seguridad.EntidadDTO;
@@ -43,7 +45,11 @@ public class EntidadRestController extends GenericServiceRestImpl {
 	private transient SeguridadServiceLocal seguridadServiceLocal;
 	
 	@POST
-	public ResultadoRestVO<EntidadDTO> crear(EntidadDTO entidad) throws Exception {
+	public ResultadoRestVO<EntidadDTO> crear(@Context HttpHeaders httpHeaders,EntidadDTO entidad) throws Exception {
+		String serviceKey = httpHeaders.getHeaderString( AppHTTPHeaderNames.SERVICE_KEY );
+		String authToken = httpHeaders.getHeaderString( AppHTTPHeaderNames.AUTH_TOKEN ); 
+		entidad.setServiceKey(serviceKey);
+		entidad.setAuthToken(authToken);	
 		return controladorAccion(entidad,AccionType.CREAR);
 	}
 	@PUT

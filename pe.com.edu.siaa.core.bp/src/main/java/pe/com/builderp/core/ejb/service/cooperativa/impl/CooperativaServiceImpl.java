@@ -11,7 +11,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 import ch.qos.logback.core.net.server.Client;
-import pe.com.builderp.core.ejb.dao.cooperativa.local.AvalDaoLocal;
+import pe.com.builderp.core.ejb.dao.cooperativa.local.AvalDatosDaoLocal;
 import pe.com.builderp.core.ejb.dao.cooperativa.local.CajaDaoLocal;
 import pe.com.builderp.core.ejb.dao.cooperativa.local.CobranzaDaoLocal;
 import pe.com.builderp.core.ejb.dao.cooperativa.local.CompromisoPagoDaoLocal;
@@ -30,7 +30,9 @@ import pe.com.builderp.core.ejb.dao.cooperativa.local.VerificacionFisicaDaoLocal
 import pe.com.builderp.core.ejb.service.cooperativa.local.CooperativaServiceLocal;
 import pe.com.builderp.core.facturacion.ejb.service.venta.local.VentaServiceLocal;
 import pe.com.builderp.core.facturacion.model.dto.venta.ClienteDTO;
-import pe.com.builderp.core.model.jpa.cooperativa.Aval;
+import pe.com.builderp.core.facturacion.model.dto.venta.VentaDTO;
+import pe.com.builderp.core.facturacion.model.jpa.venta.Aval;
+import pe.com.builderp.core.model.jpa.cooperativa.AvalDatos;
 import pe.com.builderp.core.model.jpa.cooperativa.Caja;
 import pe.com.builderp.core.model.jpa.cooperativa.Cobranza;
 import pe.com.builderp.core.model.jpa.cooperativa.CompromisoPago;
@@ -46,7 +48,7 @@ import pe.com.builderp.core.model.jpa.cooperativa.Ingreso;
 import pe.com.builderp.core.model.jpa.cooperativa.PrestamoInterno;
 import pe.com.builderp.core.model.jpa.cooperativa.ReferenciaPersonal;
 import pe.com.builderp.core.model.jpa.cooperativa.VerificacionFisica;
-import pe.com.builderp.core.model.vo.cooperativa.AvalDTO;
+import pe.com.builderp.core.model.vo.cooperativa.AvalDatosDTO;
 import pe.com.builderp.core.model.vo.cooperativa.CajaDTO;
 import pe.com.builderp.core.model.vo.cooperativa.CobranzaDTO;
 import pe.com.builderp.core.model.vo.cooperativa.CompromisoPagoDTO;
@@ -165,7 +167,7 @@ public class CooperativaServiceImpl implements CooperativaServiceLocal {
 	private PrestamoInternoDaoLocal prestamoInternoDaoImpl;
 	
 	@EJB
-	private AvalDaoLocal avalDaoImpl;
+	private AvalDatosDaoLocal avalDaoImpl;
 	
 	@EJB
 	private transient CommonServiceLocal commonServiceLocal;
@@ -187,6 +189,12 @@ public class CooperativaServiceImpl implements CooperativaServiceLocal {
 	@Override
 	public List<DocumentoRequeridoDTO> listarDocumentoRequerido(String idEvaluacionCredito)throws Exception {
 		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.documentoRequeridoDaoImpl.listarDocumentoRequerido(idEvaluacionCredito),DocumentoRequeridoDTO.class,"itemByDocumento");
+
+	}
+	
+	@Override
+	public List<DocumentoRequeridoDTO> listarDocumentoRequeridoVerificacionFisica(String idAvalDatos)throws Exception {
+		return TransferDataObjectUtil.transferObjetoEntityDTOList(this.documentoRequeridoDaoImpl.listarDocumentoRequeridoVerificacionFisica(idAvalDatos),DocumentoRequeridoDTO.class,"itemByDocumento");
 
 	}
 
@@ -312,20 +320,28 @@ public class CooperativaServiceImpl implements CooperativaServiceLocal {
 		return 0;
 	}
  
-	public InformacionLaboralDTO controladorAccionInformacionLaboral(InformacionLaboralDTO informacionLaboral,EvaluacionCredito evaluacionCredito,AccionType accionType) throws Exception {
+	public InformacionLaboralDTO controladorAccionInformacionLaboral(InformacionLaboralDTO informacionLaboral,EvaluacionCredito evaluacionCredito,AvalDatos avalDatos,AccionType accionType) throws Exception {
 		InformacionLaboralDTO resultado = null;
 		InformacionLaboral resultadoEntity = null;
 		switch (accionType) {
 			case CREAR:
 				informacionLaboral.setIdInformacionLaboral(informacionLaboralDaoImpl.generarIdInformacionLaboral());
 				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(informacionLaboral, InformacionLaboral.class,"itemByCargo","entidad");
-				resultadoEntity.setEvaluacionCredito(evaluacionCredito);
+				if(!StringUtils.isNullOrEmpty(evaluacionCredito.getIdEvaluacionCredito())) {
+					resultadoEntity.setEvaluacionCredito(evaluacionCredito);	
+				}else {
+					resultadoEntity.setAvalDatos(avalDatos);
+				}
 				this.informacionLaboralDaoImpl.save(resultadoEntity);
 				resultado = informacionLaboral;
 				break;				
 			case MODIFICAR:
 				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(informacionLaboral, InformacionLaboral.class,"itemByCargo","entidad");
-				resultadoEntity.setEvaluacionCredito(evaluacionCredito);
+				if(!StringUtils.isNullOrEmpty(evaluacionCredito.getIdEvaluacionCredito())) {
+					resultadoEntity.setEvaluacionCredito(evaluacionCredito);	
+				}else {
+					resultadoEntity.setAvalDatos(avalDatos);
+				}
 				this.informacionLaboralDaoImpl.update(resultadoEntity);
 				resultado = informacionLaboral;	 
 				break;
@@ -376,6 +392,15 @@ public class CooperativaServiceImpl implements CooperativaServiceLocal {
 			verificacionFisicaDTO.getEvaluacionCredito().setCliente(TransferDataObjectUtil.transferObjetoEntityDTO(verificacionFisicaDTO2.getEvaluacionCredito().getCliente(), ClienteDTO.class ,"itemByEstadoCivil","itemByCategoriaCliente","itemByTipoDocumentoIdentidad"));
 			List<DocumentoRequeridoDTO> listaDocumentoRequerido = listarDocumentoRequerido(verificacionFisicaDTO2.getEvaluacionCredito().getIdEvaluacionCredito());
 			verificacionFisicaDTO.getEvaluacionCredito().setListaDocumentoRequeridoPer(listaDocumentoRequerido);
+			
+			AvalDatos avalDatos = avalDaoImpl.findByAval(verificacionFisicaDTO2.getEvaluacionCredito().getIdEvaluacionCredito());
+			
+			if(!StringUtils.isNullOrEmpty(avalDatos.getIdAvalDatos())) {
+				List<DocumentoRequeridoDTO> listaDocumentoRequeridoVerificacionF = listarDocumentoRequeridoVerificacionFisica(avalDatos.getIdAvalDatos());
+				for (DocumentoRequeridoDTO documentoRequeridoDTO : listaDocumentoRequeridoVerificacionF) {
+					verificacionFisicaDTO.getListaDocumentoRequeridoAval().add(new SelectItemVO(documentoRequeridoDTO.getItemByDocumento()));
+				}		
+			}
 			
 			ImagenAdjuntoDTO img= new ImagenAdjuntoDTO();
 			img.setId(verificacionFisicaDTO.getIdVerificacionFisica());
@@ -491,9 +516,9 @@ public class CooperativaServiceImpl implements CooperativaServiceLocal {
 			if(!CollectionUtil.isEmpty(evaluacionCredito.getInformacionLaboralList())) {
 				for(InformacionLaboralDTO informacionLaboral :evaluacionCredito.getInformacionLaboralList()) {
 					if (StringUtils.isNullOrEmpty(informacionLaboral.getIdInformacionLaboral())) {
-						controladorAccionInformacionLaboral(informacionLaboral,evaluacionCreditoPersist,AccionType.CREAR);
+						controladorAccionInformacionLaboral(informacionLaboral,evaluacionCreditoPersist,new AvalDatos(),AccionType.CREAR);
 					} else {
-						controladorAccionInformacionLaboral(informacionLaboral,evaluacionCreditoPersist,AccionType.MODIFICAR);
+						controladorAccionInformacionLaboral(informacionLaboral,evaluacionCreditoPersist,new AvalDatos(),AccionType.MODIFICAR);
 					} 	
 				}
 				//registrarInformacionLaboral(userName,evaluacionCreditoPersist,evaluacionCredito.getInformacionLaboralList().get(0));
@@ -513,23 +538,23 @@ public class CooperativaServiceImpl implements CooperativaServiceLocal {
 				}
 			}
 			
-			if(!CollectionUtil.isEmpty(evaluacionCredito.getAvalList())) {
-				for(AvalDTO avalDTO : evaluacionCredito.getAvalList()) {
-					if (!avalDTO.isEsEliminado()) {
-						if (StringUtils.isNullOrEmpty(avalDTO.getIdAval())) {
-							controladorAccionAval(avalDTO,evaluacionCreditoPersist,AccionType.CREAR);
+			if(!CollectionUtil.isEmpty(evaluacionCredito.getAvalDatosList())) {
+				for(AvalDatosDTO avalDatosDTO : evaluacionCredito.getAvalDatosList()) {
+					if (!avalDatosDTO.isEsEliminado()) {
+						if (StringUtils.isNullOrEmpty(avalDatosDTO.getIdAvalDatos())) {
+							controladorAccionAval(avalDatosDTO,evaluacionCreditoPersist,AccionType.CREAR);
 						} else {
-							controladorAccionAval(avalDTO,evaluacionCreditoPersist,AccionType.MODIFICAR);
+							controladorAccionAval(avalDatosDTO,evaluacionCreditoPersist,AccionType.MODIFICAR);
 						} 
 					} else {
-						controladorAccionAval(avalDTO,evaluacionCreditoPersist, AccionType.ELIMINAR);
+						controladorAccionAval(avalDatosDTO,evaluacionCreditoPersist, AccionType.ELIMINAR);
 					}
 					//registrarReferenciaPersonal(evaluacionCreditoPersist,referenciaPersonalDTO);
 				}
 			}
 			
 			if(!CollectionUtil.isEmpty(evaluacionCredito.getListaDocumentoRequerido())) {
-				crearDocumentoRequerido(evaluacionCreditoPersist, evaluacionCredito.getListaDocumentoRequerido(),accionType);	
+				crearDocumentoRequerido(evaluacionCreditoPersist,new AvalDatos() ,evaluacionCredito.getListaDocumentoRequerido(),accionType);	
 			}
 		}
 	} 
@@ -563,16 +588,25 @@ public class CooperativaServiceImpl implements CooperativaServiceLocal {
 	}*/
 	
 	
-	private void crearDocumentoRequerido(EvaluacionCredito evaluacionCredito,List<SelectItemVO> listaTipoDocumentoRequeridoTemp,AccionType accionType) throws Exception {
+	private void crearDocumentoRequerido(EvaluacionCredito evaluacionCredito,AvalDatos avalDatos,List<SelectItemVO> listaTipoDocumentoRequeridoTemp,AccionType accionType) throws Exception {
 		//List<ItemDTO> listaTipoDocumentoRequerido = SelectItemServiceCacheUtil.getInstance().converItemDTO(listaTipoDocumentoRequeridoTemp);
 		if (AccionType.MODIFICAR.getKey().equals(accionType.getKey())) {
 			//ya que tiene uuid
-			documentoRequeridoDaoImpl.eliminarDocumentoRequerido(evaluacionCredito.getIdEvaluacionCredito());
+			if(!StringUtils.isNullOrEmpty(evaluacionCredito.getIdEvaluacionCredito())) {
+				documentoRequeridoDaoImpl.eliminarDocumentoRequerido(evaluacionCredito.getIdEvaluacionCredito());				
+			}else {
+				documentoRequeridoDaoImpl.eliminarDocumentoRequeridoAvalDatos(avalDatos.getIdAvalDatos());
+			}
+			
 		}				
 		for (SelectItemVO objItem : listaTipoDocumentoRequeridoTemp) {
 			if (objItem.isChecked()) {
 				DocumentoRequerido objPersist = new DocumentoRequerido();
-				objPersist.setEvaluacionCredito(evaluacionCredito);
+				if(!StringUtils.isNullOrEmpty(evaluacionCredito.getIdEvaluacionCredito())) {
+					objPersist.setEvaluacionCredito(evaluacionCredito);					
+				}else {
+					objPersist.setAvalDatos(avalDatos);
+				}
 				Long id = Long.valueOf(objItem.getId() + "");
 				objPersist.setItemByDocumento(TransferDataObjectUtil.transferObjetoEntityPK(SelectItemServiceCacheUtil.getInstance().obtenerItem(id), Item.class));
 				objPersist.setIdDocumentoRequerido(UUIDUtil.generarElementUUID());
@@ -586,6 +620,15 @@ public class CooperativaServiceImpl implements CooperativaServiceLocal {
 	public InformacionLaboralDTO informacionLaboralBy(String idEvaluacionCredito) throws Exception {
 		InformacionLaboralDTO resultado = new InformacionLaboralDTO();
 		InformacionLaboral usuario = informacionLaboralDaoImpl.findByInformacionLaboralID(idEvaluacionCredito);
+		resultado = TransferDataObjectUtil.transferObjetoEntityDTO(usuario,InformacionLaboralDTO.class,"entidad","itemByCargo");
+		usuario = null;
+		return resultado;
+	}
+	
+	@Override
+	public InformacionLaboralDTO informacionLaboralAvalDatos(String idAvalDatos) throws Exception {
+		InformacionLaboralDTO resultado = new InformacionLaboralDTO();
+		InformacionLaboral usuario = informacionLaboralDaoImpl.findByinformacionLaboralAvalDatos(idAvalDatos);
 		resultado = TransferDataObjectUtil.transferObjetoEntityDTO(usuario,InformacionLaboralDTO.class,"entidad","itemByCargo");
 		usuario = null;
 		return resultado;
@@ -619,8 +662,25 @@ public class CooperativaServiceImpl implements CooperativaServiceLocal {
 		}
 		
 		if(isCrearOtros) {
+			AvalDatos avalDatos = avalDaoImpl.findByAval(verificacionFisica.getEvaluacionCredito().getIdEvaluacionCredito());
 			if (!CollectionUtil.isEmpty(verificacionFisica.getListaImgaenAdjunto())) {						
 				crearImagenAdjunto(verificacionFisicaPersist,verificacionFisica.getListaImgaenAdjunto(),accionType);
+			}
+			
+			if(!StringUtils.isNullOrEmpty(avalDatos)) {
+				if(!CollectionUtil.isEmpty(verificacionFisica.getInformacionLaboralAvalList())) {
+					for(InformacionLaboralDTO informacionLaboral :verificacionFisica.getInformacionLaboralAvalList()) {
+						if (StringUtils.isNullOrEmpty(informacionLaboral.getIdInformacionLaboral())) {
+							controladorAccionInformacionLaboral(informacionLaboral,new EvaluacionCredito(),avalDatos,AccionType.CREAR);
+						} else {
+							controladorAccionInformacionLaboral(informacionLaboral,new EvaluacionCredito(),avalDatos,AccionType.MODIFICAR);
+						} 	
+					}
+					//registrarInformacionLaboral(userName,evaluacionCreditoPersist,evaluacionCredito.getInformacionLaboralList().get(0));
+				}
+				if(!CollectionUtil.isEmpty(verificacionFisica.getListaDocumentoRequeridoAval())) {
+					crearDocumentoRequerido(new EvaluacionCredito(),avalDatos, verificacionFisica.getListaDocumentoRequeridoAval(),accionType);	
+				}	
 			}
 			/*if(!CollectionUtil.isEmpty(verificacionFisica.getInformacionLaboralList())) {
 				
@@ -1085,26 +1145,7 @@ public class CooperativaServiceImpl implements CooperativaServiceLocal {
 		return resultado;
 	}
 	
-	@Override
-	public void updateVentaCierre(String idUsuario,Date fecha) throws Exception{
 
-		Usuario usraio = this.usuarioServiceImpl.find(Usuario.class, idUsuario); 
-		
-		//BigDecimal montoTotalVenta=ventaDaoImpl.contarMontoTotalVenta(usraio.getUserName(), fecha);
-		BigDecimal montoTotalCobranza = cobranzaDaoImpl.contarMontoTotalCobranza(usraio.getUserName(), fecha);
-		BigDecimal contador = montoTotalCobranza;
-
- 
-		CajaDTO cajaBy = findByCajaFecha(idUsuario,fecha);
-		cajaBy.setMontoTotal(contador.add(cajaBy.getMontoApertuera()));
-		cajaBy.setMontoCiere(contador);
-		cajaBy.setFechaActual(fecha);
-		cajaBy.setAdmin(usraio.getUserName());
-		this.cajaDaoImpl.updateCajaCierre(cajaBy); 
-		//this.ventaDaoImpl.updateVentaCierre(cajaBy.getIdCaja(),cajaBy.getUsuario().getUserName()); 
-		//return codigoGeneradoReporte;
-	}
-	
 	
 	@Override
 	public List<IngresoVoDTO> listarIngresos(IngresoVoDTO filtro) throws Exception { 
@@ -1433,33 +1474,33 @@ public class CooperativaServiceImpl implements CooperativaServiceLocal {
 		return credito;
 	}
 	
-	public AvalDTO controladorAccionAval(AvalDTO aval,EvaluacionCredito evaluacionCredito,AccionType accionType) throws Exception {
-		AvalDTO resultado = null;
-		Aval resultadoEntity = null;
+	public AvalDatosDTO controladorAccionAval(AvalDatosDTO aval,EvaluacionCredito evaluacionCredito,AccionType accionType) throws Exception {
+		AvalDatosDTO resultado = null;
+		AvalDatos resultadoEntity = null;
 		switch (accionType) {
 			case CREAR:
-				aval.setIdAval(avalDaoImpl.generarIdAval());
-				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(aval, Aval.class,"persona@PK@","evaluacionCredito@PK@");
+				aval.setIdAvalDatos(avalDaoImpl.generarIdAvalDatos());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(aval, AvalDatos.class,"aval@PK@","evaluacionCredito@PK@");
 				resultadoEntity.setEvaluacionCredito(evaluacionCredito);
 				this.avalDaoImpl.save(resultadoEntity);	
 				resultado = aval;
 				break;				
 			case MODIFICAR:
-				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(aval, Aval.class,"persona@PK@","evaluacionCredito@PK@");
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(aval, AvalDatos.class,"aval@PK@","evaluacionCredito@PK@");
 				resultadoEntity.setEvaluacionCredito(evaluacionCredito);
 				this.avalDaoImpl.update(resultadoEntity);
 				resultado = aval;	 
 				break;
 				
 			case ELIMINAR:
-				resultadoEntity = this.avalDaoImpl.find(Aval.class, aval.getIdAval());
+				resultadoEntity = this.avalDaoImpl.find(AvalDatos.class, aval.getIdAvalDatos());
 				this.avalDaoImpl.delete(resultadoEntity);
 				resultado = aval;
 				break;
 				
 			case FIND_BY_ID:
-				resultadoEntity = this.avalDaoImpl.find(Aval.class, aval.getIdAval());
-				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,AvalDTO.class);
+				resultadoEntity = this.avalDaoImpl.find(AvalDatos.class, aval.getIdAvalDatos());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,AvalDatosDTO.class);
 				break;
 				
 			/*case FIND_BY_NOMBRE:
@@ -1474,11 +1515,11 @@ public class CooperativaServiceImpl implements CooperativaServiceLocal {
 	}
 	
 	@Override
-	public AvalDTO avalBy(String idEvaluacionCredito) throws Exception {
-		AvalDTO resultado = new AvalDTO();
-		Aval aval = avalDaoImpl.findByAval(idEvaluacionCredito);
-		resultado = TransferDataObjectUtil.transferObjetoEntityDTO(aval,AvalDTO.class,"persona");
-		aval = null;
+	public AvalDatosDTO avalBy(String idEvaluacionCredito) throws Exception {
+		AvalDatosDTO resultado = new AvalDatosDTO();
+		AvalDatos avalDatos = avalDaoImpl.findByAval(idEvaluacionCredito);
+		resultado = TransferDataObjectUtil.transferObjetoEntityDTO(avalDatos,AvalDatosDTO.class,"aval");
+		avalDatos = null;
 		return resultado;
 	}
 
@@ -1530,5 +1571,53 @@ public class CooperativaServiceImpl implements CooperativaServiceLocal {
 	@Override
 	public int contarListarCompromisoPago(CompromisoPagoDTO compromisoPago) {
 		return this.compromisoPagoDaoImpl.contarListarCompromisoPago(compromisoPago);
+	}
+	
+
+	@Override
+	public String cerrarCaja(String userName,Date fecha) throws Exception{
+		UsuarioDTO resultado = null;
+		Usuario resultadoEntity = null;
+		String fileName = UUIDUtil.generarElementUUID();
+		String codigoGeneradoReporte = fileName;
+		Map<String, Object> parametros = new HashMap<String, Object>();
+		String[] subreportes;
+		subreportes = new String[0];	
+		
+		VentaDTO ventaDto = new VentaDTO();						
+		ventaDto.setUsuarioModificacion(userName);		
+		
+		resultadoEntity= this.usuarioServiceImpl.findUsuario(ventaDto.getUsuarioModificacion());
+		resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,UsuarioDTO.class);
+		parametros.put("nombreCajero", resultado.getNombre()+ " " + resultado.getApellidoPaterno()+ " " +resultado.getApellidoMaterno());
+		parametros.put("userName", userName);
+		parametros.put("fecha", FechaUtil.obtenerFechaFormatoPersonalizado(fecha, "dd/MM/yyyy"));
+
+		NombreReporteType reporte = NombreReporteType.JR_REP_CIERRE_CAJA;
+		ParametroReporteVO parametroReporteVO = new ParametroReporteVO(parametros, null, reporte, subreportes, null, false, "", "");
+		parametroReporteVO.setFormato(TipoReporteGenerarType.PDF.getKey());
+		parametroReporteVO.setFileName(fileName);
+		codigoGeneradoReporte = generarReporteServiceImpl.obtenerParametroReporteBigMemory(parametroReporteVO);
+		
+		return codigoGeneradoReporte;
+	}
+	
+	
+	
+	@Override
+	public void updateCobranzaCierre(String idUsuario,Date fecha) throws Exception{
+
+		Usuario usraio = this.usuarioServiceImpl.find(Usuario.class, idUsuario); 
+		BigDecimal montoTotalCobranza = cobranzaDaoImpl.contarMontoTotalCobranza(usraio.getUserName(), fecha); 
+
+ 
+		CajaDTO cajaBy = findByCajaFecha(idUsuario,fecha);
+		cajaBy.setMontoTotal(montoTotalCobranza.add(cajaBy.getMontoApertuera()));
+		cajaBy.setMontoCiere(montoTotalCobranza);
+		cajaBy.setFechaActual(fecha);
+		cajaBy.setAdmin(usraio.getUserName());
+		this.cajaDaoImpl.updateCajaCierre(cajaBy); 
+		//this.ventaDaoImpl.updateVentaCierre(cajaBy.getIdCaja(),cajaBy.getUsuario().getUserName()); 
+		//return codigoGeneradoReporte;
 	}
 }

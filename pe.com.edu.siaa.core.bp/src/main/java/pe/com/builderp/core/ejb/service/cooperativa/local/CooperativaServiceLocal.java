@@ -5,7 +5,7 @@ import java.util.List;
 
 import javax.ejb.Local;
 
-import pe.com.builderp.core.model.vo.cooperativa.AvalDTO;
+import pe.com.builderp.core.model.vo.cooperativa.AvalDatosDTO;
 import pe.com.builderp.core.model.vo.cooperativa.CajaDTO;
 import pe.com.builderp.core.model.vo.cooperativa.CobranzaDTO;
 import pe.com.builderp.core.model.vo.cooperativa.CompromisoPagoDTO;
@@ -54,6 +54,9 @@ public interface CooperativaServiceLocal{
 	 * @throws Exception the exception
 	 */
 	List<DocumentoRequeridoDTO> listarDocumentoRequerido(String idEvaluacionCredito) throws Exception;
+	
+	
+	List<DocumentoRequeridoDTO> listarDocumentoRequeridoVerificacionFisica(String idAvalDatos) throws Exception;
 	
 	/**
 	 * contar lista DocumentoRequerido.
@@ -151,6 +154,8 @@ public interface CooperativaServiceLocal{
 	
 	InformacionLaboralDTO informacionLaboralBy(String idEvaluacionCredito) throws Exception;
 	
+	InformacionLaboralDTO informacionLaboralAvalDatos(String idAvalDatos) throws Exception;
+	
 	
 	VerificacionFisicaDTO controladorAccionVerificacionFisica(VerificacionFisicaDTO VerificacionFisica,AccionType accionType) throws Exception; 
 	/**
@@ -228,8 +233,7 @@ public interface CooperativaServiceLocal{
 	String iniciarAperturaCaja() throws Exception;
 
 	CajaDTO findByCaja() throws Exception;
-	
-	void updateVentaCierre(String idUsuario,Date fecha) throws Exception;
+	 
 	
 	List<IngresoVoDTO> listarIngresos(IngresoVoDTO filtro) throws Exception;
 	
@@ -263,7 +267,7 @@ public interface CooperativaServiceLocal{
 	
 	CreditoDTO eliminarDetPlanPagos(CreditoDTO credito) throws Exception;
 	
-	AvalDTO avalBy(String idEvaluacionCredito) throws Exception;
+	AvalDatosDTO avalBy(String idEvaluacionCredito) throws Exception;
 	
 	//
 	
@@ -288,5 +292,9 @@ public interface CooperativaServiceLocal{
 	int contarListarCompromisoPago(CompromisoPagoDTO compromisoPago);
 	
 	List<ImagenAdjuntoDTO> listarImagenAdjunto(ImagenAdjuntoDTO imagenAdjunto) throws Exception;
+	
+	String cerrarCaja(String userName,Date fecha)throws Exception;
+	
+	void updateCobranzaCierre(String idUsuario,Date fecha) throws Exception;
 	
 }

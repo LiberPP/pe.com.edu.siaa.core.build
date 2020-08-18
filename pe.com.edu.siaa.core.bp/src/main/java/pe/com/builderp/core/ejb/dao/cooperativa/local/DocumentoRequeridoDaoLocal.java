@@ -29,7 +29,11 @@ public interface DocumentoRequeridoDaoLocal  extends GenericDAOLocal<String,Docu
 	 */
 	List<DocumentoRequerido> listarDocumentoRequerido(String idEvaluacionCredito) throws Exception;
 	
+	List<DocumentoRequerido> listarDocumentoRequeridoVerificacionFisica(String idAvalDatos);
+	
 	boolean eliminarDocumentoRequerido(String idEvaluacionCredito) throws Exception;
+	
+	boolean eliminarDocumentoRequeridoAvalDatos(String idAvalDatos) throws Exception;
 	
 	/**
 	 * Generar id documentoRequerido.

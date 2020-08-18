@@ -150,18 +150,7 @@ public class CajaRestController extends GenericServiceRestImpl {
 	}
 	
 	
-	
-	@POST
-    @Path("/updateVentaCierre/{idUsuario}/{fecha}")
-	public ResultadoRestVO<String> updateVentaCierre(@Context UriInfo info,@PathParam("idUsuario")String idUsuario,@PathParam("fecha")Date fecha){
-		ResultadoRestVO<String> resultado = new ResultadoRestVO<String>();
-		 try {
-			cooperativaServiceLocal.updateVentaCierre(idUsuario,fecha);
-		} catch (Exception e) {
-			parsearResultadoError(e, resultado);
-		}
-		return resultado;
-	}
+ 
 	
 	@POST
     @Path("/iniciarAperturaCaja")
@@ -174,5 +163,34 @@ public class CajaRestController extends GenericServiceRestImpl {
 		}
 		return resultado;
 	}
+	
+	
+	 
+	@GET
+    @Path("/cerrarCaja/{userName}/{fecha}")
+	public ResultadoRestVO<String> cerrarCaja(@Context UriInfo info,@PathParam("userName")String userName,
+			@PathParam("fecha")Date fecha){
+		ResultadoRestVO<String> resultado = new ResultadoRestVO<String>();
+		 try {
+			resultado.setObjetoResultado(cooperativaServiceLocal.cerrarCaja(userName,fecha));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+	
+	
+	@POST
+    @Path("/updateCobranzaCierre/{idUsuario}/{fecha}")
+	public ResultadoRestVO<String> updateCobranzaCierre(@Context UriInfo info,@PathParam("idUsuario")String idUsuario,@PathParam("fecha")Date fecha){
+		ResultadoRestVO<String> resultado = new ResultadoRestVO<String>();
+		 try {
+			cooperativaServiceLocal.updateCobranzaCierre(idUsuario,fecha);
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
+
 	
 }

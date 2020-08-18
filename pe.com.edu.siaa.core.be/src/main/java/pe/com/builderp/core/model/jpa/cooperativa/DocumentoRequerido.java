@@ -54,6 +54,11 @@ public class DocumentoRequerido implements Serializable {
     @Column(name = "digital" , length = 50)
     private String digital;
     
+    /** El ubigeo by nacimiento. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idAvalDatos", referencedColumnName = "idAvalDatos")
+    private AvalDatos avalDatos;
+    
     
     /**
      * Instancia un nuevo categoria.
@@ -62,16 +67,26 @@ public class DocumentoRequerido implements Serializable {
     }
 
 	public DocumentoRequerido(String idDocumentoRequerido, EvaluacionCredito evaluacionCredito, Item itemByDocumento,
-			String descripcionOtro,String digital) {
+			String descripcionOtro,String digital,AvalDatos avalDatos) {
 		super();
 		this.idDocumentoRequerido = idDocumentoRequerido;
 		this.evaluacionCredito = evaluacionCredito;
 		this.itemByDocumento = itemByDocumento;
 		this.descripcionOtro = descripcionOtro;
 		this.digital = digital;
+		this.avalDatos=avalDatos;
 	}
 	
 	
+	
+
+	public AvalDatos getAvalDatos() {
+		return avalDatos;
+	}
+
+	public void setAvalDatos(AvalDatos avalDatos) {
+		this.avalDatos = avalDatos;
+	}
 
 	public String getDigital() {
 		return digital;

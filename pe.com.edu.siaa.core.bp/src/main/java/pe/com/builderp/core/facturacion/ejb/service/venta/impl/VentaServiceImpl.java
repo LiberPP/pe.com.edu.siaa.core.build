@@ -2,6 +2,7 @@ package pe.com.builderp.core.facturacion.ejb.service.venta.impl;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 
 import pe.com.builderp.core.contabilidad.model.vo.RegistroAsientoFiltroVO;
+import pe.com.builderp.core.facturacion.ejb.dao.venta.local.AvalDaoLocal;
 import pe.com.builderp.core.facturacion.ejb.dao.venta.local.CategoriaDaoLocal;
 import pe.com.builderp.core.facturacion.ejb.dao.venta.local.ClienteDaoLocal;
 import pe.com.builderp.core.facturacion.ejb.dao.venta.local.ConfiguracionAtributoDaoLocal;
@@ -29,6 +31,7 @@ import pe.com.builderp.core.facturacion.ejb.dao.venta.local.ProformaDaoLocal;
 import pe.com.builderp.core.facturacion.ejb.dao.venta.local.TipoDocSunatEntidadDaoLocal;
 import pe.com.builderp.core.facturacion.ejb.dao.venta.local.VentaDaoLocal;
 import pe.com.builderp.core.facturacion.ejb.service.venta.local.VentaServiceLocal;
+import pe.com.builderp.core.facturacion.model.dto.venta.AvalDTO;
 import pe.com.builderp.core.facturacion.model.dto.venta.CategoriaDTO;
 import pe.com.builderp.core.facturacion.model.dto.venta.ClienteDTO;
 import pe.com.builderp.core.facturacion.model.dto.venta.ConfiguracionAtributoDTO;
@@ -46,6 +49,7 @@ import pe.com.builderp.core.facturacion.model.dto.venta.TipoDocSunatEntidadDTO;
 import pe.com.builderp.core.facturacion.model.dto.venta.VentaDTO;
 import pe.com.builderp.core.facturacion.model.jpa.venta.Categoria;
 import pe.com.builderp.core.facturacion.model.jpa.venta.Cliente;
+import pe.com.builderp.core.facturacion.model.jpa.venta.Aval;
 import pe.com.builderp.core.facturacion.model.jpa.venta.ConfiguracionAtributo;
 import pe.com.builderp.core.facturacion.model.jpa.venta.ConfiguracionAtributoValue;
 import pe.com.builderp.core.facturacion.model.jpa.venta.DetallePedido;
@@ -190,6 +194,10 @@ public class VentaServiceImpl implements VentaServiceLocal {
 	
 	@EJB
 	private transient CommonServiceLocal commonServiceLocal;
+	
+	/** El servicio cliente dao impl. */
+	@EJB
+	private AvalDaoLocal avalDaoImpl; 
 	
 	
 	@Override
@@ -1306,6 +1314,63 @@ public class VentaServiceImpl implements VentaServiceLocal {
 	
 	
 	
+	@Override
+	public AvalDTO controladorAccionAval(AvalDTO Aval, AccionType accionType) throws Exception {
+		AvalDTO resultado = null;
+		Aval resultadoEntity = null;
+		switch (accionType) {
+			case CREAR:
+				Aval.setIdAval(this.avalDaoImpl.generarIdAval());
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(Aval, Aval.class,"entidad@PK@","itemByTipoDocumentoIdentidad@PK@","itemByEstadoCivil@PK@");
+				this.avalDaoImpl.save(resultadoEntity);	
+				resultado = Aval;
+				break;				
+			case MODIFICAR:
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(Aval, Aval.class,"entidad@PK@","itemByTipoDocumentoIdentidad@PK@","itemByEstadoCivil@PK@");
+				this.avalDaoImpl.update(resultadoEntity);
+				resultado = Aval;	
+				break;
+				
+			case ELIMINAR:
+				resultadoEntity = this.avalDaoImpl.find(Aval.class, Aval.getIdAval());
+				this.avalDaoImpl.delete(resultadoEntity);
+				resultado = Aval;
+				break;
+				
+			case FIND_BY_ID:
+				resultadoEntity = this.avalDaoImpl.find(Aval.class, Aval.getIdAval());
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(resultadoEntity,AvalDTO.class,"itemByTipoDocumentoIdentidad");
+				break;
+				
+			/*case FIND_BY_NOMBRE:
+				resultado = TransferDataObjectUtil.transferObjetoEntityDTO(this.AvalDaoImpl.findByNombre(Aval),AvalDTO .class);
+				break;*/
+				
+			default:
+				break;
+		}
+		
+		return resultado;
+	}
+	@Override
+	public List<AvalDTO> listarAval(AvalDTO Aval) throws Exception {
+		List<Aval> listaTemp = this.avalDaoImpl.listarAval(Aval);
+		List<AvalDTO> listaCli = new ArrayList<AvalDTO>(); 
+		for (Aval clie : listaTemp) {
+			AvalDTO AvalDTO = TransferDataObjectUtil.transferObjetoEntityDTO(clie, AvalDTO.class, "itemByTipoDocumentoIdentidad", "itemByEstadoCivil");
+			FileVO fileVO = new FileVO();
+			fileVO.setRuta(ConstanteConfigUtil.RUTA_RECURSOS_FOTO_ALUMN + ConstanteConfigUtil.SEPARADOR_FILE + "086" +  AvalDTO.getFoto());
+			AvalDTO.setFoto(commonServiceLocal.obtenerImagenEncodeBase64(fileVO));
+			listaCli.add(AvalDTO);
+		}	
+		listaTemp = null;
+		return listaCli;
+		//return TransferDataObjectUtil.transferObjetoEntityDTOList(this.AvalDaoImpl.listarAval(Aval),AvalDTO.class,"usuario","itemByTipoDocumentoIdentidad","itemByCategoriaAval","itemByEstadoCivil");
+	}
+	@Override
+	public int contarListarAval(AvalDTO Aval){
+		return  this.avalDaoImpl.contarListarAval(Aval);
+	}
 	
-	
+	 
 }

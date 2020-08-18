@@ -1,10 +1,12 @@
 package pe.com.builderp.core.facturacion.ejb.service.venta.local;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Local;
 
 import pe.com.builderp.core.contabilidad.model.vo.RegistroAsientoFiltroVO;
+import pe.com.builderp.core.facturacion.model.dto.venta.AvalDTO;
 import pe.com.builderp.core.facturacion.model.dto.venta.CategoriaDTO;
 import pe.com.builderp.core.facturacion.model.dto.venta.ClienteDTO;
 import pe.com.builderp.core.facturacion.model.dto.venta.ConfiguracionAtributoDTO;
@@ -438,4 +440,27 @@ public interface VentaServiceLocal{
 	
 	String generarReportePago(String idVenta,String idCliente,String usuario) throws Exception;
 	
+	
+    AvalDTO controladorAccionAval(AvalDTO Aval,AccionType accionType) throws Exception; 
+	
+	/**
+	 * Listar Aval.
+	 *
+	 * @param Aval el Aval
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	List<AvalDTO> listarAval(AvalDTO Aval) throws Exception;
+	
+	/**
+	 * contar lista Aval.
+	 *
+	 * @param Aval el Aval
+	 * @return the list
+	 * @throws Exception the exception
+	 */
+	int contarListarAval(AvalDTO Aval);
+	
+	
+
 }

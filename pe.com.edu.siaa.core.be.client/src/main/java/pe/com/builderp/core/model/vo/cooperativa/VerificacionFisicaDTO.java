@@ -8,6 +8,7 @@ import java.util.Date;
 
 import pe.com.edu.siaa.core.model.dto.BasePaginator;
 import pe.com.edu.siaa.core.model.dto.seguridad.UsuarioDTO;
+import pe.com.edu.siaa.core.model.vo.SelectItemVO;
 
 /**
  * La Class Categoria.
@@ -46,6 +47,12 @@ public class VerificacionFisicaDTO extends BasePaginator implements Serializable
     
     private List<ImagenAdjuntoDTO> listaImgaenAdjunto = new ArrayList<ImagenAdjuntoDTO>();
     
+    /** El compra detalle compra list. */
+    private List<InformacionLaboralDTO> informacionLaboralAvalList = new ArrayList<InformacionLaboralDTO>(); 
+ 
+	    /** El postulante documento requerido list. */
+	private List<SelectItemVO> listaDocumentoRequeridoAval = new ArrayList<SelectItemVO>();
+    
     /**
      * Instancia un nuevo categoria.
      */
@@ -69,6 +76,22 @@ public class VerificacionFisicaDTO extends BasePaginator implements Serializable
 	
 	
 	
+
+	public List<InformacionLaboralDTO> getInformacionLaboralAvalList() {
+		return informacionLaboralAvalList;
+	}
+
+	public void setInformacionLaboralAvalList(List<InformacionLaboralDTO> informacionLaboralAvalList) {
+		this.informacionLaboralAvalList = informacionLaboralAvalList;
+	}
+
+	public List<SelectItemVO> getListaDocumentoRequeridoAval() {
+		return listaDocumentoRequeridoAval;
+	}
+
+	public void setListaDocumentoRequeridoAval(List<SelectItemVO> listaDocumentoRequeridoAval) {
+		this.listaDocumentoRequeridoAval = listaDocumentoRequeridoAval;
+	}
 
 	public List<ImagenAdjuntoDTO> getListaImgaenAdjunto() {
 		return listaImgaenAdjunto;

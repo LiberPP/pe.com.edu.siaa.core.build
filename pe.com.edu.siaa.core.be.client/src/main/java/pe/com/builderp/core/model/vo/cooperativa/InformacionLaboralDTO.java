@@ -40,6 +40,8 @@ public class InformacionLaboralDTO extends BasePaginator implements Serializable
     
     private EvaluacionCreditoDTO evaluacionCredito;
     
+    private AvalDatosDTO avalDatos;
+    
     /**
      * Instancia un nuevo categoria.
      */
@@ -47,7 +49,7 @@ public class InformacionLaboralDTO extends BasePaginator implements Serializable
     }
 
 	public InformacionLaboralDTO(String idInformacionLaboral, EntidadDTO entidad, BigDecimal salario,
-			String tiempolabor, ItemDTO itemByCargo,EvaluacionCreditoDTO evaluacionCredito) {
+			String tiempolabor, ItemDTO itemByCargo,EvaluacionCreditoDTO evaluacionCredito,AvalDatosDTO avalDatos) {
 		super();
 		this.idInformacionLaboral = idInformacionLaboral;
 		this.entidad = entidad;
@@ -55,10 +57,20 @@ public class InformacionLaboralDTO extends BasePaginator implements Serializable
 		this.tiempolabor = tiempolabor;
 		this.itemByCargo = itemByCargo;
 		this.evaluacionCredito = evaluacionCredito;
+		this.avalDatos=avalDatos;
 	}
 
 	
 	
+	
+	public AvalDatosDTO getAvalDatos() {
+		return avalDatos;
+	}
+
+	public void setAvalDatos(AvalDatosDTO avalDatos) {
+		this.avalDatos = avalDatos;
+	}
+
 	public EvaluacionCreditoDTO getEvaluacionCredito() {
 		return evaluacionCredito;
 	}

@@ -9,6 +9,7 @@ import javax.persistence.Query;
 
 import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericDAOImpl;
 import pe.com.edu.siaa.core.ejb.dao.seguridad.local.EntidadDaoLocal;
+import pe.com.edu.siaa.core.ejb.util.jms.UUIDUtil;
 import pe.com.edu.siaa.core.model.dto.seguridad.EntidadDTO;
 import pe.com.edu.siaa.core.model.jpa.seguridad.Entidad;
 import pe.com.edu.siaa.core.model.util.StringUtils;
@@ -125,7 +126,8 @@ public class EntidadDaoImpl extends  GenericDAOImpl<String, Entidad> implements 
      */
 	 @Override
     public String generarIdEntidad() {
-        String resultado = "1";
+		 return UUIDUtil.generarElementUUID();
+		 /*String resultado = "1";
         Query query = createQuery("select max(o.idEntidad) from Entidad o", null);
         List<Object> listLong =  query.getResultList();
         if (listLong != null && listLong.size() > 0 && listLong.get(0) != null)  {
@@ -134,7 +136,7 @@ public class EntidadDaoImpl extends  GenericDAOImpl<String, Entidad> implements 
                 resultado = resultado + ultimoIdGenerado;
             }
         }
-        return resultado;
+        return resultado;*/
     }
    
 }

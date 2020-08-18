@@ -47,6 +47,7 @@ version="2.0">
 		 
 		 <class>pe.com.builderp.core.facturacion.model.jpa.venta.Categoria</class>
 		 <class>pe.com.builderp.core.facturacion.model.jpa.venta.Cliente</class>
+		  <class>pe.com.builderp.core.facturacion.model.jpa.venta.Aval</class>
 		 <class>pe.com.builderp.core.facturacion.model.jpa.venta.ConfiguracionAtributo</class>
 		 <class>pe.com.builderp.core.facturacion.model.jpa.venta.ConfiguracionAtributoValue</class>
 		 <class>pe.com.builderp.core.facturacion.model.jpa.venta.DetallePedido</class>
@@ -75,7 +76,7 @@ version="2.0">
  <class>pe.com.builderp.core.model.jpa.cooperativa.Egreso</class>
  <class>pe.com.builderp.core.model.jpa.cooperativa.Ingreso</class>
  <class>pe.com.builderp.core.model.jpa.cooperativa.PrestamoInterno</class>
- <class>pe.com.builderp.core.model.jpa.cooperativa.Aval</class>
+ <class>pe.com.builderp.core.model.jpa.cooperativa.AvalDatos</class>
  <class>pe.com.builderp.core.model.jpa.cooperativa.CompromisoPago</class>
  <class>pe.com.builderp.core.model.jpa.cooperativa.ImagenAdjunto</class>
 		 

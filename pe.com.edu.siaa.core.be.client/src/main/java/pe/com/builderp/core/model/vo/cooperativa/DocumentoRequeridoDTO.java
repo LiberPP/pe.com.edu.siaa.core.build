@@ -23,20 +23,31 @@ public class DocumentoRequeridoDTO extends BasePaginator implements Serializable
     
     private String digital;
     
+    private AvalDatosDTO avalDatos;
+    
     public DocumentoRequeridoDTO() {
     }
 
 	public DocumentoRequeridoDTO(String idDocumentoRequerido, EvaluacionCreditoDTO evaluacionCredito,
-			ItemDTO itemByDocumento, String descripcionOtro,String digital) {
+			ItemDTO itemByDocumento, String descripcionOtro,String digital,AvalDatosDTO avalDatos) {
 		super();
 		this.idDocumentoRequerido = idDocumentoRequerido;
 		this.evaluacionCredito = evaluacionCredito;
 		this.itemByDocumento = itemByDocumento;
 		this.descripcionOtro = descripcionOtro;
 		this.digital= digital;
+		this.avalDatos=avalDatos;
 	}
 	
 	
+
+	public AvalDatosDTO getAvalDatos() {
+		return avalDatos;
+	}
+
+	public void setAvalDatos(AvalDatosDTO avalDatos) {
+		this.avalDatos = avalDatos;
+	}
 
 	public String getDigital() {
 		return digital;
