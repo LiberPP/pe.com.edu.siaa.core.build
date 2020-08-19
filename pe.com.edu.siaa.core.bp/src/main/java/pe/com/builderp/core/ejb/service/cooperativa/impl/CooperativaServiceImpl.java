@@ -256,6 +256,11 @@ public class CooperativaServiceImpl implements CooperativaServiceLocal {
 				evaluacionCreditoDTO.getListaDocumentoRequerido().add(new SelectItemVO(documentoRequeridoDTO.getItemByDocumento()));
 			}	
 			
+			FileVO fileVO = new FileVO();
+			fileVO.setRuta(ConstanteConfigUtil.RUTA_RECURSOS_FOTO_ALUMN + ConstanteConfigUtil.SEPARADOR_FILE + "086" +  evaluacionCredito2.getCliente().getFoto());
+			evaluacionCreditoDTO.getCliente().setFoto(commonServiceLocal.obtenerImagenEncodeBase64(fileVO));
+			
+			
 			resultado.add(evaluacionCreditoDTO);
 		}
 		listaTemo = null;
@@ -274,13 +279,13 @@ public class CooperativaServiceImpl implements CooperativaServiceLocal {
 		switch (accionType) {
 			case CREAR:
 				referenciaPersonal.setIdReferenciaPersonal(referenciaPersonalDaoImpl.generarIdReferenciaPersonal());
-				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(referenciaPersonal, ReferenciaPersonal.class);
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(referenciaPersonal, ReferenciaPersonal.class,"evaluacionCredito@PK@");
 				resultadoEntity.setEvaluacionCredito(evaluacionCredito);
 				this.referenciaPersonalDaoImpl.save(resultadoEntity);	
 				resultado = referenciaPersonal;
 				break;				
 			case MODIFICAR:
-				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(referenciaPersonal, ReferenciaPersonal.class,"itemByCargo");
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(referenciaPersonal, ReferenciaPersonal.class,"evaluacionCredito@PK@");
 				resultadoEntity.setEvaluacionCredito(evaluacionCredito);
 				this.referenciaPersonalDaoImpl.update(resultadoEntity);
 				resultado = referenciaPersonal;	 
@@ -399,8 +404,12 @@ public class CooperativaServiceImpl implements CooperativaServiceLocal {
 				List<DocumentoRequeridoDTO> listaDocumentoRequeridoVerificacionF = listarDocumentoRequeridoVerificacionFisica(avalDatos.getIdAvalDatos());
 				for (DocumentoRequeridoDTO documentoRequeridoDTO : listaDocumentoRequeridoVerificacionF) {
 					verificacionFisicaDTO.getListaDocumentoRequeridoAval().add(new SelectItemVO(documentoRequeridoDTO.getItemByDocumento()));
-				}		
+				}
 			}
+			
+			FileVO fileVO = new FileVO();
+			fileVO.setRuta(ConstanteConfigUtil.RUTA_RECURSOS_FOTO_ALUMN + ConstanteConfigUtil.SEPARADOR_FILE + "086" +  verificacionFisicaDTO2.getEvaluacionCredito().getCliente().getFoto());
+			verificacionFisicaDTO.getEvaluacionCredito().getCliente().setFoto(commonServiceLocal.obtenerImagenEncodeBase64(fileVO));
 			
 			ImagenAdjuntoDTO img= new ImagenAdjuntoDTO();
 			img.setId(verificacionFisicaDTO.getIdVerificacionFisica());
@@ -445,7 +454,6 @@ public class CooperativaServiceImpl implements CooperativaServiceLocal {
 			FileVO fileVO = new FileVO();
 			fileVO.setRuta(ConstanteConfigUtil.RUTA_RECURSOS_FOTO_ALUMN + ConstanteConfigUtil.SEPARADOR_FILE + "086" +  creditoDTO.getVerificacionFisica().getEvaluacionCredito().getCliente().getFoto());
 			creditoDTO.getVerificacionFisica().getEvaluacionCredito().getCliente().setFoto(commonServiceLocal.obtenerImagenEncodeBase64(fileVO));
-			
 			resultado.add(creditoDTO);
 		}
 	
@@ -523,9 +531,9 @@ public class CooperativaServiceImpl implements CooperativaServiceLocal {
 				}
 				//registrarInformacionLaboral(userName,evaluacionCreditoPersist,evaluacionCredito.getInformacionLaboralList().get(0));
 			}
-			if(!CollectionUtil.isEmpty(evaluacionCredito.getReferenciaPersonalDTOList())) {
+			if(!CollectionUtil.isEmpty(evaluacionCredito.getReferenciaPersonalDTOList())) { 
 				for(ReferenciaPersonalDTO referenciaPersonalDTO : evaluacionCredito.getReferenciaPersonalDTOList()) {
-					if (!evaluacionCredito.isEsEliminado()) {
+					if (!referenciaPersonalDTO.isEsEliminado()) {
 						if (StringUtils.isNullOrEmpty(referenciaPersonalDTO.getIdReferenciaPersonal())) {
 							controladorAccionReferenciaPersonal(referenciaPersonalDTO,evaluacionCreditoPersist,AccionType.CREAR);
 						} else {

@@ -11,6 +11,7 @@ import pe.com.builderp.core.ejb.dao.cooperativa.local.ReferenciaPersonalDaoLocal
 import pe.com.builderp.core.model.jpa.cooperativa.ReferenciaPersonal;
 import pe.com.builderp.core.model.vo.cooperativa.ReferenciaPersonalDTO;
 import pe.com.edu.siaa.core.ejb.dao.generic.impl.GenericFacturacionDAOImpl;
+import pe.com.edu.siaa.core.ejb.util.jms.UUIDUtil;
 import pe.com.edu.siaa.core.model.util.StringUtils;
 
 /**
@@ -87,7 +88,8 @@ public class ReferenciaPersonalDaoImpl extends  GenericFacturacionDAOImpl<String
      */
 	 @Override
     public String generarIdReferenciaPersonal() {
-        String resultado = "1";
+        return UUIDUtil.generarElementUUID();
+		 /*String resultado = "1";
         Query query = createQuery("select max(o.idReferenciaPersonal) from ReferenciaPersonal o", null);
         List<Object> listLong =  query.getResultList();
         if (listLong != null && listLong.size() > 0 && listLong.get(0) != null)  {
@@ -96,7 +98,7 @@ public class ReferenciaPersonalDaoImpl extends  GenericFacturacionDAOImpl<String
                 resultado = resultado + ultimoIdGenerado;
             }
         }
-        return resultado;
+        return resultado;*/
     }
    
 }
