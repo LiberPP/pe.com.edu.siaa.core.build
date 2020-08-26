@@ -18,6 +18,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import pe.com.edu.siaa.core.model.jpa.common.Item;
+import pe.com.edu.siaa.core.model.jpa.common.Ubigeo;
 import pe.com.edu.siaa.core.model.jpa.seguridad.Entidad;
 import pe.com.edu.siaa.core.model.jpa.seguridad.Usuario;
 import pe.com.edu.siaa.core.model.util.ConfiguracionEntityManagerUtil;
@@ -135,6 +136,11 @@ public class Cliente implements Serializable {
     @Column(name = "genero" , length = 1)
     private String genero;
     
+    /** El ubigeo by actual. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idUbigeoActual", referencedColumnName = "idUbigeo")
+    private Ubigeo ubigeoByActual;
+    
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idUsuario", referencedColumnName = "idUsuario")
     private Usuario usuario;
@@ -183,7 +189,7 @@ public class Cliente implements Serializable {
     public Cliente(String genero,Date fechaNacimiento,Item itemByEstadoCivil,String idCliente, Entidad entidad,String tipoCliente, String nombre, 
     		String apellidoPaterno, String apellidoMaterno, Item itemByTipoDocumentoIdentidad,String nroDoc, String email, String telefono,
     		String celular, String paginaWeb, String direccion, String userName,String foto, String userPassword, BigDecimal limiteCreito,
-    		Item itemByCategoriaCliente,String estado,Usuario usuario ) {
+    		Item itemByCategoriaCliente,String estado,Usuario usuario,Ubigeo ubigeoByActual ) {
         super();
         this.idCliente = idCliente;
         this.entidad = entidad;
@@ -208,6 +214,7 @@ public class Cliente implements Serializable {
         this.genero=genero;
         this.usuario=usuario;
         this.foto=foto;
+        this.ubigeoByActual=ubigeoByActual;
     }
    
     //get y set
@@ -221,7 +228,17 @@ public class Cliente implements Serializable {
      public String getIdCliente() {
         return this.idCliente;
     }
-    public String getFoto() {
+    public Ubigeo getUbigeoByActual() {
+		return ubigeoByActual;
+	}
+
+
+	public void setUbigeoByActual(Ubigeo ubigeoByActual) {
+		this.ubigeoByActual = ubigeoByActual;
+	}
+
+
+	public String getFoto() {
 		return foto;
 	}
 

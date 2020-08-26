@@ -161,6 +161,8 @@ public enum NombreReporteType {
  	
  	JR_REP_REPORTE_CUOTA_PRESTAMO("jrReporteCronogramaPagos.jasper","ReporteCuotaPrestamo","jrReporteCronogramaPagos",""),
  	
+ 	JR_REP_REPORTE_CONTRATO_CREDITO("jrReporteContratoCredito.jasper","ReporteContratoCredito","jrReporteContratoCredito",""),
+ 	
 	 /** El NULO. */
 	 NULO("","","","")
 	 ;

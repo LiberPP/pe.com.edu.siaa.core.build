@@ -511,12 +511,12 @@ public class VentaServiceImpl implements VentaServiceLocal {
 		switch (accionType) {
 			case CREAR:
 				cliente.setIdCliente(this.clienteDaoImpl.generarIdCliente());
-				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(cliente, Cliente.class,"usuario@PK@","entidad@PK@","itemByTipoDocumentoIdentidad@PK@","itemByCategoriaCliente@PK@","itemByEstadoCivil@PK@");
+				resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(cliente, Cliente.class,"ubigeoByActual@PK@","usuario@PK@","entidad@PK@","itemByTipoDocumentoIdentidad@PK@","itemByCategoriaCliente@PK@","itemByEstadoCivil@PK@");
 				this.clienteDaoImpl.save(resultadoEntity);	
 				resultado = cliente;
 				break;				
 			case MODIFICAR:
-			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(cliente, Cliente.class,"usuario@PK@","entidad@PK@","itemByTipoDocumentoIdentidad@PK@","itemByCategoriaCliente@PK@","itemByEstadoCivil@PK@");
+			    resultadoEntity = TransferDataObjectUtil.transferObjetoEntity(cliente, Cliente.class,"ubigeoByActual@PK@","usuario@PK@","entidad@PK@","itemByTipoDocumentoIdentidad@PK@","itemByCategoriaCliente@PK@","itemByEstadoCivil@PK@");
 				this.clienteDaoImpl.update(resultadoEntity);
 				resultado = cliente;	
 				break;
@@ -547,7 +547,7 @@ public class VentaServiceImpl implements VentaServiceLocal {
 		List<Cliente> listaTemp = this.clienteDaoImpl.listarCliente(cliente);
 		List<ClienteDTO> listaCli = new ArrayList<ClienteDTO>(); 
 		for (Cliente clie : listaTemp) {
-			ClienteDTO clienteDTO = TransferDataObjectUtil.transferObjetoEntityDTO(clie, ClienteDTO.class,"usuario","itemByTipoDocumentoIdentidad","itemByCategoriaCliente","itemByEstadoCivil");
+			ClienteDTO clienteDTO = TransferDataObjectUtil.transferObjetoEntityDTO(clie, ClienteDTO.class,"ubigeoByActual:{ubigeoByDependencia}","usuario","itemByTipoDocumentoIdentidad","itemByCategoriaCliente","itemByEstadoCivil");
 			FileVO fileVO = new FileVO();
 			fileVO.setRuta(ConstanteConfigUtil.RUTA_RECURSOS_FOTO_ALUMN + ConstanteConfigUtil.SEPARADOR_FILE + "086" +  clienteDTO.getFoto());
 			clienteDTO.setFoto(commonServiceLocal.obtenerImagenEncodeBase64(fileVO));

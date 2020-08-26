@@ -261,6 +261,8 @@ public interface CooperativaServiceLocal{
 	
 	String generarReporteCronogramaPago(String idCredito) throws Exception;
 	
+	String descargarContratoCredito(String idCredito) throws Exception;
+	
 	void eliminarControlPago(String idControlPago,String userName) throws Exception;
 	
 	void eliminarDetControlPago(String idDetControlPago,String userName) throws Exception;

@@ -52,7 +52,7 @@ public class ClienteDaoImpl extends  GenericFacturacionDAOImpl<String, Cliente> 
         if (esContador) {
             jpaql.append(" select count(o.idCliente) from Cliente o where 1=1 ");
         } else {
-            jpaql.append(" select o from Cliente o left join fetch o.itemByTipoDocumentoIdentidad left join fetch o.itemByCategoriaCliente left join fetch o.itemByEstadoCivil  where 1=1 ");           
+            jpaql.append(" select o from Cliente o  left join fetch o.ubigeoByActual left join fetch o.itemByTipoDocumentoIdentidad left join fetch o.itemByCategoriaCliente left join fetch o.itemByEstadoCivil  where 1=1 ");           
         }
 		if (!StringUtils.isNullOrEmpty(cliente.getSearch())) {
 	          jpaql.append(" and (TRANSLATE(UPPER(o.nombre || ' ' || o.apellidoPaterno || ' ' || o.apellidoMaterno ), :discriminaTildeMAC, :discriminaTildeMAT) like UPPER(translate(:search, :discriminaTildeMIC, :discriminaTildeMIT))  or (upper(o.nroDoc) like :search) )");

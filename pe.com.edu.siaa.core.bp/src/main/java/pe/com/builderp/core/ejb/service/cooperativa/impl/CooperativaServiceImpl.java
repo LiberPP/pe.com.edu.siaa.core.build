@@ -1358,6 +1358,29 @@ public class CooperativaServiceImpl implements CooperativaServiceLocal {
 	} 
 	
 	
+	
+	@Override
+	public String descargarContratoCredito(String idCredito) throws Exception {
+		Credito credito= this.creditoDaoImpl.find(Credito.class, idCredito);
+		//System.out.println(credito.getDescripcion() +" "+credito.getVerificacionFisica().getEvaluacionCredito().getCliente().getNombre());
+		//UUIDUtil.generarElementUUID()
+		String fileName = "CONTRATO" +" - " +credito.getVerificacionFisica().getEvaluacionCredito().getCliente().getNombre();
+		String codigoGeneradoReporte = fileName;
+		Map<String, Object> parametros = new HashMap<String, Object>();
+		String[] subreportes;
+		subreportes = new String[0];	
+		parametros.put("idCredito", idCredito);
+		parametros.put("ruta", ""); 
+		
+		NombreReporteType reporte = NombreReporteType.JR_REP_REPORTE_CONTRATO_CREDITO;
+		ParametroReporteVO parametroReporteVO = new ParametroReporteVO(parametros, null, reporte, subreportes, null, false, "", "");
+		parametroReporteVO.setFormato(TipoReporteGenerarType.PDF.getKey());
+		parametroReporteVO.setFileName(fileName);
+		codigoGeneradoReporte = generarReporteServiceImpl.obtenerParametroReporteBigMemory(parametroReporteVO);
+		return codigoGeneradoReporte;
+	} 
+	
+	
 	//
 	
 	@Override

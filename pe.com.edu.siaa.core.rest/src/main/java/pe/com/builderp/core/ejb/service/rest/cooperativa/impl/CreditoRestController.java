@@ -236,4 +236,17 @@ public class CreditoRestController extends GenericServiceRestImpl {
 		}
 		return resultado;
 	}
+	
+	
+	@GET
+    @Path("/descargarContratoCredito/{idCredito}")
+	public ResultadoRestVO<String> descargarContratoCredito(@Context HttpHeaders httpHeaders,@PathParam("idCredito") String idCredito){
+		ResultadoRestVO<String> resultado = new ResultadoRestVO<String>();
+		 try {
+    		resultado.setObjetoResultado(cooperativaServiceLocal.descargarContratoCredito(idCredito));
+		} catch (Exception e) {
+			parsearResultadoError(e, resultado);
+		}
+		return resultado;
+	}
 }

@@ -8,6 +8,7 @@ import java.util.List;
 
 import pe.com.edu.siaa.core.model.dto.BasePaginator;
 import pe.com.edu.siaa.core.model.dto.common.ItemDTO;
+import pe.com.edu.siaa.core.model.dto.common.UbigeoDTO;
 import pe.com.edu.siaa.core.model.dto.seguridad.EntidadDTO;
 import pe.com.edu.siaa.core.model.dto.seguridad.UsuarioDTO;
 
@@ -93,6 +94,9 @@ public class ClienteDTO extends BasePaginator implements Serializable {
     private String genero;
     
     private UsuarioDTO usuario;
+    
+    /** El ubigeo by actual. */
+    private UbigeoDTO ubigeoByActual;
    
     /** El cliente pedido list. */
     private List<PedidoDTO> clientePedidoList = new ArrayList<PedidoDTO>();
@@ -135,7 +139,7 @@ public class ClienteDTO extends BasePaginator implements Serializable {
     public ClienteDTO(String genero,Date fechaNacimiento,ItemDTO itemByEstadoCivil,String foto,String idCliente, 
     		EntidadDTO entidad,String tipoCliente, String nombre, String apellidoPaterno, String apellidoMaterno, ItemDTO itemByTipoDocumentoIdentidad,
     		String nroDoc, String email, String telefono, String celular, String paginaWeb, String direccion, String userName, String userPassword, 
-    		BigDecimal limiteCreito, ItemDTO itemByCategoriaCliente,String estado,UsuarioDTO usuario ) {
+    		BigDecimal limiteCreito, ItemDTO itemByCategoriaCliente,String estado,UsuarioDTO usuario,UbigeoDTO ubigeoByActual ) {
         super();
         this.idCliente = idCliente;
         this.entidad = entidad;
@@ -160,6 +164,7 @@ public class ClienteDTO extends BasePaginator implements Serializable {
         this.fechaNacimiento=fechaNacimiento;
         this.genero=genero;
         this.usuario=usuario;
+        this.ubigeoByActual=ubigeoByActual;
     }
    
     //get y set+++
@@ -173,7 +178,17 @@ public class ClienteDTO extends BasePaginator implements Serializable {
      public String getIdCliente() {
         return this.idCliente;
     }
-    public UsuarioDTO getUsuario() {
+    public UbigeoDTO getUbigeoByActual() {
+		return ubigeoByActual;
+	}
+
+
+	public void setUbigeoByActual(UbigeoDTO ubigeoByActual) {
+		this.ubigeoByActual = ubigeoByActual;
+	}
+
+
+	public UsuarioDTO getUsuario() {
 		return usuario;
 	}
 
