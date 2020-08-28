@@ -30,6 +30,7 @@ import pe.com.edu.siaa.core.ejb.dao.seguridad.local.UsuarioDaoLocal;
 import pe.com.edu.siaa.core.ejb.dao.seguridad.local.UsuarioEntidadDaoLocal;
 import pe.com.edu.siaa.core.ejb.factory.CollectionUtil;
 import pe.com.edu.siaa.core.ejb.factory.TransferDataObjectUtil;
+import pe.com.edu.siaa.core.ejb.service.common.local.CommonServiceLocal;
 import pe.com.edu.siaa.core.ejb.service.seguridad.local.SeguridadServiceLocal;
 import pe.com.edu.siaa.core.ejb.service.util.FechaUtil;
 import pe.com.edu.siaa.core.ejb.util.cache.AppAuthenticator;
@@ -74,10 +75,12 @@ import pe.com.edu.siaa.core.model.jpa.seguridad.Usuario;
 import pe.com.edu.siaa.core.model.jpa.seguridad.UsuarioEntidad;
 import pe.com.edu.siaa.core.model.type.AccionType;
 import pe.com.edu.siaa.core.model.type.TipoComponenteType;
+import pe.com.edu.siaa.core.model.util.ConstanteConfigUtil;
 import pe.com.edu.siaa.core.model.util.ObjectUtil;
 import pe.com.edu.siaa.core.model.util.StringUtils;
 import pe.com.edu.siaa.core.model.vo.ConfiguracionMenuVO;
 import pe.com.edu.siaa.core.model.vo.EgresadoFiltroVO;
+import pe.com.edu.siaa.core.model.vo.FileVO;
 
 
 /**
@@ -168,6 +171,9 @@ public class SeguridadServiceImpl implements SeguridadServiceLocal{
 	
 	@EJB
 	private RecuperarPasswordDaoLocal recuperarPasswordDaoImpl;
+	
+	@EJB
+	private transient CommonServiceLocal commonServiceLocal;
 	
 
 	@Override
@@ -585,6 +591,11 @@ public class SeguridadServiceImpl implements SeguridadServiceLocal{
 		if (resultado != null && resultado.getIdUsuario() != null) {
 			resultado.setPrivilegiosMap(obtenerPrivilegiosUsuario(resultado.getIdUsuario()));
 			resultado.setListaMenu(obtenerMenuUsuario(resultado.getIdUsuario()));
+			
+			FileVO fileVO = new FileVO();
+			fileVO.setRuta(ConstanteConfigUtil.RUTA_RECURSOS_FOTO_ALUMN + ConstanteConfigUtil.SEPARADOR_FILE + "086" +  resultado.getFoto());
+			resultado.setFoto(commonServiceLocal.obtenerImagenEncodeBase64(fileVO));
+			
 			List<String> listaIdUsuario = new ArrayList<String>();
 			listaIdUsuario.add(resultado.getIdUsuario());
 			//Para saber si es un usuario que tiene mas de una empresa
